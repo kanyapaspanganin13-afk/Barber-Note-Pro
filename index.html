@@ -2,202 +2,46 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Barber Note Pro v.1</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
+    <title>Barber Note Pro v.2.1</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #6366f1;
-            --primary-light: #818cf8;
-            --bg: #f1f5f9;
-            --card: #ffffff;
-            --text-main: #1e293b;
-            --text-sub: #64748b;
-            --nav-height: 70px;
-        }
-
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-
-        body { 
-            margin: 0; 
-            background-color: #cbd5e1; /* พื้นหลังด้านนอกสำหรับ PC */
-            display: flex;
-            justify-content: center;
-        }
-
-        /* Container หลักที่ทำให้หน้าตาเหมือนมือถือตลอดเวลา */
-        .app-shell {
-            width: 100%;
-            max-width: 480px; /* บังคับขนาดหน้าจอ */
-            min-height: 100vh;
-            background-color: var(--bg);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 0 30px rgba(0,0,0,0.2);
-            padding-bottom: var(--nav-height);
-        }
-
-        /* ส่วนหัวแอป */
-        .header {
-            padding: 20px;
-            text-align: center;
-            background: var(--card);
-            color: var(--primary);
-            font-size: 24px;
-            font-weight: bold;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-
-        /* เนื้อหาภายในหน้า */
-        .page { display: none; padding: 15px; animation: fadeIn 0.3s; }
-        .page.active { display: block; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* การจัดวางปุ่มเมนูบน (ประกัน/วันหยุด/ตั้งค่า) */
-        .top-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .action-card {
-            background: var(--card);
-            padding: 15px 5px;
-            border-radius: 15px;
-            text-align: center;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-main);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            border: 1px solid transparent;
-            cursor: pointer;
-        }
-        .action-card i { font-size: 20px; display: block; margin-bottom: 8px; color: var(--primary); }
-
-        /* ช่องกรอกราคาขนาดใหญ่ */
-        .price-display {
-            background: var(--card);
-            margin-bottom: 20px;
-            border-radius: 20px;
-            padding: 25px;
-            text-align: center;
-            border: 2px solid var(--primary);
-            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.2);
-        }
-        .price-display input {
-            width: 100%;
-            border: none;
-            text-align: center;
-            font-size: 56px;
-            font-weight: 800;
-            color: var(--text-main);
-            outline: none;
-            background: transparent;
-        }
-
-        /* กลุ่มปุ่มชำระเงิน */
-        .pay-methods {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .btn-pay {
-            padding: 18px;
-            border-radius: 15px;
-            border: none;
-            background: #e2e8f0;
-            font-weight: bold;
-            font-size: 16px;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .btn-pay.active-cash { background: #dcfce7; color: #166534; border: 2px solid #22c55e; }
-        .btn-pay.active-trans { background: #e0f2fe; color: #075985; border: 2px solid #0ea5e9; }
-
-        /* ปุ่มบันทึกใหญ่พิเศษ */
-        .btn-save {
-            width: 100%;
-            padding: 20px;
-            border-radius: 20px;
-            border: none;
-            background: var(--primary);
-            color: white;
-            font-size: 22px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
-        }
-
-        /* แก้ไข Bottom Nav (ให้ไอคอนอยู่รวมกัน ไม่กระจายขอบ) */
-        .bottom-nav {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: var(--nav-height);
-            background: var(--card);
-            display: flex;
-            justify-content: center; /* จัดเข้ากลาง */
-            align-items: center;
-            border-top: 1px solid rgba(0,0,0,0.05);
-            gap: 40px; /* ระยะห่างระหว่างปุ่มที่พอดี */
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: 11px;
-            font-weight: 600;
-            transition: 0.2s;
-        }
-        .nav-item i { font-size: 24px; margin-bottom: 4px; }
+        :root { --primary: #6366f1; --accent: #0ea5e9; --danger: #ef4444; --success: #22c55e; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --border: #e2e8f0; }
+        * { box-sizing: border-box; font-family: 'Kanit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 90px; overflow-x: hidden; }
+        .container { padding: 10px; max-width: 500px; margin: auto; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        .icon-card { position: relative; border-radius: 12px; padding: 10px 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1.5px solid transparent; }
+        .icon-card span:first-child { font-size: 18px; }
+        .icon-card span:last-child { font-size: 10px; font-weight: 800; }
+        input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 12px; font-size: 14px; background: #f1f5f9; outline: none; }
+        .price-box { font-size: 40px; font-weight: bold; text-align: center; color: var(--primary); padding: 10px; border: 2px solid var(--primary); border-radius: 15px; margin-bottom: 15px; width: 100%; background: #fff; display: block; }
+        .btn { border: none; padding: 12px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 600; transition: 0.2s; }
+        .btn:active { transform: scale(0.95); }
+        .btn-pay { background: #e2e8f0; color: #64748b; border: 2px solid transparent; }
+        .btn-pay.active-cash { background: #dcfce7; color: #15803d; border-color: #22c55e; }
+        .btn-pay.active-trans { background: #e0f2fe; color: #0369a1; border-color: #0ea5e9; }
+        .btn-main { background: var(--primary); color: white; width: 100%; font-size: 28px; height: 60px; }
+        .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid var(--border); z-index: 1000; }
+        .nav-item { border: none; background: none; color: #94a3b8; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-item.active { color: var(--primary); }
-
-        /* ปรับปรุง Input ทั่วไป */
-        .input-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-        select, input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
-            font-size: 14px;
-            background: var(--card);
-        }
-
-        /* หน้ารายงาน (รูปที่ 3) */
-        .summary-box {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 10px;
-        }
-        .summary-item { width: 45%; font-size: 14px; margin-bottom: 5px; }
-
+        .nav-item i { font-size: 22px; }
+        .page { display: none; } .page.active { display: block; }
+        .status-bar { padding: 12px; border-radius: 12px; text-align: center; font-weight: bold; margin-bottom: 10px; font-size: 14px; }
+        .status-red { background: #fee2e2; color: #dc2626; }
+        .status-indigo { background: #e0e7ff; color: #3730a3; }
+        .status-green { background: #dcfce7; color: #16a34a; }
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 8px; font-size: 11px; margin: 2px; background: #eee; }
+        .history-row { padding: 10px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+        .modal-content { background: #fff; padding: 20px; border-radius: 25px; width: 100%; max-width: 400px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .card { background: var(--card); border-radius: 20px; padding: 15px; margin-bottom: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
-
     <div class="app-shell">
         <div class="header" id="shopNameDisp">Barber Shop</div>
 
