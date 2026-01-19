@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.2.1.9</title>
+    <title>Barber Note Pro v.2.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -76,18 +76,14 @@
 
         <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
             <select id="hairStyle" style="height: 50px;">
-                <option value="">💇 ทรงผม</option>
+                <option value="">💇 เลือกทรงผม</option>
                 <option value="เด็ก">👶 ตัดผมเด็ก</option>
-                <option>รองทรง</option><option>แฟชั่น</option><option>สกินเฟด</option>
-                <option>เปิดข้าง</option><option>ตำรวจ/ทหาร</option><option>ทรงนักเรียน</option>
-                <option>แก้ผม</option><option>โกนผม</option>
-            </select>
+                <option>รองทรง</option><option>แฟชั่น</option><option>สกินเฟด</option><option>เปิดข้าง</option><option>ตำรวจ/ทหาร</option><option>ทรงนักเรียน</option>
+                <option>แก้ผม</option><option>โกนผม</option></select>
             <select id="extra1" style="height: 50px;">
-                <option value="">บริการ 1</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option>
-            </select>
+                <option value="">บริการ 1</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option><option>ย้อมผม</option> </select>
             <select id="extra2" style="height: 50px;">
-                <option value="">บริการ 2</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option>
-            </select>
+                <option value="">บริการ 2</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option><option>ย้อมผม</option></select>
         </div>
         <input type="number" id="priceInp" class="price-box" placeholder="0" inputmode="numeric">
         <div class="grid-2">
@@ -98,8 +94,7 @@
     </div>
 
     <div id="p2" class="page">
-        <div class="grid-2">
-            <div class="card" style="text-align: center;">
+        <div class="grid-2"><div class="card" style="text-align: center;">
                 <label style="font-size: 13px; opacity: 0.8;">ยอดเงินรวมวันนี้</label>
                 <div id="dTotal" style="font-size:32px; font-weight:800; color:var(--primary);">0</div>
                 <div id="dCounts" style="font-size:14px; font-weight:600; color:#64748b; margin-top:5px;">ลูกค้า: 0 คน</div>
@@ -154,52 +149,31 @@
     </div>
 <div id="modalSet" class="modal">
     <div class="modal-content">
-        <h3 style="margin-top:0; color:var(--primary);">⚙️ ตั้งค่าระบบ</h3> 
-        <label style="font-size:11px; font-weight:600;">ชื่อร้าน</label>
-        <input id="setShop" style="margin-bottom:10px;">
+        <h3 style="margin-top:0; color:var(--primary);">⚙️ ตั้งค่าระบบ</h3> <label style="font-size:11px; font-weight:600;">ชื่อร้าน</label> <input id="setShop" style="margin-bottom:10px;">
         <div class="grid-2">
             <div>
-                <label style="font-size:11px; font-weight:600;">% ช่าง</label>
-                <input type="number" id="setPerc" placeholder="เช่น 50">
-            </div>
+                <label style="font-size:11px; font-weight:600;">% ช่าง</label><input type="number" id="setPerc" placeholder="เช่น 50"></div>
             <div>
-                <label style="font-size:11px; font-weight:600;">ประกัน/วัน</label>
-                <input type="number" id="setGuar" placeholder="0">
-            </div>
+                <label style="font-size:11px; font-weight:600;">ประกัน/วัน</label> <input type="number" id="setGuar" placeholder="0"></div>
         </div>
         
         <div style="margin-top:10px">
             <label style="font-size:11px; font-weight:600;">ธีมแอป</label>
             <select id="setTheme">
-                <option value="neon-light">🌤 Neon Light (Default)</option>
-                <option value="deep-navy">🌌 Deep Navy</option>
-                <option value="barber-dark">🌑 Barber Dark</option>
-            </select>
+                <option value="neon-light">🌤 Neon Light (Default)</option> <option value="deep-navy">🌌 Deep Navy</option> <option value="barber-dark">🌑 Barber Dark</option> </select>
         </div>
-        
         <div class="grid-2" style="margin-top:10px">
             <div>
-                <label style="font-size:11px; font-weight:600;">ระบบเสียง</label>
-                <select id="setSound">
-                    <option value="on">🔊 เปิด</option>
-                    <option value="off">🔇 ปิด</option>
-                </select>
+                <label style="font-size:11px; font-weight:600;">ระบบเสียง</label> <select id="setSound"> <option value="on">🔊 เปิด</option> <option value="off">🔇 ปิด</option></select>
             </div>
             <div>
-                <label style="font-size:11px; font-weight:600;">เสียงพูด</label>
-                <select id="setVoice">
-                    <option value="female">👩 หญิง</option>
-                    <option value="male">👨 ชาย</option>
-                </select>
+                <label style="font-size:11px; font-weight:600;">เสียงพูด</label><select id="setVoice"> <option value="female">👩 หญิง</option> <option value="male">👨 ชาย</option></select>
             </div>
         </div>
-
         <div class="grid-2" style="margin-top:20px">
-            <button class="btn" style="background:var(--primary); color:#fff" onclick="saveSettings()">บันทึก</button>
-            <button class="btn" style="background:#e2e8f0; color:var(--text)" onclick="closeSettings()">ปิด</button>
+            <button class="btn" style="background:var(--primary); color:#fff" onclick="saveSettings()">บันทึก</button><button class="btn" style="background:#e2e8f0; color:var(--text)" onclick="closeSettings()">ปิด</button>
         </div>
-        
-        <button class="btn" style="width:100%; background:var(--danger); color:#fff; margin-top:10px; font-size:12px;" onclick="clearAllData()">⚠️ ล้างข้อมูลทั้งหมด</button>
+         <button class="btn" style="width:100%; background:var(--danger); color:#fff; margin-top:10px; font-size:12px;" onclick="clearAllData()">⚠️ ล้างข้อมูลทั้งหมด</button>
     </div>
 </div>
     <nav class="nav">
@@ -232,7 +206,39 @@
         $(`n${n}`).classList.add('active');
         renderDay();
     }
+    function openSettings() {
+        $("setShop").value = conf.shop || "Barber Shop";
+        $("setPerc").value = conf.perc || 50;
+        $("setGuar").value = conf.guar || 0;
+        $("modalSet").style.display = "block";
+    }
 
+    function closeSettings() {
+        $("modalSet").style.display = "none";
+    }
+
+    function saveSettings() {
+        conf.shop = $("setShop").value;
+        conf.perc = Number($("setPerc").value);
+        conf.guar = Number($("setGuar").value);
+        // เก็บค่าธีมและเสียง (ถ้าต้องการเขียนโค้ดเพิ่มในอนาคต)
+        conf.theme = $("setTheme").value;
+        conf.sound = $("setSound").value;
+        
+        localStorage.setItem("barber_conf", JSON.stringify(conf));
+        $("shopNameDisp").innerText = conf.shop;
+        
+        alert("บันทึกเรียบร้อย!");
+        renderDay();
+        closeSettings();
+    }
+
+    function clearAllData() {
+        if (confirm("คุณแน่ใจหรือไม่ที่จะล้างข้อมูลทั้งหมด? ข้อมูลจะหายถาวร!")) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
     function updateDateDisplay(val) {
         const d = new Date(val);
         $("dateDisplay").innerText = d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
