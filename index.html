@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.2.1</title>
+    <title>Barber Note Pro v.2.1.1</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -78,28 +78,18 @@
             <button id="btnCash" class="btn btn-pay" onclick="selectPay('Cash')">💵 เงินสด</button>
             <button id="btnTrans" class="btn btn-pay" onclick="selectPay('Trans')">📱 โอนเงิน</button></div>
         <button id="mainSaveBtn" class="btn btn-main" onclick="handleSave()"><i class="fas fa-save"></i></button> </div>
-        <div id="p2" class="page">
-        <div class="card" style="padding: 20px;">
-        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 15px; align-items: center;">
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-        <div style="display:flex; justify-content:space-between; font-size:14px;"><span>ยอดรวม:</span> <b id="dTotal" style="color:var(--primary)">0</b></div>
-        <div style="display:flex; justify-content:space-between; font-size:14px;"><span>📱 โอน:</span> <b id="dTrans">0</b></div>
-        <div style="display:flex; justify-content:space-between; font-size:14px;"><span>🤵 ช่าง:</span> <b id="dBarber">0</b></div>
-        <div style="display:flex; justify-content:space-between; font-size:14px;"><span>👥 ลูกค้า:</span> <b id="dCounts">0</b></div></div>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-        <div id="settleBar" class="status-bar" style="margin:0; padding:8px;">สถานะ</div>
-        <button onclick="shareLine()" style="background:#06C755; color:white; border:none; padding:10px; border-radius:12px; font-weight:bold;">
-        <i class="fab fa-line"></i> LINE
-        </button>
-        </div>
+        
+<div id="p2" class="page">
+    <div class="grid-2"><div class="card" style="text-align: center;"><label>ยอดเงินรวมวันนี้</label><div id="dTotal" style="font-size:28px; font-weight:600">0</div><div id="dCounts" style="font-size:18px; font-weight:600; color:var(--primary); margin-top:5px;">ลูกค้า: 0 คน</div></div>
+    <div class="card"><div style="font-size:16px; font-weight:600; margin-bottom:6px;">📱 โอน: <b id="dTrans">0</b></div><div style="font-size:16px; font-weight:600; margin-bottom:6px;">🤵 ช่าง: <b id="dBarber">0</b></div><div style="font-size:16px; font-weight:600;">🏠 ร้าน: <b id="dShop">0</b></div></div></div>
+    <div id="settleBar" class="status-bar status-blue">ยอดพอดี</div>
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><label>รายการวันนี้</label><i class="fab fa-line" style="color:#06C755; font-size:24px; cursor:pointer;" onclick="shareLine()"></i></div>
+        <div id="dServiceStats" style="margin-bottom:15px;"></div><div id="dailyList"></div>
     </div>
-        <div id="dServiceStats" style="margin-top:10px; display:flex; flex-wrap:wrap; gap:5px;"></div>
-        </div>
-        <div id="dailyList"></div>
-        <button class="btn-save" style="margin-top:10px; background: var(--indigo);" onclick="closeDay()">
-        <i class="fas fa-check-circle"></i> ปิดยอดวันนี้
-        </button>
-    </div>
+    <button class="btn-close-day" onclick="closeDay()"><i class="fas fa-check-circle"></i></button>
+</div>
+
 
    <div id="p3" class="page">
         <div class="card" style="text-align:center">
