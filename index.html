@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.2.1.6</title>
+    <title>Barber Note Pro v.2.1.7</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -386,8 +386,6 @@
             alert("เคลียร์ยอดสำเร็จ!");
         }
     }
-</script>
-
     function shareLine() {
         const d = $("dateInp").value, today = db.filter(r => r.date === d); if (!today.length) return;
         let tot = 0, trans = 0, cash = 0, counts = {"ตัดผม":0, "เด็ก":0, "สระผม":0, "โกนหนวด":0, "อื่น":0};
