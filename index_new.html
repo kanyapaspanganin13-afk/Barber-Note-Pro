@@ -89,31 +89,60 @@
         <span style="font-size: 10px; font-weight: 800; color: #be185d;">บันทึกวันหยุด</span>
     </div>
 </div>
+<div class="card" style="border-left: 5px solid #10b981;">
+        <div class="grid-2" style="margin-bottom:10px; grid-template-columns: 1fr;">
+            <select id="hairStyle">
+                <option value="">-- เลือกทรงผม --</option>
+                <option value="เด็ก">👶 ตัดผมเด็ก</option>
+                <option>รองทรง</option><option>แฟชั่น</option><option>สกินเฟด</option>
+                <option>เปิดข้าง</option><option>ตำรวจ/ทหาร</option><option>ทรงนักเรียน<option>แก้ผม<option>โกนผม</option>
+            </select>
+        </div>
+        <div class="grid-2">
+            <select id="extra1"><option value="">บริการอื่น 1</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม<option>ย้อมผม<option>ดัดผม</option></select>
+            <select id="extra2"><option value="">บริการอื่น 2</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม<option>ย้อมผม<option>ดัดผม</option></select>
+        </div>
+    </div>
 
-    <div class="card" style="border-left: 5px solid #0ea5e9; padding: 10px 15px;">
-        <div class="grid-2">
-            <div><label style="font-size:12px">เริ่ม</label><input type="tel" id="tStart" placeholder="0900" class="time-input" maxlength="4"></div>
-            <div><label style="font-size:12px">เสร็จ</label><input type="tel" id="tEnd" placeholder="0930" class="time-input" maxlength="4"></div>
-        </div>
-    </div>
-
-    <div class="card" style="border-left: 5px solid #10b981;"><div class="grid-2" style="margin-bottom:10px"><select id="mainSvc"><option value="">ไม่เลือก</option><option value="เด็ก">เด็ก</option></select><select id="hairStyle"><option value="">ไม่เลือก</option><option>รองทรง</option><option>แฟชั่น</option><option>สกินเฟด</option><option>เปิดข้าง</option></option><option>ตำรวจ/ทหาร</option><option>ทรงนักเรียน</option><option>แก้ทรงผม<option>โกนผม</option></select></div>
-    <div class="grid-2"><select id="extra1"><option value="">บริการอื่น 1</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option><option>ย้อมผม</option><option>ดัดผม</option></option></select><select id="extra2"><option value="">บริการอื่น 2</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option><option>ย้อมผม</option><option>ดัดผม</option>ม</option></select></div></div>
-    <div class="card" style="border-left: 5px solid #f59e0b;"><input type="number" id="priceInp" placeholder="0" inputmode="numeric" style="font-size:40px; font-weight:600; color:#b45309; text-align:center; height:80px;"><div class="grid-2" style="margin-top:15px"><button id="btnCash" class="btn-pay" onclick="selectPay('Cash')"><i class="fas fa-money-bill-wave"></i> สด</button><button id="btnTrans" class="btn-pay" onclick="selectPay('Trans')"><i class="fas fa-mobile-alt"></i> โอน</button></div></div>
-    <button class="btn-save" id="mainSaveBtn" onclick="handleSave()">บันทึกข้อมูล</button>
+    <div class="card" style="border-left: 5px solid #f59e0b;">
+        <input type="number" id="priceInp" placeholder="0" inputmode="numeric" style="font-size:40px; font-weight:600; color:#b45309; text-align:center; height:80px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 8px; margin-top: 15px;">
+            <button id="btnCash" class="btn-pay" onclick="selectPay('Cash')">สด</button>
+            <button id="btnTrans" class="btn-pay" onclick="selectPay('Trans')">โอน</button>
+            <button class="btn-save" id="mainSaveBtn" onclick="handleSave()" style="margin:0; font-size:16px;">บันทึก</button>
+        </div>
+    </div>
 </div>
-
 <div id="p2" class="page">
-    <div class="grid-2"><div class="card" style="text-align: center;"><label>ยอดเงินรวมวันนี้</label><div id="dTotal" style="font-size:28px; font-weight:600">0</div><div id="dCounts" style="font-size:18px; font-weight:600; color:var(--primary); margin-top:5px;">ลูกค้า: 0 คน</div></div>
-    <div class="card"><div style="font-size:16px; font-weight:600; margin-bottom:6px;">📱 โอน: <b id="dTrans">0</b></div><div style="font-size:16px; font-weight:600; margin-bottom:6px;">🤵 ช่าง: <b id="dBarber">0</b></div><div style="font-size:16px; font-weight:600;">🏠 ร้าน: <b id="dShop">0</b></div></div></div>
-    <div id="settleBar" class="status-bar status-blue">ยอดพอดี</div>
-    <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><label>รายการวันนี้</label><i class="fab fa-line" style="color:#06C755; font-size:24px; cursor:pointer;" onclick="shareLine()"></i></div>
-        <div id="dServiceStats" style="margin-bottom:15px;"></div><div id="dailyList"></div>
-    </div>
-    <button class="btn-close-day" onclick="closeDay()"><i class="fas fa-check-circle"></i></button>
-</div>
+    <div class="grid-2">
+        <div class="card" style="text-align: center;">
+            <label>ยอดเงินรวมวันนี้</label>
+            <div id="dTotal" style="font-size:28px; font-weight:600">0</div>
+            <div id="dCounts" style="font-size:18px; font-weight:600; color:var(--primary); margin-top:5px;">ลูกค้า: 0 คน</div>
+        </div>
+        <div class="card">
+            <div style="font-size:16px; font-weight:600; margin-bottom:6px;">📱 โอน: <b id="dTrans">0</b></div>
+            <div style="font-size:16px; font-weight:600; margin-bottom:6px;">🤵 ช่าง: <b id="dBarber">0</b></div>
+            <div style="font-size:16px; font-weight:600;">🏠 ร้าน: <b id="dShop">0</b></div>
+        </div>
+    </div>
 
+    <div style="display: flex; gap: 8px; align-items: center; margin: 10px 0;">
+        <div id="settleBar" class="status-bar status-blue" style="margin:0; flex: 1;">ยอดพอดี</div>
+        <button class="btn-plane" onclick="closeDay()">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <label>รายการวันนี้</label>
+            <i class="fab fa-line" style="color:#06C755; font-size:24px; cursor:pointer;" onclick="shareLine()"></i>
+        </div>
+        <div id="dServiceStats" style="margin-bottom:15px;"></div>
+        <div id="dailyList"></div>
+    </div>
+</div>
 <div id="p3" class="page">
     <div class="acc-main-card">
         <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -155,10 +184,27 @@
         <input type="text" id="accNote" placeholder="หมายเหตุการเคลียร์" style="height:40px; margin-bottom:10px;">
         <button class="btn-save" onclick="clearAccount()" style="margin:0; padding:15px; background:var(--accent);">✅ ยืนยันเคลียร์เงินเรียบร้อย</button>
     </div>
+<div class="stats-grid">
+    <button class="btn-toggle-history" onclick="toggleAccordion('dailyAcc')">
+        <i class="fas fa-calendar-day"></i> ประวัติรายวัน
+    </button>
+    <button class="btn-toggle-history" onclick="toggleAccordion('monthlyAcc')">
+        <i class="fas fa-chart-line"></i> สถิติรายเดือน
+    </button>
+</div>
 
-    <div class="card" style="border-top: 4px solid var(--primary);"><label>เรียกดูประวัติรายวัน</label><input type="date" id="histDate" onchange="loadHistDaily()"><div id="histDailyArea"></div></div>
-    <div class="card" style="border-top: 4px solid var(--warning);"><label>สรุปสถิติรายเดือน</label><input type="month" id="histMonth" onchange="loadHistMonth()"><div id="histMonthArea"></div></div>
-</div> 
+<div id="dailyAcc" class="accordion-content">
+    <label style="font-size:12px; color:var(--primary); font-weight:600;">📅 เลือกวันที่ต้องการดู</label>
+    <input type="date" id="histDate" onchange="loadHistDaily()" style="margin-top:5px;">
+    <div id="histDailyArea" style="margin-top:10px;"></div>
+</div>
+
+<div id="monthlyAcc" class="accordion-content">
+    <label style="font-size:12px; color:var(--warning); font-weight:600;">📊 เลือกเดือนที่ต้องการสรุป</label>
+    <input type="month" id="histMonth" onchange="loadHistMonth()" style="margin-top:5px;">
+    <div id="histMonthArea" style="margin-top:10px;"></div>
+</div>
+    
 <div id="historyPanel" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:10000; align-items:flex-end;">
     <div style="background:var(--card); width:100%; border-radius:25px 25px 0 0; padding:20px; max-height:85vh; overflow-y:auto; animation: slideUp 0.3s ease-out; box-shadow: 0 -10px 25px rgba(0,0,0,0.2);">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid rgba(0,0,0,0.05); padding-bottom:15px;">
@@ -187,4 +233,285 @@
 <nav class="nav"><div class="nav-item active" id="n1" onclick="go(1)"><i class="fas fa-edit"></i>บันทึก</div><div class="nav-item" id="n2" onclick="go(2)"><i class="fas fa-calendar-check"></i>รายวัน</div><div class="nav-item" id="n3" onclick="go(3)"><i class="fas fa-history"></i>สถิติ</div></nav>
 
 <script>
-แก้ทีละส่วนอันนี้ของเดิม
+let payMethod="", 
+        conf=JSON.parse(localStorage.getItem("barber_conf"))||{shop:"Barber Shop",perc:50,guar:0,theme:"light",bg:"#f1f5f9",sound:"on",voice:"female"}, 
+        db=JSON.parse(localStorage.getItem("barber_db"))||[], 
+        archives=JSON.parse(localStorage.getItem("barber_arc"))||[],
+        account=JSON.parse(localStorage.getItem("barber_account"))||{balance:0, logs:[]};
+
+    const $=(id)=>document.getElementById(id);
+    
+    window.onload=()=>{ 
+        $("dateInp").valueAsDate=new Date(); 
+        updateDateDisplay($("dateInp").value);
+        applySettings(); 
+    };
+    
+    function speak(t){ if(conf.sound==="off")return; window.speechSynthesis.cancel(); const m=new SpeechSynthesisUtterance(t); m.lang='th-TH'; m.pitch=conf.voice==="male"?0.6:1.1; window.speechSynthesis.speak(m); }
+    
+    // ฟังก์ชันจัดการเวลา 0900 -> 09:00
+    document.querySelectorAll('.time-input').forEach(i=>i.addEventListener('input',e=>{ 
+        let v=e.target.value.replace(/\D/g,''); 
+        if(v.length>=4) e.target.value=v.substring(0,2)+":"+v.substring(2,4); 
+    }));
+
+    function go(n){ 
+        document.querySelectorAll('.page, .nav-item').forEach(el=>el.classList.remove('active')); 
+        $("p"+n).classList.add('active'); 
+        $("n"+n).classList.add('active'); 
+        if(n===2) renderDay(); 
+        if(n===3) { loadAccountStatus(); loadAccountHistory(); }
+    }
+
+    function selectPay(m){ payMethod=m; $("btnCash").className=m==='Cash'?'btn-pay active-cash':'btn-pay'; $("btnTrans").className=m==='Trans'?'btn-pay active-transfer':'btn-pay'; }
+
+    // --- ระบบ ยืด/หด หน้า 3 ---
+    function toggleAccordion(id) {
+        const daily = $("dailyAcc");
+        const monthly = $("monthlyAcc");
+        if (id === 'dailyAcc') {
+            daily.style.display = (daily.style.display === 'block') ? 'none' : 'block';
+            monthly.style.display = 'none';
+        } else {
+            monthly.style.display = (monthly.style.display === 'block') ? 'none' : 'block';
+            daily.style.display = 'none';
+        }
+    }
+
+    // --- บันทึกข้อมูล (Logic ใหม่ ตัด mainSvc) ---
+    function handleSave(){
+        const p=$("priceInp").value; 
+        const hair=$("hairStyle").value;
+        const ex1=$("extra1").value;
+        const ex2=$("extra2").value;
+
+        if(!hair && !ex1 && !ex2){ speak("กรุณาเลือกบริการ"); return; }
+        if(!p||!payMethod){ speak("กรุณาระบุราคาและวิธีชำระเงิน"); return; }
+
+        // รวมชื่อบริการ (ถ้าเป็นเด็ก ให้ถือว่าเป็นทรงผมหลัก)
+        let svcs = [hair, ex1, ex2].filter(s => s !== "");
+        
+        db.push({
+            id: Date.now(),
+            date: $("dateInp").value,
+            time: `${$("tStart").value || '00:00'}-${$("tEnd").value || '00:00'}`,
+            svcs: svcs,
+            hair: hair, // เก็บไว้เช็คว่าเป็นเด็กหรือทรงอะไร
+            price: Number(p),
+            pay: payMethod
+        });
+
+        localStorage.setItem("barber_db", JSON.stringify(db)); 
+        speak("บันทึก " + p + " บาท สำเร็จ");
+        
+        // เอฟเฟกต์ปุ่มบันทึก
+        $("mainSaveBtn").innerText="บันทึกแล้ว ✓"; 
+        $("mainSaveBtn").style.background="var(--accent)";
+        
+        setTimeout(()=>{ 
+            $("mainSaveBtn").innerText="บันทึกข้อมูล"; 
+            $("mainSaveBtn").style.background="var(--primary)"; 
+            $("priceInp").value=""; 
+            if($("tEnd").value){ $("tStart").value=$("tEnd").value; $("tEnd").value=""; } 
+            $("extra1").value=$("extra2").value=$("hairStyle").value=""; 
+            selectPay(""); 
+        }, 600);
+    }
+
+    function renderDay(){
+        const d=$("dateInp").value, today=db.filter(r=>r.date===d); 
+        let tot=0,trans=0,cash=0,stats={},listHtml="";
+        
+        today.sort((a,b)=>a.time.localeCompare(b.time)).forEach(r=>{
+            tot+=r.price; 
+            r.pay==='Trans' ? trans+=r.price : cash+=r.price; 
+            
+            // นับสถิติ: ถ้า hair เป็นเด็ก ให้นับทั้งเด็กและตัดผม
+            if(r.hair === "เด็ก") {
+                stats["เด็ก"] = (stats["เด็ก"] || 0) + 1;
+                stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
+            } else if(r.hair) {
+                stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
+            }
+
+            // นับบริการเสริมอื่นๆ
+            r.svcs.forEach(s => { 
+                if(s !== r.hair) stats[s] = (stats[s] || 0) + 1; 
+            });
+
+            listHtml += `<div class="history-row"><div style="display:flex; justify-content:space-between"><span>${r.time} | ${r.svcs.join('+')}</span><b>฿${r.price}</b></div><div style="display:flex; justify-content:space-between; opacity:0.7"><span></span><span>${r.pay==='Cash'?'💵 สด':'📱 โอน'} <i class="fas fa-trash" style="margin-left:10px; color:var(--danger)" onclick="delRec(${r.id})"></i></span></div></div>`;
+        });
+
+        const bEarn=Math.max(tot*(conf.perc/100),conf.guar), sEarn=tot-bEarn, settle=cash-bEarn;
+        $("dTotal").innerText=tot.toLocaleString(); 
+        $("dTrans").innerText=trans.toLocaleString(); 
+        $("dBarber").innerHTML=`${Math.floor(bEarn).toLocaleString()} <small>(สด: ${cash})</small>`; 
+        $("dShop").innerText=Math.floor(sEarn).toLocaleString(); 
+        $("dCounts").innerText=`ลูกค้า: ${today.length} คน`; 
+        $("dailyList").innerHTML=listHtml||"<center style='opacity:0.3; padding:20px'>ไม่มีข้อมูล</center>";
+        
+        // แสดง Badge สถิติ
+        let sH=""; 
+        if(stats["ตัดผม"]) sH += `<span class="badge" style="background:#4338ca; color:white;">ตัดผม: ${stats["ตัดผม"]}</span>`;
+        for(let s in stats) { if(s !== "ตัดผม") sH += `<span class="badge">${s}: ${stats[s]}</span>`; }
+        $("dServiceStats").innerHTML=sH;
+
+        const b=$("settleBar"); 
+        if(tot===0){ b.innerText="🟦 ร้านจ่ายประกัน"; b.className="status-bar status-blue"; } 
+        else if(settle>0){ b.innerText=`🟥 ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`; b.className="status-bar status-red"; } 
+        else if(settle<0){ b.innerText=`🟦 ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; b.className="status-bar status-indigo"; } 
+        else { b.innerText="✅ ยอดพอดี"; b.className="status-bar status-green"; }
+    }
+
+    function calcTodaySettle(){
+        const d = $("dateInp").value;
+        const today = db.filter(r=>r.date===d);
+        if(!today.length) return 0;
+        const tot = today.reduce((a,b)=>a+b.price,0);
+        const cash = today.filter(r=>r.pay==='Cash').reduce((a,b)=>a+b.price,0);
+        const bEarn = Math.max(tot*(conf.perc/100), conf.guar);
+        return cash - bEarn;
+    }
+
+    function closeDay() {
+        const d = $("dateInp").value;
+        const today = db.filter(r => r.date === d);
+        if(!today.length) return alert("ไม่มีข้อมูลที่จะส่ง");
+        if(confirm("ปิดยอดวันนี้และส่งไปหน้าสถิติ?")) {
+            const tot = today.reduce((a,b) => a+b.price, 0);
+            const cash = today.filter(r=>r.pay==='Cash').reduce((a,b)=>a+b.price, 0);
+            const bEarn = Math.max(tot * (conf.perc/100), conf.guar);
+            
+            let dailyStats = {};
+            today.forEach(r => { 
+                r.svcs.forEach(s => { dailyStats[s] = (dailyStats[s] || 0) + 1; });
+                if(r.hair === "เด็ก") dailyStats["ตัดผม"] = (dailyStats["ตัดผม"] || 0) + 1;
+                else if(r.hair) dailyStats["ตัดผม"] = (dailyStats["ตัดผม"] || 0) + 1;
+            }); 
+
+            archives = archives.filter(a => a.date !== d);
+            archives.push({date: d, total: tot, cash: cash, barber: bEarn, shop: tot-bEarn, settle: cash-bEarn, count: today.length, details: today, stats: dailyStats});
+            
+            account.balance = (account.balance || 0) + (cash - bEarn);
+            localStorage.setItem("barber_account", JSON.stringify(account));
+            localStorage.setItem("barber_arc", JSON.stringify(archives));
+            db = db.filter(r => r.date !== d);
+            localStorage.setItem("barber_db", JSON.stringify(db));
+            
+            speak("ปิดยอดสำเร็จ"); go(3);
+        }
+    }
+
+    function loadAccountStatus() {
+        const todaySettle = calcTodaySettle();
+        const oldBal = account.balance || 0;
+        const net = oldBal + todaySettle;
+        const dStr = $("dateInp").value;
+        const dObj = new Date(dStr);
+        const dateThai = `${dObj.getDate()}/${dObj.getMonth()+1}/${(dObj.getFullYear()+543).toString().slice(-2)}`;
+
+        $("accOldVal").innerText = `฿${oldBal.toLocaleString()}`;
+        $("accTodayVal").innerText = `฿${todaySettle.toLocaleString()}`;
+        $("accNet").innerText = Math.abs(net).toLocaleString();
+
+        let txt="✅ ยอดพอดี", cls="status-green", light="#16a34a";
+        if(net>0){ txt=`🚩 ค้างคืนร้าน ฿${Math.abs(net).toLocaleString()}`; cls="status-red"; light="#dc2626"; }
+        else if(net<0){ txt=`🚩 ค้างคืนช่าง ฿${Math.abs(net).toLocaleString()}`; cls="status-indigo"; light="#1e3a8a"; }
+
+        $("accStatus").innerText = txt;
+        $("accStatus").className = "status-bar "+cls;
+        $("accLight").style.background = light;
+    }
+
+    function clearAccount(){
+        const d = $("accDate").value; if(!d) return alert("เลือกวันที่เคลียร์");
+        const net = (account.balance || 0) + calcTodaySettle();
+        account.logs.unshift({ date: d, amount: net, note: $("accNote").value || "เคลียร์ยอดสะสม" });
+        account.balance = 0 - calcTodaySettle();
+        localStorage.setItem("barber_account",JSON.stringify(account));
+        speak("เคลียร์เงินเรียบร้อย"); 
+        $("accNote").value = ""; 
+        loadAccountHistory(); loadAccountStatus();
+    }
+
+    function loadAccountHistory(){
+        const box = $("accHistory");
+        if(!account.logs.length){ box.innerHTML = "<center style='opacity:.4; padding:20px;'>ไม่มีประวัติ</center>"; return; }
+        box.innerHTML = account.logs.slice(0,10).map(l=>`<div class="history-row" style="padding:8px 0; border-bottom:1px dashed #ddd;"><b>${l.date}</b> | ฿${Math.abs(l.amount).toLocaleString()}<div style="font-size:10px; opacity:.6">${l.note}</div></div>`).join("");
+    }
+
+    function toggleAccHistory() {
+        $("historyPanel").style.display = "flex";
+        const box = $("accHistoryFull");
+        if(!account.logs.length){
+            box.innerHTML = "<center style='opacity:.4; padding:50px;'>ไม่มีประวัติการเคลียร์เงิน</center>";
+            return;
+        }
+        box.innerHTML = account.logs.map(l => `
+            <div style="padding:15px; border-bottom:1px solid rgba(0,0,0,0.05); margin-bottom:12px; background:var(--input-bg); border-radius:15px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <b style="font-size:15px;">📅 ${l.date}</b>
+                    <b style="font-size:18px; color:var(--accent);">฿${Math.abs(l.amount).toLocaleString()}</b>
+                </div>
+                <div style="font-size:12px; color:#64748b; margin-top:8px;">${l.note || "เคลียร์ยอดสะสม"}</div>
+            </div>
+        `).join("");
+    }
+
+    function loadHistDaily() {
+        const d = $("histDate").value; const found = archives.find(a => a.date === d); area = $("histDailyArea"); 
+        if(!found) { area.innerHTML = "<center style='color:#ccc; padding:20px;'>ไม่พบข้อมูล</center>"; return; }
+        let rows = found.details.map(r => `<div class="history-row" style="font-size:13px;"><div style="display:flex; justify-content:space-between"><b>${r.time} | ${r.svcs.join('+')}</b> <b>฿${r.price}</b></div><div style="font-size:11px; opacity:0.6">${r.pay==='Cash'?'เงินสด':'โอน'}</div></div>`).join('');
+        let statBadges = ""; for(let s in found.stats) { statBadges += `<span class="badge" style="background:#eee; color:#333;">${s}: ${found.stats[s]}</span>`; }
+        area.innerHTML = `<div style="background:var(--input-bg); padding:10px; border-radius:15px;"><div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-bottom:10px; font-size:12px;"><div>ยอด: ${found.total}</div><div>สด: ${found.cash}</div></div><div style="display:flex; flex-wrap:wrap; gap:3px; margin-bottom:10px;">${statBadges}</div><div style="border-top:1px dashed #ccc; padding-top:5px;">${rows}</div></div>`;
+    }
+
+    function loadHistMonth() {
+        const m = $("histMonth").value; const area = $("histMonthArea"); if(!m) return;
+        const filtered = archives.filter(a => a.date.startsWith(m));
+        if(!filtered.length) { area.innerHTML = "<center style='color:#ccc; padding:20px;'>ไม่มีข้อมูล</center>"; return; }
+        let mT=0, mB=0, mC=0, mStats={};
+        filtered.forEach(a => { mT+=a.total; mB+=a.barber; mC+=a.count; for(let s in a.stats) mStats[s]=(mStats[s]||0)+a.stats[s]; });
+        let sB=""; for(let s in mStats) sB+=`<span class="badge">${s}: ${mStats[s]}</span>`;
+        area.innerHTML = `<div style="padding:15px; background:var(--input-bg); border-radius:15px;">
+            <div style="font-size:18px; font-weight:700; color:var(--primary);">฿${mT.toLocaleString()}</div>
+            <div style="font-size:12px; margin-bottom:10px;">ช่าง: ${Math.floor(mB).toLocaleString()} | ร้าน: ${Math.floor(mT-mB).toLocaleString()}</div>
+            <div style="font-size:12px; opacity:0.7;">ลูกค้า: ${mC} คน | ทำงาน: ${filtered.length} วัน</div>
+            <div style="margin-top:10px;">${sB}</div>
+        </div>`;
+    }
+
+    function shareLine() {
+        const d = $("dateInp").value, today = db.filter(r => r.date === d); if (!today.length) return;
+        let tot = 0, trans = 0, cash = 0;
+        let msg = `💈 รายงานร้าน: ${conf.shop}\n📅 วันที่: ${d}\n-------------------------\n`;
+        today.forEach((r, i) => { 
+            tot += r.price; r.pay === 'Trans' ? trans += r.price : cash += r.price;
+            msg += `${i + 1}. [${r.time}] ${r.svcs.join('+')} = ${r.price}\n`;
+        });
+        const bE = Math.max(tot * (conf.perc / 100), conf.guar), settle = Math.floor(cash - bE);
+        msg += `-------------------------\n💰 ยอดรวม: ${tot}\n🤵 ช่าง: ${Math.floor(bE)}\n🏠 ร้าน: ${Math.floor(tot - bE)}\n-------------------------\n`;
+        msg += settle >= 0 ? `🚩 ช่างคืนร้าน: ${settle}` : `🚩 ร้านคืนช่าง: ${Math.abs(settle)}`;
+        window.open(`https://line.me/R/msg/text/?${encodeURIComponent(msg)}`);
+    }
+
+    function updateDateDisplay(val) {
+        if(!val) return;
+        const d = new Date(val);
+        const months = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+        $('dateDisplay').innerText = d.getDate() + " " + months[d.getMonth()];
+    }
+
+    function delRec(id) { if(confirm("ลบรายการนี้?")) { db = db.filter(r => r.id !== id); localStorage.setItem("barber_db", JSON.stringify(db)); speak("ลบแล้ว"); renderDay(); } }
+    function closeHistoryFull() { $("historyPanel").style.display = "none"; }
+    function openSettings(){ $("modalSet").style.display="flex"; $("setShop").value=conf.shop; $("setPerc").value=conf.perc; $("setGuar").value=conf.guar; $("setTheme").value=conf.theme; $("setSound").value=conf.sound; $("setVoice").value=conf.voice; }
+    function closeSettings(){ $("modalSet").style.display="none"; }
+    function setBg(c){ conf.bg=c; applySettings(); }
+    function changeTheme(v){ conf.theme=v; applySettings(); }
+    function saveSettings(){ conf.shop=$("setShop").value; conf.perc=Number($("setPerc").value); conf.guar=Number($("setGuar").value); conf.theme=$("setTheme").value; conf.sound=$("setSound").value; conf.voice=$("setVoice").value; localStorage.setItem("barber_conf",JSON.stringify(conf)); applySettings(); closeSettings(); speak("บันทึกแล้ว"); }
+    function applySettings(){ $("shopNameDisp").innerText=conf.shop; $("mainBody").className="theme-"+conf.theme; $("mainBody").style.backgroundColor=conf.bg; }
+    function clearAllData(){ if(confirm("ล้างทั้งหมด?")){ localStorage.clear(); location.reload(); } }
+    </script>
+</body>
+</html>
+    
