@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.2.1.1</title>
+    <title>Barber Note Pro v.2.1.2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -89,30 +89,60 @@
     </div>
     <button class="btn-close-day" onclick="closeDay()"><i class="fas fa-check-circle"></i></button>
 </div>
+<div id="p3" class="page">
+    <div class="acc-main-card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="margin:0; font-size:15px; color:#b45309;">🧾 สรุปยอดบัญชีสุทธิ</h3>
+            <div id="accLight" class="acc-light" style="background:gray;"></div>
+        </div>
 
-
-   <div id="p3" class="page">
-        <div class="card" style="text-align:center">
-            <span>ยอดค้างสุทธิ</span>
-            <h1 id="accNet" style="color:var(--primary);margin:5px 0">฿0</h1>
-            <div class="grid-2" style="font-size:12px;opacity:0.7">
-                <div>เดิม: <b id="accOldVal">0</b></div>
-                <div>วันนี้: <b id="accTodayVal">0</b></div>
+        <div style="font-size:11px; color:#64748b; margin:12px 0; line-height:1.6; background:rgba(0,0,0,0.03); padding:10px; border-radius:12px;">
+            <div style="display:flex; justify-content:space-between;">
+                <span id="accOldText">ยอดค้างเดิม:</span>
+                <b id="accOldVal">฿0</b>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+                <span id="accTodayText">ยอดวันนี้:</span>
+                <b id="accTodayVal">฿0</b>
             </div>
         </div>
-        <div class="grid-2">
-            <input id="accNote" placeholder="หมายเหตุ">
-            <button class="btn" style="background:var(--success);color:#fff" onclick="clearAccount()">✔ เคลียร์ยอด</button>
+
+        <div style="text-align:center; margin:15px 0;">
+            <div style="font-size:38px; font-weight:800; color:#1e3a8a;">
+                <small style="font-size:18px; font-weight:400; opacity:0.5;">฿</small><span id="accNet">0</span>
+            </div>
         </div>
-        <div id="accountList"></div>
+        
+        <div id="accStatus" class="status-bar" style="margin:10px 0; text-align:center;">กำลังดึงข้อมูล...</div>
+
+        <button class="btn-toggle-history" onclick="toggleAccHistory()">
+            <i class="fas fa-history"></i> <span id="toggleText">ดูประวัติการเคลียร์เงิน</span>
+        </button>
+
+        <div id="accHistoryWrapper" class="history-wrapper">
+            <div id="accHistory" class="history-list"></div>
+        </div>
+
+        <hr style="opacity:0.05; margin:15px 0;">
+
+        <label style="font-size:12px; color:#64748b;">ระบุวันที่เคลียร์</label>
+        <input type="date" id="accDate" style="height:40px; margin-bottom:10px;">
+        <input type="text" id="accNote" placeholder="หมายเหตุการเคลียร์" style="height:40px; margin-bottom:10px;">
+        <button class="btn-save" onclick="clearAccount()" style="margin:0; padding:15px; background:var(--accent);">✅ ยืนยันเคลียร์เงินเรียบร้อย</button>
+    </div>
+
+    <div class="card" style="border-top: 4px solid var(--primary);"><label>เรียกดูประวัติรายวัน</label><input type="date" id="histDate" onchange="loadHistDaily()"><div id="histDailyArea"></div></div>
+    <div class="card" style="border-top: 4px solid var(--warning);"><label>สรุปสถิติรายเดือน</label><input type="month" id="histMonth" onchange="loadHistMonth()"><div id="histMonthArea"></div></div>
+</div> 
+<div id="historyPanel" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:10000; align-items:flex-end;">
+    <div style="background:var(--card); width:100%; border-radius:25px 25px 0 0; padding:20px; max-height:85vh; overflow-y:auto; animation: slideUp 0.3s ease-out; box-shadow: 0 -10px 25px rgba(0,0,0,0.2);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid rgba(0,0,0,0.05); padding-bottom:15px;">
+            <h3 style="margin:0; font-size:18px;"><i class="fas fa-history"></i> ประวัติการเคลียร์เงิน</h3>
+            <button onclick="closeHistoryFull()" style="background:#f1f5f9; border:none; padding:10px 20px; border-radius:12px; font-weight:bold; color:var(--danger);">ปิด</button></div>
+        <div id="accHistoryFull"></div>
     </div>
 </div>
 
-<nav class="nav-bar">
-    <button id="n1" class="nav-item active" onclick="go(1)"><i class="fas fa-cut"></i>บันทึก</button>
-    <button id="n2" class="nav-item" onclick="go(2)"><i class="fas fa-file-lines"></i>รายงาน</button>
-    <button id="n3" class="nav-item" onclick="go(3)"><i class="fas fa-wallet"></i>บัญชี</button>
-</nav>
 
 <div id="modalSet" class="modal">
     <div class="modal-content">
