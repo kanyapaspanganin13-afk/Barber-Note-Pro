@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.2.1.5</title>
+    <title>Barber Note Pro v.2.1.6</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -171,7 +171,6 @@
         <div class="nav-item" id="n2" onclick="go(2)"><i class="fas fa-file-invoice"></i>รายงาน</div>
         <div class="nav-item" id="n3" onclick="go(3)"><i class="fas fa-wallet"></i>บัญชี</div>
     </nav>
-</div>
 
 <div id="modalSet" class="modal">
     <div class="modal-content">
@@ -211,131 +210,183 @@
 </div>
 
 <script>
-    let db=JSON.parse(localStorage.getItem("barber_db"))||[], 
-        conf=JSON.parse(localStorage.getItem("barber_conf"))||{shop:"Barber Shop", perc:50, guar:0, sound:"on", voice:"female"},
-        account=JSON.parse(localStorage.getItem("barber_account"))||{balance:0, logs:[]},
-        payMethod="";
+<script>
+    let db = JSON.parse(localStorage.getItem("barber_db")) || [],
+        conf = JSON.parse(localStorage.getItem("barber_conf")) || { shop: "Barber Shop", perc: 50, guar: 0 },
+        account = JSON.parse(localStorage.getItem("barber_account")) || { balance: 0, logs: [] },
+        payMethod = "";
 
-    const $=(id)=>document.getElementById(id);
+    const $ = (id) => document.getElementById(id);
 
-    window.onload=()=>{ 
+    window.onload = () => {
         const today = new Date().toISOString().split('T')[0];
-        $("dateInp").value = today;
-        $("accDateSearch").value = today;
+        if ($("dateInp")) $("dateInp").value = today;
+        if ($("accDate")) $("accDate").value = today;
+        if ($("histDate")) $("histDate").value = today;
+        
         updateDateDisplay(today);
+        if($("shopNameDisp")) $("shopNameDisp").innerText = conf.shop;
     };
 
-    function go(n){
-        document.querySelectorAll('.page, .nav-item').forEach((el,i)=>{
-            if(el.id.startsWith('p')) el.classList.toggle('active', el.id==='p'+n);
-            if(el.id.startsWith('n')) el.classList.toggle('active', el.id==='n'+n);
-        });
-        if(n===2 || n===3) renderDay();
+    function go(n) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        
+        if ($('p' + n)) $('p' + n).classList.add('active');
+        if ($('n' + n)) $('n' + n).classList.add('active');
+        
+        if (n === 2 || n === 3) renderDay();
     }
 
-    function updateDateDisplay(val){ 
-        if(!val)return; 
-        const d=new Date(val); 
-        $("dateDisplay").innerText = d.toLocaleDateString('th-TH',{day:'numeric',month:'short'}); 
-        renderDay(); 
+    function updateDateDisplay(val) {
+        if (!val) return;
+        const d = new Date(val);
+        if ($("dateDisplay")) $("dateDisplay").innerText = d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
+        renderDay();
     }
 
-    function selectPay(m){ 
-        payMethod=m; 
-        $("btnCash").className=m==='Cash'?'btn-pay active-cash':'btn-pay'; 
-        $("btnTrans").className=m==='Trans'?'btn-pay active-trans':'btn-pay'; 
+    function selectPay(m) {
+        payMethod = m;
+        $("btnCash").classList.toggle('active-cash', m === 'Cash');
+        $("btnTrans").classList.toggle('active-trans', m === 'Trans');
     }
 
-    function handleSave(){
-        const p=$("priceInp").value; 
-        if(!p||!payMethod){ alert("ใส่ราคาและเลือกการชำระเงิน"); return; }
+    function handleSave() {
+        const p = $("priceInp").value;
+        if (!p || !payMethod) { alert("กรุณาใส่ราคาและเลือกวิธีชำระเงิน"); return; }
+        
         const r = {
-            id:Date.now(), 
-            date:$("dateInp").value, 
-            time:$("tStart").value||'--:--', 
-            svcs:[$("hairStyle").value,$("extra1").value,$("extra2").value].filter(s=>s), 
-            price:Number(p), 
-            pay:payMethod,
-            hair:$("hairStyle").value
+            id: Date.now(),
+            date: $("dateInp").value,
+            time: $("tStart").value || new Date().toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'}),
+            svcs: [$("hairStyle").value, $("extra1").value, $("extra2").value].filter(s => s),
+            price: Number(p),
+            pay: payMethod,
+            hair: $("hairStyle").value
         };
-        db.push(r); 
+        
+        db.push(r);
         localStorage.setItem("barber_db", JSON.stringify(db));
-        $("priceInp").value=""; selectPay(""); renderDay();
-        alert("บันทึกสำเร็จ");
+        
+        // Reset inputs
+        $("priceInp").value = "";
+        $("tStart").value = "";
+        selectPay("");
+        renderDay();
+        alert("บันทึกสำเร็จ ✅");
     }
 
-    function renderDay(){
-        const d=$("accDateSearch").value; // ใช้ไอดีจากหน้าบัญชีมาอ้างอิง
-        const today=db.filter(r=>r.date===d); 
-        let tot=0,trans=0,cash=0,stats={},listHtml="";
+    function renderDay() {
+    // 1. ดึงวันที่จากหน้าบันทึกมาใช้ (หรือหน้าสถิติถ้ามีการเปลี่ยนวันที่)
+    const d = $("dateInp").value; 
+    const today = db.filter(r => r.date === d); 
+    let tot = 0, trans = 0, cash = 0, stats = {}, listHtml = "";
 
-        today.forEach(r=>{
-            tot+=r.price; 
-            r.pay==='Trans' ? trans+=r.price : cash+=r.price; 
-            r.svcs.forEach(s => { stats[s] = (stats[s] || 0) + 1; });
-            listHtml += `<div class="history-row">
-                <div style="display:flex; justify-content:space-between"><span>${r.time} | ${r.svcs.join('+')}</span><b>฿${r.price}</b></div>
+    today.forEach(r => {
+        tot += r.price; 
+        r.pay === 'Trans' ? trans += r.price : cash += r.price; 
+        r.svcs.forEach(s => { stats[s] = (stats[s] || 0) + 1; });
+        
+        listHtml += `
+            <div class="history-row" style="padding:10px 0; border-bottom:1px solid rgba(0,0,0,0.05);">
+                <div style="display:flex; justify-content:space-between">
+                    <span><b>${r.time}</b> | ${r.svcs.join('+')}</span>
+                    <b>฿${r.price.toLocaleString()}</b>
+                </div>
                 <div style="display:flex; justify-content:space-between; opacity:0.7; font-size:12px;">
-                    <span>${r.pay==='Cash'?'💵 สด':'📱 โอน'}</span>
+                    <span>${r.pay === 'Cash' ? '💵 สด' : '📱 โอน'}</span>
                     <i class="fas fa-trash" style="color:var(--danger)" onclick="delRec(${r.id})"></i>
                 </div>
             </div>`;
-        });
+    });
 
-        const bEarn=Math.max(tot*(conf.perc/100),conf.guar);
-        const settle=cash-bEarn;
+    // 2. คำนวณประกันรายได้ และ ส่วนแบ่ง
+    const bEarn = Math.max(tot * (conf.perc / 100), conf.guar); // รายได้ช่าง
+    const sEarn = tot - bEarn; // รายได้ร้าน
+    const settle = cash - bEarn; // ยอดที่ต้องเคลียร์ (เงินสดในมือ - รายได้ช่าง)
 
-        if($("dTotal")) $("dTotal").innerText=tot.toLocaleString();
-        if($("dTrans")) $("dTrans").innerText=trans.toLocaleString();
-        if($("dBarber")) $("dBarber").innerText=Math.floor(bEarn).toLocaleString();
-        if($("dailyList")) $("dailyList").innerHTML=listHtml||"<center style='opacity:0.3; padding:20px'>ไม่มีข้อมูล</center>";
-        
-        // สถิติ Badge
-        let sH=""; for(let s in stats) { sH += `<span class="badge">${s}: ${stats[s]}</span>`; }
-        if($("dServiceStats")) $("dServiceStats").innerHTML=sH;
+    // 3. แสดงผลหน้า P.2 (รายงานประจำวัน)
+    if($("dTotal")) $("dTotal").innerText = tot.toLocaleString();
+    if($("dTrans")) $("dTrans").innerText = trans.toLocaleString();
+    if($("dBarber")) $("dBarber").innerText = Math.floor(bEarn).toLocaleString();
+    if($("dShop")) $("dShop").innerText = Math.floor(sEarn).toLocaleString(); // เพิ่มส่วนนี้
+    if($("dCounts")) $("dCounts").innerText = `ลูกค้า: ${today.length} คน`;
+    if($("dailyList")) $("dailyList").innerHTML = listHtml || "<center style='opacity:0.3; padding:20px'>ไม่มีข้อมูล</center>";
+    
+    // 4. แสดงผลแถบสถานะ SettleBar
+    const b = $("settleBar"); 
+    if(b){
+        if(tot === 0) { b.innerText = "🟦 ร้านจ่ายประกันรายได้"; b.className = "status-bar status-indigo"; }
+        else if(settle > 0) { b.innerText = `🟥 ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`; b.className = "status-bar status-red"; }
+        else if(settle < 0) { b.innerText = `🟦 ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; b.className = "status-bar status-indigo"; }
+        else { b.innerText = "✅ ยอดพอดี"; b.className = "status-bar status-green"; }
+    }
 
-        // บาร์สถานะ
-        const b=$("settleBar"); 
-        if(b){
-            if(tot===0) { b.innerText="🟦 ร้านจ่ายประกัน"; b.className="status-bar status-indigo"; }
-            else if(settle>0) { b.innerText=`🟥 ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`; b.className="status-bar status-red"; }
-            else if(settle<0) { b.innerText=`🟦 ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; b.className="status-bar status-indigo"; }
-            else { b.innerText="✅ ยอดพอดี"; b.className="status-bar status-green"; }
-        }
-
-        // หน้าบัญชี
-        $("accOldVal").innerText = (account.balance || 0).toLocaleString();
-        $("accTodayVal").innerText = Math.floor(settle).toLocaleString();
-        const net = (account.balance || 0) + settle;
-        $("accNet").innerText = Math.abs(net).toLocaleString();
-        $("accStatus").innerText = net > 0 ? "🚩 ช่างต้องคืนเงินร้าน" : net < 0 ? "🚩 ร้านต้องคืนเงินช่าง" : "✅ ยอดเงินลงตัว";
+    // 5. แสดงผลหน้า P.3 (หน้าบัญชี)
+    if($("accOldVal")) $("accOldVal").innerText = `฿${(account.balance || 0).toLocaleString()}`;
+    if($("accTodayVal")) $("accTodayVal").innerText = `฿${Math.floor(settle).toLocaleString()}`;
+    
+    const net = (account.balance || 0) + settle;
+    if($("accNet")) $("accNet").innerText = Math.abs(net).toLocaleString();
+    
+    if($("accStatus")) {
+        $("accStatus").innerText = net > 0 ? "🚩 ช่างต้องคืนเงินร้าน" : net < 0 ? "🚩 ร้านต้องคืนเงินช่าง" : "✅ ยอดเงินสะสมลงตัว";
         $("accStatus").className = "status-bar " + (net > 0 ? "status-red" : net < 0 ? "status-indigo" : "status-green");
     }
+}
 
-    function delRec(id){ if(confirm("ลบรายการนี้?")){ db=db.filter(r=>r.id!==id); localStorage.setItem("barber_db",JSON.stringify(db)); renderDay(); } }
-    function openSettings(){ $("modalSet").style.display="flex"; $("setShop").value=conf.shop; $("setPerc").value=conf.perc; $("setGuar").value=conf.guar; }
-    function closeSettings(){ $("modalSet").style.display="none"; }
-    function saveSettings(){ 
-        conf.shop=$("setShop").value; conf.perc=$("setPerc").value; conf.guar=$("setGuar").value; 
-        localStorage.setItem("barber_conf",JSON.stringify(conf)); 
-        $("shopNameDisp").innerText=conf.shop;
-        closeSettings(); renderDay(); 
+    function delRec(id) {
+        if (confirm("ต้องการลบรายการนี้ใช่หรือไม่?")) {
+            db = db.filter(r => r.id !== id);
+            localStorage.setItem("barber_db", JSON.stringify(db));
+            renderDay();
+        }
     }
-    function clearAllData(){ if(confirm("ล้างข้อมูลทั้งหมด? ยอดเงินและประวัติจะหายถาวร")){ localStorage.clear(); location.reload(); } }
 
-    function openHistoryPopup(){ 
-        $("modalHistory").style.display="flex"; 
-        $("historyListContent").innerHTML = account.logs.map(l=>`<div class="history-row"><b>${l.date}</b> | ${l.amount.toLocaleString()} ฿<br><small>${l.note}</small></div>`).join('') || "ไม่มีประวัติ";
+    function toggleAccHistory() {
+        const wrapper = $("accHistoryWrapper");
+        const isHidden = wrapper.style.display === "none";
+        wrapper.style.display = isHidden ? "block" : "none";
+        $("toggleText").innerText = isHidden ? "ปิดประวัติ" : "ดูประวัติการเคลียร์เงิน";
+        if (isHidden) {
+            $("accHistory").innerHTML = account.logs.map(l => `
+                <div style="padding:8px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;">
+                    <span>${l.date}<br><small>${l.note}</small></span>
+                    <b>฿${l.amount.toLocaleString()}</b>
+                </div>
+            `).join('') || "ไม่มีประวัติ";
+        }
     }
-    function closeHistoryPopup(){ $("modalHistory").style.display="none"; }
 
-    function clearAccount(){
-        const net = (account.balance || 0) + (Math.floor(parseFloat($("accTodayVal").innerText.replace(/,/g,''))));
-        account.logs.unshift({date: new Date().toLocaleDateString('th-TH'), amount: net, note: $("accNote").value || "เคลียร์ยอด"});
-        account.balance = 0 - (Math.floor(parseFloat($("accTodayVal").innerText.replace(/,/g,''))));
-        localStorage.setItem("barber_account", JSON.stringify(account));
-        $("accNote").value=""; renderDay(); alert("เคลียร์ยอดเรียบร้อย");
+    function clearAccount() {
+        const dInp = $("dateInp").value;
+        const todayRecs = db.filter(r => r.date === dInp);
+        const tot = todayRecs.reduce((a, b) => a + b.price, 0);
+        const cash = todayRecs.filter(r => r.pay === 'Cash').reduce((a, b) => a + b.price, 0);
+        const bEarn = Math.max(tot * (conf.perc / 100), conf.guar);
+        const todaySettle = cash - bEarn;
+        
+        const currentNet = (account.balance || 0) + todaySettle;
+        
+        if (confirm(`ยืนยันการเคลียร์ยอดจำนวน ฿${currentNet.toLocaleString()} ?`)) {
+            // บันทึก Log
+            account.logs.unshift({
+                date: $("accDate").value,
+                amount: currentNet,
+                note: $("accNote").value || "เคลียร์บัญชี"
+            });
+            
+            // ล้างยอดค้างสะสม และ ยอดของวันนี้ (โดยการลบ Record หรือ Mark ว่าจ่ายแล้ว)
+            // ในระบบนี้ใช้การ reset balance เป็น 0 และลบข้อมูลวันนั้นออกเพื่อเริ่มใหม่ (หรือเก็บไว้แต่ balance เดิมเป็น 0)
+            account.balance = 0 - todaySettle; // เพื่อให้ Net ออกมาเป็น 0 ในวันนั้น
+            
+            localStorage.setItem("barber_account", JSON.stringify(account));
+            $("accNote").value = "";
+            renderDay();
+            alert("เคลียร์ยอดสำเร็จ!");
+        }
     }
+</script>
 
     function shareLine() {
         const d = $("dateInp").value, today = db.filter(r => r.date === d); if (!today.length) return;
