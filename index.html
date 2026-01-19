@@ -4,68 +4,125 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.11.3.1 (Updated)</title>
+    <title>Barber Note Pro v.1.1.1 (Updated)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
    <style>
-        /* --- 1. ตัวแปรสีและธีม (รวมของเดิม + ธีมใหม่) --- */
-        :root { 
-            --primary: #00CCFF; /* ฟ้า Neon ตามโลโก้ใหม่ */
-            --accent: #16a34a; 
-            --danger: #dc2626; 
-            --warning: #f59e0b; 
-            --main-bg: #f1f5f9; 
-            --card: #ffffff; 
-            --text: #1e293b; 
-            --input-bg: #f8fafc; 
-            --border: #e2e8f0; 
-        }
-        body.theme-dark { --main-bg: #0f172a; --card: #1e293b; --text: #f8fafc; --input-bg: #334155; --border: #475569; }
-        body.theme-pastel { --main-bg: #faf5ff; --card: #ffffff; --text: #4c1d95; --input-bg: #f5f3ff; --border: #e9d5ff; }
+    /* --- 1. ตัวแปรสีและธีม --- */
+    :root { 
+        --primary: #00CCFF; 
+        --accent: #16a34a; 
+        --danger: #dc2626; 
+        --warning: #f59e0b; 
+        --main-bg: #f1f5f9; 
+        --card: #ffffff; 
+        --text: #1e293b; 
+        --input-bg: #f8fafc; 
+        --border: #e2e8f0; 
+    }
+    body.theme-dark { --main-bg: #0f172a; --card: #1e293b; --text: #f8fafc; --input-bg: #334155; --border: #475569; }
+    body.theme-pastel { --main-bg: #faf5ff; --card: #ffffff; --text: #4c1d95; --input-bg: #f5f3ff; --border: #e9d5ff; }
 
-        body { margin: 0; font-family: 'Kanit'; background: var(--main-bg); color: var(--text); padding-bottom: 90px; transition: 0.3s; font-weight: 300; }
-        
-        /* --- 2. Header & Navigation --- */
-        header { padding: 15px; background: var(--card); display: flex; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); position: sticky; top:0; z-index:100; }
-        header h1 { flex: 1; text-align: center; font-size: 18px; margin: 0; font-weight: 500; }
-        .nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); display: flex; border-top: 1px solid rgba(0,0,0,0.1); height: 75px; align-items: center; justify-content: space-around; z-index: 9999; }
-        .nav-item { flex: 1; text-align: center; color: #94a3b8; font-size: 13px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
-        .nav-item.active { color: var(--primary); font-weight: 500; }
+    /* --- 2. การจัดเลย์เอาต์พื้นฐาน --- */
+    body { 
+        margin: 0; 
+        font-family: 'Kanit', sans-serif; 
+        background: var(--main-bg); 
+        color: var(--text); 
+        padding-bottom: 90px; 
+        transition: 0.3s; 
+        font-weight: 300; 
+    }
 
-        /* --- 3. การ์ดและ Layout (แบบใหม่) --- */
-        .page { display: none; padding: 15px; animation: fadeIn 0.2s; } 
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        .card { background: var(--card); border-radius: 20px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; box-sizing: border-box; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 8px; width: 100%; box-sizing: border-box; }
+    header { 
+        padding: 12px 15px; 
+        background: var(--card); 
+        display: flex; 
+        align-items: center; 
+        border-bottom: 1px solid rgba(0,0,0,0.05); 
+        position: sticky; 
+        top:0; 
+        z-index:100; 
+    }
+    header h1 { flex: 1; text-align: center; font-size: 18px; margin: 0; font-weight: 500; }
 
-        input, select { width: 100%; height: 45px; padding: 8px 10px; border-radius: 12px; border: 1px solid var(--border); font-size: 16px; box-sizing: border-box; background: var(--input-bg); color: var(--text); outline: none; font-family: 'Kanit'; }
-        
-        /* --- 4. ปุ่มและการแสดงผล --- */
-        .btn-pay { border: 2px solid transparent; background: var(--input-bg); color: var(--text); padding: 8px 5px; border-radius: 12px; font-weight: 500; cursor: pointer; transition: 0.2s; font-size: 18px; display: flex; align-items: center; justify-content: center; gap: 4px; }
-        .active-cash { border: 3px solid #16a34a !important; color: #14532d !important; background: #dcfce7 !important; }
-        .active-transfer { border: 3px solid #0284c7 !important; color: #0c4a6e !important; background: #e0f2fe !important; }
-        
-        .btn-save { background: var(--primary); color: white; width: 100%; padding: 12px; border-radius: 12px; font-size: 18px; font-weight: 600; border: none; cursor: pointer; }
-        
-        /* แถบสถานะและปุ่มเครื่องบินหน้า 2 */
-        .status-bar { width: 100%; padding: 15px; border-radius: 15px; text-align: center; font-weight: 600; font-size: 16px; box-sizing: border-box; }
-        .status-blue { background: #e0f2fe; color: #0284c7; } 
-        .btn-plane { width: 50px; height: 50px; border-radius: 15px; background: var(--primary); color: white; border: none; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,204,255,0.3); }
+    /* --- 3. ระบบนำทาง (Bottom Nav) --- */
+    .nav { 
+        position: fixed; bottom: 0; left: 0; right: 0; 
+        background: var(--card); 
+        display: flex; 
+        border-top: 1px solid rgba(0,0,0,0.1); 
+        height: 70px; 
+        align-items: center; 
+        justify-content: space-around; 
+        z-index: 9999; 
+    }
+    .nav-item { 
+        flex: 1; text-align: center; color: #94a3b8; font-size: 12px; 
+        cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; 
+    }
+    .nav-item.active { color: var(--primary); font-weight: 500; }
 
-        /* --- 5. ระบบยุบ/ขยาย หน้า 3 (Accordion) --- */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .btn-toggle-history { width: 100%; background: var(--input-bg); border: 1px solid var(--border); padding: 12px; border-radius: 15px; font-size: 14px; color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Kanit'; }
-        .accordion-content { display: none; background: rgba(0,0,0,0.02); border-radius: 15px; padding: 15px; margin-top: 8px; border: 1px solid var(--border); }
+    /* --- 4. การจัดการ Grid แนวนอน (หัวใจหลัก) --- */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; width: 100%; }
+    
+    /* พิเศษสำหรับหน้า 3: ปุ่มสถิติแนวนอน */
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
 
-        /* ส่วนอื่นๆ คงเดิม */
-        .acc-main-card { background: var(--card); padding: 18px; border-radius: 25px; border-left: 6px solid #f59e0b; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 15px; }
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-        .modal-content { background: var(--card); width: 100%; border-radius: 25px; padding: 22px; max-height: 85vh; overflow-y: auto; }
-        .color-dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid #ddd; display: inline-block; margin: 5px; }
-    </style>
+    /* --- 5. การ์ดและอินพุต --- */
+    .page { display: none; padding: 12px; animation: fadeIn 0.2s; } 
+    .page.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
+    .card { 
+        background: var(--card); 
+        border-radius: 18px; 
+        padding: 14px; 
+        margin-bottom: 10px; 
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
+    }
+
+    input, select { 
+        width: 100%; height: 45px; padding: 8px 12px; 
+        border-radius: 12px; border: 1px solid var(--border); 
+        font-size: 15px; background: var(--input-bg); 
+        color: var(--text); outline: none; font-family: 'Kanit'; 
+    }
+
+    /* --- 6. ปุ่มและการแสดงผล --- */
+    .btn-pay { 
+        border: 2px solid var(--border); 
+        background: var(--input-bg); 
+        color: var(--text); 
+        padding: 10px; border-radius: 12px; 
+        font-weight: 500; cursor: pointer; 
+        font-size: 16px; display: flex; 
+        align-items: center; justify-content: center; gap: 6px; 
+    }
+    .active-cash { border: 2px solid #16a34a !important; color: #16a34a !important; background: #dcfce7 !important; }
+    .active-transfer { border: 2px solid #0284c7 !important; color: #0284c7 !important; background: #e0f2fe !important; }
+    
+    .btn-save { 
+        background: var(--primary); color: white; width: 100%; 
+        padding: 12px; border-radius: 12px; font-size: 16px; 
+        font-weight: 600; border: none; cursor: pointer; 
+    }
+
+    .status-bar { 
+        width: 100%; padding: 12px; border-radius: 12px; 
+        text-align: center; font-weight: 600; font-size: 14px; 
+    }
+    .status-blue { background: #e0f2fe; color: #0284c7; } 
+
+    /* --- 7. Modal & History --- */
+    .accordion-content { display: none; background: rgba(0,0,0,0.02); border-radius: 12px; padding: 12px; margin-top: 8px; border: 1px solid var(--border); }
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+    .modal-content { background: var(--card); width: 100%; border-radius: 20px; padding: 20px; max-height: 80vh; overflow-y: auto; }
+.nav-item i { font-size: 20px; }
+    .nav-item span { font-size: 11px; margin-top: 2px; }
+    .nav-item.active { color: var(--primary); transform: translateY(-2px); transition: 0.2s; }
+   </style>
 </head>
 <body id="mainBody">
 <header><div style="width:40px"></div><h1 id="shopNameDisp">Barber Note</h1><div onclick="openSettings()" style="cursor:pointer"><i class="fas fa-cog"></i></div></header>
@@ -219,19 +276,74 @@
 /* ปรับสไตล์ปุ่มดูประวัติใน Card ให้เด่นขึ้น */
 .btn-toggle-history { width: 100%; padding: 12px; border-radius: 12px; border: 1px dashed var(--primary); background: #f0f7ff; color: var(--primary); cursor: pointer; font-family: 'Kanit'; }
 </style>
+<div id="modalSet" class="modal">
+    <div class="modal-content">
+        <h3>⚙️ ตั้งค่าระบบ</h3>
+        
+        <label>ชื่อร้าน / ชื่อช่าง</label>
+        <input id="setShop" placeholder="ชื่อที่จะโชว์บนหัวแอป">
 
-    <div id="modalSet" class="modal"><div class="modal-content"><h3>⚙️ ตั้งค่า</h3><label>ชื่อร้าน</label><input id="setShop">
-<div class="grid-2" style="margin-top:10px"><div><label>% แบ่ง</label><input type="number" id="setPerc"></div><div><label>ประกัน</label><input type="number" id="setGuar"></div></div>
-<div class="grid-2" style="margin-top:15px"><div><label>🔊 เสียง</label><select id="setSound"><option value="on">เปิด</option><option value="off">ปิด</option></select></div><div><label>🎚️ เสียงพูด</label><select id="setVoice"><option value="female">👩 หญิง</option><option value="male">👨 ชาย</option></select></div></div>
-<label style="margin-top:15px">ธีม</label><select id="setTheme" onchange="changeTheme(this.value)"><option value="light">Light</option><option value="dark">Dark</option><option value="pastel">Pastel</option></select>
-<div style="margin-top:10px"><label>เลือกสีพื้นหลัง (7 สี)</label><br>
-    <div class="color-dot" style="background:#fdf2f8" onclick="setBg('#fdf2f8')"></div><div class="color-dot" style="background:#f0fdf4" onclick="setBg('#f0fdf4')"></div><div class="color-dot" style="background:#f0f9ff" onclick="setBg('#f0f9ff')"></div><div class="color-dot" style="background:#fffbeb" onclick="setBg('#fffbeb')"></div><div class="color-dot" style="background:#faf5ff" onclick="setBg('#faf5ff')"></div><div class="color-dot" style="background:#f1f5f9" onclick="setBg('#f1f5f9')"></div><div class="color-dot" style="background:#ffffff; border:1px solid #ccc" onclick="setBg('#ffffff')"></div>
+        <div class="grid-2" style="margin-top:10px">
+            <div><label>% ส่วนแบ่งช่าง</label><input type="number" id="setPerc"></div>
+            <div><label>เงินประกันรายได้</label><input type="number" id="setGuar"></div>
+        </div>
+
+        <div class="grid-2" style="margin-top:15px">
+            <div>
+                <label>🔊 เอฟเฟกต์</label>
+                <select id="setSound">
+                    <option value="on">เปิด</option>
+                    <option value="off">ปิด</option>
+                </select>
+            </div>
+            <div>
+                <label>🎙️ ระบบเสียงพูด</label>
+                <select id="setVoice">
+                    <option value="female">👩 ผู้หญิง</option>
+                    <option value="male">👨 ผู้ชาย</option>
+                </select>
+            </div>
+        </div>
+
+        <hr style="opacity:0.1; margin:20px 0;">
+
+        <label>เลือกธีมหลัก</label>
+        <select id="setTheme" onchange="applyTheme(this.value)">
+            <option value="neon">Neon Light (ขาว-ฟ้า)</option>
+            <option value="deep">Deep Navy (น้ำเงินเข้ม)</option>
+            <option value="dark">Barber Dark (ดำ-ฟ้า)</option>
+        </select>
+
+        <div style="margin-top:15px;">
+            <label>🔆 ปรับความสว่างพื้นหลัง (<span id="brightVal">100</span>%)</label>
+            <input type="range" id="setBright" min="0.3" max="1.2" step="0.1" 
+                   oninput="updateBrightness(this.value)">
+        </div>
+
+        <div class="grid-2" style="margin-top:25px;">
+            <button class="btn-save" onclick="saveSettings()" style="margin:0">บันทึกตั้งค่า</button>
+            <button onclick="closeSettings()" style="background:none; border:1px solid var(--border); color:var(--text); border-radius:12px;">ปิด</button>
+        </div>
+
+        <button onclick="clearAllData()" style="width:100%; background:none; border:none; color:var(--danger); margin-top:25px; font-size:11px; opacity:0.5; cursor:pointer;">
+            ⚠️ ล้างข้อมูลและรีเซ็ตแอปทั้งหมด
+        </button>
+    </div>
 </div>
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;"><button class="btn-save" onclick="saveSettings()" style="margin:0">บันทึก</button><button onclick="closeSettings()" style="border-radius:10px; border: 1px solid var(--border)">ปิด</button></div>
-<button onclick="clearAllData()" style="width:100%; background:none; border:none; color:red; margin-top:20px; font-size:12px; opacity:0.5">ล้างข้อมูลทั้งหมด</button></div></div>
-
-<nav class="nav"><div class="nav-item active" id="n1" onclick="go(1)"><i class="fas fa-edit"></i>บันทึก</div><div class="nav-item" id="n2" onclick="go(2)"><i class="fas fa-calendar-check"></i>รายวัน</div><div class="nav-item" id="n3" onclick="go(3)"><i class="fas fa-history"></i>สถิติ</div></nav>
-
+  <nav class="nav">
+    <div class="nav-item active" id="n1" onclick="go(1)">
+        <i class="fas fa-cut"></i>
+        <span>บันทึกงาน</span>
+    </div>
+    <div class="nav-item" id="n2" onclick="go(2)">
+        <i class="fas fa-clipboard-list"></i>
+        <span>รายงานวันนี้</span>
+    </div>
+    <div class="nav-item" id="n3" onclick="go(3)">
+        <i class="fas fa-chart-pie"></i>
+        <span>บัญชี/สถิติ</span>
+    </div>
+</nav>  
 <script>
 let payMethod="", 
         conf=JSON.parse(localStorage.getItem("barber_conf"))||{shop:"Barber Shop",perc:50,guar:0,theme:"light",bg:"#f1f5f9",sound:"on",voice:"female"}, 
