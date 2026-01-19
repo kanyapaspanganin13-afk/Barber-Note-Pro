@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.2.1.8</title>
+    <title>Barber Note Pro v.2.1.9</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -43,6 +43,8 @@
         .acc-main-card { background: #fff; border-radius: 25px; padding: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid var(--border); }
         .btn-save { background: var(--accent); color: white; width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; }
         .history-row { padding: 10px; border-bottom: 1px solid #f1f5f9; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
+        .modal-content { background: white; margin: 15% auto; padding: 20px; width: 90%; max-width: 400px; border-radius: 25px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); position: relative; }
     </style>
 </head>
 <body>
@@ -87,9 +89,7 @@
                 <option value="">บริการ 2</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option>
             </select>
         </div>
-
         <input type="number" id="priceInp" class="price-box" placeholder="0" inputmode="numeric">
-
         <div class="grid-2">
             <button id="btnCash" class="btn btn-pay" onclick="selectPay('Cash')">💵 เงินสด</button>
             <button id="btnTrans" class="btn btn-pay" onclick="selectPay('Trans')">📱 โอนเงิน</button>
@@ -152,7 +152,56 @@
             <div id="histDailyArea"></div>
         </div>
     </div>
+<div id="modalSet" class="modal">
+    <div class="modal-content">
+        <h3 style="margin-top:0; color:var(--primary);">⚙️ ตั้งค่าระบบ</h3> 
+        <label style="font-size:11px; font-weight:600;">ชื่อร้าน</label>
+        <input id="setShop" style="margin-bottom:10px;">
+        <div class="grid-2">
+            <div>
+                <label style="font-size:11px; font-weight:600;">% ช่าง</label>
+                <input type="number" id="setPerc" placeholder="เช่น 50">
+            </div>
+            <div>
+                <label style="font-size:11px; font-weight:600;">ประกัน/วัน</label>
+                <input type="number" id="setGuar" placeholder="0">
+            </div>
+        </div>
+        
+        <div style="margin-top:10px">
+            <label style="font-size:11px; font-weight:600;">ธีมแอป</label>
+            <select id="setTheme">
+                <option value="neon-light">🌤 Neon Light (Default)</option>
+                <option value="deep-navy">🌌 Deep Navy</option>
+                <option value="barber-dark">🌑 Barber Dark</option>
+            </select>
+        </div>
+        
+        <div class="grid-2" style="margin-top:10px">
+            <div>
+                <label style="font-size:11px; font-weight:600;">ระบบเสียง</label>
+                <select id="setSound">
+                    <option value="on">🔊 เปิด</option>
+                    <option value="off">🔇 ปิด</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size:11px; font-weight:600;">เสียงพูด</label>
+                <select id="setVoice">
+                    <option value="female">👩 หญิง</option>
+                    <option value="male">👨 ชาย</option>
+                </select>
+            </div>
+        </div>
 
+        <div class="grid-2" style="margin-top:20px">
+            <button class="btn" style="background:var(--primary); color:#fff" onclick="saveSettings()">บันทึก</button>
+            <button class="btn" style="background:#e2e8f0; color:var(--text)" onclick="closeSettings()">ปิด</button>
+        </div>
+        
+        <button class="btn" style="width:100%; background:var(--danger); color:#fff; margin-top:10px; font-size:12px;" onclick="clearAllData()">⚠️ ล้างข้อมูลทั้งหมด</button>
+    </div>
+</div>
     <nav class="nav">
         <div class="nav-item active" id="n1" onclick="go(1)"><i class="fas fa-edit"></i>บันทึก</div>
         <div class="nav-item" id="n2" onclick="go(2)"><i class="fas fa-file-invoice"></i>รายงาน</div>
