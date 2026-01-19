@@ -2,115 +2,287 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-    <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.2.2</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Barber Note Pro v.1</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #6366f1; --accent: #0ea5e9; --danger: #ef4444; --success: #22c55e; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --border: #e2e8f0; }
-        
-        /* --- Theme Definitions --- */
-        body.theme-deep-navy { --primary: #38bdf8; --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --border: #334155; }
-        body.theme-barber-dark { --primary: #fbbf24; --bg: #18181b; --card: #27272a; --text: #f4f4f5; --border: #3f3f46; }
-        body.theme-neon-light { --primary: #8b5cf6; --bg: #f5f3ff; --card: #ffffff; --text: #1e1b4b; --border: #ddd6fe; }
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --nav-height: 70px;
+        }
 
-        * { box-sizing: border-box; font-family: 'Kanit', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 90px; overflow-x: hidden; transition: 0.3s; }
-        .container { padding: 10px; max-width: 500px; margin: auto; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-        .icon-card { position: relative; border-radius: 12px; padding: 10px 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1.5px solid transparent; background: var(--card); }
-        .icon-card span { font-size: 10px; font-weight: 800; }
-        input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 12px; font-size: 14px; background: var(--card); color: inherit; outline: none; transition: 0.3s; }
-        .price-box { font-size: 40px; font-weight: bold; text-align: center; color: var(--primary); padding: 10px; border: 2px solid var(--primary); border-radius: 15px; margin-bottom: 15px; width: 100%; background: var(--card); display: block; }
-        .btn { border: none; padding: 12px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 600; transition: 0.2s; }
-        .btn-pay { background: #e2e8f0; color: #64748b; }
-        .btn-pay.active-cash { background: #dcfce7; color: #15803d; border: 2px solid #22c55e; }
-        .btn-pay.active-trans { background: #e0f2fe; color: #0369a1; border: 2px solid #0ea5e9; }
-        .btn-main { background: var(--primary); color: white; width: 100%; font-size: 28px; height: 60px; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
-        .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid var(--border); z-index: 1000; }
-        .nav-item { border: none; background: none; color: #94a3b8; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .nav-item.active { color: var(--primary); }
-        .page { display: none; } .page.active { display: block; animation: fadeIn 0.3s ease; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body { 
+            margin: 0; 
+            background-color: #cbd5e1; /* พื้นหลังด้านนอกสำหรับ PC */
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Container หลักที่ทำให้หน้าตาเหมือนมือถือตลอดเวลา */
+        .app-shell {
+            width: 100%;
+            max-width: 480px; /* บังคับขนาดหน้าจอ */
+            min-height: 100vh;
+            background-color: var(--bg);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 30px rgba(0,0,0,0.2);
+            padding-bottom: var(--nav-height);
+        }
+
+        /* ส่วนหัวแอป */
+        .header {
+            padding: 20px;
+            text-align: center;
+            background: var(--card);
+            color: var(--primary);
+            font-size: 24px;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* เนื้อหาภายในหน้า */
+        .page { display: none; padding: 15px; animation: fadeIn 0.3s; }
+        .page.active { display: block; }
+
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .status-bar { padding: 12px; border-radius: 12px; text-align: center; font-weight: bold; margin-bottom: 10px; font-size: 14px; }
-        .status-red { background: #fee2e2; color: #dc2626; }
-        .status-indigo { background: #e0e7ff; color: #3730a3; }
-        .status-green { background: #dcfce7; color: #16a34a; }
-        .history-row { padding: 12px; border-bottom: 1px solid var(--border); font-size: 14px; background: var(--card); margin-bottom: 5px; border-radius: 10px; }
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; backdrop-filter: blur(4px); }
-        .modal-content { background: var(--card); padding: 20px; border-radius: 25px; width: 100%; max-width: 400px; color: var(--text); }
-        .card { background: var(--card); border-radius: 20px; padding: 15px; margin-bottom: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+
+        /* การจัดวางปุ่มเมนูบน (ประกัน/วันหยุด/ตั้งค่า) */
+        .top-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .action-card {
+            background: var(--card);
+            padding: 15px 5px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-main);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+        .action-card i { font-size: 20px; display: block; margin-bottom: 8px; color: var(--primary); }
+
+        /* ช่องกรอกราคาขนาดใหญ่ */
+        .price-display {
+            background: var(--card);
+            margin-bottom: 20px;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid var(--primary);
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.2);
+        }
+        .price-display input {
+            width: 100%;
+            border: none;
+            text-align: center;
+            font-size: 56px;
+            font-weight: 800;
+            color: var(--text-main);
+            outline: none;
+            background: transparent;
+        }
+
+        /* กลุ่มปุ่มชำระเงิน */
+        .pay-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .btn-pay {
+            padding: 18px;
+            border-radius: 15px;
+            border: none;
+            background: #e2e8f0;
+            font-weight: bold;
+            font-size: 16px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-pay.active-cash { background: #dcfce7; color: #166534; border: 2px solid #22c55e; }
+        .btn-pay.active-trans { background: #e0f2fe; color: #075985; border: 2px solid #0ea5e9; }
+
+        /* ปุ่มบันทึกใหญ่พิเศษ */
+        .btn-save {
+            width: 100%;
+            padding: 20px;
+            border-radius: 20px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
+        }
+
+        /* แก้ไข Bottom Nav (ให้ไอคอนอยู่รวมกัน ไม่กระจายขอบ) */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background: var(--card);
+            display: flex;
+            justify-content: center; /* จัดเข้ากลาง */
+            align-items: center;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            gap: 40px; /* ระยะห่างระหว่างปุ่มที่พอดี */
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .nav-item i { font-size: 24px; margin-bottom: 4px; }
+        .nav-item.active { color: var(--primary); }
+
+        /* ปรับปรุง Input ทั่วไป */
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        select, input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            font-size: 14px;
+            background: var(--card);
+        }
+
+        /* หน้ารายงาน (รูปที่ 3) */
+        .summary-box {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .summary-item { width: 45%; font-size: 14px; margin-bottom: 5px; }
+
     </style>
 </head>
-<body id="mainBody">
+<body>
 
-<div class="container">
-    <h2 id="shopNameDisp" style="text-align:center; color:var(--primary); margin: 10px 0;">Barber Shop</h2>
+    <div class="app-shell">
+        <div class="header" id="shopNameDisp">Barber Shop</div>
 
-    <div id="p1" class="page active">
-        <div class="grid-3">
-            <div class="icon-card" onclick="openSettings()">🛡️<span>ประกัน</span></div>
-            <div class="icon-card" onclick="alert('ระบบวันหยุดอยู่ในรายงานรายเดือน')">🏖️<span>วันหยุด</span></div>
-            <div class="icon-card" onclick="openSettings()">⚙️<span>ตั้งค่า</span></div>
+        <div id="p1" class="page active">
+            <div class="top-actions">
+                <div class="action-card" onclick="handleInsurance()"><i class="fas fa-shield-alt"></i>ประกันรายได้</div>
+                <div class="action-card" onclick="handleHoliday()"><i class="fas fa-umbrella-beach" style="color:#f43f5e"></i>บันทึกวันหยุด</div>
+                <div class="action-card" onclick="openSettings()"><i class="fas fa-cog" style="color:#64748b"></i>ตั้งค่าระบบ</div>
+            </div>
+
+            <div class="input-group">
+                <input type="date" id="dateInp" onchange="updateDateDisplay(this.value)">
+                <input type="tel" id="tStart" placeholder="เริ่ม" class="time-input">
+                <input type="tel" id="tEnd" placeholder="เสร็จ" class="time-input">
+            </div>
+
+            <div class="input-group">
+                <select id="hairStyle"><option value="">เลือกทรงผม</option></select>
+                <select id="extra1"><option value="">บริการ 1</option></select>
+                <select id="extra2"><option value="">บริการ 2</option></select>
+            </div>
+
+            <div class="price-display">
+                <input type="number" id="priceInp" placeholder="0" onfocus="this.select()">
+            </div>
+
+            <div class="pay-methods">
+                <button class="btn-pay" id="btnCash" onclick="selectPay('Cash')"><i class="fas fa-money-bill-wave"></i> เงินสด</button>
+                <button class="btn-pay" id="btnTrans" onclick="selectPay('Trans')"><i class="fas fa-mobile-alt"></i> โอนเงิน</button>
+            </div>
+
+            <button class="btn-save" id="mainSaveBtn" onclick="handleSave()">
+                <i class="fas fa-save"></i> บันทึกข้อมูล
+            </button>
         </div>
-        <div class="grid-3">
-            <div class="icon-card">📅<span id="dateDisplay">วันนี้</span><input type="date" id="dateInp" onchange="updateDateDisplay(this.value)" style="position:absolute;inset:0;opacity:0"></div>
-            <input id="tStart" type="tel" placeholder="เริ่ม" style="text-align:center;">
-            <input id="tEnd" type="tel" placeholder="เสร็จ" style="text-align:center;">
+
+        <div id="p2" class="page">
+            <div class="summary-box">
+                <div class="summary-item">ยอดรวมวันนี้: <b id="dTotal">฿0</b></div>
+                <div class="summary-item">ลูกค้า: <b id="dCounts">0 คน</b></div>
+                <div class="summary-item">📱 โอน: <b id="dTrans">฿0</b></div>
+                <div class="summary-item">🤵 ช่าง: <b id="dBarber">฿0</b></div>
+                <div id="settleBar" class="status-bar" style="width: 100%; text-align: center; padding: 10px; border-radius: 10px; background: #fee2e2;">
+                    สถานะการเงิน
+                </div>
+            </div>
+            <div id="dailyList"></div>
         </div>
-        <div class="grid-3">
-            <select id="hairStyle"><option value="">เลือกทรงผม</option><option value="เด็ก">👶 เด็ก</option><option>รองทรง</option><option>แฟชั่น</option></select>
-            <select id="extra1"><option value="">บริการ 1</option><option>โกนหนวด</option><option>สระผม</option></select>
-            <select id="extra2"><option value="">บริการ 2</option><option>กันหน้า</option><option>สระผม</option></select>
+
+        <div id="p3" class="page">
+            <div class="summary-box" style="text-align: center; flex-direction: column;">
+                <div style="font-size: 14px; color: var(--text-sub);">ยอดค้างสุทธิ</div>
+                <div id="accNet" style="font-size: 48px; font-weight: 800; color: var(--primary); margin: 10px 0;">฿0</div>
+                <div style="display: flex; justify-content: space-around; width: 100%; border-top: 1px solid #eee; pt: 15px;">
+                    <div>เดิม: <b id="accOldVal">฿0</b></div>
+                    <div>วันนี้: <b id="accTodayVal">฿0</b></div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="accNote" placeholder="หมายเหตุ..." style="flex: 2;">
+                <button class="btn-save" style="flex: 1; padding: 12px; font-size: 14px; background: #10b981;" onclick="clearAccount()">
+                    <i class="fas fa-check"></i> เคลียร์ยอด
+                </button>
+            </div>
         </div>
-        <input id="priceInp" class="price-box" type="number" placeholder="0">
-        <div class="grid-2">
-            <button id="btnCash" class="btn btn-pay" onclick="selectPay('Cash')">💵 เงินสด</button>
-            <button id="btnTrans" class="btn btn-pay" onclick="selectPay('Trans')">📱 โอน</button>
-        </div>
-        <button class="btn btn-main" onclick="handleSave()">💾 บันทึก</button>
+
+        <nav class="bottom-nav">
+            <a href="javascript:void(0)" class="nav-item active" id="n1" onclick="go(1)">
+                <i class="fas fa-cut"></i>
+                <span>บันทึก</span>
+            </a>
+            <a href="javascript:void(0)" class="nav-item" id="n2" onclick="go(2)">
+                <i class="fas fa-file-alt"></i>
+                <span>รายงาน</span>
+            </a>
+            <a href="javascript:void(0)" class="nav-item" id="n3" onclick="go(3)">
+                <i class="fas fa-wallet"></i>
+                <span>บัญชี</span>
+            </a>
+        </nav>
     </div>
 
-    <div id="p2" class="page">
-        <div class="card" style="display:flex;gap:10px;">
-            <div style="flex:8;font-size:13px">
-                <div style="display:flex;justify-content:space-between"><span>ยอดรวมวันนี้</span><b id="dTotal">฿0</b></div>
-                <div style="display:flex;justify-content:space-between"><span>ลูกค้า</span><b id="dCustomer">0 คน</b></div>
-                <div style="display:flex;justify-content:space-between"><span>📱 โอน</span><b id="dTrans">฿0</b></div>
-                <div style="display:flex;justify-content:space-between"><span>🤵 ช่าง</span><b id="dBarber">฿0</b></div>
-            </div>
-            <div style="flex:4">
-                <div id="settleBar" class="status-bar status-indigo" style="padding:5px;font-size:10px">รอข้อมูล</div>
-                <button class="btn" style="background:var(--accent);color:#fff;width:100%" onclick="shareLinePreview()">📱 Line</button>
-            </div>
-        </div>
-        <div id="dailyList"></div>
-    </div>
-
-    <div id="p3" class="page">
-        <div class="card" style="text-align:center">
-            <span>ยอดค้างสุทธิ</span>
-            <h1 id="accNet" style="color:var(--primary);margin:5px 0">฿0</h1>
-            <div class="grid-2" style="font-size:12px;opacity:0.7">
-                <div>เดิม: <b id="accOldVal">0</b></div>
-                <div>วันนี้: <b id="accTodayVal">0</b></div>
-            </div>
-        </div>
-        <div class="grid-2">
-            <input id="accNote" placeholder="หมายเหตุ">
-            <button class="btn" style="background:var(--success);color:#fff" onclick="clearAccount()">✔ เคลียร์ยอด</button>
-        </div>
-        <div id="accountList"></div>
-    </div>
-</div>
-
-<nav class="nav-bar">
-    <button id="n1" class="nav-item active" onclick="go(1)"><i class="fas fa-cut"></i>บันทึก</button>
-    <button id="n2" class="nav-item" onclick="go(2)"><i class="fas fa-file-lines"></i>รายงาน</button>
-    <button id="n3" class="nav-item" onclick="go(3)"><i class="fas fa-wallet"></i>บัญชี</button>
-</nav>
+</body>
+</html>
 
 <div id="modalSet" class="modal">
     <div class="modal-content">
