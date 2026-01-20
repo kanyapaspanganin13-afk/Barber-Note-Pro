@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.2.3.0</title>
+    <title>Barber Note Pro v.2.3.1</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -12,7 +12,6 @@
             --primary: #6366f1; --accent: #0ea5e9; --bg: #f8fafc; --text: #1e293b; --border: #e2e8f0; 
             --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
         }
-
         * { box-sizing: border-box; font-family: 'Kanit', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 100px; overflow-x: hidden; }
         .container { padding: 15px; max-width: 500px; margin: auto; }
@@ -26,7 +25,6 @@
             border-radius: 15px; font-size: 20px !important; font-weight: 800; 
             background: #f1f5f9; text-align: center; outline: none;
         }
-
         /* Price Box */
         .price-box { 
             font-size: 80px; font-weight: 800; text-align: center; color: #64748b; 
@@ -34,10 +32,8 @@
             height: 130px; display: flex; align-items: center; justify-content: center;
             background: #fff; margin-bottom: 30px; width: 100%;
         }
-
         .btn-main { background: var(--primary); color: white; width: 100%; height: 85px; border-radius: 20px; font-size: 35px; border: none; cursor: pointer; transition: 0.2s; }
         .btn-main:active { transform: scale(0.95); }
-
         .btn-pay { background: #fff; border: 2px solid var(--border); font-size: 20px; font-weight: 700; border-radius: 15px; height: 65px; cursor: pointer; }
         .btn-pay.active-cash { border-color: var(--primary); background: #eef2ff; color: var(--primary); }
         .btn-pay.active-trans { border-color: var(--accent); background: #f0f9ff; color: var(--accent); }
@@ -46,7 +42,6 @@
         .page { display: none; }
         .page.active { display: block !important; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
         .nav-bar { 
             position: fixed !important; bottom: 0 !important; left: 0; right: 0; 
             background: #fff; display: flex !important; flex-direction: row !important; 
@@ -228,25 +223,24 @@
         $(`n${n}`).classList.add('active');
         renderDay();
     }
-    // --- 1. ฟังก์ชันประกันรายได้ ---
-function handleInsurance() {
+    function handleInsurance() {
     const today = document.getElementById('dateInp').value;
-    const todayRecords = db.records.filter(r => r.date === today);
-    
-    // คำนวณส่วนแบ่งช่างทั้งหมดของวันนี้
-    const totalBarberShare = todayRecords.reduce((sum, r) => sum + r.barberShare, 0);
-    const guaranteeAmount = db.settings.guar; // ยอดประกันที่ตั้งค่าไว้ (เช่น 500)
+    const guaranteeAmount = parseInt(db.settings.guar) || 0; // ดึงค่าประกันต่อวันจากที่ตั้งค่าไว้
 
     if (guaranteeAmount <= 0) {
-        alert("ยังไม่ได้ตั้งค่ายอดประกันรายได้ (ไปที่เมนูตั้งค่า)");
+        alert("⚠️ กรุณาตั้งค่ายอดประกันรายได้ในเมนู 'ตั้งค่าระบบ' ก่อน");
         return;
     }
+    // กรองรายการเฉพาะของวันที่เลือก
+    const todayRecords = db.records.filter(r => r.date === today);
+    // รวมยอดส่วนแบ่งของช่าง (Barber Share) ทั้งหมดของวันนี้
+    const totalBarberShare = todayRecords.reduce((sum, r) => sum + (r.barberShare || 0), 0);
 
     if (totalBarberShare < guaranteeAmount) {
         const diff = guaranteeAmount - totalBarberShare;
-        alert(`วันนี้ยอดช่างได้: ${totalBarberShare} บาท\nต่ำกว่าประกันที่ตั้งไว้ (${guaranteeAmount} บาท)\n\nร้านต้องเติมเงินประกันให้ช่าง: ${diff} บาท`);
+        alert(`🛡️ ประกันรายได้วันที่ ${today}\n------------------------\nยอดช่างทำได้: ${totalBarberShare} บาท\nประกันไว้ที่: ${guaranteeAmount} บาท\n\n✅ ร้านต้องจ่ายเติมให้ช่าง: ${diff} บาท`);
     } else {
-        alert(`วันนี้ยอดช่างได้: ${totalBarberShare} บาท\nเกินยอดประกัน (${guaranteeAmount} บาท) แล้ว 🎉`);
+        alert(`🛡️ ประกันรายได้วันที่ ${today}\n------------------------\nยอดช่างทำได้: ${totalBarberShare} บาท\n(เกินยอดประกัน ${guaranteeAmount} บาทแล้ว 🎉)`);
     }
 }
 
@@ -271,33 +265,32 @@ function handleHoliday() {
         updateReportPage(); // อัปเดตตารางรายงานทันที
     }
 }
+    // ฟังก์ชันสำหรับบันทึกค่าจากฟอร์มตั้งค่า
+function saveSettings() {
+    db.settings.shopName = document.getElementById('setShop').value || "Barber Shop";
+    db.settings.perc = parseInt(document.getElementById('setPerc').value) || 50;
+    db.settings.guar = parseInt(document.getElementById('setGuar').value) || 0;
 
-// --- 3. ฟังก์ชันเปิดการตั้งค่า (เดิมที่เคยเขียนไว้) ---
+    saveDB(); // บันทึกลง LocalStorage
+    document.getElementById('shopNameDisp').innerText = db.settings.shopName;
+    
+    alert("✅ บันทึกการตั้งค่าเรียบร้อย");
+    closeSettings(); // ปิดหน้าต่างตั้งค่า
+}
+
+// ฟังก์ชันเปิดหน้าตั้งค่า (ใส่ค่าปัจจุบันลงในช่อง)
 function openSettings() {
     document.getElementById('setShop').value = db.settings.shopName;
     document.getElementById('setPerc').value = db.settings.perc;
     document.getElementById('setGuar').value = db.settings.guar;
-    document.getElementById('modalSet').style.display = 'flex';
+    
+    // แสดงส่วนหน้าต่างตั้งค่าระบบ (เช่น เปลี่ยน class ให้ active หรือ display: block)
+    document.getElementById('modalSet').style.display = 'block'; 
 }
     function closeSettings() {
         $("modalSet").style.display = "none";
     }
 
-    function saveSettings() {
-        conf.shop = $("setShop").value;
-        conf.perc = Number($("setPerc").value);
-        conf.guar = Number($("setGuar").value);
-        // เก็บค่าธีมและเสียง (ถ้าต้องการเขียนโค้ดเพิ่มในอนาคต)
-        conf.theme = $("setTheme").value;
-        conf.sound = $("setSound").value;
-        
-        localStorage.setItem("barber_conf", JSON.stringify(conf));
-        $("shopNameDisp").innerText = conf.shop;
-        
-        alert("บันทึกเรียบร้อย!");
-        renderDay();
-        closeSettings();
-    }
 
     function clearAllData() {
         if (confirm("คุณแน่ใจหรือไม่ที่จะล้างข้อมูลทั้งหมด? ข้อมูลจะหายถาวร!")) {
