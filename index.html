@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.7.4.3</title>
+    <title>Barber Note Pro v.7.5.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -233,8 +233,8 @@
 function handleSave() {
         const p = parseInt($("priceInp").value);
         if(!p || !payMethod) return alert("ใส่ราคาและเลือกวิธีจ่ายก่อนพี่!");
-        const rec = {id: Date.now(),date: $("dateInp").value,time: $("tStart").value || new Date().toLocaleTimeString('th-TH',{hour12:false,hour:'2-digit',minute:'2-digit'}),
-            svcs: [$("hairStyle").value, $("extra1").value, $("extra2").value].filter(s => s !== ""),price: p,pay: payMethod
+        const rec = {id: Date.now(),date: $("dateInp").value,time: $("tStart").value || new Date().toLocaleTimeString('th-TH', {hour12:false, hour:'2-digit', minute:'2-digit'}),svcs: [$("hairStyle").value, $("extra1").value, $("extra2").value].filter(s => s !== ""),
+        price: p,pay: payMethod,type: "SERVICE" // แนะนำให้ใส่ไว้ เพื่อแยกกับประเภท GUARANTEE_CLAIM หรือ HOLIDAY
         };
         db.push(rec);saveDB();alert("✅ บันทึกแล้วครับ");$("priceInp").value = "";renderDay();
     }
@@ -242,20 +242,44 @@ function handleSave() {
 function handleInsurance() {
     const today = $("dateInp").value || new Date().toISOString().split('T')[0];
     const guaranteeAmount = parseInt(conf.guar) || 0;
+
     // ฟังก์ชันสั่งให้พูด
-    const speak = (txt) => {const msg = new SpeechSynthesisUtterance(txt);msg.lang = 'th-TH';window.speechSynthesis.speak(msg);
+    const speak = (txt) => {
+        const msg = new SpeechSynthesisUtterance(txt);
+        msg.lang = 'th-TH';
+        window.speechSynthesis.speak(msg);
     };
+
     // --- จุดที่พี่สั่ง: ถ้ายังไม่ได้ตั้งค่า (เป็น 0) ให้พูดเตือน ---
-    if (guaranteeAmount <= 0) {speak("กรุณาตั้งค่าประกัน");alert("⚠️ กรุณาตั้งค่ายอดประกันรายได้ในเมนู 'ตั้งค่าระบบ' ก่อน");return;
+    if (guaranteeAmount <= 0) {
+        speak("พี่คะ กรุณาตั้งค่าประกันก่อนค่ะ"); // เสียงพูดเตือน
+        alert("⚠️ กรุณาตั้งค่ายอดประกันรายได้ในเมนู 'ตั้งค่าระบบ' ก่อน");
+        return;
     }
+
     // เช็คว่ากดซ้ำไหม
     const alreadyGuar = db.find(r => r.date === today && r.type === "GUARANTEE_CLAIM");
-    if (alreadyGuar) {speak("วันนี้เปิดประกันไปแล้วค่ะ");alert("🛡️ วันนี้เปิดระบบประกันรายได้ไปแล้วครับพี่");return;
+    if (alreadyGuar) {
+        speak("วันนี้เปิดประกันไปแล้วค่ะ");
+        alert("🛡️ วันนี้เปิดระบบประกันรายได้ไปแล้วครับพี่");
+        return;
     }
+
     if (confirm(`🛡️ ยืนยันใช้ระบบ 'ประกันรายได้' ใช่ไหมพี่?`)) {
-        db.push({ id: Date.now(),date: today,time: "00:00",svcs: ["🛡️ ประกันรายวัน"],price: 0,pay: "N/A",type: "GUARANTEE_CLAIM" 
+        db.push({ 
+            id: Date.now(), 
+            date: today, 
+            time: "00:00", 
+            svcs: ["🛡️ ประกันรายวัน"], 
+            price: 0, 
+            pay: "N/A",
+            type: "GUARANTEE_CLAIM" 
         });
-        saveDB();speak(`เปิดระบบประกันรายวัน ${guaranteeAmount} บาท เรียบร้อยแล้วค่ะ`);alert("✅ เปิดระบบประกันเรียบร้อย");renderDay();
+
+        saveDB(); 
+        speak(`เปิดระบบประกันรายวัน ${guaranteeAmount} บาท เรียบร้อยแล้วค่ะ`);
+        alert("✅ เปิดระบบประกันเรียบร้อย");
+        renderDay();
     }
 }
     // --- 2. ฟังก์ชันบันทึกวันหยุด ---
