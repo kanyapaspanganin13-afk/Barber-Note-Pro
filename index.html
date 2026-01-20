@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.7.4.3</title>
+    <title>Barber Note Pro v.7.3.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -409,7 +409,7 @@
         renderDay();
         alert("บันทึกสำเร็จ ✅");
     }
-  function renderDay() {
+ function renderDay() {
     const d = $("dateInp").value, today = db.filter(r => r.date === d);
     let tot = 0, trans = 0, cash = 0, stats = {}, listHtml = "";
 
@@ -430,37 +430,96 @@
                 }
             });
         }
-        // ปุ่ม LINE จะอยู่แค่ใน listHtml นี้เท่านั้น (ตามประวัติแต่ละคน)
-        listHtml += `<div class="history-row"><div style="display:flex; justify-content:space-between"><span>${r.time} | ${r.svcs.join('+')}</span><b>฿${r.price}</b></div><div style="display:flex; justify-content:space-between; opacity:0.7"><span>${r.hair || ''}</span><span>${r.pay === 'Cash' ? '💵 สด' : '📱 โอน'} <i class="fas fa-trash" style="margin-left:10px; color:var(--danger)" onclick="delRec(${r.id})"></i></span></div></div>`;
+
+     // แก้ในส่วน listHtml ของ renderDay
+listHtml += `
+    <div class="history-row" style="background:#ffffff; padding:15px; border-radius:18px; margin-bottom:10px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1); border:1px solid #f1f5f9;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span><b style="color:#4338ca; font-size:15px;">${r.time}</b> | ${r.svcs.join('+')}</span>
+            <b style="font-size:16px; color:#1e293b;">฿${r.price}</b>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+            <span style="color:#64748b; font-size:13px; font-weight:600;">${r.hair || ''}</span>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <span style="font-size:12px; font-weight:700; color:#475569;">${r.pay === 'Cash' ? '💵 เงินสด' : '📱 โอน'}</span>
+                
+                <i class="fab fa-line" style="color:#06c755; font-size:22px; cursor:pointer;" 
+                   onclick="window.location.href='https://line.me/R/msg/text/?รายการ: ${r.svcs.join('+')} ราคา: ${r.price} บ.'"></i>
+                
+                <i class="fas fa-trash-alt" style="color:#dc2626; font-size:18px; cursor:pointer;" onclick="delRec(${r.id})"></i>
+            </div>
+        </div>
+    </div>`;
     });
 
-    const bEarn = Math.max(tot * (conf.perc / 100), conf.guar), sEarn = tot - bEarn, settle = cash - bEarn;
+    // 💰 คำนวณตามจริง: bEarn = เงินที่ช่างต้องได้ | settle = เงินสดที่ต้องเคลียร์
+    const bEarn = Math.max(tot * (conf.perc / 100), conf.guar);
+    const sEarn = tot - bEarn;
+    const settle = cash - bEarn;
 
     $("dTotal").innerText = tot.toLocaleString();
     $("dTrans").innerText = trans.toLocaleString();
-    $("dBarber").innerHTML = `${Math.floor(bEarn).toLocaleString()} <small>(สด: ${cash})</small>`;
+    $("dBarber").innerHTML = `<span style="color:#1e293b">${Math.floor(bEarn).toLocaleString()}</span> <small style="color:#64748b">(สด: ${cash})</small>`;
     $("dShop").innerText = Math.floor(sEarn).toLocaleString();
     $("dCounts").innerText = `ลูกค้า: ${today.length} คน`;
-    $("dailyList").innerHTML = listHtml || "<center style='opacity:0.3; padding:20px'>ไม่มีข้อมูล</center>";
+    $("dailyList").innerHTML = listHtml || "<center style='opacity:0.3; padding:40px;'>ไม่มีข้อมูลลูกค้าวันนี้</center>";
 
-    // ✅ พ่นค่าลงแถบแจ้งเงิน (ไม่มีปุ่มไลน์โผล่มามั่วแล้ว)
+    // ✅ ปรับสีและค่าเงินในแถบสถานะ (เพื่อให้ไหลไปหน้า 3 ได้ถูกต้อง)
     const b = $("settleBar");
-    b.className = "status-bar";
-    if (tot === 0) { b.innerText = "🟦 ร้านจ่ายประกัน"; b.className += " status-blue"; }
-    else if (settle > 0) { b.innerText = `🟥 คืนร้าน ฿${Math.floor(settle).toLocaleString()}`; b.className += " status-red"; }
-    else if (settle < 0) { b.innerText = `🟦 คืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; b.className += " status-indigo"; }
-    else { b.innerText = "✅ ยอดพอดี"; b.className += " status-green"; }
+    b.style.display = "flex"; b.style.alignItems = "center"; b.style.justifyContent = "center";
+    b.style.borderRadius = "15px"; b.style.fontWeight = "900"; b.style.fontSize = "14px";
+    
+    // 🟦 กรณีร้านต้องจ่ายประกัน (รายได้ช่างไม่ถึงเป้า)
+    if (tot * (conf.perc / 100) < conf.guar) {
+        let guarPay = conf.guar - (tot * (conf.perc / 100));
+        b.innerText = `🟦 ร้านจ่ายประกัน ฿${Math.floor(guarPay).toLocaleString()}`;
+        b.style.background = "#e0e7ff"; b.style.color = "#4338ca";
+    } 
+    // 🟥 กรณีช่างถือเงินสดเกิน ต้องคืนร้าน
+    else if (settle > 0) { 
+        b.innerText = `🟥 ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`; 
+        b.style.background = "#fee2e2"; b.style.color = "#dc2626";
+    } 
+    // 🟦 กรณีเงินโอนเยอะ ร้านต้องทอนเงินสดให้ช่าง
+    else if (settle < 0) { 
+        b.innerText = `🟦 ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; 
+        b.style.background = "#e0e7ff"; b.style.color = "#4338ca";
+    } 
+    // ✅ ยอดพอดีเป๊ะ
+    else { 
+        b.innerText = "✅ ยอดเงินสดพอดี"; 
+        b.style.background = "#dcfce7"; b.style.color = "#16a34a";
+    }
 
-    // ✅ แสดงผล Badge ด้านล่าง
+    // Badge สถิติ (เหมือนเดิม)
     let sH = "";
-    if (stats["ตัดผม"]) sH += `<span class="badge" style="background:#4338ca; color:white; padding:4px 12px; border-radius:15px; margin:3px; display:inline-block; font-size:12px; font-weight:800;">ตัดผม: ${stats["ตัดผม"]}</span>`;
-    if (stats["เด็ก"]) sH += `<span class="badge" style="background:#ec4899; color:white; padding:4px 12px; border-radius:15px; margin:3px; display:inline-block; font-size:12px; font-weight:800;">เด็ก: ${stats["เด็ก"]}</span>`;
+    if (stats["ตัดผม"]) sH += `<span class="badge" style="background:#4338ca; color:white; padding:5px 12px; border-radius:12px; margin:3px; display:inline-block; font-size:12px; font-weight:800;">ตัดผม: ${stats["ตัดผม"]}</span>`;
+    if (stats["เด็ก"]) sH += `<span class="badge" style="background:#ec4899; color:white; padding:5px 12px; border-radius:12px; margin:3px; display:inline-block; font-size:12px; font-weight:800;">เด็ก: ${stats["เด็ก"]}</span>`;
     for (let s in stats) {
         if (s !== "ตัดผม" && s !== "เด็ก") {
-            sH += `<span class="badge" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; padding:4px 12px; border-radius:15px; margin:3px; display:inline-block; font-size:11px;">${s}: ${stats[s]}</span>`;
+            sH += `<span class="badge" style="background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; padding:5px 12px; border-radius:12px; margin:3px; display:inline-block; font-size:11px;">${s}: ${stats[s]}</span>`;
         }
     }
     $("dServiceStats").innerHTML = sH;
+}
+   // ฟังก์ชันสำหรับปุ่มส้มอมแดง ส่งสรุปยอดรวมไปหน้า 3 หรือส่งให้เจ้าของ
+function sendSummary() {
+    const d = document.getElementById("dateInp").value;
+    const tot = document.getElementById("dTotal").innerText;
+    const trans = document.getElementById("dTrans").innerText;
+    const shop = document.getElementById("dShop").innerText;
+    const statusText = document.getElementById("settleBar").innerText; // ดึงค่า "ร้านจ่ายประกัน" หรือ "ช่างคืนเงิน"
+
+    const msg = `📊 สรุปยอดร้านตัดผม (${d})\n` +
+                `------------------\n` +
+                `💰 ยอดรวม: ${tot} บ.\n` +
+                `📱 ยอดโอน: ${trans} บ.\n` +
+                `🏠 ส่วนของร้าน: ${shop} บ.\n` +
+                `------------------\n` +
+                `📌 สถานะ: ${statusText}`;
+
+    // ✅ เด้งไปหน้าเลือกเพื่อนใน LINE เพื่อส่งรายงาน
+    window.location.href = `https://line.me/R/msg/text/?${encodeURIComponent(msg)}`;
 }
     function clearAccount() {
         const currentTodaySettle = Number($("accTodayVal").innerText.replace('฿','').replace(',','')) || 0;
