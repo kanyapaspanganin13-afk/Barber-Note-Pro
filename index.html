@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.7.3.3</title>
+    <title>Barber Note Pro v.7.4.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -62,44 +62,24 @@
     /* ส่วนอื่นๆ */
     .page { display: none; } .page.active { display: block; }
     .status-bar { padding: 12px; border-radius: 12px; text-align: center; font-weight: bold; margin-bottom: 10px; font-size: 14px; }
-   .modal {
-        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-        background: rgba(0, 0, 0, 0.85); display: none; z-index: 999999; 
-        align-items: center; justify-content: center;
+   .modal {position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;background: rgba(0, 0, 0, 0.85); display: none; z-index: 999999;align-items: center; justify-content: center;
     }
-    .modal-content {
-        background: #fff; width: 90%; max-width: 400px; border-radius: 25px;
-        padding: 25px; max-height: 85vh; overflow-y: auto; 
-        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    .modal-content {background: #fff; width: 90%; max-width: 400px; border-radius: 25px;padding: 25px; max-height: 85vh; overflow-y: auto;box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
-
-    /* --- ส่วนจัดระเบียบหน้า รายงาน (Page 2) --- */
-    .summary-container { 
-        display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; 
+  /* --- ส่วนจัดระเบียบหน้า รายงาน (Page 2) --- */
+    .summary-container {display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; 
     }
-    .card-main, .card-sub { 
-        background: white; padding: 15px; border-radius: 20px; 
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
+    .card-main, .card-sub {background: white; padding: 15px; border-radius: 20px;box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
     }
-    .stat-row { 
-        display: flex; justify-content: space-between; font-size: 13px; 
-        font-weight: 700; margin: 3px 0; 
+    .stat-row {display: flex; justify-content: space-between; font-size: 13px;font-weight: 700; margin: 3px 0; 
     }
     /* status-bar มีประกาศซ้ำ ผมรวมให้เป็นอันเดียวที่สมบูรณ์ครับ */
-    .status-bar { 
-        padding: 12px; border-radius: 12px; text-align: center; 
-        font-weight: 800; font-size: 14px; margin-bottom: 10px;
+    .status-bar {padding: 12px; border-radius: 12px; text-align: center;font-weight: 800; font-size: 14px; margin-bottom: 10px;
     }
-    .btn-line { 
-        background: #06C755; color: white; border: none; 
-        padding: 5px 15px; border-radius: 20px; font-size: 11px; cursor: pointer;
+    .btn-line {background: #06C755; color: white; border: none;padding: 5px 15px; border-radius: 20px; font-size: 11px; cursor: pointer;
     }
-
     /* รายการประวัติ (History Item) */
-    .history-item {
-        background: white; padding: 12px; border-radius: 15px; margin-bottom: 8px;
-        display: flex; justify-content: space-between; align-items: center;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.04); border-left: 5px solid var(--primary);
+    .history-item {background: white; padding: 12px; border-radius: 15px; margin-bottom: 8px;display: flex; justify-content: space-between; align-items: center;box-shadow: 0 2px 5px rgba(0,0,0,0.04); border-left: 5px solid var(--primary);
     }
 </style>
     </head>
@@ -109,14 +89,11 @@
     <h2 id="shopNameDisp" style="text-align:center; color:var(--primary); margin: 10px 0;">Barber Shop</h2>
     <div id="p1" class="page active"> 
     <div class="grid-3">
-    <div class="icon-card" style="background: #fffbeb; border-color: #fde68a;" onclick="handleInsurance()">
-        <span>🛡️</span><span style="color: #b45309;">ประกันรายได้</span>
+    <div class="icon-card" style="background: #fffbeb; border-color: #fde68a;" onclick="handleInsurance()"><span>🛡️</span><span style="color: #b45309;">ประกันรายได้</span>
     </div>
-    <div class="icon-card" style="background: #fff1f2; border-color: #fecdd3;" onclick="handleHoliday()">
-        <span>🏖️</span><span style="color: #be185d;">บันทึกวันหยุด</span>
+    <div class="icon-card" style="background: #fff1f2; border-color: #fecdd3;" onclick="handleHoliday()"><span>🏖️</span><span style="color: #be185d;">บันทึกวันหยุด</span>
     </div>
-    <div class="icon-card" style="background: #f1f5f9; border-color: #cbd5e1;" onclick="openSettings()">
-        <span>⚙️</span><span style="color: #475569;">ตั้งค่าระบบ</span>
+    <div class="icon-card" style="background: #f1f5f9; border-color: #cbd5e1;" onclick="openSettings()"><span>⚙️</span><span style="color: #475569;">ตั้งค่าระบบ</span>
     </div>
 </div>
     <div class="grid-3">
@@ -137,13 +114,11 @@
         </div>
         <input type="number" id="priceInp" class="price-box" placeholder="0" inputmode="numeric">
     <div class="grid-2">
-            <button id="btnCash" class="btn btn-pay" onclick="selectPay('Cash')">💵 เงินสด</button>
-            <button id="btnTrans" class="btn btn-pay" onclick="selectPay('Trans')">📱 โอน</button>
+         <button id="btnCash" class="btn btn-pay" onclick="selectPay('Cash')">💵 เงินสด</button><button id="btnTrans" class="btn btn-pay" onclick="selectPay('Trans')">📱 โอน</button>
         </div>
         <button class="btn btn-main" onclick="handleSave()">บันทึกข้อมูล</button>
     </div>
 <div id="p2" class="page" style="padding: 15px;"> 
-    
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
         <div style="background: white; padding:18px 15px; border-radius:20px; text-align:center; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
             <small style="font-weight:800; color:#64748b; text-transform: uppercase;">ยอดรวมวันนี้</small>
@@ -158,31 +133,23 @@
             <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:800;"><span style="color:#64748b;">🏠 ร้าน:</span> <b id="dShop">0</b></div>
         </div>
     </div>
-
     <div style="display:flex; gap:10px; margin-bottom:18px; align-items: center;">
         <div id="settleBar" style="flex: 8; height: 50px; display:flex; align-items:center; justify-content:center; font-weight:900; border-radius:15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-size: 14px;"></div>
-        
-        <button onclick="sendSummary()" style="flex: 2; height: 50px; background:#ff4500; color:white; border:none; border-radius:15px; font-size:20px; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(255, 69, 0, 0.3); cursor:pointer;">
-            <i class="fas fa-paper-plane"></i>
+        <button onclick="sendSummary()" style="flex: 2; height: 50px; background:#ff4500; color:white; border:none; border-radius:15px; font-size:20px; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(255, 69, 0, 0.3); cursor:pointer;"><i class="fas fa-paper-plane"></i>
         </button>
     </div>
-
     <div id="dServiceStats" style="text-align:center; margin-bottom:20px; display:flex; flex-wrap:wrap; justify-content:center; gap:6px;"></div>
     <hr style="border:0; border-top:1px solid #e2e8f0; margin-bottom:15px;">
-
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-    <div style="font-weight:800; color:#1e293b; font-size:14px;">📋 รายการลูกค้าวันนี้:</div>
-    
+    <div style="font-weight:800; color:#1e293b; font-size:14px;">📋 รายงานวันนี้:</div>
     <div onclick="sendDailyListToLine()" style="background:#06c755; color:white; padding:5px 12px; border-radius:10px; font-size:12px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:5px; box-shadow: 0 2px 4px rgba(6,199,85,0.2);">
-        <i class="fab fa-line" style="font-size:16px;"></i>
-        <span>ส่งรายการวันนี้</span>
+    <i class="fab fa-line" style="font-size:16px;"></i><span>ส่งรายการวันนี้</span>
     </div>
 </div>
-
 <div id="dailyList" style="display:flex; flex-direction:column; gap:10px;">
     </div>
-        <button onclick="go(3)" style="position: fixed; bottom: 90px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-size: 24px;"><i class="fas fa-check-circle"></i>
-        </button>
+     <button onclick="go(3)" style="position: fixed; bottom: 90px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-size: 24px;"><i class="fas fa-check-circle"></i>
+</button>
     </div>
 
     <div id="p3" class="page">
@@ -239,8 +206,7 @@
         <label style="font-size:11px; font-weight:600;">เสียงพูด</label><select id="setVoice"><option value="female">👩 หญิง</option><option value="male">👨 ชาย</option></select></div>
     </div>
         <div class="grid-2" style="margin-top:20px">
-        <button class="btn" style="background:var(--primary); color:#fff" onclick="saveSettings()">บันทึก</button>
-        <button class="btn" style="background:#e2e8f0; color:var(--text)" onclick="closeSettings()">ปิด</button>
+        <button class="btn" style="background:var(--primary); color:#fff" onclick="saveSettings()">บันทึก</button><button class="btn" style="background:#e2e8f0; color:var(--text)" onclick="closeSettings()">ปิด</button>
     </div>
         <button class="btn" style="width:100%; background:var(--danger); color:#fff; margin-top:10px; font-size:12px;" onclick="clearAllData()">⚠️ ล้างข้อมูลทั้งหมด</button>
     </div>
@@ -258,79 +224,71 @@
     let conf = JSON.parse(localStorage.getItem("barber_conf")) || { shop: "Barber Shop", perc: 50, guar: 0 };
     let account = JSON.parse(localStorage.getItem("barber_account")) || { balance: 0, logs: [] };
     let payMethod = "";
-
     const $ = (id) => document.getElementById(id);
-
     window.onload = () => {
         const today = new Date().toISOString().split('T')[0];
-        if($("dateInp")) $("dateInp").value = today;
-        if($("accDate")) $("accDate").value = today;
-        if($("histDate")) $("histDate").value = today;
-        if($("shopNameDisp")) $("shopNameDisp").innerText = conf.shop; // ใช้ conf.shop ตามที่ประกาศไว้
+        if($("dateInp")) $("dateInp").value = today;if($("accDate")) $("accDate").value = today;if($("histDate")) $("histDate").value = today;if($("shopNameDisp")) $("shopNameDisp").innerText = conf.shop; // ใช้ conf.shop ตามที่ประกาศไว้
         updateDateDisplay(today);
     };
 function handleSave() {
         const p = parseInt($("priceInp").value);
         if(!p || !payMethod) return alert("ใส่ราคาและเลือกวิธีจ่ายก่อนพี่!");
-        const rec = {
-            id: Date.now(),
-            date: $("dateInp").value,
-            time: $("tStart").value || new Date().toLocaleTimeString('th-TH',{hour12:false,hour:'2-digit',minute:'2-digit'}),
-            svcs: [$("hairStyle").value, $("extra1").value, $("extra2").value].filter(s => s !== ""),
-            price: p,
-            pay: payMethod
+        const rec = {id: Date.now(),date: $("dateInp").value,time: $("tStart").value || new Date().toLocaleTimeString('th-TH',{hour12:false,hour:'2-digit',minute:'2-digit'}),
+            svcs: [$("hairStyle").value, $("extra1").value, $("extra2").value].filter(s => s !== ""),price: p,pay: payMethod
         };
-        db.push(rec);
+        db.push(rec);saveDB();alert("✅ บันทึกแล้วครับ");$("priceInp").value = "";renderDay();
+    }
+    // --- 1. ฟังก์ชันประกันรายได้ 
+function handleInsurance() {
+    const today = $("dateInp").value || new Date().toISOString().split('T')[0];
+    const guaranteeAmount = parseInt(conf.guar) || 0;
+    // ฟังก์ชันสั่งให้พูด
+    const speak = (txt) => {const msg = new SpeechSynthesisUtterance(txt);msg.lang = 'th-TH';window.speechSynthesis.speak(msg);
+    };
+    // --- จุดที่พี่สั่ง: ถ้ายังไม่ได้ตั้งค่า (เป็น 0) ให้พูดเตือน ---
+    if (guaranteeAmount <= 0) {speak("กรุณาตั้งค่าประกัน");alert("⚠️ กรุณาตั้งค่ายอดประกันรายได้ในเมนู 'ตั้งค่าระบบ' ก่อน");return;
+    }
+    // เช็คว่ากดซ้ำไหม
+    const alreadyGuar = db.find(r => r.date === today && r.type === "GUARANTEE_CLAIM");
+    if (alreadyGuar) {speak("วันนี้เปิดประกันไปแล้วค่ะ");alert("🛡️ วันนี้เปิดระบบประกันรายได้ไปแล้วครับพี่");return;
+    }
+    if (confirm(`🛡️ ยืนยันใช้ระบบ 'ประกันรายได้' ใช่ไหมพี่?`)) {
+        db.push({ id: Date.now(),date: today,time: "00:00",svcs: ["🛡️ ประกันรายวัน"],price: 0,pay: "N/A",type: "GUARANTEE_CLAIM" 
+        });
+        saveDB();speak(`เปิดระบบประกันรายวัน ${guaranteeAmount} บาท เรียบร้อยแล้วค่ะ`);alert("✅ เปิดระบบประกันเรียบร้อย");renderDay();
+    }
+}
+    // --- 2. ฟังก์ชันบันทึกวันหยุด ---
+   function handleHoliday() {
+    const today = $("dateInp").value;
+    if (!today) return alert("กรุณาเลือกวันที่ก่อน");
+
+    // ฟังก์ชันสั่งให้พูด
+    const speak = (txt) => {
+        const msg = new SpeechSynthesisUtterance(txt);
+        msg.lang = 'th-TH';
+        window.speechSynthesis.speak(msg);
+    };
+
+    if (confirm(`ยืนยันการบันทึกให้วันที่ ${today} เป็น "วันหยุด"?`)) {
+        const holidayRecord = {
+            id: Date.now(),
+            date: today,
+            time: "00:00",
+            svcs: ["🏖️ วันหยุดร้าน"], // ใส่ไอคอนให้ชัด
+            price: 0,
+            pay: "N/A",
+            type: "HOLIDAY" // มาร์กประเภทไว้เผื่อดึงข้อมูลทำสรุปรายเดือน
+        };
+        
+        db.push(holidayRecord);
         saveDB();
-        alert("✅ บันทึกแล้วครับ");
-        $("priceInp").value = "";
+        
+        speak("บันทึกเป็นวันหยุดเรียบร้อยแล้วค่ะพักผ่อนให้สบายนะคะ"); // เสียงพูด
+        alert("🏖️ บันทึกวันหยุดเรียบร้อย");
         renderDay();
     }
-    // --- 1. ฟังก์ชันประกันรายได้ (แก้ไขปีกกาและตัวแปร) ---
-    function handleInsurance() {
-        const today = $("dateInp").value || new Date().toISOString().split('T')[0];
-        const guaranteeAmount = parseInt(conf.guar) || 0;
-
-        if (guaranteeAmount <= 0) {
-            alert("⚠️ กรุณาตั้งค่ายอดประกันรายได้ในเมนู 'ตั้งค่าระบบ' ก่อน");
-            return;
-        }
-
-        const todayRecords = db.filter(r => r.date === today);
-        const totalBarberShare = todayRecords.reduce((sum, r) => {
-            // คำนวณส่วนแบ่งช่างต่อรายการตาม % ที่ตั้งไว้
-            const share = (r.price * (conf.perc / 100));
-            return sum + share;
-        }, 0);
-
-        if (totalBarberShare < guaranteeAmount) {
-            const diff = guaranteeAmount - totalBarberShare;
-            alert(`🛡️ ประกันรายได้วันที่ ${today}\n------------------------\nยอดช่างทำได้: ${Math.floor(totalBarberShare)} บาท\nประกันไว้ที่: ${guaranteeAmount} บาท\n\n✅ ร้านต้องจ่ายเติมให้ช่าง: ${Math.floor(diff)} บาท`);
-        } else {
-            alert(`🛡️ ประกันรายได้วันที่ ${today}\n------------------------\nยอดช่างทำได้: ${Math.floor(totalBarberShare)} บาท\n(เกินยอดประกัน ${guaranteeAmount} บาทแล้ว 🎉)`);
-        }
-    } // <--- ปิดปีกกาให้ถูกต้องตรงนี้
-
-    // --- 2. ฟังก์ชันบันทึกวันหยุด ---
-    function handleHoliday() {
-        const today = $("dateInp").value;
-        if (!today) return alert("กรุณาเลือกวันที่ก่อน");
-
-        if (confirm(`ยืนยันการบันทึกให้วันที่ ${today} เป็น "วันหยุด"?`)) {
-            const holidayRecord = {
-                id: Date.now(),
-                date: today,
-                time: "00:00",
-                svcs: ["🏖️ วันหยุด"],
-                price: 0,
-                pay: "N/A"
-            };
-            db.push(holidayRecord);
-            saveDB();
-            alert("บันทึกวันหยุดเรียบร้อย");
-            renderDay();
-        }
-    }
+}
 
     // --- 3. ฟังก์ชันตั้งค่าระบบ (เปลี่ยนไปใช้ตัวแปร conf ให้ตรงกัน) ---
     function openSettings() {
@@ -443,17 +401,46 @@ function renderDay() {
     });
 
     // --- ส่วนแสดงผลยอดเงิน (อ้างอิง ID จาก HTML ของพี่) ---
-    const bEarn = Math.max(tot * (conf.perc / 100), conf.guar);
-    const sEarn = tot - bEarn;
-    const settle = cash - bEarn;
+   // --- ก๊อปปี้ชุดนี้วางทับของเดิมได้เลยครับ ---
 
+    // 1. เช็คว่าวันนี้มีการกดปุ่มประกันรายได้ไหม
+    const hasGuar = today.some(r => r.type === "GUARANTEE_CLAIM");
+    
+    // 2. คำนวณรายได้ช่าง (ถ้ากดประกัน ต้องได้ไม่ต่ำกว่า 200)
+    const bEarn = hasGuar ? Math.max(tot * (conf.perc / 100), conf.guar) : (tot * (conf.perc / 100));
+    
+    // 3. ยอดร้าน (ยอดรวม ลบ รายได้ช่าง) -> ตรงนี้จะติดลบถ้าไม่มีลูกค้า
+    const sEarn = tot - bEarn;
+
+    // --- สั่งโชว์บนหน้าจอ ---
     document.getElementById("dTotal").innerText = tot.toLocaleString();
     document.getElementById("dTrans").innerText = trans.toLocaleString();
     document.getElementById("dBarber").innerHTML = `${Math.floor(bEarn).toLocaleString()} <small style="color:#64748b;">(สด:${cash})</small>`;
-    document.getElementById("dShop").innerText = Math.floor(sEarn).toLocaleString();
+    
+    // แสดงยอดร้าน และเปลี่ยนเป็นสีแดงถ้าติดลบ
+    const dShop = document.getElementById("dShop");
+    dShop.innerText = Math.floor(sEarn).toLocaleString();
+    dShop.style.color = sEarn < 0 ? "#dc2626" : "#1e293b"; 
+
     document.getElementById("dCounts").innerText = `ลูกค้า ${today.length} คน`;
     document.getElementById("dailyList").innerHTML = listHtml || "<center style='opacity:0.3; padding:40px;'>ไม่มีลูกค้า</center>";
 
+    // --- แถบแจ้งเตือนด้านล่าง (SettleBar) ---
+    const b = document.getElementById("settleBar");
+    if (b) {
+        if (tot === 0 && hasGuar) {
+            b.innerText = `ไม่มีลูกค้า ได้ประกันรายวัน ${conf.guar} บ.`;
+            b.style.background = "#e0e7ff"; b.style.color = "#4338ca";
+        } else if (sEarn < 0) {
+            // กรณีงานน้อยกว่าประกัน -> ร้านคืนช่าง
+            b.innerText = `ร้านคืนช่าง ${Math.floor(Math.abs(sEarn))} บ.`;
+            b.style.background = "#fef2f2"; b.style.color = "#dc2626";
+        } else {
+            // กรณีปกติ (ลูกค้าโอนเข้าร้านหมด) -> ร้านคืนช่างตามจริง
+            b.innerText = `ร้านคืนช่าง ${Math.floor(bEarn - cash)} บ.`;
+            b.style.background = "#e0e7ff"; b.style.color = "#4338ca";
+        }
+    }
     // --- แถบสถานะ (settleBar) ---
     const b = document.getElementById("settleBar");
     if (b) {
