@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.7.3.2</title>
+    <title>Barber Note Pro v.7.4.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -146,8 +146,8 @@
     
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
         <div style="background: white; padding:18px 15px; border-radius:20px; text-align:center; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
-            <small style="font-weight:800; color:#64748b;">ยอดรวมวันนี้</small>
-            <div id="dTotal" style="font-size:36px; font-weight:900; color:#4338ca;">0</div>
+            <small style="font-weight:800; color:#64748b; text-transform: uppercase;">ยอดรวมวันนี้</small>
+            <div id="dTotal" style="font-size:36px; font-weight:900; color:#4338ca; margin: 5px 0;">0</div>
             <div id="dCounts" style="font-size:13px; font-weight:700; color:#1e293b; background:#e0e7ff; display:inline-block; padding:2px 10px; border-radius:10px;">ลูกค้า 0 คน</div>
         </div>
 
@@ -159,17 +159,21 @@
         </div>
     </div>
 
-    <div style="display:flex; gap:10px; margin-bottom:18px; align-items:stretch;">
-        <div id="settleBar" style="flex: 8; margin:0; display:flex; align-items:center; justify-content:center; font-weight:900; border-radius:15px; min-height: 50px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);"></div>
+    <div style="display:flex; gap:10px; margin-bottom:18px; align-items: center;">
+        <div id="settleBar" style="flex: 8; height: 50px; display:flex; align-items:center; justify-content:center; font-weight:900; border-radius:15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-size: 14px;"></div>
         
-        <button onclick="sendSummary()" style="flex: 2; background:#ff4500; color:white; border:none; border-radius:15px; font-size:22px; display:flex; align-items:center; justify-content:center; box-shadow: 0 6px 15px rgba(255, 69, 0, 0.4);">
+        <button onclick="sendSummary()" style="flex: 2; height: 50px; background:#ff4500; color:white; border:none; border-radius:15px; font-size:20px; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(255, 69, 0, 0.3); cursor:pointer;">
             <i class="fas fa-paper-plane"></i>
         </button>
     </div>
 
-    <div id="dServiceStats" style="text-align:center; margin-bottom:20px;"></div>
+    <div id="dServiceStats" style="text-align:center; margin-bottom:20px; display:flex; flex-wrap:wrap; justify-content:center; gap:6px;"></div>
 
-    <div id="dailyList"></div>
+    <hr style="border:0; border-top:1px solid #e2e8f0; margin-bottom:15px;">
+
+    <div style="font-weight:800; color:#1e293b; margin-bottom:10px; font-size:14px;">📋 รายการลูกค้าวันนี้:</div>
+    <div id="dailyList" style="display:flex; flex-direction:column; gap:10px;">
+        </div>
 </div>
         <button onclick="go(3)" style="position: fixed; bottom: 90px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-size: 24px;"><i class="fas fa-check-circle"></i>
         </button>
