@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.5.3.7</title>
+    <title>Barber Note Pro v.5.3.8</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -13,148 +13,59 @@
     }
     * { box-sizing: border-box; font-family: 'Kanit', sans-serif; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 90px; overflow-x: hidden; }
+    /* ตัวหรี่แสงหน้าจอ (Brightness Overlay) */
+    #brightnessOverlay {position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;background: black; pointer-events: none; z-index: 9999999; opacity: 0;
+    }
+    /* ธีมต่างๆ */
+    body.deep-navy { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --border: #334155; }
+    body.deep-navy .icon-card, body.deep-navy input, body.deep-navy select { background: #1e293b; color: white; border-color: #334155; }
+    body.barber-dark { --bg: #121212; --card: #1a1a1a; --text: #e0e0e0; --primary: #fbbf24; --border: #333; }
+    body.barber-dark .icon-card, body.barber-dark input, body.barber-dark select { background: #1a1a1a; color: #fbbf24; border-color: #333; }   
     .container { padding: 10px; max-width: 500px; margin: auto; }
     /* บังคับให้แถว 3 ช่องกว้างเท่ากันเป๊ะ */
-.grid-3 {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 6px !important;
-    margin-bottom: 8px !important;
-}
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
-    .icon-card { 
-        position: relative; 
-        border-radius: 15px; 
-        padding: 15px 5px; 
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-        justify-content: center; 
-        gap: 5px; 
-        cursor: pointer; 
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
-        border: 1.5px solid transparent; 
-        background: #fff;
+    .grid-3 {display: grid !important;grid-template-columns: repeat(3, 1fr) !important;gap: 6px !important;margin-bottom: 8px !important;
     }
-    .icon-card span:first-child { font-size: 22px; }
-    .icon-card span:last-child { font-size: 13px; font-weight: 700; }
-
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }.icon-card { position: relative;border-radius: 15px;padding: 15px 5px;display: flex;flex-direction: column;align-items: center;justify-content: center;gap: 5px;  
+    cursor: pointer;box-shadow: 0 2px 4px rgba(0,0,0,0.05);border: 1.5px solid transparent;background: #fff;
+    }
+    .icon-card span:first-child { font-size: 22px; }.icon-card span:last-child { font-size: 13px; font-weight: 700; }
    /* ปรับความสูงช่อง input/select ให้สมดุล (แก้ปัญหาช่องสูงต่ำไม่เท่ากัน) */
-input, select {
-    width: 100%;
-    height: 68px !important; /* ปรับค่าความสูงให้เท่ากันหมดทุกช่อง */
-    border-radius: 14px !important;
-    font-size: 18px !important;
-    font-weight: 600;
-    text-align: center;
-    border: 1.5px solid var(--border);
-    background: #f1f5f9;
-}
-    input[type="date"], 
-    input[type="time"],
-    .grid-3 .icon-card {
-    height: 60px !important; 
-    border-radius: 12px !important;
-    font-size: 18px !important;
-    margin: 0 !important;
-}
-.price-box {
-    font-size: 55px !important; 
-    height: 90px !important;  /* ลดความสูงลงจากเดิม */
-    font-weight: 700 !important;
-    margin-bottom: 12px !important;
-    border: 2px solid var(--primary) !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #fff;
-    color: var(--text);
-}
+    input, select {width: 100%;height: 68px !important;border-radius: 14px !important;font-size: 18px !important;font-weight: 600;text-align: center;border: 1.5px solid var(--border);background: #f1f5f9;
+    }
+    input[type="date"], input[type="time"],.grid-3 .icon-card {height: 60px !important;border-radius: 12px !important;font-size: 18px !important;margin: 0 !important;
+    }
+    .price-box {font-size: 55px !important;height: 90px !important;font-weight: 700 !important;margin-bottom: 12px !important;border: 2px solid var(--primary) !important;
+    display: flex;align-items: center;justify-content: center;background: #fff;color: var(--text);
+    }
     .btn { border: none; padding: 12px; border-radius: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; transition: 0.2s; }
     .btn:active { transform: scale(0.95); }
     /* ปรับปุ่มจ่ายเงินให้สูงขึ้น */
-    .btn-pay { 
-        background: #e2e8f0; 
-        color: #64748b; 
-        border: 2px solid transparent; 
-        height: 70px; 
-        font-size: 18px; 
+    .btn-pay { background: #e2e8f0; color: #64748b; border:2px solid transparent;height: 70px;font-size: 18px; 
     }
     .btn-pay img, .btn-pay i { font-size: 24px; margin-right: 8px; }
     .btn-pay.active-cash { background: #dcfce7; color: #15803d; border-color: #22c55e; }
     .btn-pay.active-trans { background: #e0f2fe; color: #0369a1; border-color: #0ea5e9; }
     /* ปุ่มบันทึกใหญ่พิเศษด้านล่าง */
-    .btn-main { 
-        background: var(--primary); 
-        color: white; 
-        width: 100%; 
-        height: 85px; 
-        border-radius: 20px; 
-        font-size: 35px; 
-        margin-top: 10px;
+    .btn-main {background: var(--primary);color: white;width: 100%;height: 85px;border-radius: 20px;font-size: 35px;margin-top: 10px;
     }
-    .nav-bar{
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 75px; /* เพิ่มความสูงเมนูบาร์ */
-        background: #ffffff;
-        display: flex !important;
-        flex-direction: row !important;
-        justify-content: space-around;
-        align-items: center;
-        border-top: 1px solid #eee;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-        z-index: 1000;
+    .nav-bar{position: fixed;bottom: 0;left: 0;right: 0;height: 75px;background: #ffffff;display: flex !important;flex-direction: row !important;justify-content: space-around;
+    align-items: center;border-top: 1px solid #eee;box-shadow: 0 -2px 10px rgba(0,0,0,0.05);z-index: 1000;
     }
-    .nav-item {
-        flex: 1;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center;
-        justify-content: center;
-        gap: 4px;
-        color: #94a3b8;
-        text-decoration: none;
+    .nav-item {flex: 1;display: flex !important;flex-direction: column !important;align-items: center;justify-content: center;gap: 4px;color: #94a3b8;text-decoration: none;
     }
-    /* ปรับขนาดไอคอนให้ใหญ่ขึ้น */
-    .nav-item i {
-        font-size: 24px !important; 
+    .nav-item i {font-size: 24px !important; /* ปรับขนาดไอคอนให้ใหญ่ขึ้น */ 
     }
-    /* ปรับขนาดตัวหนังสือใต้ไอคอน */
-    .nav-item span {
-        font-size: 13px !important;
-        font-weight: 500;
+    .nav-item span {font-size: 13px !important;font-weight: 500;/* ปรับขนาดตัวหนังสือใต้ไอคอน */
     }
-    .nav-item.active {
-        color: #6366f1; /* สีม่วงตามธีม */
-}
+    .nav-item.active {color: #6366f1; /* สีม่วงตามธีม */
+    }
     /* ส่วนอื่นๆ */
     .page { display: none; } .page.active { display: block; }
     .status-bar { padding: 12px; border-radius: 12px; text-align: center; font-weight: bold; margin-bottom: 10px; font-size: 14px; }
-   .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.85); /* พื้นหลังดำโปร่งแสง */
-    display: none; /* ซ่อนไว้ก่อน */
-    z-index: 999999; /* ต้องสูงกว่า Navbar */
-    align-items: center;
-    justify-content: center;
-}
-.modal-content {
-    background: #fff;
-    width: 90%;
-    max-width: 400px;
-    border-radius: 25px;
-    padding: 25px;
-    max-height: 85vh; /* ป้องกันยาวเกินหน้าจอ */
-    overflow-y: auto; /* เลื่อนขึ้นลงได้ถ้าเนื้อหาเยอะ */
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
+   .modal {position: fixed;top: 0;left: 0;width: 100vw;height: 100vh;background: rgba(0, 0, 0, 0.85); display: none; z-index: 999999; align-items:center;justify-content: center;
+    }
+    .modal-content {background: #fff;width: 90%;max-width: 400px;border-radius: 25px;padding: 25px;max-height: 85vh;overflow-y: auto;box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
 </style>
     </head>
     <body>
@@ -191,92 +102,91 @@ input, select {
         </div>
         <input type="number" id="priceInp" class="price-box" placeholder="0" inputmode="numeric">
     <div class="grid-2">
-        <button id="btnCash" class="btn btn-pay" onclick="selectPay('Cash')">💵 เงินสด</button>
-        <button id="btnTrans" class="btn btn-pay" onclick="selectPay('Trans')">📱 โอนเงิน</button>
+        <button id="btnCash" class="btn btn-pay" onclick="selectPay('Cash')">💵 เงินสด</button><button id="btnTrans" class="btn btn-pay" onclick="selectPay('Trans')">📱 โอนเงิน</button>
     </div>
         <button id="mainSaveBtn" class="btn btn-main" onclick="handleSave()"><i class="fas fa-save"></i></button>
     </div>
-
     <div id="p2" class="page">
-        <div class="grid-2"><div class="card" style="text-align: center;">
-                <label style="font-size: 13px; opacity: 0.8;">ยอดเงินรวมวันนี้</label>
-                <div id="dTotal" style="font-size:32px; font-weight:800; color:var(--primary);">0</div>
-                <div id="dCounts" style="font-size:14px; font-weight:600; color:#64748b; margin-top:5px;">ลูกค้า: 0 คน</div>
-            </div>
-            <div class="card" style="display: flex; flex-direction: column; justify-content: center; gap: 5px;">
-                <div style="font-size:15px; font-weight:600;">📱 โอน: <b id="dTrans" style="color:#0284c7">0</b></div>
-                <div style="font-size:15px; font-weight:600;">🤵 ช่าง: <b id="dBarber" style="color:var(--accent)">0</b></div>
-                <div style="font-size:15px; font-weight:600;">🏠 ร้าน: <b id="dShop" style="color:var(--warning)">0</b></div>
-            </div>
-        </div>
+    <div class="grid-2"><div class="card" style="text-align: center;">
+        <label style="font-size: 13px; opacity: 0.8;">ยอดเงินรวมวันนี้</label>
+        <div id="dTotal" style="font-size:32px; font-weight:800; color:var(--primary);">0</div>
+        <div id="dCounts" style="font-size:14px; font-weight:600; color:#64748b; margin-top:5px;">ลูกค้า: 0 คน</div>
+    </div>
+        <div class="card" style="display: flex; flex-direction: column; justify-content: center; gap: 5px;">
+        <div style="font-size:15px; font-weight:600;">📱 โอน: <b id="dTrans" style="color:#0284c7">0</b></div>
+        <div style="font-size:15px; font-weight:600;">🤵 ช่าง: <b id="dBarber" style="color:var(--accent)">0</b></div>
+        <div style="font-size:15px; font-weight:600;">🏠 ร้าน: <b id="dShop" style="color:var(--warning)">0</b></div>
+    </div>
+</div>
         <div id="settleBar" class="status-bar status-indigo">ยอดพอดี</div>
         <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <label style="font-weight: 600;">📋 รายการวันนี้</label>
-                <button onclick="shareLine()" style="background:#06C755; color:white; border:none; padding:8px 12px; border-radius:8px; font-size:12px;"><i class="fab fa-line"></i> ส่ง LINE</button>
-            </div>
-            <div id="dailyList"></div>
-        </div>
-        <button onclick="go(3)" style="position: fixed; bottom: 90px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-size: 24px;">
-            <i class="fas fa-check-circle"></i>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <label style="font-weight: 600;">📋 รายการวันนี้</label><button onclick="shareLine()" style="background:#06C755; color:white; border:none; padding:8px 12px; border-radius:8px; font-size:12px;"><i class="fab fa-line"></i> ส่ง LINE</button>
+    </div>
+        <div id="dailyList"></div>
+</div>
+        <button onclick="go(3)" style="position: fixed; bottom: 90px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-size: 24px;"><i class="fas fa-check-circle"></i>
         </button>
     </div>
 
     <div id="p3" class="page">
         <div class="acc-main-card">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3 style="margin:0; font-size:16px; color:#b45309;"><i class="fas fa-wallet"></i> สรุปยอดบัญชีสุทธิ</h3>
-                <div id="accLight" style="background:gray; width:12px; height:12px; border-radius:50%;"></div>
-            </div>
-            <div style="font-size:13px; color:#64748b; margin:15px 0; background:rgba(0,0,0,0.03); padding:12px; border-radius:15px;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>ยอดค้างเดิม:</span><b id="accOldVal">฿0</b></div>
-                <div style="display:flex; justify-content:space-between;"><span>ยอดวันนี้:</span><b id="accTodayVal" style="color:var(--primary)">฿0</b></div>
-            </div>
-            <div style="text-align:center; margin:20px 0;">
-                <div style="font-size:14px; opacity:0.6;">สถานะบัญชี</div>
-                <div style="font-size:48px; font-weight:900; color:var(--primary);">฿<span id="accNet">0</span></div>
-            </div>
-            <div id="accStatus" class="status-bar">กำลังโหลด...</div>
-            <button class="btn" onclick="toggleAccHistory()" style="width:100%; border:1px dashed var(--primary); background:#f0f7ff; color:var(--primary); margin-bottom:15px;">ประวัติการเคลียร์เงิน</button>
-            <div id="accHistoryWrapper" style="display:none; margin-bottom:15px;"><div id="accHistory" class="card" style="font-size:12px; max-height:150px; overflow:y:auto;"></div></div>
-            <div style="background:#f8fafc; padding:15px; border-radius:20px; border:1px solid var(--border);">
-                <input type="date" id="accDate" style="margin-bottom:10px;">
-                <input type="text" id="accNote" placeholder="บันทึกช่วยจำ" style="margin-bottom:10px;">
-                <button class="btn-save" onclick="clearAccount()">✅ ยืนยันการเคลียร์เงิน</button>
-            </div>
-        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;"><h3 style="margin:0; font-size:16px; color:#b45309;"><i class="fas fa-wallet"></i> สรุปยอดบัญชีสุทธิ</h3>
+        <div id="accLight" style="background:gray; width:12px; height:12px; border-radius:50%;"></div>
+    </div>
+        <div style="font-size:13px; color:#64748b; margin:15px 0; background:rgba(0,0,0,0.03); padding:12px; border-radius:15px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>ยอดค้างเดิม:</span><b id="accOldVal">฿0</b></div>
+        <div style="display:flex; justify-content:space-between;"><span>ยอดวันนี้:</span><b id="accTodayVal" style="color:var(--primary)">฿0</b></div>
+    </div>
+        <div style="text-align:center; margin:20px 0;">
+        <div style="font-size:14px; opacity:0.6;">สถานะบัญชี</div>
+        <div style="font-size:48px; font-weight:900; color:var(--primary);">฿<span id="accNet">0</span></div>
+    </div>
+        <div id="accStatus" class="status-bar">กำลังโหลด...</div>
+        <button class="btn" onclick="toggleAccHistory()" style="width:100%; border:1px dashed var(--primary); background:#f0f7ff; color:var(--primary); margin-bottom:15px;">ประวัติการเคลียร์เงิน</button>
+        <div id="accHistoryWrapper" style="display:none; margin-bottom:15px;"><div id="accHistory" class="card" style="font-size:12px; max-height:150px; overflow:y:auto;"></div></div>
+        <div style="background:#f8fafc; padding:15px; border-radius:20px; border:1px solid var(--border);">
+        <input type="date" id="accDate" style="margin-bottom:10px;">
+        <input type="text" id="accNote" placeholder="บันทึกช่วยจำ" style="margin-bottom:10px;">
+        <button class="btn-save" onclick="clearAccount()">✅ ยืนยันการเคลียร์เงิน</button>
+    </div>
+</div>
         <div class="card" style="margin-top:20px;">
             <label>📅 ประวัติรายวัน</label>
             <input type="date" id="histDate" onchange="loadHistDaily()" style="margin:10px 0;">
             <div id="histDailyArea"></div>
         </div>
     </div>
-<div id="modalSet" class="modal">
+
+    <div id="modalSet" class="modal">
     <div class="modal-content">
-        <h3 style="margin-top:0; color:var(--primary);">⚙️ ตั้งค่าระบบ</h3> <label style="font-size:11px; font-weight:600;">ชื่อร้าน</label> <input id="setShop" style="margin-bottom:10px;">
+        <h3 style="margin-top:0; color:var(--primary); text-align: center;">⚙️ ตั้งค่าระบบ</h3> 
+        <label style="font-size:11px; font-weight:600;">ชื่อร้าน</label> <input id="setShop" style="margin-bottom:10px;">
         <div class="grid-2">
-            <div>
-                <label style="font-size:11px; font-weight:600;">% ช่าง</label><input type="number" id="setPerc" placeholder="เช่น 50"></div>
-            <div>
-                <label style="font-size:11px; font-weight:600;">ประกัน/วัน</label> <input type="number" id="setGuar" placeholder="0"></div>
-        </div>
+    <div>
+        <label style="font-size:11px; font-weight:600;">% ช่าง</label><input type="number" id="setPerc" placeholder="เช่น 50"></div>
+    <div>
+        <label style="font-size:11px; font-weight:600;">ประกัน/วัน</label><input type="number" id="setGuar" placeholder="0"></div>
+    </div>
+        <div style="margin-top:10px; background: #f1f5f9; padding: 10px; border-radius: 12px;">
+        <label style="font-size:11px; font-weight:800; display: flex; justify-content: space-between;"><span>🔆 ความสว่างหน้าจอ</span><span id="brightVal">100%</span>
+        </label><input type="range" id="setBright" min="0" max="0.8" step="0.1" value="0"oninput="changeBrightness(this.value); document.getElementById('brightVal').innerText = Math.round((1 - this.value) * 100) + '%';">
+    </div>
         <div style="margin-top:10px">
-            <label style="font-size:11px; font-weight:600;">ธีมแอป</label>
-            <select id="setTheme">
-                <option value="neon-light">🌤 Neon Light (Default)</option> <option value="deep-navy">🌌 Deep Navy</option> <option value="barber-dark">🌑 Barber Dark</option> </select>
-        </div>
+        <label style="font-size:11px; font-weight:600;">ธีมแอป</label><select id="setTheme">
+        <option value="neon-light">🌤 Neon Light (Default)</option><option value="deep-navy">🌌 Deep Navy</option><option value="barber-dark">🌑 Barber Dark</option></select>
+    </div>
         <div class="grid-2" style="margin-top:10px">
             <div>
-                <label style="font-size:11px; font-weight:600;">ระบบเสียง</label> <select id="setSound"> <option value="on">🔊 เปิด</option> <option value="off">🔇 ปิด</option></select>
-            </div>
-            <div>
-                <label style="font-size:11px; font-weight:600;">เสียงพูด</label><select id="setVoice"> <option value="female">👩 หญิง</option> <option value="male">👨 ชาย</option></select>
-            </div>
-        </div>
+        <label style="font-size:11px; font-weight:600;">ระบบเสียง</label> <select id="setSound"><option value="on">🔊 เปิด</option><option value="off">🔇 ปิด</option></select></div>
+    <div>
+        <label style="font-size:11px; font-weight:600;">เสียงพูด</label><select id="setVoice"><option value="female">👩 หญิง</option><option value="male">👨 ชาย</option></select></div>
+    </div>
         <div class="grid-2" style="margin-top:20px">
-            <button class="btn" style="background:var(--primary); color:#fff" onclick="saveSettings()">บันทึก</button><button class="btn" style="background:#e2e8f0; color:var(--text)" onclick="closeSettings()">ปิด</button>
-        </div>
-         <button class="btn" style="width:100%; background:var(--danger); color:#fff; margin-top:10px; font-size:12px;" onclick="clearAllData()">⚠️ ล้างข้อมูลทั้งหมด</button>
+        <button class="btn" style="background:var(--primary); color:#fff" onclick="saveSettings()">บันทึก</button>
+        <button class="btn" style="background:#e2e8f0; color:var(--text)" onclick="closeSettings()">ปิด</button>
+    </div>
+        <button class="btn" style="width:100%; background:var(--danger); color:#fff; margin-top:10px; font-size:12px;" onclick="clearAllData()">⚠️ ล้างข้อมูลทั้งหมด</button>
     </div>
 </div>
     <nav class="nav-bar">
@@ -285,7 +195,7 @@ input, select {
         <div class="nav-item" id="n3" onclick="go(3)"><i class="fas fa-wallet"></i>บัญชี</div>
     </nav>
 </div>
-
+    <div id="brightnessOverlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: black; pointer-events: none; z-index: 9999999; opacity: 0;"></div>
 <script>
     // ดึงข้อมูลเดิมจาก LocalStorage (รักษาชื่อตัวแปรเดิมไว้)
     let db = JSON.parse(localStorage.getItem("barber_db")) || [];
@@ -373,32 +283,52 @@ input, select {
             modal.style.display = 'flex'; 
         }
     }
-
     function saveSettings() {
-        conf.shop = $("setShop").value || "Barber Shop";
-        conf.perc = parseInt($("setPerc").value) || 50;
-        conf.guar = parseInt($("setGuar").value) || 0;
+    conf.shop = $("setShop").value;
+    conf.perc = parseInt($("setPerc").value);
+    conf.guar = parseInt($("setGuar").value);
+    conf.theme = $("setTheme").value;
+    conf.sound = $("setSound").value;
+    conf.voice = $("setVoice").value;
+    conf.bright = $("setBright").value;
 
-        saveDB(); 
-        $("shopNameDisp").innerText = conf.shop;
-        alert("✅ บันทึกการตั้งค่าเรียบร้อย");
-        closeSettings(); 
-        renderDay(); // สั่งคำนวณใหม่ทันทีหลังเปลี่ยนค่า
-    }
-
+    localStorage.setItem("barber_conf", JSON.stringify(conf));
+    
+    applyTheme(conf.theme);
+    changeBrightness(conf.bright);
+    $("shopNameDisp").innerText = conf.shop;
+    
+    speak("บันทึกข้อมูลเรียบร้อยแล้ว");
+    alert("✅ บันทึกเรียบร้อย");
+    closeSettings();
+}
     function closeSettings() {
         if ($("modalSet")) $("modalSet").style.display = 'none';
     }
-
-    // --- ส่วนที่เหลือ (ฟังก์ชันเดิมของคุณที่ถูกต้องอยู่แล้ว) ---
-
+       // ฟังก์ชันปรับแสง
+    function changeBrightness(val) {
+    const el = document.getElementById('brightnessOverlay');
+    if (el) el.style.opacity = val;
+    }
+        // ฟังก์ชันเปลี่ยนธีม
+    function applyTheme(themeName) {
+    document.body.className = themeName;
+    }
+        // ฟังก์ชันเสียงพูด
+    function speak(text) {
+    if (conf.sound === 'off') return;
+    window.speechSynthesis.cancel();
+    const msg = new SpeechSynthesisUtterance(text);
+    msg.lang = 'th-TH';
+    msg.pitch = (conf.voice === 'male') ? 0.8 : 1.2;
+    window.speechSynthesis.speak(msg);
+    }
     function clearAllData() {
         if (confirm("คุณแน่ใจหรือไม่ที่จะล้างข้อมูลทั้งหมด? ข้อมูลจะหายถาวร!")) {
             localStorage.clear();
             location.reload();
         }
     }
-
     function updateDateDisplay(val) {
         const d = new Date(val);
         $("dateDisplay").innerText = d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
