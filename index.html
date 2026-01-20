@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.2.3.9</title>
+    <title>Barber Note Pro v.2.3.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -75,18 +75,17 @@
 <div class="container">
     <h2 id="shopNameDisp" style="text-align:center; color:var(--primary); margin: 10px 0;">Barber Shop</h2>
     
-    <div id="p1" class="page active">
-        <div class="grid-3">
-            <div class="icon-card" style="background: #fffbeb; border-color: #fde68a;" onclick="alert('กำลังพัฒนา')">
-                <span>🛡️</span><span style="color: #b45309;">ประกันรายได้</span>
-            </div>
-            <div class="icon-card" style="background: #fff1f2; border-color: #fecdd3;" onclick="alert('กำลังพัฒนา')">
-                <span>🏖️</span><span style="color: #be185d;">บันทึกวันหยุด</span>
-            </div>
-            <div class="icon-card" style="background: #f1f5f9; border-color: #cbd5e1;" onclick="alert('ตั้งค่าใน Script')">
-                <span>⚙️</span><span style="color: #475569;">ตั้งค่าระบบ</span>
-            </div>
-        </div>
+ <div class="grid-3">
+    <div class="icon-card" style="background: #fffbeb; border-color: #fde68a;" onclick="handleInsurance()">
+        <span>🛡️</span><span style="color: #b45309;">ประกันรายได้</span>
+    </div>
+    <div class="icon-card" style="background: #fff1f2; border-color: #fecdd3;" onclick="handleHoliday()">
+        <span>🏖️</span><span style="color: #be185d;">บันทึกวันหยุด</span>
+    </div>
+    <div class="icon-card" style="background: #f1f5f9; border-color: #cbd5e1;" onclick="openSettings()">
+        <span>⚙️</span><span style="color: #475569;">ตั้งค่าระบบ</span>
+    </div>
+</div>
 
         <div class="grid-3">
             <div class="icon-card" style="background: #f1f5f9; border-color: #cbd5e1; padding: 5px; height: 50px;">
@@ -229,13 +228,57 @@
         $(`n${n}`).classList.add('active');
         renderDay();
     }
-    function openSettings() {
-        $("setShop").value = conf.shop || "Barber Shop";
-        $("setPerc").value = conf.perc || 50;
-        $("setGuar").value = conf.guar || 0;
-        $("modalSet").style.display = "block";
+    // --- 1. ฟังก์ชันประกันรายได้ ---
+function handleInsurance() {
+    const today = document.getElementById('dateInp').value;
+    const todayRecords = db.records.filter(r => r.date === today);
+    
+    // คำนวณส่วนแบ่งช่างทั้งหมดของวันนี้
+    const totalBarberShare = todayRecords.reduce((sum, r) => sum + r.barberShare, 0);
+    const guaranteeAmount = db.settings.guar; // ยอดประกันที่ตั้งค่าไว้ (เช่น 500)
+
+    if (guaranteeAmount <= 0) {
+        alert("ยังไม่ได้ตั้งค่ายอดประกันรายได้ (ไปที่เมนูตั้งค่า)");
+        return;
     }
 
+    if (totalBarberShare < guaranteeAmount) {
+        const diff = guaranteeAmount - totalBarberShare;
+        alert(`วันนี้ยอดช่างได้: ${totalBarberShare} บาท\nต่ำกว่าประกันที่ตั้งไว้ (${guaranteeAmount} บาท)\n\nร้านต้องเติมเงินประกันให้ช่าง: ${diff} บาท`);
+    } else {
+        alert(`วันนี้ยอดช่างได้: ${totalBarberShare} บาท\nเกินยอดประกัน (${guaranteeAmount} บาท) แล้ว 🎉`);
+    }
+}
+
+// --- 2. ฟังก์ชันบันทึกวันหยุด ---
+function handleHoliday() {
+    const today = document.getElementById('dateInp').value;
+    if (!today) return alert("กรุณาเลือกวันที่ก่อน");
+
+    if (confirm(`ยืนยันการบันทึกให้วันที่ ${today} เป็น "วันหยุด"?`)) {
+        const holidayRecord = {
+            id: Date.now(),
+            date: today,
+            style: "🏖️ วันหยุด",
+            price: 0,
+            method: "N/A",
+            barberShare: 0,
+            shopShare: 0
+        };
+        db.records.push(holidayRecord);
+        saveDB();
+        alert("บันทึกวันหยุดเรียบร้อย");
+        updateReportPage(); // อัปเดตตารางรายงานทันที
+    }
+}
+
+// --- 3. ฟังก์ชันเปิดการตั้งค่า (เดิมที่เคยเขียนไว้) ---
+function openSettings() {
+    document.getElementById('setShop').value = db.settings.shopName;
+    document.getElementById('setPerc').value = db.settings.perc;
+    document.getElementById('setGuar').value = db.settings.guar;
+    document.getElementById('modalSet').style.display = 'flex';
+}
     function closeSettings() {
         $("modalSet").style.display = "none";
     }
