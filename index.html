@@ -4,19 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.2.3.3</title>
+    <title>Barber Note Pro v.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
     :root { 
-        --primary: #6366f1; 
-        --accent: #0ea5e9; 
-        --danger: #ef4444; 
-        --success: #22c55e; 
-        --bg: #f8fafc; 
-        --card: #ffffff; 
-        --text: #1e293b; 
-        --border: #e2e8f0; 
+        --primary: #6366f1; --accent: #0ea5e9; --danger: #ef4444; --success: #22c55e; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --border: #e2e8f0; 
     }
     * { box-sizing: border-box; font-family: 'Kanit', sans-serif; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 90px; overflow-x: hidden; }
@@ -102,10 +95,8 @@
         font-size: 18px; 
     }
     .btn-pay img, .btn-pay i { font-size: 24px; margin-right: 8px; }
-    
     .btn-pay.active-cash { background: #dcfce7; color: #15803d; border-color: #22c55e; }
     .btn-pay.active-trans { background: #e0f2fe; color: #0369a1; border-color: #0ea5e9; }
-
     /* ปุ่มบันทึกใหญ่พิเศษด้านล่าง */
     .btn-main { 
         background: var(--primary); 
@@ -148,7 +139,7 @@
 </style>
     </head>
     <body>
-
+  
 <div class="container">
     <h2 id="shopNameDisp" style="text-align:center; color:var(--primary); margin: 10px 0;">Barber Shop</h2>
     <div id="p1" class="page active"> 
@@ -270,7 +261,7 @@
          <button class="btn" style="width:100%; background:var(--danger); color:#fff; margin-top:10px; font-size:12px;" onclick="clearAllData()">⚠️ ล้างข้อมูลทั้งหมด</button>
     </div>
 </div>
-    <nav class="nav">
+    <nav class="nav-bar">
         <div class="nav-item active" id="n1" onclick="go(1)"><i class="fas fa-edit"></i>บันทึก</div>
         <div class="nav-item" id="n2" onclick="go(2)"><i class="fas fa-file-invoice"></i>รายงาน</div>
         <div class="nav-item" id="n3" onclick="go(3)"><i class="fas fa-wallet"></i>บัญชี</div>
