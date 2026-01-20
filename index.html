@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.5.3.8</title>
+    <title>Barber Note Pro v.5.3.9</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -65,7 +65,59 @@
    .modal {position: fixed;top: 0;left: 0;width: 100vw;height: 100vh;background: rgba(0, 0, 0, 0.85); display: none; z-index: 999999; align-items:center;justify-content: center;
     }
     .modal-content {background: #fff;width: 90%;max-width: 400px;border-radius: 25px;padding: 25px;max-height: 85vh;overflow-y: auto;box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+.summary-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 15px;
     }
+    .card-main {
+        background: white;
+        padding: 15px;
+        border-radius: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        text-align: center;
+    }
+    .card-sub {
+        background: white;
+        padding: 12px;
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .stat-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    .history-item {
+        background: white;
+        margin-bottom: 8px;
+        padding: 12px;
+        border-radius: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 5px solid var(--primary);
+    }
+
+    /* วางเพิ่มเติมสไตล์สถานะต่อท้าย */
+    .status-bar.status-blue { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+    .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        margin: 2px;
+        background: #f1f5f9;
+        color: #475569;
+    }
+                  
 </style>
     </head>
     <body>
@@ -360,41 +412,76 @@
         alert("บันทึกสำเร็จ ✅");
     }
 
-    function renderDay() {
-        const d = $("dateInp").value;
-        const todayRecords = db.filter(r => r.date === d);
-        let tot = 0, trans = 0, cash = 0, listHtml = "";
+   function renderDay() {
+    const d = $("dateInp").value;
+    const todayRecords = db.filter(r => r.date === d);
+    let tot = 0, trans = 0, cash = 0, stats = {}, listHtml = "";
 
-        todayRecords.forEach(r => {
-            tot += r.price;
-            r.pay === 'Trans' ? trans += r.price : cash += r.price;
-            listHtml += `<div class="history-row" style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;">
-                <span><b>${r.time}</b> | ${r.svcs.join('+')}</span>
-                <span>฿${r.price} <i class="fas fa-trash" style="color:red; margin-left:10px" onclick="delRec(${r.id})"></i></span>
-            </div>`;
+    // เรียงเวลาและนับสถิติ
+    todayRecords.sort((a, b) => a.time.localeCompare(b.time)).forEach(r => {
+        tot += r.price;
+        r.pay === 'Trans' ? trans += r.price : cash += r.price;
+
+        // --- ลอจิกนับสถิติบริการ ---
+        const isCutting = r.svcs.includes("ตัดผม") || r.svcs.includes("เด็ก") || (r.hair && r.hair.trim() !== "");
+        if (isCutting) stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
+        
+        r.svcs.forEach(s => {
+            if (s === "เด็ก") stats["เด็ก"] = (stats["เด็ก"] || 0) + 1;
+            else if (s !== "ตัดผม" && s !== "") stats[s] = (stats[s] || 0) + 1;
         });
 
-        // คำนวณส่วนแบ่งตามค่า conf
-        const bEarn = Math.max(tot * (conf.perc / 100), conf.guar);
-        const sEarn = tot - bEarn;
-        const settle = cash - bEarn;
+        // สร้างรายการประวัติ (Style ใหม่)
+        listHtml += `
+            <div class="history-item">
+                <div style="flex:1">
+                    <div style="font-weight: 800; font-size: 14px;">${r.time} น. | ${r.svcs.join('+')}</div>
+                    <div style="font-size: 12px; color: #94a3b8;">${r.pay==='Cash'?'💵 เงินสด':'📱 โอนเงิน'}</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-weight: 800; color: var(--primary);">฿${r.price.toLocaleString()}</div>
+                    <i class="fas fa-trash-alt" style="color: #cbd5e1; font-size: 14px;" onclick="delRec(${r.id})"></i>
+                </div>
+            </div>`;
+    });
 
-        if($("dTotal")) $("dTotal").innerText = tot.toLocaleString();
-        if($("dTrans")) $("dTrans").innerText = trans.toLocaleString();
-        if($("dBarber")) $("dBarber").innerText = Math.floor(bEarn).toLocaleString();
-        if($("dShop")) $("dShop").innerText = Math.floor(sEarn).toLocaleString();
-        if($("dCounts")) $("dCounts").innerText = `ลูกค้า: ${todayRecords.length} คน`;
-        $("dailyList").innerHTML = listHtml || "<center style='opacity:0.3;padding:20px'>ไม่มีข้อมูล</center>";
+    // คำนวณส่วนแบ่งและประกันรายได้
+    const bEarn = Math.max(tot * (conf.perc / 100), conf.guar);
+    const sEarn = tot - bEarn;
+    const settle = cash - bEarn;
 
-        const net = (account.balance || 0) + settle;
-        $("accOldVal").innerText = `฿${(account.balance || 0).toLocaleString()}`;
-        $("accTodayVal").innerText = `฿${Math.floor(settle).toLocaleString()}`;
-        $("accNet").innerText = Math.abs(Math.floor(net)).toLocaleString();
-        $("accLight").style.background = net > 0 ? "red" : net < 0 ? "blue" : "green";
-        $("accStatus").innerText = net > 0 ? "🚩 ช่างคืนเงินร้าน" : net < 0 ? "🚩 ร้านคืนช่าง" : "✅ ยอดลงตัว";
-        $("accStatus").className = "status-bar " + (net > 0 ? "status-red" : net < 0 ? "status-indigo" : "status-green");
+    // อัปเดตยอดตัวเลข
+    $("dTotal").innerText = tot.toLocaleString();
+    $("dTrans").innerText = trans.toLocaleString();
+    $("dBarber").innerHTML = `${Math.floor(bEarn).toLocaleString()} <small style="font-size:10px; opacity:0.6">(สด:${cash})</small>`;
+    $("dShop").innerText = Math.floor(sEarn).toLocaleString();
+    $("dCounts").innerText = `ลูกค้า: ${todayRecords.length} คน`;
+    $("dailyList").innerHTML = listHtml || `<div style="text-align:center; padding:40px; color:#cbd5e1; font-weight:700;">( ยังไม่มีข้อมูล )</div>`;
+
+    // อัปเดต Badge สถิติ
+    let sH = "";
+    if (stats["ตัดผม"]) sH += `<span class="badge" style="background:var(--primary); color:white;">ตัดผม: ${stats["ตัดผม"]}</span>`;
+    for (let s in stats) {
+        if (s !== "ตัดผม") sH += `<span class="badge">${s}: ${stats[s]}</span>`;
     }
+    $("dServiceStats").innerHTML = sH;
 
+    // --- อัปเดตแถบสถานะ (Settle Bar) ---
+    const b = $("settleBar");
+    if (tot === 0) {
+        b.innerText = `🟦 ร้านจ่ายประกันรายได้ ฿${conf.guar.toLocaleString()}`;
+        b.className = "status-bar status-blue";
+    } else if (settle > 0) {
+        b.innerText = `🟥 ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`;
+        b.className = "status-bar status-red";
+    } else if (settle < 0) {
+        b.innerText = `🟦 ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`;
+        b.className = "status-bar status-indigo";
+    } else {
+        b.innerText = "✅ ยอดลงตัวพอดี";
+        b.className = "status-bar status-green";
+    }
+}
     function delRec(id) {
         if (confirm("ลบรายการนี้?")) {
             db = db.filter(r => r.id !== id);
