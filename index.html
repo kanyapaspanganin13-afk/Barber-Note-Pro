@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.5.2</title>
+    <title>Barber Note Pro v.5.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -14,13 +14,12 @@
     * { box-sizing: border-box; font-family: 'Kanit', sans-serif; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 90px; overflow-x: hidden; }
     .container { padding: 15px; max-width: 500px; margin: auto; }
-    /* ปรับระยะห่างระหว่างแถวให้กว้างขึ้นเพื่อใช้พื้นที่ด้านล่าง */
-    .grid-3 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); 
-    gap: 8px;
-    margin-bottom: 15px;
-    align-items: center;
+    /* บังคับให้แถว 3 ช่องกว้างเท่ากันเป๊ะ */
+.grid-3 {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 10px !important;
+    margin-bottom: 15px !important;
 }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
     .icon-card { 
@@ -40,21 +39,17 @@
     .icon-card span:first-child { font-size: 22px; }
     .icon-card span:last-child { font-size: 11px; font-weight: 800; }
 
-    /* แก้ไขช่อง input/select ให้สูงเท่ากันและตัวหนังสือใหญ่ */
-    input, select { 
-        width: 100%; 
-        height: 75px; /* กำหนดความสูงให้คงที่ทุกช่อง */
-        padding: 10px; 
-        border: 1.5px solid var(--border); 
-        border-radius: 16px; 
-        font-size: 20px; 
-        font-weight: 800; 
-        background: #f1f5f9; 
-        outline: none; 
-        text-align: center;
-        color: var(--text);
-    }
-
+   /* ปรับความสูงช่อง input/select ให้สมดุล (แก้ปัญหาช่องสูงต่ำไม่เท่ากัน) */
+input, select {
+    width: 100%;
+    height: 55px !important; /* ปรับค่าความสูงให้เท่ากันหมดทุกช่อง */
+    border-radius: 12px !important;
+    font-size: 16px !important;
+    font-weight: 600;
+    text-align: center;
+    border: 1.5px solid var(--border);
+    background: #f1f5f9;
+}
     input[type="date"], 
     input[type="time"],
     .grid-3 .icon-card {
@@ -63,23 +58,18 @@
     font-size: 12px !important;
     margin: 0 !important;
 }
-    /* ช่องแสดงราคาปรับให้ใหญ่และมีพื้นที่ */
-    .price-box { 
-        font-size: 60px; 
-        font-weight: 600; 
-        text-align: center; 
-        color: #64748b; 
-        padding: 20px; 
-        border: 2.5px solid var(--primary); 
-        border-radius: 25px; 
-        margin-bottom: 30px; 
-        width: 100%; 
-        background: #fff; 
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 85px; 
-    }
+.price-box {
+    font-size: 50px !important; 
+    height: 100px !important;  /* ลดความสูงลงจากเดิม */
+    font-weight: 700 !important;
+    margin-bottom: 20px !important;
+    border: 2px solid var(--primary) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: var(--text);
+}
     .btn { border: none; padding: 12px; border-radius: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; transition: 0.2s; }
     .btn:active { transform: scale(0.95); }
     /* ปรับปุ่มจ่ายเงินให้สูงขึ้น */
@@ -185,8 +175,8 @@
     </div>
 </div>
     <div class="grid-3">
-        <div class="icon-card" style="background: #f1f5f9; border-color: #cbd5e1; padding: 1px; height: 70px;">
-        <span id="dateDisplay" style="font-size: 16px; font-weight: 500;">เลือกวันที่</span>
+        <div class="icon-card" style="background: #f1f5f9; border-color: #cbd5e1; padding: 1px; height: 55px;">
+        <span id="dateDisplay" style="font-size: 14px; font-weight: 700;">เลือกวันที่</span>
         <input type="date" id="dateInp" onchange="updateDateDisplay(this.value)" style="position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer;">
     </div>
         <input type="time" id="tStart" placeholder="เริ่ม" style="text-align:center; height: 50px;">
