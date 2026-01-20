@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.6.3</title>
+    <title>Barber Note Pro v.7.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -142,25 +142,32 @@
         </div>
         <button class="btn btn-main" onclick="handleSave()">บันทึกข้อมูล</button>
     </div>
-    <div id="p2" class="page">
+<div id="p2" class="page" style="padding: 15px;"> 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-    <div style="background:white; padding:15px; border-radius:20px; text-align:center;">
-        <small>ยอดรวมวันนี้</small>
-        <div id="dTotal" style="font-size:32px; font-weight:900;">0</div>
-        <div id="dCounts" style="font-size:12px;">ลูกค้า 0 คน</div>
-    </div>
-    <div style="background:white; padding:15px; border-radius:20px;">...</div>
-</div>
+        <div style="background:white; padding:15px; border-radius:20px; text-align:center; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
+            <small style="font-weight:800; color:#64748b;">ยอดรวมวันนี้</small>
+            <div id="dTotal" style="font-size:32px; font-weight:900; color:#6366f1;">0</div>
+            <div id="dCounts" style="font-size:12px; color:#94a3b8;">ลูกค้า 0 คน</div>
+        </div>
 
-<div id="dServiceStats" style="margin-bottom:15px; text-align:center;"></div>
         <div style="background:white; padding:15px; border-radius:20px; box-shadow:0 4px 10px rgba(0,0,0,0.05); display:flex; flex-direction:column; justify-content:center; gap:5px;">
-            <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700;"><span>📱 โอน:</span> <span id="dTrans">0</span></div>
-            <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700;"><span>🤵 ช่าง:</span> <span id="dBarber">0</span></div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700;">
+                <span>📱 โอน:</span> <span id="dTrans">0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700;">
+                <span>🤵 ช่าง:</span> <span id="dBarber">0</span>
+            </div>
             <hr style="border:0; border-top:1px dashed #eee; margin:5px 0;">
-            <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700;"><span>🏠 ร้าน:</span> <span id="dShop">0</span></div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700;">
+                <span>🏠 ร้าน:</span> <span id="dShop">0</span>
+            </div>
         </div>
     </div>
-    <div id="settleBar" style="padding:12px; border-radius:12px; text-align:center; font-weight:800; font-size:14px; margin-bottom:15px;"></div>
+
+    <div id="dServiceStats" style="text-align:center; margin-bottom:15px; display:flex; flex-wrap:wrap; justify-content:center; gap:5px;"></div>
+
+    <div id="settleBar" style="padding:12px; border-radius:12px; text-align:center; font-weight:800; margin-bottom:15px;"></div>
+    
     <div id="dailyList" style="display:flex; flex-direction:column; gap:8px;"></div>
 </div>
         <button onclick="go(3)" style="position: fixed; bottom: 90px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-size: 24px;"><i class="fas fa-check-circle"></i>
