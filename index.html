@@ -1,10 +1,10 @@
-    <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.7.3.3</title>
+    <title>Barber Note Pro v.7.5.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -168,13 +168,19 @@
     </div>
 
     <div id="dServiceStats" style="text-align:center; margin-bottom:20px; display:flex; flex-wrap:wrap; justify-content:center; gap:6px;"></div>
-
     <hr style="border:0; border-top:1px solid #e2e8f0; margin-bottom:15px;">
 
-    <div style="font-weight:800; color:#1e293b; margin-bottom:10px; font-size:14px;">📋 รายการลูกค้าวันนี้:</div>
-    <div id="dailyList" style="display:flex; flex-direction:column; gap:10px;">
-        </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+    <div style="font-weight:800; color:#1e293b; font-size:14px;">📋 รายการลูกค้าวันนี้:</div>
+    
+    <div onclick="sendDailyListToLine()" style="background:#06c755; color:white; padding:5px 12px; border-radius:10px; font-size:12px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:5px; box-shadow: 0 2px 4px rgba(6,199,85,0.2);">
+        <i class="fab fa-line" style="font-size:16px;"></i>
+        <span>ส่งรายการวันนี้</span>
+    </div>
 </div>
+
+<div id="dailyList" style="display:flex; flex-direction:column; gap:10px;">
+    </div>
         <button onclick="go(3)" style="position: fixed; bottom: 90px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-size: 24px;"><i class="fas fa-check-circle"></i>
         </button>
     </div>
@@ -520,6 +526,22 @@ function sendSummary() {
 
     // ✅ เด้งไปหน้าเลือกเพื่อนใน LINE เพื่อส่งรายงาน
     window.location.href = `https://line.me/R/msg/text/?${encodeURIComponent(msg)}`;
+}
+    function sendDailyListToLine() {
+    const d = document.getElementById("dateInp").value;
+    const today = db.filter(r => r.date === d);
+    
+    if (today.length === 0) {
+        alert("ไม่มีข้อมูลของวันนี้ครับพี่!");
+        return;
+    }
+
+    let listText = `📋 รายการลูกค้า (${d})\n`;
+    today.sort((a, b) => a.time.localeCompare(b.time)).forEach((r, idx) => {
+        listText += `${idx + 1}. ${r.time} | ${r.svcs.join('+')} | ฿${r.price}\n`;
+    });
+
+    window.location.href = `https://line.me/R/msg/text/?${encodeURIComponent(listText)}`;
 }
     function clearAccount() {
         const currentTodaySettle = Number($("accTodayVal").innerText.replace('฿','').replace(',','')) || 0;
