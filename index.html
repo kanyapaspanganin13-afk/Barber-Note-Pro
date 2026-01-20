@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.5.3.9</title>
+    <title>Barber Note Pro v.1</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -94,30 +94,25 @@
         font-size: 14px;
         font-weight: 600;
     }
-    .history-item {
-        background: white;
-        margin-bottom: 8px;
-        padding: 12px;
-        border-radius: 15px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-left: 5px solid var(--primary);
-    }
+    /*จัดระเบียบรายการประวัติแต่ละแถว */
+.history-item {
+    background: white;
+    padding: 12px 15px;
+    border-radius: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border-left: 4px solid var(--primary);
+}
 
-    /* วางเพิ่มเติมสไตล์สถานะต่อท้าย */
-    .status-bar.status-blue { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
-    .badge {
-        display: inline-block;
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: 700;
-        margin: 2px;
-        background: #f1f5f9;
-        color: #475569;
-    }
-                  
+/* แถบสถานะให้ดูนูนขึ้นมา */
+.status-bar {
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
 </style>
     </head>
     <body>
@@ -158,24 +153,44 @@
     </div>
         <button id="mainSaveBtn" class="btn btn-main" onclick="handleSave()"><i class="fas fa-save"></i></button>
     </div>
-    <div id="p2" class="page">
-    <div class="grid-2"><div class="card" style="text-align: center;">
-        <label style="font-size: 13px; opacity: 0.8;">ยอดเงินรวมวันนี้</label>
-        <div id="dTotal" style="font-size:32px; font-weight:800; color:var(--primary);">0</div>
-        <div id="dCounts" style="font-size:14px; font-weight:600; color:#64748b; margin-top:5px;">ลูกค้า: 0 คน</div>
+  <div id="p2" class="page">
+    <div class="summary-container">
+        <div class="card-main">
+            <label style="font-size: 11px; color: #64748b; font-weight: 800; uppercase">ยอดรวมวันนี้</label>
+            <div id="dTotal" style="font-size: 32px; font-weight: 900; color: var(--primary); line-height: 1;">0</div>
+            <div id="dCounts" style="font-size: 12px; font-weight: 700; color: #94a3b8; margin-top: 5px;">ลูกค้า 0 คน</div>
+            <div id="dServiceStats" style="margin-top: 10px; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px;"></div>
+        </div>
+        
+        <div class="card-sub">
+            <div class="stat-row">
+                <span style="color: #64748b;">📱 โอน</span>
+                <span id="dTrans" style="color: #0ea5e9; font-weight: 800;">0</span>
+            </div>
+            <div class="stat-row">
+                <span style="color: #64748b;">🤵 ช่าง</span>
+                <span id="dBarber" style="color: #6366f1; font-weight: 800;">0</span>
+            </div>
+            <div style="border-top: 1px dashed #e2e8f0; margin: 4px 0;"></div>
+            <div class="stat-row">
+                <span style="color: #64748b;">🏠 ร้าน</span>
+                <span id="dShop" style="color: #f43f5e; font-weight: 800;">0</span>
+            </div>
+        </div>
     </div>
-        <div class="card" style="display: flex; flex-direction: column; justify-content: center; gap: 5px;">
-        <div style="font-size:15px; font-weight:600;">📱 โอน: <b id="dTrans" style="color:#0284c7">0</b></div>
-        <div style="font-size:15px; font-weight:600;">🤵 ช่าง: <b id="dBarber" style="color:var(--accent)">0</b></div>
-        <div style="font-size:15px; font-weight:600;">🏠 ร้าน: <b id="dShop" style="color:var(--warning)">0</b></div>
+
+    <div id="settleBar" class="status-bar" style="margin-bottom: 15px; text-align: center; font-weight: 800;">
+        ยินดีต้อนรับ
     </div>
-</div>
-        <div id="settleBar" class="status-bar status-indigo">ยอดพอดี</div>
-        <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <label style="font-weight: 600;">📋 รายการวันนี้</label><button onclick="shareLine()" style="background:#06C755; color:white; border:none; padding:8px 12px; border-radius:8px; font-size:12px;"><i class="fab fa-line"></i> ส่ง LINE</button>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: #1e293b;">📋 รายการวันนี้</h3>
+        <button onclick="shareLine()" style="background: #06C755; color: white; border: none; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 5px;">
+            <i class="fab fa-line"></i> ส่ง LINE
+        </button>
     </div>
-        <div id="dailyList"></div>
+    
+    <div id="dailyList" style="display: flex; flex-direction: column; gap: 8px;"></div>
 </div>
         <button onclick="go(3)" style="position: fixed; bottom: 90px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-size: 24px;"><i class="fas fa-check-circle"></i>
         </button>
