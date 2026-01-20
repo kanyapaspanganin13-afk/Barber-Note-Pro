@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.5.3</title>
+    <title>Barber Note Pro v.6.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -144,12 +144,15 @@
     </div>
     <div id="p2" class="page">
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-        <div style="background:white; padding:15px; border-radius:20px; text-align:center; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
-            <small style="font-weight:800; color:#64748b;">ยอดรวมวันนี้</small>
-            <div id="dTotal" style="font-size:32px; font-weight:900; color:#6366f1;">0</div>
-            <div id="dCounts" style="font-size:12px; color:#94a3b8;">ลูกค้า 0 คน</div>
-            <div id="dServiceStats" style="margin-top:8px;"></div>
-        </div>
+    <div style="background:white; padding:15px; border-radius:20px; text-align:center;">
+        <small>ยอดรวมวันนี้</small>
+        <div id="dTotal" style="font-size:32px; font-weight:900;">0</div>
+        <div id="dCounts" style="font-size:12px;">ลูกค้า 0 คน</div>
+    </div>
+    <div style="background:white; padding:15px; border-radius:20px;">...</div>
+</div>
+
+<div id="dServiceStats" style="margin-bottom:15px; text-align:center;"></div>
         <div style="background:white; padding:15px; border-radius:20px; box-shadow:0 4px 10px rgba(0,0,0,0.05); display:flex; flex-direction:column; justify-content:center; gap:5px;">
             <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700;"><span>📱 โอน:</span> <span id="dTrans">0</span></div>
             <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700;"><span>🤵 ช่าง:</span> <span id="dBarber">0</span></div>
@@ -394,28 +397,63 @@
         renderDay();
         alert("บันทึกสำเร็จ ✅");
     }
-       function renderDay(){
-        const d=$("dateInp").value, today=db.filter(r=>r.date===d); 
-        let tot=0,trans=0,cash=0,stats={},listHtml="";
-        today.sort((a,b)=>a.time.localeCompare(b.time)).forEach(r=>{
-            tot+=r.price; 
-            r.pay==='Trans' ? trans+=r.price : cash+=r.price; 
-            const isCutting = r.svcs.includes("ตัดผม") || r.svcs.includes("เด็ก") || (r.hair && r.hair.trim() !== "");
-            if (isCutting) stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
-            r.svcs.forEach(s => { if (s === "เด็ก") stats["เด็ก"] = (stats["เด็ก"] || 0) + 1; else if (s !== "ตัดผม") stats[s] = (stats[s] || 0) + 1; });
-            listHtml += `<div class="history-row"><div style="display:flex; justify-content:space-between"><span>${r.time} | ${r.svcs.join('+')}</span><b>฿${r.price}</b></div><div style="display:flex; justify-content:space-between; opacity:0.7"><span>${r.hair||''}</span><span>${r.pay==='Cash'?'💵 สด':'📱 โอน'} <i class="fas fa-trash" style="margin-left:10px; color:var(--danger)" onclick="delRec(${r.id})"></i></span></div></div>`;
-        });
-        const bEarn=Math.max(tot*(conf.perc/100),conf.guar), sEarn=tot-bEarn, settle=cash-bEarn;
-        $("dTotal").innerText=tot.toLocaleString(); $("dTrans").innerText=trans.toLocaleString(); $("dBarber").innerHTML=`${Math.floor(bEarn).toLocaleString()} <small>(สด: ${cash})</small>`; $("dShop").innerText=Math.floor(sEarn).toLocaleString(); $("dCounts").innerText=`ลูกค้า: ${today.length} คน`; $("dailyList").innerHTML=listHtml||"<center style='opacity:0.3; padding:20px'>ไม่มีข้อมูล</center>";
-        let sH=""; if(stats["ตัดผม"]) sH += `<span class="badge" style="background:#4338ca; color:white;">ตัดผม: ${stats["ตัดผม"]}</span>`;
-        for(let s in stats) { if(s !== "ตัดผม") sH += `<span class="badge">${s}: ${stats[s]}</span>`; }
-        $("dServiceStats").innerHTML=sH;
-        const b=$("settleBar"); 
-        if(tot===0){ b.innerText="🟦 ร้านจ่ายประกัน"; b.className="status-bar status-blue"; } 
-        else if(settle>0){ b.innerText=`🟥 ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`; b.className="status-bar status-red"; } 
-        else if(settle<0){ b.innerText=`🟦 ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; b.className="status-bar status-indigo"; } 
-        else { b.innerText="✅ ยอดพอดี"; b.className="status-bar status-green"; }
-    }    
+function renderDay() {
+    const d = $("dateInp").value, today = db.filter(r => r.date === d);
+    let tot = 0, trans = 0, cash = 0, stats = {}, listHtml = "";
+
+    today.sort((a, b) => a.time.localeCompare(b.time)).forEach(r => {
+        tot += r.price;
+        r.pay === 'Trans' ? trans += r.price : cash += r.price;
+
+        // --- ระบบนับสถิติแบบใหม่: นับทุกอย่างที่เลือกมาใน 3 ช่อง (hairStyle, extra1, extra2) ---
+        if (r.svcs && Array.isArray(r.svcs)) {
+            r.svcs.forEach(s => {
+                if (s && s.trim() !== "") {
+                    // นับแยกตามชื่อบริการเป๊ะๆ ใครเลือกอะไรมานับหมด
+                    stats[s] = (stats[s] || 0) + 1;
+                }
+            });
+        }
+
+        // กรณีพิเศษ: ถ้ามีการระบุทรงผม (hair) แต่ในรายการ svcs ไม่มีคำว่าตัดผมหรือเด็ก ให้นับ "ตัดผม" เพิ่มให้ด้วย
+        const hasCuttingWord = r.svcs.some(s => s.includes("ตัดผม") || s.includes("เด็ก") || s.includes("รองทรง"));
+        if ((r.hair && r.hair.trim() !== "") && !hasCuttingWord) {
+            stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
+        }
+
+        listHtml += `<div class="history-row"><div style="display:flex; justify-content:space-between"><span>${r.time} | ${r.svcs.join('+')}</span><b>฿${r.price}</b></div><div style="display:flex; justify-content:space-between; opacity:0.7"><span>${r.hair || ''}</span><span>${r.pay === 'Cash' ? '💵 สด' : '📱 โอน'} <i class="fas fa-trash" style="margin-left:10px; color:var(--danger)" onclick="delRec(${r.id})"></i></span></div></div>`;
+    });
+
+    const bEarn = Math.max(tot * (conf.perc / 100), conf.guar), sEarn = tot - bEarn, settle = cash - bEarn;
+
+    // พ่นค่าลงหน้าจอ (ยอดเงินต่างๆ)
+    $("dTotal").innerText = tot.toLocaleString();
+    $("dTrans").innerText = trans.toLocaleString();
+    $("dBarber").innerHTML = `${Math.floor(bEarn).toLocaleString()} <small>(สด: ${cash})</small>`;
+    $("dShop").innerText = Math.floor(sEarn).toLocaleString();
+    $("dCounts").innerText = `ลูกค้า: ${today.length} คน`;
+    $("dailyList").innerHTML = listHtml || "<center style='opacity:0.3; padding:20px'>ไม่มีข้อมูล</center>";
+
+    // --- ส่วนแสดงผล Badge (sH): วนลูปแสดงผลทุกอย่างที่นับได้ ---
+    let sH = "";
+    // ดึง "ตัดผม" ขึ้นมาโชว์ก่อนเพื่อน (ถ้ามี)
+    if (stats["ตัดผม"]) {
+        sH += `<span class="badge" style="background:#4338ca; color:white; padding:4px 12px; border-radius:15px; margin:3px; display:inline-block; font-size:12px; font-weight:600;">ตัดผม: ${stats["ตัดผม"]}</span>`;
+    }
+    // วนลูปโชว์บริการอื่นๆ ที่เหลือให้ครบ
+    for (let s in stats) {
+        if (s !== "ตัดผม") {
+            sH += `<span class="badge" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; padding:4px 12px; border-radius:15px; margin:3px; display:inline-block; font-size:11px;">${s}: ${stats[s]}</span>`;
+        }
+    }
+    $("dServiceStats").innerHTML = sH;
+
+    const b = $("settleBar");
+    if (tot === 0) { b.innerText = "🟦 ร้านจ่ายประกัน"; b.className = "status-bar status-blue"; }
+    else if (settle > 0) { b.innerText = `🟥 ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`; b.className = "status-bar status-red"; }
+    else if (settle < 0) { b.innerText = `🟦 ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; b.className = "status-bar status-indigo"; }
+    else { b.innerText = "✅ ยอดพอดี"; b.className = "status-bar status-green"; }
+}    
     function delRec(id) {
         if (confirm("ลบรายการนี้?")) {
             db = db.filter(r => r.id !== id);
