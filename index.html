@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.7.5.3</title>
+    <title>Barber Note Pro v.7.5.2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -270,17 +270,7 @@
         updateDateDisplay(today);
     };
 
-    function saveDB() {
-        localStorage.setItem("barber_db", JSON.stringify(db));
-        localStorage.setItem("barber_conf", JSON.stringify(conf)); // บันทึกค่าตั้งค่าแยกตามตัวแปร conf
-    }
-
-    function go(n) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        $(`p${n}`).classList.add('active');
-        $(`n${n}`).classList.add('active');
-        renderDay();
+    
     }
 
     // --- 1. ฟังก์ชันประกันรายได้ (แก้ไขปีกกาและตัวแปร) ---
@@ -437,26 +427,31 @@
             });
         }
 
-     // แก้ในส่วน listHtml ของ renderDay
-listHtml += `
-    <div class="history-row" style="background:#ffffff; padding:15px; border-radius:18px; margin-bottom:10px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1); border:1px solid #f1f5f9;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span><b style="color:#4338ca; font-size:15px;">${r.time}</b> | ${r.svcs.join('+')}</span>
-            <b style="font-size:16px; color:#1e293b;">฿${r.price}</b>
-        </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-            <span style="color:#64748b; font-size:13px; font-weight:600;">${r.hair || ''}</span>
-            <div style="display:flex; align-items:center; gap:15px;">
-                <span style="font-size:12px; font-weight:700; color:#475569;">${r.pay === 'Cash' ? '💵 เงินสด' : '📱 โอน'}</span>
-                
-                <i class="fab fa-line" style="color:#06c755; font-size:22px; cursor:pointer;" 
-                   onclick="window.location.href='https://line.me/R/msg/text/?รายการ: ${r.svcs.join('+')} ราคา: ${r.price} บ.'"></i>
-                
-                <i class="fas fa-trash-alt" style="color:#dc2626; font-size:18px; cursor:pointer;" onclick="delRec(${r.id})"></i>
+today.sort((a, b) => a.time.localeCompare(b.time)).forEach(r => {
+    tot += r.price;
+    r.pay === 'Trans' ? trans += r.price : cash += r.price;
+
+    listHtml += `
+        <div class="history-row" style="background:#ffffff; padding:15px; border-radius:18px; margin-bottom:10px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1); border:1px solid #f1f5f9; position:relative;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span><b style="color:#4338ca; font-size:15px;">${r.time}</b> | ${r.svcs.join('+')}</span>
+                <b style="font-size:16px; color:#1e293b;">฿${r.price}</b>
             </div>
-        </div>
-    </div>`;
-    });
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                <span style="color:#64748b; font-size:13px; font-weight:600;">${r.hair || ''}</span>
+                <div style="display:flex; align-items:center; gap:15px; position:relative; z-index:10;">
+                    <span style="font-size:12px; font-weight:700; color:#475569;">${r.pay === 'Cash' ? '💵 เงินสด' : '📱 โอน'}</span>
+                    
+                    <i class="fab fa-line" style="color:#06c755; font-size:20px; opacity:0.6;"></i>
+                    
+                    <div onclick="delRec(${r.id})" style="cursor:pointer; padding:5px; display:inline-block;">
+                        <i class="fas fa-trash-alt" style="color:#dc2626; font-size:20px;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+});
+
 
     // 💰 คำนวณตามจริง: bEarn = เงินที่ช่างต้องได้ | settle = เงินสดที่ต้องเคลียร์
     const bEarn = Math.max(tot * (conf.perc / 100), conf.guar);
@@ -535,7 +530,6 @@ function sendSummary() {
         alert("ไม่มีข้อมูลของวันนี้ครับพี่!");
         return;
     }
-
     let listText = `📋 รายการลูกค้า (${d})\n`;
     today.sort((a, b) => a.time.localeCompare(b.time)).forEach((r, idx) => {
         listText += `${idx + 1}. ${r.time} | ${r.svcs.join('+')} | ฿${r.price}\n`;
@@ -554,7 +548,6 @@ function sendSummary() {
             renderDay();
         }
     }
-
     function toggleAccHistory() {
         const w = $("accHistoryWrapper");
         w.style.display = w.style.display === "none" ? "block" : "none";
@@ -571,6 +564,11 @@ function sendSummary() {
         const msg = `💈 รายงานร้าน\nยอดรวม: ${$("dTotal").innerText}\nช่าง: ${$("dBarber").innerText}\nร้าน: ${$("dShop").innerText}`;
         window.open(`https://line.me/R/msg/text/?${encodeURIComponent(msg)}`);
     }
+   function saveDB() { localStorage.setItem("barber_db", JSON.stringify(db)); localStorage.setItem("barber_conf", JSON.stringify(conf)); }
+   function go(n) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); $(`p${n}`).classList.add('active'); $(`n${n}`).classList.add('active'); renderDay(); }
+   function delRec(id) { if (confirm("จะลบรายการนี้ใช่ไหมครับพี่?")) { db = db.filter(r => r.id !== id); saveDB(); renderDay(); if (typeof speak === "function") speak("ลบเรียบร้อย"); } }
+   function sendDailyListToLine() { const d = $("dateInp").value, today = db.filter(r => r.date === d); if (today.length === 0) return alert("ไม่มีข้อมูลของวันนี้ครับพี่!"); let listText = `📋 รายการลูกค้า (${d})\n`; today.sort((a, b) => a.time.localeCompare(b.time)).forEach((r, idx) => { listText += `${idx + 1}. ${r.time} | ${r.svcs.join('+')} | ฿${r.price}\n`; }); window.location.href = `https://line.me/R/msg/text/?${encodeURIComponent(listText)}`; }
+
 </script>
 </body>
 </html>
