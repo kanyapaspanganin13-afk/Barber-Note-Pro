@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.2.3.6</title>
+    <title>Barber Note Pro v.2.3.7</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
- <style>
+<style>
     :root { 
         --primary: #6366f1; 
         --accent: #0ea5e9; 
@@ -21,28 +21,28 @@
 
     * { box-sizing: border-box; font-family: 'Kanit', sans-serif; -webkit-tap-highlight-color: transparent; }
     
-    body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 100px; overflow-x: hidden; }
+    body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 90px; overflow-x: hidden; }
     
     .container { padding: 15px; max-width: 500px; margin: auto; }
 
-    /* 1. แก้ไขสัดส่วน Grid ให้ช่องว่างเหมาะสม */
+    /* ปรับ Grid ให้สมดุลและเพิ่มระยะห่างเพื่อใช้พื้นที่ด้านล่าง */
     .grid-3 { 
         display: grid; 
         grid-template-columns: 1fr 1fr 1fr; 
         gap: 10px; 
-        margin-bottom: 20px; 
+        margin-bottom: 25px; 
     }
     
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
 
-    /* 2. แก้ไขความสูงและตัวหนังสือของ input/select (วันที่และเวลา) */
+    /* แก้ไขช่อง input/select ให้สูงเท่ากัน 70px และตัวหนังสือใหญ่หนา */
     input, select { 
         width: 100%; 
-        height: 70px; /* บังคับความสูงให้เท่ากันทุกช่อง */
+        height: 70px; /* บังคับความสูงช่องวันที่และเวลาให้เท่ากัน */
         padding: 5px; 
         border: 1.5px solid var(--border); 
         border-radius: 15px; 
-        font-size: 20px; /* ขยายตัวหนังสือให้ใหญ่ตามต้องการ */
+        font-size: 20px; /* ขยายตัวอักษรให้ใหญ่ชัดเจน */
         font-weight: 800; 
         background: #f1f5f9; 
         outline: none; 
@@ -52,49 +52,43 @@
         justify-content: center;
     }
 
-    /* เน้นช่องวันที่ให้ชัดเจน */
-    input[type="text"], input[type="date"] {
-        font-size: 22px;
-    }
-
-    /* 3. ปรับขนาด Price Box ให้ใหญ่และสมดุล */
+    /* ปรับแต่งราคา (Price Box) ให้ใหญ่และเด่น */
     .price-box { 
         font-size: 80px; 
         font-weight: 800; 
         text-align: center; 
         color: #64748b; 
         padding: 20px; 
-        border: 2px solid var(--primary); 
+        border: 2.5px solid var(--primary); 
         border-radius: 25px; 
-        margin-bottom: 25px; 
+        margin-bottom: 30px; 
         width: 100%; 
         background: #fff; 
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 130px; 
+        height: 140px; 
     }
 
-    /* 4. แก้ไขปุ่มบันทึกและปุ่มจ่ายเงิน */
+    /* ปรับปุ่มหลักๆ ให้ใหญ่ขึ้น */
     .btn { border: none; padding: 12px; border-radius: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; transition: 0.2s; }
-    
-    .btn-pay { background: #e2e8f0; height: 65px; font-size: 18px; }
-    .btn-main { background: var(--primary); color: white; width: 100%; height: 80px; border-radius: 20px; font-size: 32px; }
+    .btn-pay { background: #e2e8f0; height: 70px; font-size: 18px; }
+    .btn-main { background: var(--primary); color: white; width: 100%; height: 85px; border-radius: 20px; font-size: 35px; }
 
-    /* 5. แก้ไข Navbar ด้านล่างที่ซ้อนกัน (จุดที่วงกลมสีแดงไว้) */
+    /* แก้ไข Navbar ด้านล่างที่แสดงผลผิดพลาด */
     .nav-bar { 
         position: fixed; 
         bottom: 0; 
         left: 0; 
         right: 0; 
         background: #fff; 
-        display: flex; /* บังคับให้เรียงแนวนอน */
-        flex-direction: row; /* เรียงจากซ้ายไปขวา */
+        display: flex !important; /* บังคับให้เรียงแนวนอน */
+        flex-direction: row !important; 
         justify-content: space-around; 
         padding: 10px 0; 
         border-top: 1px solid var(--border); 
         z-index: 1000;
-        height: 75px;
+        height: 80px;
     }
     
     .nav-item { 
@@ -107,17 +101,15 @@
         align-items: center; 
         justify-content: center;
         gap: 4px; 
-        flex: 1; /* ให้แต่ละเมนูมีพื้นที่เท่าๆ กัน */
+        flex: 1;
     }
 
     .nav-item.active { color: var(--primary); }
     .nav-item i { font-size: 24px; }
 
-    /* ส่วนอื่นๆ */
-    .icon-card { border-radius: 15px; padding: 12px 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    .icon-card span:first-child { font-size: 20px; }
-    .icon-card span:last-child { font-size: 11px; font-weight: 800; }
-    .page { display: none; } .page.active { display: block; }
+    /* จัดระเบียบหน้า Page (ป้องกันการซ้อนทับ) */
+    .page { display: none; } 
+    .page.active { display: block; }
 </style>
 </head>
 <body>
