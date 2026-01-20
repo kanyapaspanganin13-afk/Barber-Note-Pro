@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.5.2.4</title>
+    <title>Barber Note Pro v.5.3.7</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -137,21 +137,20 @@ input, select {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* พื้นหลังดำโปร่งแสง */
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85); /* พื้นหลังดำโปร่งแสง */
     display: none; /* ซ่อนไว้ก่อน */
-    z-index: 10001; /* ต้องสูงกว่า Navbar */
+    z-index: 999999; /* ต้องสูงกว่า Navbar */
     align-items: center;
     justify-content: center;
 }
-
 .modal-content {
     background: #fff;
     width: 90%;
     max-width: 400px;
-    border-radius: 20px;
-    padding: 20px;
+    border-radius: 25px;
+    padding: 25px;
     max-height: 85vh; /* ป้องกันยาวเกินหน้าจอ */
     overflow-y: auto; /* เลื่อนขึ้นลงได้ถ้าเนื้อหาเยอะ */
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
@@ -261,7 +260,6 @@ input, select {
             <div>
                 <label style="font-size:11px; font-weight:600;">ประกัน/วัน</label> <input type="number" id="setGuar" placeholder="0"></div>
         </div>
-        
         <div style="margin-top:10px">
             <label style="font-size:11px; font-weight:600;">ธีมแอป</label>
             <select id="setTheme">
@@ -289,6 +287,7 @@ input, select {
 </div>
 
 <script>
+    // ดึงข้อมูลเดิมจาก LocalStorage (รักษาชื่อตัวแปรเดิมไว้)
     let db = JSON.parse(localStorage.getItem("barber_db")) || [];
     let conf = JSON.parse(localStorage.getItem("barber_conf")) || { shop: "Barber Shop", perc: 50, guar: 0 };
     let account = JSON.parse(localStorage.getItem("barber_account")) || { balance: 0, logs: [] };
@@ -298,11 +297,17 @@ input, select {
 
     window.onload = () => {
         const today = new Date().toISOString().split('T')[0];
-        $("dateInp").value = today;
-        $("accDate").value = today;
-        $("histDate").value = today;
+        if($("dateInp")) $("dateInp").value = today;
+        if($("accDate")) $("accDate").value = today;
+        if($("histDate")) $("histDate").value = today;
+        if($("shopNameDisp")) $("shopNameDisp").innerText = conf.shop; // ใช้ conf.shop ตามที่ประกาศไว้
         updateDateDisplay(today);
     };
+
+    function saveDB() {
+        localStorage.setItem("barber_db", JSON.stringify(db));
+        localStorage.setItem("barber_conf", JSON.stringify(conf)); // บันทึกค่าตั้งค่าแยกตามตัวแปร conf
+    }
 
     function go(n) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -311,74 +316,81 @@ input, select {
         $(`n${n}`).classList.add('active');
         renderDay();
     }
+
+    // --- 1. ฟังก์ชันประกันรายได้ (แก้ไขปีกกาและตัวแปร) ---
     function handleInsurance() {
-    const today = document.getElementById('dateInp').value;
-    const guaranteeAmount = parseInt(db.settings.guar) || 0; // ดึงค่าประกันต่อวันจากที่ตั้งค่าไว้
+        const today = $("dateInp").value || new Date().toISOString().split('T')[0];
+        const guaranteeAmount = parseInt(conf.guar) || 0;
 
-    if (guaranteeAmount <= 0) {
-        alert("⚠️ กรุณาตั้งค่ายอดประกันรายได้ในเมนู 'ตั้งค่าระบบ' ก่อน");
-        return;
+        if (guaranteeAmount <= 0) {
+            alert("⚠️ กรุณาตั้งค่ายอดประกันรายได้ในเมนู 'ตั้งค่าระบบ' ก่อน");
+            return;
+        }
+
+        const todayRecords = db.filter(r => r.date === today);
+        const totalBarberShare = todayRecords.reduce((sum, r) => {
+            // คำนวณส่วนแบ่งช่างต่อรายการตาม % ที่ตั้งไว้
+            const share = (r.price * (conf.perc / 100));
+            return sum + share;
+        }, 0);
+
+        if (totalBarberShare < guaranteeAmount) {
+            const diff = guaranteeAmount - totalBarberShare;
+            alert(`🛡️ ประกันรายได้วันที่ ${today}\n------------------------\nยอดช่างทำได้: ${Math.floor(totalBarberShare)} บาท\nประกันไว้ที่: ${guaranteeAmount} บาท\n\n✅ ร้านต้องจ่ายเติมให้ช่าง: ${Math.floor(diff)} บาท`);
+        } else {
+            alert(`🛡️ ประกันรายได้วันที่ ${today}\n------------------------\nยอดช่างทำได้: ${Math.floor(totalBarberShare)} บาท\n(เกินยอดประกัน ${guaranteeAmount} บาทแล้ว 🎉)`);
+        }
+    } // <--- ปิดปีกกาให้ถูกต้องตรงนี้
+
+    // --- 2. ฟังก์ชันบันทึกวันหยุด ---
+    function handleHoliday() {
+        const today = $("dateInp").value;
+        if (!today) return alert("กรุณาเลือกวันที่ก่อน");
+
+        if (confirm(`ยืนยันการบันทึกให้วันที่ ${today} เป็น "วันหยุด"?`)) {
+            const holidayRecord = {
+                id: Date.now(),
+                date: today,
+                time: "00:00",
+                svcs: ["🏖️ วันหยุด"],
+                price: 0,
+                pay: "N/A"
+            };
+            db.push(holidayRecord);
+            saveDB();
+            alert("บันทึกวันหยุดเรียบร้อย");
+            renderDay();
+        }
     }
-    // กรองรายการเฉพาะของวันที่เลือก
-    const todayRecords = db.records.filter(r => r.date === today);
-    // รวมยอดส่วนแบ่งของช่าง (Barber Share) ทั้งหมดของวันนี้
-    const totalBarberShare = todayRecords.reduce((sum, r) => sum + (r.barberShare || 0), 0);
 
-    if (totalBarberShare < guaranteeAmount) {
-        const diff = guaranteeAmount - totalBarberShare;
-        alert(`🛡️ ประกันรายได้วันที่ ${today}\n------------------------\nยอดช่างทำได้: ${totalBarberShare} บาท\nประกันไว้ที่: ${guaranteeAmount} บาท\n\n✅ ร้านต้องจ่ายเติมให้ช่าง: ${diff} บาท`);
-    } else {
-        alert(`🛡️ ประกันรายได้วันที่ ${today}\n------------------------\nยอดช่างทำได้: ${totalBarberShare} บาท\n(เกินยอดประกัน ${guaranteeAmount} บาทแล้ว 🎉)`);
+    // --- 3. ฟังก์ชันตั้งค่าระบบ (เปลี่ยนไปใช้ตัวแปร conf ให้ตรงกัน) ---
+    function openSettings() {
+        const modal = $("modalSet");
+        if (modal) {
+            $("setShop").value = conf.shop || "";
+            $("setPerc").value = conf.perc || 50;
+            $("setGuar").value = conf.guar || 0;
+            modal.style.display = 'flex'; 
+        }
     }
-}
 
-// --- 2. ฟังก์ชันบันทึกวันหยุด ---
-function handleHoliday() {
-    const today = document.getElementById('dateInp').value;
-    if (!today) return alert("กรุณาเลือกวันที่ก่อน");
+    function saveSettings() {
+        conf.shop = $("setShop").value || "Barber Shop";
+        conf.perc = parseInt($("setPerc").value) || 50;
+        conf.guar = parseInt($("setGuar").value) || 0;
 
-    if (confirm(`ยืนยันการบันทึกให้วันที่ ${today} เป็น "วันหยุด"?`)) {
-        const holidayRecord = {
-            id: Date.now(),
-            date: today,
-            style: "🏖️ วันหยุด",
-            price: 0,
-            method: "N/A",
-            barberShare: 0,
-            shopShare: 0
-        };
-        db.records.push(holidayRecord);
-        saveDB();
-        alert("บันทึกวันหยุดเรียบร้อย");
-        updateReportPage(); // อัปเดตตารางรายงานทันที
+        saveDB(); 
+        $("shopNameDisp").innerText = conf.shop;
+        alert("✅ บันทึกการตั้งค่าเรียบร้อย");
+        closeSettings(); 
+        renderDay(); // สั่งคำนวณใหม่ทันทีหลังเปลี่ยนค่า
     }
-}
-    // ฟังก์ชันสำหรับบันทึกค่าจากฟอร์มตั้งค่า
-function saveSettings() {
-    db.settings.shopName = document.getElementById('setShop').value || "Barber Shop";
-    db.settings.perc = parseInt(document.getElementById('setPerc').value) || 50;
-    db.settings.guar = parseInt(document.getElementById('setGuar').value) || 0;
 
-    saveDB(); // บันทึกลง LocalStorage
-    document.getElementById('shopNameDisp').innerText = db.settings.shopName;
-    
-    alert("✅ บันทึกการตั้งค่าเรียบร้อย");
-    closeSettings(); // ปิดหน้าต่างตั้งค่า
-}
-
-// ฟังก์ชันเปิดหน้าตั้งค่า (ใส่ค่าปัจจุบันลงในช่อง)
-function openSettings() {
-    document.getElementById('setShop').value = db.settings.shopName;
-    document.getElementById('setPerc').value = db.settings.perc;
-    document.getElementById('setGuar').value = db.settings.guar;
-    
-    // แสดงส่วนหน้าต่างตั้งค่าระบบ (เช่น เปลี่ยน class ให้ active หรือ display: block)
-    document.getElementById('modalSet').style.display = 'block'; 
-}
     function closeSettings() {
-        $("modalSet").style.display = "none";
+        if ($("modalSet")) $("modalSet").style.display = 'none';
     }
 
+    // --- ส่วนที่เหลือ (ฟังก์ชันเดิมของคุณที่ถูกต้องอยู่แล้ว) ---
 
     function clearAllData() {
         if (confirm("คุณแน่ใจหรือไม่ที่จะล้างข้อมูลทั้งหมด? ข้อมูลจะหายถาวร!")) {
@@ -386,6 +398,7 @@ function openSettings() {
             location.reload();
         }
     }
+
     function updateDateDisplay(val) {
         const d = new Date(val);
         $("dateDisplay").innerText = d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
@@ -410,7 +423,7 @@ function openSettings() {
             pay: payMethod
         };
         db.push(r);
-        localStorage.setItem("barber_db", JSON.stringify(db));
+        saveDB();
         $("priceInp").value = "";
         selectPay("");
         renderDay();
@@ -419,18 +432,19 @@ function openSettings() {
 
     function renderDay() {
         const d = $("dateInp").value;
-        const today = db.filter(r => r.date === d);
+        const todayRecords = db.filter(r => r.date === d);
         let tot = 0, trans = 0, cash = 0, listHtml = "";
 
-        today.forEach(r => {
+        todayRecords.forEach(r => {
             tot += r.price;
             r.pay === 'Trans' ? trans += r.price : cash += r.price;
-            listHtml += `<div class="history-row">
+            listHtml += `<div class="history-row" style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;">
                 <span><b>${r.time}</b> | ${r.svcs.join('+')}</span>
                 <span>฿${r.price} <i class="fas fa-trash" style="color:red; margin-left:10px" onclick="delRec(${r.id})"></i></span>
             </div>`;
         });
 
+        // คำนวณส่วนแบ่งตามค่า conf
         const bEarn = Math.max(tot * (conf.perc / 100), conf.guar);
         const sEarn = tot - bEarn;
         const settle = cash - bEarn;
@@ -439,13 +453,13 @@ function openSettings() {
         if($("dTrans")) $("dTrans").innerText = trans.toLocaleString();
         if($("dBarber")) $("dBarber").innerText = Math.floor(bEarn).toLocaleString();
         if($("dShop")) $("dShop").innerText = Math.floor(sEarn).toLocaleString();
-        if($("dCounts")) $("dCounts").innerText = `ลูกค้า: ${today.length} คน`;
+        if($("dCounts")) $("dCounts").innerText = `ลูกค้า: ${todayRecords.length} คน`;
         $("dailyList").innerHTML = listHtml || "<center style='opacity:0.3;padding:20px'>ไม่มีข้อมูล</center>";
 
         const net = (account.balance || 0) + settle;
         $("accOldVal").innerText = `฿${(account.balance || 0).toLocaleString()}`;
         $("accTodayVal").innerText = `฿${Math.floor(settle).toLocaleString()}`;
-        $("accNet").innerText = Math.abs(net).toLocaleString();
+        $("accNet").innerText = Math.abs(Math.floor(net)).toLocaleString();
         $("accLight").style.background = net > 0 ? "red" : net < 0 ? "blue" : "green";
         $("accStatus").innerText = net > 0 ? "🚩 ช่างคืนเงินร้าน" : net < 0 ? "🚩 ร้านคืนช่าง" : "✅ ยอดลงตัว";
         $("accStatus").className = "status-bar " + (net > 0 ? "status-red" : net < 0 ? "status-indigo" : "status-green");
@@ -454,13 +468,14 @@ function openSettings() {
     function delRec(id) {
         if (confirm("ลบรายการนี้?")) {
             db = db.filter(r => r.id !== id);
-            localStorage.setItem("barber_db", JSON.stringify(db));
+            saveDB();
             renderDay();
         }
     }
 
     function clearAccount() {
-        const net = (account.balance || 0) + (Number($("accTodayVal").innerText.replace('฿','')) || 0);
+        const currentTodaySettle = Number($("accTodayVal").innerText.replace('฿','').replace(',','')) || 0;
+        const net = (account.balance || 0) + currentTodaySettle;
         if (confirm(`ยืนยันเคลียร์เงิน ฿${net} ?`)) {
             account.logs.unshift({ date: $("accDate").value, amount: net, note: $("accNote").value });
             account.balance = 0; 
@@ -473,13 +488,13 @@ function openSettings() {
     function toggleAccHistory() {
         const w = $("accHistoryWrapper");
         w.style.display = w.style.display === "none" ? "block" : "none";
-        $("accHistory").innerHTML = account.logs.map(l => `<div>${l.date}: ฿${l.amount} (${l.note})</div>`).join('') || "ไม่มีประวัติ";
+        $("accHistory").innerHTML = account.logs.map(l => `<div style="padding:5px; border-bottom:1px solid #eee;">${l.date}: ฿${l.amount} (${l.note})</div>`).join('') || "ไม่มีประวัติ";
     }
 
     function loadHistDaily() {
         const d = $("histDate").value;
         const data = db.filter(r => r.date === d);
-        $("histDailyArea").innerHTML = data.map(r => `<div class="history-row">${r.time} - ${r.svcs.join('+')} <b>฿${r.price}</b></div>`).join('') || "ไม่พบข้อมูล";
+        $("histDailyArea").innerHTML = data.map(r => `<div class="history-row" style="padding:8px; border-bottom:1px solid #eee;">${r.time} - ${r.svcs.join('+')} <b>฿${r.price}</b></div>`).join('') || "ไม่พบข้อมูล";
     }
     
     function shareLine() {
