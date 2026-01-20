@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.3.3</title>
+    <title>Barber Note Pro v.4.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -104,7 +104,7 @@
 </style>
     </head>
     <body>
-  
+<div id="brightnessOverlay"></div>
 <div class="container">
     <h2 id="shopNameDisp" style="text-align:center; color:var(--primary); margin: 10px 0;">Barber Shop</h2>
     <div id="p1" class="page active"> 
@@ -136,7 +136,14 @@
         <select id="extra2" style="height: 50px;"><option value="">บริการ 2</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option><option>ย้อมผม</option></select>
         </div>
         <input type="number" id="priceInp" class="price-box" placeholder="0" inputmode="numeric">
-    <div id="p2" class="page" style="display:none; padding: 15px;">
+    <div class="grid-2">
+            <button id="btnCash" class="btn btn-pay" onclick="selectPay('Cash')">💵 เงินสด</button>
+            <button id="btnTrans" class="btn btn-pay" onclick="selectPay('Trans')">📱 โอน</button>
+        </div>
+        <button class="btn btn-main" onclick="handleSave()">บันทึกข้อมูล</button>
+    </div>
+    <div id="p2" class="page">
+        <div id="p2" class="page" style="display:none; padding: 15px;">
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
         <div style="background:white; padding:15px; border-radius:20px; text-align:center; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
             <small style="font-weight:800; color:#64748b;">ยอดรวมวันนี้</small>
