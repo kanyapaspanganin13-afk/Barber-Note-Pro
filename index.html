@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.1</title>
+    <title>Barber Note Pro v.1.2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -65,55 +65,19 @@
    .modal {position: fixed;top: 0;left: 0;width: 100vw;height: 100vh;background: rgba(0, 0, 0, 0.85); display: none; z-index: 999999; align-items:center;justify-content: center;
     }
     .modal-content {background: #fff;width: 90%;max-width: 400px;border-radius: 25px;padding: 25px;max-height: 85vh;overflow-y: auto;box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-.summary-container {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-bottom: 15px;
-    }
-    .card-main {
-        background: white;
-        padding: 15px;
-        border-radius: 20px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        text-align: center;
-    }
-    .card-sub {
-        background: white;
-        padding: 12px;
-        border-radius: 20px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-    .stat-row {
-        display: flex;
-        justify-content: space-between;
-        font-size: 14px;
-        font-weight: 600;
-    }
-    /*จัดระเบียบรายการประวัติแต่ละแถว */
-.history-item {
-    background: white;
-    padding: 12px 15px;
-    border-radius: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    border-left: 4px solid var(--primary);
-}
+    .summary-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+    .card-main, .card-sub { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .stat-row { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; margin: 3px 0; }
+    .status-bar { padding: 12px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 14px; }
+    .btn-line { background: #06C755; color: white; border: none; padding: 5px 15px; border-radius: 20px; font-size: 11px; }
 
-/* แถบสถานะให้ดูนูนขึ้นมา */
-.status-bar {
-    padding: 12px;
-    border-radius: 12px;
-    font-size: 13px;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-}
-</style>
+    /* แก้ไขรายการประวัติไม่ให้ซ้อนทับ */
+    .history-item {
+    background: white; padding: 12px; border-radius: 15px; margin-bottom: 8px;
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 5px solid var(--primary);
+    }
+    </style>
     </head>
     <body>
   
@@ -153,42 +117,30 @@
     </div>
         <button id="mainSaveBtn" class="btn btn-main" onclick="handleSave()"><i class="fas fa-save"></i></button>
     </div>
-  <div id="p2" class="page">
+<div id="p2" class="page" style="display:none; padding: 15px;">
     <div class="summary-container">
         <div class="card-main">
-            <label style="font-size: 11px; color: #64748b; font-weight: 800; uppercase">ยอดรวมวันนี้</label>
-            <div id="dTotal" style="font-size: 32px; font-weight: 900; color: var(--primary); line-height: 1;">0</div>
-            <div id="dCounts" style="font-size: 12px; font-weight: 700; color: #94a3b8; margin-top: 5px;">ลูกค้า 0 คน</div>
-            <div id="dServiceStats" style="margin-top: 10px; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px;"></div>
-        </div>
+            <small style="font-weight:800; color:#64748b;">ยอดรวมวันนี้</small>
+            <div id="dTotal" style="font-size:32px; font-weight:900; color:var(--primary);">0</div>
+            <div id="dCounts" style="font-size:12px; color:#94a3b8;">ลูกค้า 0 คน</div>
+            <div id="dServiceStats"></div> </div>
         
         <div class="card-sub">
-            <div class="stat-row">
-                <span style="color: #64748b;">📱 โอน</span>
-                <span id="dTrans" style="color: #0ea5e9; font-weight: 800;">0</span>
-            </div>
-            <div class="stat-row">
-                <span style="color: #64748b;">🤵 ช่าง</span>
-                <span id="dBarber" style="color: #6366f1; font-weight: 800;">0</span>
-            </div>
-            <div style="border-top: 1px dashed #e2e8f0; margin: 4px 0;"></div>
-            <div class="stat-row">
-                <span style="color: #64748b;">🏠 ร้าน</span>
-                <span id="dShop" style="color: #f43f5e; font-weight: 800;">0</span>
-            </div>
+            <div class="stat-row"><span>📱 โอน:</span> <span id="dTrans">0</span></div>
+            <div class="stat-row"><span>🤵 ช่าง:</span> <span id="dBarber">0</span></div>
+            <hr style="border:0; border-top:1px dashed #eee; margin:5px 0;">
+            <div class="stat-row"><span>🏠 ร้าน:</span> <span id="dShop">0</span></div>
         </div>
     </div>
 
-    <div id="settleBar" class="status-bar" style="margin-bottom: 15px; text-align: center; font-weight: 800;">
-        ยินดีต้อนรับ
-    </div>
+    <div id="settleBar" class="status-bar">รอการคำนวณ...</div>
 
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: #1e293b;">📋 รายการวันนี้</h3>
-        <button onclick="shareLine()" style="background: #06C755; color: white; border: none; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 5px;">
-            <i class="fab fa-line"></i> ส่ง LINE
-        </button>
+    <div style="display:flex; justify-content:space-between; margin: 15px 0 10px;">
+        <b style="font-size:15px;">📋 รายการวันนี้</b>
+        <button onclick="shareLine()" class="btn-line">ส่ง LINE</button>
     </div>
+    <div id="dailyList"></div>
+</div>
     
     <div id="dailyList" style="display: flex; flex-direction: column; gap: 8px;"></div>
 </div>
@@ -426,77 +378,66 @@
         renderDay();
         alert("บันทึกสำเร็จ ✅");
     }
-
-   function renderDay() {
-    const d = $("dateInp").value;
-    const todayRecords = db.filter(r => r.date === d);
+        function renderDay() {
+    const d = document.getElementById("dateInp").value;
+    const today = db.filter(r => r.date === d);
     let tot = 0, trans = 0, cash = 0, stats = {}, listHtml = "";
 
-    // เรียงเวลาและนับสถิติ
-    todayRecords.sort((a, b) => a.time.localeCompare(b.time)).forEach(r => {
+    today.sort((a,b) => a.time.localeCompare(b.time)).forEach(r => {
         tot += r.price;
         r.pay === 'Trans' ? trans += r.price : cash += r.price;
 
-        // --- ลอจิกนับสถิติบริการ ---
-        const isCutting = r.svcs.includes("ตัดผม") || r.svcs.includes("เด็ก") || (r.hair && r.hair.trim() !== "");
-        if (isCutting) stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
-        
-        r.svcs.forEach(s => {
-            if (s === "เด็ก") stats["เด็ก"] = (stats["เด็ก"] || 0) + 1;
-            else if (s !== "ตัดผม" && s !== "") stats[s] = (stats[s] || 0) + 1;
-        });
+        // นับสถิติ
+        r.svcs.forEach(s => { if(s!=='') stats[s] = (stats[s] || 0) + 1; });
 
-        // สร้างรายการประวัติ (Style ใหม่)
         listHtml += `
             <div class="history-item">
                 <div style="flex:1">
-                    <div style="font-weight: 800; font-size: 14px;">${r.time} น. | ${r.svcs.join('+')}</div>
-                    <div style="font-size: 12px; color: #94a3b8;">${r.pay==='Cash'?'💵 เงินสด':'📱 โอนเงิน'}</div>
+                    <div style="font-weight:800; font-size:14px;">${r.time} | ${r.svcs.join('+')}</div>
+                    <div style="font-size:11px; color:#94a3b8;">${r.pay==='Cash'?'💵 สด':'📱 โอน'} ${r.hair||''}</div>
                 </div>
-                <div style="text-align: right;">
-                    <div style="font-weight: 800; color: var(--primary);">฿${r.price.toLocaleString()}</div>
-                    <i class="fas fa-trash-alt" style="color: #cbd5e1; font-size: 14px;" onclick="delRec(${r.id})"></i>
+                <div style="text-align:right">
+                    <div style="font-weight:900; color:var(--primary);">฿${r.price}</div>
+                    <i class="fas fa-trash" style="color:#fca5a5; font-size:12px;" onclick="delRec(${r.id})"></i>
                 </div>
             </div>`;
     });
 
-    // คำนวณส่วนแบ่งและประกันรายได้
-    const bEarn = Math.max(tot * (conf.perc / 100), conf.guar);
-    const sEarn = tot - bEarn;
+    // --- จุดแก้คำนวณ: ถ้าไม่มีงาน ให้ยอดเป็น 0 ไม่ให้ติดลบ ---
+    const bEarn = (tot > 0) ? Math.max(tot * (conf.perc / 100), conf.guar) : 0;
+    const sEarn = (tot > 0) ? tot - bEarn : 0;
     const settle = cash - bEarn;
 
-    // อัปเดตยอดตัวเลข
-    $("dTotal").innerText = tot.toLocaleString();
-    $("dTrans").innerText = trans.toLocaleString();
-    $("dBarber").innerHTML = `${Math.floor(bEarn).toLocaleString()} <small style="font-size:10px; opacity:0.6">(สด:${cash})</small>`;
-    $("dShop").innerText = Math.floor(sEarn).toLocaleString();
-    $("dCounts").innerText = `ลูกค้า: ${todayRecords.length} คน`;
-    $("dailyList").innerHTML = listHtml || `<div style="text-align:center; padding:40px; color:#cbd5e1; font-weight:700;">( ยังไม่มีข้อมูล )</div>`;
+    // ใส่ข้อมูลลงหน้าจอ
+    document.getElementById("dTotal").innerText = tot.toLocaleString();
+    document.getElementById("dTrans").innerText = trans.toLocaleString();
+    document.getElementById("dBarber").innerHTML = `${Math.floor(bEarn).toLocaleString()} <small style="font-size:10px; opacity:0.5">(สด:${cash})</small>`;
+    document.getElementById("dShop").innerText = Math.floor(sEarn).toLocaleString();
+    document.getElementById("dCounts").innerText = `ลูกค้า: ${today.length} คน`;
+    document.getElementById("dailyList").innerHTML = listHtml || "<center style='padding:20px; opacity:0.3;'>ไม่มีข้อมูล</center>";
 
-    // อัปเดต Badge สถิติ
+    // แสดงสถิติ Badge
     let sH = "";
-    if (stats["ตัดผม"]) sH += `<span class="badge" style="background:var(--primary); color:white;">ตัดผม: ${stats["ตัดผม"]}</span>`;
-    for (let s in stats) {
-        if (s !== "ตัดผม") sH += `<span class="badge">${s}: ${stats[s]}</span>`;
-    }
-    $("dServiceStats").innerHTML = sH;
+    for(let s in stats) sH += `<span class="badge" style="background:#f1f5f9; padding:2px 8px; border-radius:10px; font-size:10px; margin:2px;">${s}:${stats[s]}</span>`;
+    document.getElementById("dServiceStats").innerHTML = sH;
 
-    // --- อัปเดตแถบสถานะ (Settle Bar) ---
-    const b = $("settleBar");
+    // แจ้งสถานะแถบสี
+    const b = document.getElementById("settleBar");
     if (tot === 0) {
-        b.innerText = `🟦 ร้านจ่ายประกันรายได้ ฿${conf.guar.toLocaleString()}`;
-        b.className = "status-bar status-blue";
+        b.innerText = `🟦 ร้านจ่ายประกัน ฿${conf.guar}`;
+        b.style.background = "#dbeafe"; b.style.color = "#1e40af";
     } else if (settle > 0) {
-        b.innerText = `🟥 ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`;
-        b.className = "status-bar status-red";
+        b.innerText = `🟥 ช่างคืนร้าน ฿${Math.floor(settle)}`;
+        b.style.background = "#fee2e2"; b.style.color = "#b91c1c";
     } else if (settle < 0) {
-        b.innerText = `🟦 ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`;
-        b.className = "status-bar status-indigo";
+        b.innerText = `🟦 ร้านคืนช่าง ฿${Math.floor(Math.abs(settle))}`;
+        b.style.background = "#e0e7ff"; b.style.color = "#4338ca";
     } else {
         b.innerText = "✅ ยอดลงตัวพอดี";
-        b.className = "status-bar status-green";
+        b.style.background = "#dcfce7"; b.style.color = "#15803d";
     }
 }
+       
     function delRec(id) {
         if (confirm("ลบรายการนี้?")) {
             db = db.filter(r => r.id !== id);
