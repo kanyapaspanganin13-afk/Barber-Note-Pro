@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.5.13</title>
+    <title>Barber Note Pro v.5.23</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -13,15 +13,15 @@
     }
     * { box-sizing: border-box; font-family: 'Kanit', sans-serif; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 90px; overflow-x: hidden; }
-    .container { padding: 15px; max-width: 500px; margin: auto; }
+    .container { padding: 10px; max-width: 500px; margin: auto; }
     /* บังคับให้แถว 3 ช่องกว้างเท่ากันเป๊ะ */
 .grid-3 {
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
-    gap: 8px !important;
-    margin-bottom: 15px !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
 }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
     .icon-card { 
         position: relative; 
         border-radius: 15px; 
@@ -37,14 +37,14 @@
         background: #fff;
     }
     .icon-card span:first-child { font-size: 22px; }
-    .icon-card span:last-child { font-size: 11px; font-weight: 800; }
+    .icon-card span:last-child { font-size: 13px; font-weight: 700; }
 
    /* ปรับความสูงช่อง input/select ให้สมดุล (แก้ปัญหาช่องสูงต่ำไม่เท่ากัน) */
 input, select {
     width: 100%;
-    height: 55px !important; /* ปรับค่าความสูงให้เท่ากันหมดทุกช่อง */
-    border-radius: 12px !important;
-    font-size: 16px !important;
+    height: 68px !important; /* ปรับค่าความสูงให้เท่ากันหมดทุกช่อง */
+    border-radius: 14px !important;
+    font-size: 18px !important;
     font-weight: 600;
     text-align: center;
     border: 1.5px solid var(--border);
