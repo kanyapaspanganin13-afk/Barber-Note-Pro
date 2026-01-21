@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.7.1</title>
+    <title>Barber Note Pro v.7.2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -317,7 +317,20 @@ function handleInsurance() {
         renderDay();
     }
 }
-
+function changeBrightness(val) {
+    const overlay = document.getElementById('brightnessOverlay');
+    const body = document.body;
+    
+    overlay.style.opacity = val;
+    
+    if (parseFloat(val) > 0) {
+        // ถ้าหรี่ไฟ ให้ดึงแผ่นดำขึ้นมาทับปุ่ม (z-index 999999 จะทำงาน)
+        body.classList.add('show-overlay');
+    } else {
+        // ถ้าสว่างสุด ให้ถีบแผ่นดำลงไปใต้ดิน (z-index -1 จะทำงาน)
+        body.classList.remove('show-overlay');
+    }
+}
     // --- 3. ฟังก์ชันตั้งค่าระบบ (เปลี่ยนไปใช้ตัวแปร conf ให้ตรงกัน) ---
     function openSettings() {
         const modal = $("modalSet");
