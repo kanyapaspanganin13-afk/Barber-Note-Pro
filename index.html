@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.7.7</title>
+    <title>Barber Note Pro v.7.1</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -13,18 +13,25 @@
     }
     * { box-sizing: border-box; font-family: 'Kanit', sans-serif; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 90px; overflow-x: hidden; }
-    #brightnessOverlay {
+   #brightnessOverlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
     background: black;
-    z-index: 999999;
     opacity: 0;
-    pointer-events: none !important; /* บังคับให้กดทะลุได้แน่นอน */
-    visibility: hidden; /* เพิ่มตัวนี้เพื่อให้มันหายไปจริงๆ ตอนไม่ได้ใช้ */
-    transition: opacity 0.3s, visibility 0.3s;
+    /* 1. ตอนปกติ: มึงลงไปนอนอยู่ใต้ดิน ห้ามโผล่มาบังนิ้วเด็ดขาด */
+    z-index: -1 !important; 
+    /* 2. ตอนปกติ: มึงห้ามรับแรงกด นิ้วจิ้มทะลุไปหาปุ่มได้เลย */
+    pointer-events: none !important; 
+    /* 3. ตอนปกติ: มึงไม่ต้องแสดงตัวตน */
+    display: none; 
+}
+
+/* 4. เมื่อมีการสั่งหรี่ไฟ (ผ่าน JS) ให้มันโผล่มาบังหน้าจอเฉพาะตอนนั้น */
+.show-overlay #brightnessOverlay {
+    display: block !important;
+    z-index: 999999 !important;
+    pointer-events: auto !important;
 }
    
     body.deep-navy { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --border: #334155; }
