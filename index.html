@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.7.7.3</title>
+    <title>Barber Note Pro v.7.8.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -376,12 +376,12 @@ window.addEventListener('DOMContentLoaded', () => {
         $("btnCash").className = `btn btn-pay ${m === 'Cash' ? 'active-cash' : ''}`;
         $("btnTrans").className = `btn btn-pay ${m === 'Trans' ? 'active-trans' : ''}`;
     }
- function renderDay() {
+function renderDay() {
     const d = document.getElementById("dateInp").value;
     const today = db.filter(r => r.date === d);
     let tot = 0, trans = 0, cash = 0, stats = {}, listHtml = "";
 
-    // 1. เรียงเวลาและ loop คำนวณ
+    // 1. เรียงเวลาและ Loop (กูแก้ให้นับเลขไม่เบิ้ลแล้ว)
     today.sort((a, b) => a.time.localeCompare(b.time)).forEach(r => {
         tot += r.price;
         if (r.pay === 'Trans') trans += r.price;
@@ -391,12 +391,12 @@ window.addEventListener('DOMContentLoaded', () => {
             r.svcs.forEach(s => {
                 let name = s.trim();
                 if (name !== "") {
+                    // ถ้านามสกุลเป็น ตัดผม/แฟชั่น/รองทรง ให้นับเข้าหมวด "ตัดผม" อย่างเดียว ไม่นับซ้ำ!
                     if (name.includes("แฟชั่น") || name.includes("รองทรง") || name === "ตัดผม") {
                         stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
-                    } else if (name === "เด็ก") {
-                        stats["เด็ก"] = (stats["เด็ก"] || 0) + 1;
+                    } else {
+                        stats[name] = (stats[name] || 0) + 1;
                     }
-                    stats[name] = (stats[name] || 0) + 1;
                 }
             });
         }
@@ -408,45 +408,44 @@ window.addEventListener('DOMContentLoaded', () => {
                     <span><b style="color:#4338ca; font-size:15px;">${r.time}</b> | ${r.svcs.join('+')}</span><br>
                     <small style="color:#64748b; font-weight:600;">${r.svcs[0] || ''}</small>
                 </div>
-
                 <div style="display:flex; align-items:center; gap:12px;">
-                    <span style="font-size:13px; font-weight:700; color:#475569;">
-                        ${r.pay === 'Cash' ? 'เงินสด' : 'โอน'}
-                    </span>
-
+                    <span style="font-size:13px; font-weight:700; color:#475569;">${r.pay === 'Cash' ? 'เงินสด' : 'โอน'}</span>
                     <b style="font-size:18px; color:#1e293b;">฿${r.price}</b>
-
-                    <div onclick="delRec(${r.id})" style="cursor:pointer; padding:5px;">
-                        <i class="fas fa-trash-alt" style="color:#dc2626; font-size:18px;"></i>
-                    </div>
+                    <div onclick="delRec(${r.id})" style="cursor:pointer; padding:5px;"><i class="fas fa-trash-alt" style="color:#dc2626; font-size:18px;"></i></div>
                 </div>
             </div>
         </div>`;
-    }); // ✅ ปิด forEach ตรงนี้ (ตัวการที่ทำให้พัง)
+    });
 
-    // 2. คำนวณรายได้
-    const hasGuar = today.some(r => r.type === "GUARANTEE_CLAIM");
-    const bEarn = hasGuar
-        ? Math.max(tot * (conf.perc / 100), conf.guar)
-        : (tot * (conf.perc / 100));
-
-    const sEarn = tot - bEarn;
-    const settle = cash - bEarn;
+    // 2. สูตรใหม่ (ร้านตั้งต้นที่ -200)
+    // ร้านได้ 50% แล้วหักประกันออก 200
+    let shopShare = tot * 0.5; 
+    let sEarn = shopShare - 200; 
+    let bEarn = tot - sEarn; // ส่วนที่เหลือคือของช่าง
+    
+    // คำนวณเงินสดที่ต้องเคลียร์ (เงินสดที่ช่างถือ - ค่าตัวช่าง)
+    let settle = cash - bEarn;
 
     // 3. แสดงผลยอดเงิน
     document.getElementById("dTotal").innerText = tot.toLocaleString();
     document.getElementById("dTrans").innerText = trans.toLocaleString();
-    document.getElementById("dBarber").innerHTML =
-        `${Math.floor(bEarn).toLocaleString()} <small style="color:#64748b;">(สด:${cash})</small>`;
+    document.getElementById("dBarber").innerHTML = `${Math.floor(bEarn).toLocaleString()} <small>(สด:${cash})</small>`;
 
     const dShop = document.getElementById("dShop");
     dShop.innerText = Math.floor(sEarn).toLocaleString();
-    dShop.style.color = sEarn < 0 ? "#dc2626" : "#1e293b";
+    dShop.style.color = sEarn < 0 ? "#dc2626" : "#16a34a"; // ติดลบโชว์แดง กำไรโชว์เขียว
 
     document.getElementById("dCounts").innerText = `ลูกค้า ${today.length} คน`;
-    document.getElementById("dailyList").innerHTML =
-        listHtml || "<center style='opacity:0.3; padding:40px;'>ไม่มีลูกค้า</center>";
-
+    
+    // 4. แสดงรายการ + ตบด้วยปุ่มส้ม (แยกกันชัดเจน ไม่กอง!)
+    let orangeBtn = `
+        <div style="margin-top: 20px;">
+            <button onclick="go(3)" style="background: #f97316; color: white; padding: 18px; border: none; border-radius: 15px; font-weight: bold; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 12px rgba(249,115,22,0.3);">
+                <i class="fas fa-file-invoice-dollar"></i> สรุปยอดและไปหน้ารายงาน
+            </button>
+        </div>`;
+    
+    document.getElementById("dailyList").innerHTML = (listHtml || "<center style='opacity:0.3; padding:40px;'>ไม่มีลูกค้า</center>") + orangeBtn;
     // 4. แถบสถานะ
     const bar = document.getElementById("settleBar");
     if (bar) {
@@ -469,19 +468,15 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 5. Badge สถิติ
+  // 6. Badge สถิติ (แก้ให้นับไม่เบิ้ลแล้ว)
     let sH = "";
     for (let s in stats) {
         let bg = (s === "ตัดผม") ? "#4338ca" : (s === "เด็ก") ? "#ec4899" : "#f1f5f9";
         let color = (bg === "#f1f5f9") ? "#475569" : "white";
-        sH += `<span style="background:${bg}; color:${color};
-                padding:4px 10px; border-radius:10px;
-                font-size:11px; font-weight:700; margin-right:5px;">
-                ${s}: ${stats[s]}</span>`;
+        sH += `<span style="background:${bg}; color:${color}; padding:4px 10px; border-radius:10px; font-size:11px; font-weight:700; margin-right:5px;">${s}: ${stats[s]}</span>`;
     }
     document.getElementById("dServiceStats").innerHTML = sH;
 }
-
    // ฟังก์ชันสำหรับปุ่มส้มอมแดง ส่งสรุปยอดรวมไปหน้า 3 หรือส่งให้เจ้าของ
 function sendSummary() {
     const d = document.getElementById("dateInp").value;
