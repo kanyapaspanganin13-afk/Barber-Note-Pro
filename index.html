@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.7.3.3</title>
+    <title>Barber Note Pro v.7.4.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -381,7 +381,7 @@ function renderDay() {
         tot += r.price; 
         r.pay === 'Trans' ? trans += r.price : cash += r.price; 
 
-        // --- 1. สถิตินับหัวรวม ---
+        // --- 1. สถิตินับหัว (สีใครสีมัน) ---
         const hasHair = r.hair && r.hair.trim() !== "";
         const hasCutSvc = r.svcs.includes("ตัดผม") || r.svcs.includes("เด็ก");
         if (hasHair || hasCutSvc) stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
@@ -391,7 +391,7 @@ function renderDay() {
             else if (s !== "ตัดผม") stats[s] = (stats[s] || 0) + 1;
         });
 
-        // --- 2. รายการลูกค้า (เวลาไม่ล้น) ---
+        // --- 2. รายการ (เวลาครบ [เริ่ม-เสร็จ]) ---
         listHtml += `
         <div class="history-row" style="padding:10px; border-bottom:1px solid #f1f5f9;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -410,38 +410,35 @@ function renderDay() {
 
     const bEarn = Math.max(tot * (conf.perc / 100), conf.guar), sEarn = tot - bEarn, settle = cash - bEarn;
 
-    // พ่นตัวเลขยอดบน
+    // อัปเดตยอดสรุปด้านบน (สด/โอน ครบ)
     $("dTotal").innerText = tot.toLocaleString(); 
     $("dTrans").innerText = trans.toLocaleString(); 
     $("dBarber").innerHTML = `${Math.floor(bEarn).toLocaleString()} <small style="font-size:10px; opacity:0.5;">(สด:${cash})</small>`; 
     $("dShop").innerText = Math.floor(sEarn).toLocaleString(); 
     $("dCounts").innerText = `ลูกค้า: ${today.length} คน`; 
 
-    // --- 3. [สำคัญ!] จัดเลย์เอาต์บน: ซ้าย(สถิติ) - ขวา(ปุ่มไลน์) ---
-    let sH = `<div style="display:flex; justify-content:space-between; align-items:flex-start; width:100%; gap:10px;">
-                <div style="display:flex; flex-wrap:wrap; gap:4px; flex:1;">`; // ฝั่งซ้าย
-    
-    if(stats["ตัดผม"]) sH += `<span class="badge" style="background:#1e3a8a; color:#fff; font-size:10px; padding:3px 8px;">ตัดผม: ${stats["ตัดผม"]}</span>`;
+    // --- 3. [แถบบน] สถิติ(ซ้าย) + ไอคอนไลน์(ขวา) ---
+    let sH = `<div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:10px;">
+                <div style="display:flex; flex-wrap:wrap; gap:4px; flex:1;">`;
+    if(stats["ตัดผม"]) sH += `<span class="badge" style="background:#1e3a8a; color:#fff; font-size:10px;">ตัดผม: ${stats["ตัดผม"]}</span>`;
     for(let s in stats) { 
         if(s !== "ตัดผม") {
             let bg = "#64748b";
             if(s === "เด็ก") bg = "#f472b6"; else if(s.includes("แฟชั่น")) bg = "#8b5cf6"; 
             else if(s.includes("รองทรง")) bg = "#0ea5e9"; else if(s === "โกนหนวด") bg = "#10b981";
-            sH += `<span class="badge" style="background:${bg}; color:#fff; font-size:10px; padding:3px 8px;">${s}: ${stats[s]}</span>`; 
+            sH += `<span class="badge" style="background:${bg}; color:#fff; font-size:10px;">${s}: ${stats[s]}</span>`; 
         }
     }
-    
     sH += `</div>
-            <button onclick="sendSummary()" style="background:#22c55e; color:white; border:none; padding:8px 12px; border-radius:8px; font-weight:bold; font-size:12px; display:flex; align-items:center; gap:5px; white-space:nowrap;">
-                <i class="fab fa-line"></i> ส่งงาน
+            <button onclick="sendSummary()" style="background:#22c55e; color:white; border:none; width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-left:10px;">
+                <i class="fab fa-line" style="font-size:20px;"></i>
             </button>
           </div>`;
     $("dServiceStats").innerHTML = sH;
 
-    // --- 4. รายการลูกค้า ---
     $("dailyList").innerHTML = listHtml || "<center style='padding:30px; opacity:0.3;'>ไม่มีข้อมูล</center>";
 
-    // --- 5. โซนล่าง: แถบสถานะ + ปุ่มส้มขวาสุด ---
+    // --- 4. [แถบล่าง] แถบสถานะ + ปุ่มจรวดส้มปิดงาน ---
     const b = $("settleBar"); 
     let statusTxt = "";
     if (tot === 0) { statusTxt = "🟦 ร้านจ่ายประกัน"; b.className = "status-bar status-blue"; } 
@@ -452,10 +449,16 @@ function renderDay() {
     b.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
             <span style="font-weight:700;">${statusTxt}</span>
-            <button onclick="go(3)" style="background:#f97316; color:white; border:none; padding:6px 14px; border-radius:8px; font-weight:bold; font-size:12px;">
-                <i class="fas fa-power-off"></i> ปิดงาน
+            <button onclick="saveAndGo('${d}', ${tot}, ${sEarn}, ${bEarn})" style="background:#f97316; color:white; border:none; width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center;">
+                <i class="fas fa-paper-plane"></i>
             </button>
         </div>`;
+}
+
+function saveAndGo(date, total, shop, barber) {
+    if (total === 0 && !confirm("ไม่มีข้อมูลยอด ปิดงานเลยมั้ย?")) return;
+    go(3); // ไปหน้ารายงานรายเดือนทันที
+    if(typeof renderHistory === "function") renderHistory(); 
 }
     function sendDailyListToLine() {
     const d = document.getElementById("dateInp").value;
