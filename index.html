@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.2</title>
+    <title>Barber Note Pro v.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -384,18 +384,21 @@ function renderDay() {
     const d = $("dateInp").value, today = db.filter(r => r.date === d); 
     let tot = 0, trans = 0, cash = 0, stats = {}, listHtml = "";
 
+    // เรียงเวลา และใช้ Set เพื่อให้นับสถิติไม่เบิ้ลตาม Logic เพื่อนมึงบอก
     today.sort((a, b) => a.time.localeCompare(b.time)).forEach(r => {
         tot += r.price; 
         r.pay === 'Trans' ? trans += r.price : cash += r.price; 
+        
+        // --- LOGIC สถิติเพื่อนมึงบอก (นับไม่เบิ้ล) ---
+        const counted = new Set();
+        counted.add("ตัดผม"); // ทุกบิลนับตัดผม 1
+        if (r.hair && r.hair.includes("เด็ก")) counted.add("เด็ก");
         r.svcs.forEach(s => {
-            if (s === "ตัดผม") stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
-            else if (s === "เด็ก") stats["เด็ก"] = (stats["เด็ก"] || 0) + 1;
-            else stats[s] = (stats[s] || 0) + 1;
+            if (!s || s.includes("เด็ก") || s.includes("รองทรง") || s.includes("แฟชั่น") || s.includes("นักเรียน") || s.includes("ตัดผม")) return;
+            counted.add(s);
         });
-        if (r.hair && r.hair.trim() !== "") {
-            let h = r.hair.trim();
-            stats[h] = (stats[h] || 0) + 1;
-        }
+        counted.forEach(k => stats[k] = (stats[k] || 0) + 1);
+
         const timeShow = r.endTime ? `${r.time} - ${r.endTime}` : r.time;
         listHtml += `
         <div class="history-row" style="padding:12px; border-bottom:1px solid #f1f5f9; background:#fff;">
@@ -414,11 +417,15 @@ function renderDay() {
     });
 
     const bEarn = Math.max(tot * (conf.perc / 100), conf.guar), sEarn = tot - bEarn, settle = cash - bEarn;
+    
+    // อัปเดตตัวเลข 4 ประโยคทองคำ (ด้านบน)
     $("dTotal").innerText = tot.toLocaleString(); 
     $("dTrans").innerText = trans.toLocaleString(); 
     $("dBarber").innerHTML = `${Math.floor(bEarn).toLocaleString()} <small style="font-size:10px; opacity:0.6;">(สด: ${cash})</small>`; 
     $("dShop").innerText = Math.floor(sEarn).toLocaleString(); 
     $("dCounts").innerText = `ลูกค้า: ${today.length} คน`; 
+
+    // วาด Badge สถิติ
     let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:15px; justify-content:center;">`;
     const order = ["ตัดผม", "เด็ก"];
     order.forEach(k => {
@@ -434,24 +441,30 @@ function renderDay() {
     }
     sH += `</div>`;
     $("dServiceStats").innerHTML = sH;
+
+    // ส่วนหัวรายการวันนี้ + ปุ่ม LINE (ย้ายมาขวาตามสั่ง)
     const headerHtml = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:10px 5px; border-top:1px solid #eee;">
             <b style="font-size:15px; color:#1e293b;">📋 รายงานวันนี้:</b>
-            <i class="fab fa-line" onclick="shareLine()"style="color:#22c55e; font-size:32px; cursor:pointer;"></i>
+            <i class="fab fa-line" onclick="shareLine()" style="color:#22c55e; font-size:32px; cursor:pointer;"></i>
         </div>`;
+    
     $("dailyList").innerHTML = headerHtml + (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>");
-    const b = $("settleBar"); 
+
+    // แถบสีสถานะ (จ่ายประกัน/คืนร้าน/คืนช่าง) + อิส้ม (จรวด)
     let statusTxt = "", bgBar = "";
     if (tot === 0) { statusTxt = "🟦 ร้านจ่ายประกัน"; bgBar = "#e0f2fe"; } 
     else if (settle > 0) { statusTxt = `🟥 ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`; bgBar = "#fee2e2"; } 
     else if (settle < 0) { statusTxt = `🟦 ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; bgBar = "#e0e7ff"; } 
     else { statusTxt = "✅ ยอดพอดีเป๊ะ"; bgBar = "#dcfce7"; }
+
+    const b = $("settleBar"); 
     const container = b.parentElement;
     container.innerHTML = `
         <div id="settleBar" style="flex: 8; height: 50px; background:${bgBar}; display:flex; align-items:center; justify-content:center; font-weight:900; border-radius:15px; font-size: 14px; color:#1e293b; border:1px solid rgba(0,0,0,0.05);">
             ${statusTxt}
         </div>
-        <button onclick="saveAndGo('${d}', ${tot}, ${sEarn}, ${bEarn})" style="flex: 2; height: 50px; background:#ff4500; color:white; border:none; border-radius:15px; font-size:20px; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(255, 69, 0, 0.3); cursor:pointer;">
+        <button onclick="saveAndGo('${d}', ${tot}, ${sEarn}, ${bEarn})" style="flex: 2; height: 50px; background:#ff4500; color:white; border:none; border-radius:15px; font-size:20px; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(255, 69, 0, 0.3); cursor:pointer; margin-left:10px;">
             <i class="fas fa-paper-plane"></i>
         </button>`;
 }
