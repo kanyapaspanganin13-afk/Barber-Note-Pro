@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.7.5</title>
+    <title>Barber Note Pro v.7.6</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -80,6 +80,7 @@
     
     .acc-main-card { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #fffbeb; }
     .btn-save { background: var(--success); color: white; border: none; width: 100%; padding: 15px; border-radius: 15px; font-weight: 700; font-size: 16px; cursor: pointer; }
+    #accHistory { font-size: 12px; max-height: 150px; overflow-y: auto; }
 </style>
     </head>
     <body>
@@ -178,7 +179,7 @@
     </div>
         <div style="margin-top:10px; background: #f1f5f9; padding: 10px; border-radius: 12px;">
         <label style="font-size:11px; font-weight:800; display: flex; justify-content: space-between;"><span>🔆 ความสว่างหน้าจอ</span><span id="brightVal">100%</span>
-        </label><input type="range" id="setBright" min="0" max="0.8" step="0.1" value="0"oninput="changeBrightness(this.value); document.getElementById('brightVal').innerText = Math.round((1 - this.value) * 100) + '%';">
+        </label><input type="range" id="setBright" min="0" max="0.8" step="0.1" value="0" oninput="..."changeBrightness(this.value); document.getElementById('brightVal').innerText = Math.round((1 - this.value) * 100) + '%';">
     </div>
         <div style="margin-top:10px">
         <label style="font-size:11px; font-weight:600;">ธีมแอป</label><select id="setTheme">
@@ -196,6 +197,7 @@
         <button class="btn" style="width:100%; background:var(--danger); color:#fff; margin-top:10px; font-size:12px;" onclick="clearAllData()">⚠️ ล้างข้อมูลทั้งหมด</button>
     </div>
 </div>
+    </div>
     <nav class="nav-bar">
         <div class="nav-item active" id="n1" onclick="go(1)"><i class="fas fa-edit"></i>บันทึก</div>
         <div class="nav-item" id="n2" onclick="go(2)"><i class="fas fa-file-invoice"></i>รายงาน</div>
