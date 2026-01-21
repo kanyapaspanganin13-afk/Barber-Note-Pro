@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.7.4.3</title>
+    <title>Barber Note Pro v.7.5.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -383,89 +383,81 @@ function renderDay() {
         tot += r.price; 
         r.pay === 'Trans' ? trans += r.price : cash += r.price; 
 
-        // --- 1. ส่วนการคำนวณสถิติ (ไม่นับเบิ้ล) ---
+        // --- 1. สถิตินับหัวรวม ---
         const hasHair = r.hair && r.hair.trim() !== "";
         const hasCutSvc = r.svcs.includes("ตัดผม") || r.svcs.includes("เด็ก");
-        
-        if (hasHair || hasCutSvc) {
-            stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
-        }
-        if (hasHair) {
-            let hName = r.hair.trim();
-            stats[hName] = (stats[hName] || 0) + 1;
-        }
+        if (hasHair || hasCutSvc) stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
+        if (hasHair) { let h = r.hair.trim(); stats[h] = (stats[h] || 0) + 1; }
         r.svcs.forEach(s => {
             if (s === "เด็ก") stats["เด็ก"] = (stats["เด็ก"] || 0) + 1;
             else if (s !== "ตัดผม") stats[s] = (stats[s] || 0) + 1;
         });
 
-        // --- 2. ส่วนการแสดงรายการ (บรรทัดเดียวสะอาดๆ) ---
+        // --- 2. รายการลูกค้า (เวลาไม่ล้น) ---
         listHtml += `
-        <div class="history-row">
+        <div class="history-row" style="padding:10px; border-bottom:1px solid #f1f5f9;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div style="flex:1;">
-                    <span style="color:#4338ca; font-weight:800;">[${r.time}${r.endTime ? ' - ' + r.endTime : ''}]</span> 
-                    <span style="margin-left:8px; font-weight:600;">${r.svcs.join('+')}</span>
-                    ${r.hair ? `<div style="font-size:12px; color:#64748b; margin-top:2px;">ทรง: ${r.hair}</div>` : ''}
+                    <span style="color:#4338ca; font-weight:800; font-size:11px;">[${r.time}${r.endTime ? '-' + r.endTime : ''}]</span> 
+                    <span style="font-weight:700; font-size:13px; margin-left:5px;">${r.svcs.join('+')}</span>
+                    ${r.hair ? `<div style="font-size:11px; color:#64748b; margin-left:15px;">ทรง: ${r.hair}</div>` : ''}
                 </div>
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <span style="font-size:11px; padding:2px 6px; background:#f1f5f9; border-radius:5px; color:#64748b;">${r.pay==='Cash'?'สด':'โอน'}</span>
-                    <b style="font-size:16px; color:#1e293b; min-width:50px; text-align:right;">฿${r.price}</b>
-                    <i class="fas fa-trash-alt" onclick="delRec(${r.id})" style="color:#dc2626; cursor:pointer; padding:5px;"></i>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <b style="font-size:15px;">฿${r.price}</b>
+                    <i class="fas fa-trash-alt" onclick="delRec(${r.id})" style="color:#cbd5e1; cursor:pointer; padding:5px;"></i>
                 </div>
             </div>
         </div>`;
     });
 
-    // --- 3. ส่วนสูตรคำนวณเงิน (ร้านไม่เจ๊ง 35 บาทแล้ว) ---
-    const bEarn = Math.max(tot * (conf.perc / 100), conf.guar);
-    const sEarn = tot - bEarn;
-    const settle = cash - bEarn;
+    const bEarn = Math.max(tot * (conf.perc / 100), conf.guar), sEarn = tot - bEarn, settle = cash - bEarn;
 
-    // พ่นตัวเลขขึ้นหน้าจอ
+    // พ่นตัวเลขยอดบน
     $("dTotal").innerText = tot.toLocaleString(); 
     $("dTrans").innerText = trans.toLocaleString(); 
-    $("dBarber").innerHTML = `${Math.floor(bEarn).toLocaleString()} <small style="opacity:0.6; font-size:11px;">(สด: ${cash})</small>`; 
+    $("dBarber").innerHTML = `${Math.floor(bEarn).toLocaleString()} <small style="font-size:10px; opacity:0.5;">(สด:${cash})</small>`; 
     $("dShop").innerText = Math.floor(sEarn).toLocaleString(); 
     $("dCounts").innerText = `ลูกค้า: ${today.length} คน`; 
-    $("dailyList").innerHTML = listHtml || "<center style='opacity:0.3; padding:40px;'>ไม่มีข้อมูลลูกค้า</center>";
 
-    // --- 4. ส่วนพ่น Badge "สีใครสีมัน" มองปุ๊บรู้ปั๊บ ---
-    let sH = ""; 
-    // ตัดผมรวม (น้ำเงินเข้ม) ขึ้นอันแรกเสมอ
-    if(stats["ตัดผม"]) {
-        sH += `<span class="badge" style="background:#1e3a8a; color:#ffffff; font-weight:800;">ตัดผม: ${stats["ตัดผม"]}</span>`;
-    }
-    // วนลูปที่เหลือแยกสีตามชื่อ
+    // --- 3. [สำคัญ!] จัดเลย์เอาต์บน: ซ้าย(สถิติ) - ขวา(ปุ่มไลน์) ---
+    let sH = `<div style="display:flex; justify-content:space-between; align-items:flex-start; width:100%; gap:10px;">
+                <div style="display:flex; flex-wrap:wrap; gap:4px; flex:1;">`; // ฝั่งซ้าย
+    
+    if(stats["ตัดผม"]) sH += `<span class="badge" style="background:#1e3a8a; color:#fff; font-size:10px; padding:3px 8px;">ตัดผม: ${stats["ตัดผม"]}</span>`;
     for(let s in stats) { 
         if(s !== "ตัดผม") {
-            let bg = "#64748b", txt = "#ffffff"; // สีเทาพื้นฐาน
-            if(s === "เด็ก") bg = "#f472b6"; // ชมพู
-            else if(s.includes("แฟชั่น")) bg = "#8b5cf6"; // ม่วง
-            else if(s.includes("รองทรง")) bg = "#0ea5e9"; // ฟ้า
-            else if(s === "โกนหนวด") bg = "#10b981"; // เขียว
-            else if(s === "สระผม") bg = "#f59e0b"; // ส้ม
-            
-            sH += `<span class="badge" style="background:${bg}; color:${txt}; font-weight:700;">${s}: ${stats[s]}</span>`; 
+            let bg = "#64748b";
+            if(s === "เด็ก") bg = "#f472b6"; else if(s.includes("แฟชั่น")) bg = "#8b5cf6"; 
+            else if(s.includes("รองทรง")) bg = "#0ea5e9"; else if(s === "โกนหนวด") bg = "#10b981";
+            sH += `<span class="badge" style="background:${bg}; color:#fff; font-size:10px; padding:3px 8px;">${s}: ${stats[s]}</span>`; 
         }
     }
+    
+    sH += `</div>
+            <button onclick="sendSummary()" style="background:#22c55e; color:white; border:none; padding:8px 12px; border-radius:8px; font-weight:bold; font-size:12px; display:flex; align-items:center; gap:5px; white-space:nowrap;">
+                <i class="fab fa-line"></i> ส่งงาน
+            </button>
+          </div>`;
     $("dServiceStats").innerHTML = sH;
 
-    // --- 5. ส่วนสถานะการจ่ายเงิน (ครบ 4 เงื่อนไขห้ามตัด!) ---
+    // --- 4. รายการลูกค้า ---
+    $("dailyList").innerHTML = listHtml || "<center style='padding:30px; opacity:0.3;'>ไม่มีข้อมูล</center>";
+
+    // --- 5. โซนล่าง: แถบสถานะ + ปุ่มส้มขวาสุด ---
     const b = $("settleBar"); 
-    if (tot === 0) { 
-        b.innerText = "🟦 ร้านจ่ายประกันให้ช่าง"; 
-        b.className = "status-bar status-blue"; 
-    } else if (settle > 0) { 
-        b.innerText = `🟥 ช่างต้องคืนเงินร้าน ฿${Math.floor(settle).toLocaleString()}`; 
-        b.className = "status-bar status-red"; 
-    } else if (settle < 0) { 
-        b.innerText = `🟦 ร้านต้องโอนคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; 
-        b.className = "status-bar status-indigo"; 
-    } else { 
-        b.innerText = "✅ ยอดเงินสดพอดีเป๊ะ"; 
-        b.className = "status-bar status-green"; 
-    }
+    let statusTxt = "";
+    if (tot === 0) { statusTxt = "🟦 ร้านจ่ายประกัน"; b.className = "status-bar status-blue"; } 
+    else if (settle > 0) { statusTxt = `🟥 ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`; b.className = "status-bar status-red"; } 
+    else if (settle < 0) { statusTxt = `🟦 ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; b.className = "status-bar status-indigo"; } 
+    else { statusTxt = "✅ ยอดเงินสดพอดีเป๊ะ"; b.className = "status-bar status-green"; }
+
+    b.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+            <span style="font-weight:700;">${statusTxt}</span>
+            <button onclick="go(3)" style="background:#f97316; color:white; border:none; padding:6px 14px; border-radius:8px; font-weight:bold; font-size:12px;">
+                <i class="fas fa-power-off"></i> ปิดงาน
+            </button>
+        </div>`;
 }
     function sendDailyListToLine() {
     const d = document.getElementById("dateInp").value;
