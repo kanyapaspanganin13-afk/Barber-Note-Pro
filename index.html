@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.7.3.3</title>
+    <title>Barber Note Pro v.7.4.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -342,7 +342,6 @@ function handleInsurance() {
             location.reload();
         }
     }
-    // 1. ฟังก์ชันแสดงผลวันที่ (อันเดิมของพี่ แต่เติมกันบั๊กไว้นิดหน่อย)
 function updateDateDisplay(val) {
     if (!val) return; // กัน Error ถ้าค่าว่าง
     const d = new Date(val);
@@ -377,98 +376,97 @@ window.addEventListener('DOMContentLoaded', () => {
         $("btnTrans").className = `btn btn-pay ${m === 'Trans' ? 'active-trans' : ''}`;
     }
 function renderDay() {
-    const d = document.getElementById("dateInp").value;
-    const today = db.filter(r => r.date === d);
-
-    let tot = 0, trans = 0, cash = 0;
-    let stats = {};
-    let listHtml = "";
+    const d = $("dateInp").value, today = db.filter(r => r.date === d); 
+    let tot = 0, trans = 0, cash = 0, stats = {}, listHtml = "";
 
     today.sort((a, b) => a.time.localeCompare(b.time)).forEach(r => {
-        tot += r.price;
-        if (r.pay === 'Trans') trans += r.price;
-        else cash += r.price;
+        tot += r.price; 
+        r.pay === 'Trans' ? trans += r.price : cash += r.price; 
 
-        // นับสถิติบริการ (ไม่นับค่าว่าง)
-        if (Array.isArray(r.svcs)) {
-            r.svcs.forEach(s => {
-                const name = s.trim();
-                if (!name) return;
-                stats[name] = (stats[name] || 0) + 1;
-            });
+        // --- 1. ส่วนการคำนวณสถิติ (ไม่นับเบิ้ล) ---
+        const hasHair = r.hair && r.hair.trim() !== "";
+        const hasCutSvc = r.svcs.includes("ตัดผม") || r.svcs.includes("เด็ก");
+        
+        if (hasHair || hasCutSvc) {
+            stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
         }
+        if (hasHair) {
+            let hName = r.hair.trim();
+            stats[hName] = (stats[hName] || 0) + 1;
+        }
+        r.svcs.forEach(s => {
+            if (s === "เด็ก") stats["เด็ก"] = (stats["เด็ก"] || 0) + 1;
+            else if (s !== "ตัดผม") stats[s] = (stats[s] || 0) + 1;
+        });
 
+        // --- 2. ส่วนการแสดงรายการ (บรรทัดเดียวสะอาดๆ) ---
         listHtml += `
-        <div style="background:#fff; padding:15px; border-radius:15px; margin-bottom:10px; border:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
-            <div style="flex:1;">
-                <span style="color:#4338ca; font-weight:800;">
-                    [${r.time}${r.endTime ? ' - ' + r.endTime : ''}]
-                </span>
-                <span style="margin-left:8px; font-weight:600;">
-                    ${r.svcs.join(' + ')}
-                </span>
-            </div>
-            <div style="display:flex; align-items:center; gap:10px;">
-                <span style="font-size:12px; color:#64748b;">
-                    ${r.pay === 'Cash' ? 'เงินสด' : 'โอน'}
-                </span>
-                <b style="font-size:16px;">฿${r.price}</b>
-                <i class="fas fa-trash"
-                   onclick="delRec(${r.id})"
-                   style="color:#dc2626; cursor:pointer; margin-left:5px;"></i>
+        <div class="history-row">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="flex:1;">
+                    <span style="color:#4338ca; font-weight:800;">[${r.time}${r.endTime ? ' - ' + r.endTime : ''}]</span> 
+                    <span style="margin-left:8px; font-weight:600;">${r.svcs.join('+')}</span>
+                    ${r.hair ? `<div style="font-size:12px; color:#64748b; margin-top:2px;">ทรง: ${r.hair}</div>` : ''}
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:11px; padding:2px 6px; background:#f1f5f9; border-radius:5px; color:#64748b;">${r.pay==='Cash'?'สด':'โอน'}</span>
+                    <b style="font-size:16px; color:#1e293b; min-width:50px; text-align:right;">฿${r.price}</b>
+                    <i class="fas fa-trash-alt" onclick="delRec(${r.id})" style="color:#dc2626; cursor:pointer; padding:5px;"></i>
+                </div>
             </div>
         </div>`;
     });
 
-    // ===== สูตรคำนวณเงิน =====
-    const shopHalf = tot * 0.5;
-    const barberHalf = tot * 0.5;
-    const guarantee = 200;
+    // --- 3. ส่วนสูตรคำนวณเงิน (ร้านไม่เจ๊ง 35 บาทแล้ว) ---
+    const bEarn = Math.max(tot * (conf.perc / 100), conf.guar);
+    const sEarn = tot - bEarn;
+    const settle = cash - bEarn;
 
-    const sEarn = shopHalf;
-    const bTotalNeed = barberHalf + guarantee;
-    const settle = cash - bTotalNeed;
+    // พ่นตัวเลขขึ้นหน้าจอ
+    $("dTotal").innerText = tot.toLocaleString(); 
+    $("dTrans").innerText = trans.toLocaleString(); 
+    $("dBarber").innerHTML = `${Math.floor(bEarn).toLocaleString()} <small style="opacity:0.6; font-size:11px;">(สด: ${cash})</small>`; 
+    $("dShop").innerText = Math.floor(sEarn).toLocaleString(); 
+    $("dCounts").innerText = `ลูกค้า: ${today.length} คน`; 
+    $("dailyList").innerHTML = listHtml || "<center style='opacity:0.3; padding:40px;'>ไม่มีข้อมูลลูกค้า</center>";
 
-    // ===== แสดงผล =====
-    document.getElementById("dTotal").innerText = tot.toLocaleString();
-    document.getElementById("dShop").innerText = Math.floor(sEarn).toLocaleString();
-    document.getElementById("dBarber").innerText = Math.floor(barberHalf).toLocaleString();
-
-    // ===== badge สถิติ =====
-    let sH = "";
-    for (let s in stats) {
-        sH += `
-        <span style="background:#f1f5f9; color:#475569;
-            padding:4px 10px; border-radius:10px;
-            font-size:11px; font-weight:700;
-            margin-right:5px; border:1px solid #e2e8f0;">
-            ${s}: ${stats[s]}
-        </span>`;
+    // --- 4. ส่วนพ่น Badge "สีใครสีมัน" มองปุ๊บรู้ปั๊บ ---
+    let sH = ""; 
+    // ตัดผมรวม (น้ำเงินเข้ม) ขึ้นอันแรกเสมอ
+    if(stats["ตัดผม"]) {
+        sH += `<span class="badge" style="background:#1e3a8a; color:#ffffff; font-weight:800;">ตัดผม: ${stats["ตัดผม"]}</span>`;
     }
-
-    document.getElementById("dServiceStats").innerHTML = sH;
-    document.getElementById("dailyList").innerHTML =
-        listHtml || "<center style='padding:20px; opacity:0.5;'>ไม่มีงาน</center>";
-
-    // ===== แถบเคลียร์เงินสด =====
-    const bar = document.getElementById("settleBar");
-    if (bar) {
-        if (settle < 0) {
-            bar.innerText = `🟦 ร้านต้องโอนคืนช่าง ฿${Math.floor(Math.abs(settle))} (รวมประกัน)`;
-            bar.style.background = "#e0e7ff";
-            bar.style.color = "#4338ca";
-        } else if (settle > 0) {
-            bar.innerText = `🟥 ช่างต้องส่งเงินร้าน ฿${Math.floor(settle)}`;
-            bar.style.background = "#fee2e2";
-            bar.style.color = "#dc2626";
-        } else {
-            bar.innerText = "✅ ยอดเงินสดพอดีเป๊ะ ไม่ต้องโอนคืน";
-            bar.style.background = "#dcfce7";
-            bar.style.color = "#16a34a";
+    // วนลูปที่เหลือแยกสีตามชื่อ
+    for(let s in stats) { 
+        if(s !== "ตัดผม") {
+            let bg = "#64748b", txt = "#ffffff"; // สีเทาพื้นฐาน
+            if(s === "เด็ก") bg = "#f472b6"; // ชมพู
+            else if(s.includes("แฟชั่น")) bg = "#8b5cf6"; // ม่วง
+            else if(s.includes("รองทรง")) bg = "#0ea5e9"; // ฟ้า
+            else if(s === "โกนหนวด") bg = "#10b981"; // เขียว
+            else if(s === "สระผม") bg = "#f59e0b"; // ส้ม
+            
+            sH += `<span class="badge" style="background:${bg}; color:${txt}; font-weight:700;">${s}: ${stats[s]}</span>`; 
         }
     }
-}
+    $("dServiceStats").innerHTML = sH;
 
+    // --- 5. ส่วนสถานะการจ่ายเงิน (ครบ 4 เงื่อนไขห้ามตัด!) ---
+    const b = $("settleBar"); 
+    if (tot === 0) { 
+        b.innerText = "🟦 ร้านจ่ายประกันให้ช่าง"; 
+        b.className = "status-bar status-blue"; 
+    } else if (settle > 0) { 
+        b.innerText = `🟥 ช่างต้องคืนเงินร้าน ฿${Math.floor(settle).toLocaleString()}`; 
+        b.className = "status-bar status-red"; 
+    } else if (settle < 0) { 
+        b.innerText = `🟦 ร้านต้องโอนคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; 
+        b.className = "status-bar status-indigo"; 
+    } else { 
+        b.innerText = "✅ ยอดเงินสดพอดีเป๊ะ"; 
+        b.className = "status-bar status-green"; 
+    }
+}
     function sendDailyListToLine() {
     const d = document.getElementById("dateInp").value;
     const today = db.filter(r => r.date === d);
