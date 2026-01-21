@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.7.3.3</title>
+    <title>Barber Note Pro v.5.3.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -406,28 +406,38 @@ function renderDay() {
         tot += r.price; 
         r.pay === 'Trans' ? trans += r.price : cash += r.price; 
 
-        // 1. นับสถิติ (ตัดผมต้องขึ้นอันแรก)
-        const hasHair = r.hair && r.hair.trim() !== "";
-        const hasCutSvc = r.svcs.includes("ตัดผม") || r.svcs.includes("เด็ก");
-        if (hasHair || hasCutSvc) stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
-        if (hasHair) { let h = r.hair.trim(); stats[h] = (stats[h] || 0) + 1; }
+        // 1. Logic นับสถิติ (นับตัดผม/เด็ก เป็น "ตัดผม" เสมอ)
+        const isCutHair = r.svcs.some(s => s.includes("ตัดผม") || s.includes("เด็ก"));
+        if (isCutHair) stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
+        
+        if (r.hair && r.hair.trim() !== "") {
+            let h = r.hair.trim();
+            stats[h] = (stats[h] || 0) + 1;
+        }
+        
         r.svcs.forEach(s => {
-            if (s === "เด็ก") stats["เด็ก"] = (stats["เด็ก"] || 0) + 1;
-            else if (s !== "ตัดผม") stats[s] = (stats[s] || 0) + 1;
+            if (s !== "ตัดผม" && s !== "เด็ก") {
+                stats[s] = (stats[s] || 0) + 1;
+            }
         });
 
-        // 2. รายการลูกค้า (ใช้โครงสร้างที่มึงเขียนมาเป๊ะๆ คลีนสุด!)
+        // 2. จัดรูปแบบเวลา [เริ่ม - เสร็จ]
+        const fullTime = r.endTime ? `${r.time} - ${r.endTime}` : r.time;
+
+        // 3. รายการลูกค้า (โครงสร้าง 2 บรรทัดตามใจเถ้าแก่)
         listHtml += `
-        <div class="history-row" style="padding:10px; border-bottom:1px solid #eee;">
+        <div class="history-row" style="padding:12px; border-bottom:1px solid #eee;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-               <span style="font-weight:700; font-size:14px; cursor:pointer;"onclick="editTime(${r.id})">${r.endTime ? `${r.time} - ${r.endTime}` : r.time}${r.svcs.join('+')}</span>
-                <b style="font-size:16px;">฿${r.price}</b>
+                <span style="font-weight:800; font-size:14px; color:#1e293b;">
+                    [${fullTime}] | ${r.svcs.join('+')}
+                </span>
+                <b style="font-size:16px; color:#1e293b;">฿${r.price}</b>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; opacity:0.7; font-size:12px; margin-top:4px;">
-                <span>${r.hair || ''}</span>
-                <span>
-                    ${r.pay === 'Cash' ? '💵 สด' : '📱 โอน'} 
-                    <i class="fas fa-trash" style="margin-left:10px; color:var(--danger); cursor:pointer;" onclick="delRec(${r.id})"></i>
+            <div style="display:flex; justify-content:space-between; align-items:center; opacity:0.8; font-size:12px; margin-top:6px;">
+                <span style="color:#64748b; font-weight:600;">${r.hair || '-'}</span>
+                <span style="display:flex; align-items:center; gap:10px; font-weight:700;">
+                    ${r.pay === 'Trans' ? '📱 โอน' : '💵 สด'}
+                    <i class="fas fa-trash-alt" style="color:#ef4444; cursor:pointer; font-size:14px;" onclick="delRec(${r.id})"></i>
                 </span>
             </div>
         </div>`;
@@ -435,31 +445,33 @@ function renderDay() {
 
     const bEarn = Math.max(tot * (conf.perc / 100), conf.guar), sEarn = tot - bEarn, settle = cash - bEarn;
 
-    // อัปเดตยอดการ์ดบน
+    // การ์ดบน: สด/โอน
     $("dTotal").innerText = tot.toLocaleString(); 
     $("dTrans").innerText = trans.toLocaleString(); 
     $("dBarber").innerHTML = `${Math.floor(bEarn).toLocaleString()} <small style="font-size:10px; opacity:0.6;">(สด: ${cash})</small>`; 
     $("dShop").innerText = Math.floor(sEarn).toLocaleString(); 
     $("dCounts").innerText = `ลูกค้า: ${today.length} คน`; 
 
-    // 3. พ่นสถิติ Badge
-    let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px;">`;
-    if(stats["ตัดผม"]) sH += `<span class="badge" style="background:#1e3a8a; color:#fff; font-size:10px;">ตัดผม: ${stats["ตัดผม"]}</span>`;
+    // 4. แสดง Badge สถิติ (ตัดผมต้องมาอันแรก)
+    let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:12px;">`;
+    if(stats["ตัดผม"]) sH += `<span class="badge" style="background:#4338ca; color:#fff; font-size:11px; padding:3px 8px;">ตัดผม: ${stats["ตัดผม"]}</span>`;
     for(let s in stats) { 
         if(s !== "ตัดผม") {
             let bg = "#64748b";
-            if(s === "เด็ก") bg = "#f472b6"; else if(s.includes("แฟชั่น")) bg = "#8b5cf6"; 
-            else if(s.includes("รองทรง")) bg = "#0ea5e9"; else if(s === "โกนหนวด") bg = "#10b981";
-            sH += `<span class="badge" style="background:${bg}; color:#fff; font-size:10px;">${s}: ${stats[s]}</span>`; 
+            if(s.includes("แฟชั่น")) bg = "#8b5cf6"; 
+            else if(s.includes("โกนหนวด")) bg = "#10b981";
+            else if(s.includes("กันหน้า")) bg = "#0ea5e9";
+            sH += `<span class="badge" style="background:${bg}; color:#fff; font-size:11px; padding:3px 8px;">${s}: ${stats[s]}</span>`; 
         }
     }
     sH += `</div>`;
     $("dServiceStats").innerHTML = sH;
 
-    // 4. พ่นแค่รายการลงใน dailyList (ตาม HTML ของมึง)
+    // 5. พ่นรายการ (dailyList) + ใส่ปุ่มไลน์กลับเข้าหัวข้อ (ถ้าเถ้าแก่อยากให้พ่นจาก JS)
+    // แต่ถ้าเถ้าแก่มีหัวข้อใน HTML อยู่แล้ว ตัวนี้จะพ่นแค่รายการลูกค้าครับ
     $("dailyList").innerHTML = listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>";
 
-    // 5. แถบสถานะล่าง (พ่นแค่ตัวหนังสือ ไม่แถมปุ่มส้ม)
+    // 6. แถบสถานะล่าง
     const b = $("settleBar"); 
     let statusTxt = "";
     if (tot === 0) { statusTxt = "🟦 ร้านจ่ายประกัน"; b.className = "status-bar status-blue"; } 
