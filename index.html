@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.5.3.3</title>
+    <title>Barber Note Pro v.5.2.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -114,22 +114,11 @@
                     <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:800;"><span style="color:#64748b;">🏠 ร้าน:</span> <b id="dShop">0</b></div>
                 </div>
             </div>
-
-            <div style="display:flex; gap:10px; margin-bottom:18px; align-items: center;">
-                <div id="settleBar" style="flex: 8; height: 50px; display:flex; align-items:center; justify-content:center; font-weight:900; border-radius:15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-size: 14px;"></div>
-                <button onclick="sendSummary()" style="flex: 2; height: 50px; background:#ff4500; color:white; border:none; border-radius:15px; font-size:20px; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(255, 69, 0, 0.3); cursor:pointer;"><i class="fas fa-paper-plane"></i></button>
-            </div>
-
-            <div id="dServiceStats" style="text-align:center; margin-bottom:20px; display:flex; flex-wrap:wrap; justify-content:center; gap:6px;"></div>
-            <hr style="border:0; border-top:1px solid #e2e8f0; margin-bottom:15px;">
-     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-    <div style="font-weight:800; color:#1e293b; font-size:14px;">📋 รายงานวันนี้:</div>
-</div>
-
-<div id="dailyList" style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
-    </div>
-
-</button>
+           <div id="settleBarContainer" style="margin-bottom:18px;"><div id="settleBar"></div>
+       </div>
+           <div id="dServiceStats"></div><hr style="border:0; border-top:1px solid #e2e8f0; margin-top:15px;">
+           <div id="dailyList"></div>
+           </button>
         </div>
          <div id="p3" class="page"> 
              <div class="acc-main-card">
@@ -406,38 +395,28 @@ function renderDay() {
         tot += r.price; 
         r.pay === 'Trans' ? trans += r.price : cash += r.price; 
 
-        // 1. Logic นับสถิติ (นับตัดผม/เด็ก เป็น "ตัดผม" เสมอ)
-        const isCutHair = r.svcs.some(s => s.includes("ตัดผม") || s.includes("เด็ก"));
-        if (isCutHair) stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
-        
-        if (r.hair && r.hair.trim() !== "") {
-            let h = r.hair.trim();
-            stats[h] = (stats[h] || 0) + 1;
-        }
-        
+        // 1. นับสถิติแยก (ตัดผม 1 / เด็ก 1 ไม่นับรวมกันแล้ว)
         r.svcs.forEach(s => {
-            if (s !== "ตัดผม" && s !== "เด็ก") {
-                stats[s] = (stats[s] || 0) + 1;
-            }
+            if (s === "ตัดผม") stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
+            else if (s === "เด็ก") stats["เด็ก"] = (stats["เด็ก"] || 0) + 1;
+            else stats[s] = (stats[s] || 0) + 1;
         });
 
-        // 2. จัดรูปแบบเวลา [เริ่ม - เสร็จ]
-        const fullTime = r.endTime ? `${r.time} - ${r.endTime}` : r.time;
+        // 2. จัดการเรื่องเวลา (ถ้ามีเวลาเสร็จให้โชว์คู่ ถ้าไม่มีโชว์แค่เริ่ม)
+        const timeShow = r.endTime ? `${r.time} - ${r.endTime}` : r.time;
 
-        // 3. รายการลูกค้า (โครงสร้าง 2 บรรทัดตามใจเถ้าแก่)
+        // 3. รายการลูกค้า 2 บรรทัด (เวลาอยู่บนสุดตามมึงสั่ง)
         listHtml += `
-        <div class="history-row" style="padding:12px; border-bottom:1px solid #eee;">
+        <div class="history-row" style="padding:12px; border-bottom:1px solid #f1f5f9; background:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-weight:800; font-size:14px; color:#1e293b;">
-                    [${fullTime}] | ${r.svcs.join('+')}
-                </span>
+                <span style="font-weight:800; font-size:14px; color:#1e293b;">[${timeShow}] | ${r.svcs.join('+')}</span>
                 <b style="font-size:16px; color:#1e293b;">฿${r.price}</b>
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; opacity:0.8; font-size:12px; margin-top:6px;">
-                <span style="color:#64748b; font-weight:600;">${r.hair || '-'}</span>
+                <span style="font-weight:600; color:#64748b;">${r.hair || '-'}</span>
                 <span style="display:flex; align-items:center; gap:10px; font-weight:700;">
                     ${r.pay === 'Trans' ? '📱 โอน' : '💵 สด'}
-                    <i class="fas fa-trash-alt" style="color:#ef4444; cursor:pointer; font-size:14px;" onclick="delRec(${r.id})"></i>
+                    <i class="fas fa-trash-alt" style="color:#ef4444; cursor:pointer;" onclick="delRec(${r.id})"></i>
                 </span>
             </div>
         </div>`;
@@ -445,41 +424,62 @@ function renderDay() {
 
     const bEarn = Math.max(tot * (conf.perc / 100), conf.guar), sEarn = tot - bEarn, settle = cash - bEarn;
 
-    // การ์ดบน: สด/โอน
+    // อัปเดตยอดการ์ดบน
     $("dTotal").innerText = tot.toLocaleString(); 
     $("dTrans").innerText = trans.toLocaleString(); 
     $("dBarber").innerHTML = `${Math.floor(bEarn).toLocaleString()} <small style="font-size:10px; opacity:0.6;">(สด: ${cash})</small>`; 
     $("dShop").innerText = Math.floor(sEarn).toLocaleString(); 
     $("dCounts").innerText = `ลูกค้า: ${today.length} คน`; 
 
-    // 4. แสดง Badge สถิติ (ตัดผมต้องมาอันแรก)
-    let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:12px;">`;
-    if(stats["ตัดผม"]) sH += `<span class="badge" style="background:#4338ca; color:#fff; font-size:11px; padding:3px 8px;">ตัดผม: ${stats["ตัดผม"]}</span>`;
-    for(let s in stats) { 
-        if(s !== "ตัดผม") {
-            let bg = "#64748b";
-            if(s.includes("แฟชั่น")) bg = "#8b5cf6"; 
-            else if(s.includes("โกนหนวด")) bg = "#10b981";
-            else if(s.includes("กันหน้า")) bg = "#0ea5e9";
-            sH += `<span class="badge" style="background:${bg}; color:#fff; font-size:11px; padding:3px 8px;">${s}: ${stats[s]}</span>`; 
+    // 4. แสดง Badge สถิติ (แยกสีพื้นหลัง)
+    let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:15px; justify-content:center;">`;
+    const order = ["ตัดผม", "เด็ก"];
+    order.forEach(k => {
+        if(stats[k]) {
+            let bg = k === "ตัดผม" ? "#1e3a8a" : "#ec4899";
+            sH += `<span class="badge" style="background:${bg}; color:#fff; padding:5px 10px; border-radius:8px; font-size:11px; font-weight:800;">${k}: ${stats[k]}</span>`;
+        }
+    });
+    for(let s in stats) {
+        if(!order.includes(s)) {
+            sH += `<span class="badge" style="background:#64748b; color:#fff; padding:5px 10px; border-radius:8px; font-size:11px; font-weight:800;">${s}: ${stats[s]}</span>`;
         }
     }
     sH += `</div>`;
     $("dServiceStats").innerHTML = sH;
 
-    // 5. พ่นรายการ (dailyList) + ใส่ปุ่มไลน์กลับเข้าหัวข้อ (ถ้าเถ้าแก่อยากให้พ่นจาก JS)
-    // แต่ถ้าเถ้าแก่มีหัวข้อใน HTML อยู่แล้ว ตัวนี้จะพ่นแค่รายการลูกค้าครับ
-    $("dailyList").innerHTML = listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>";
+    // 5. พ่นแถบรายงานวันนี้ + ไลน์เขียว
+    const headerHtml = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:10px 5px;">
+            <b style="font-size:15px; color:#1e293b;">📋 รายงานวันนี้:</b>
+            <i class="fab fa-line" onclick="sendSummary()" style="color:#22c55e; font-size:32px; cursor:pointer;"></i>
+        </div>`;
+    $("dailyList").innerHTML = headerHtml + (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>");
 
-    // 6. แถบสถานะล่าง
+    // 6. แถบสถานะ + อิส้มปุ่มจรวด (พ่นทับ HTML เก่าไปเลย)
     const b = $("settleBar"); 
-    let statusTxt = "";
-    if (tot === 0) { statusTxt = "🟦 ร้านจ่ายประกัน"; b.className = "status-bar status-blue"; } 
-    else if (settle > 0) { statusTxt = `🟥 ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`; b.className = "status-bar status-red"; } 
-    else if (settle < 0) { statusTxt = `🟦 ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; b.className = "status-bar status-indigo"; } 
-    else { statusTxt = "✅ ยอดเงินสดพอดีเป๊ะ"; b.className = "status-bar status-green"; }
+    let statusTxt = "", bgBar = "";
+    if (tot === 0) { statusTxt = "🟦 ร้านจ่ายประกัน"; bgBar = "#e0f2fe"; } 
+    else if (settle > 0) { statusTxt = `🟥 ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`; bgBar = "#fee2e2"; } 
+    else if (settle < 0) { statusTxt = `🟦 ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; bgBar = "#e0e7ff"; } 
+    else { statusTxt = "✅ ยอดเงินสดพอดี"; bgBar = "#dcfce7"; }
     
-    b.innerHTML = `<span style="font-weight:700; font-size:13px;">${statusTxt}</span>`;
+    // ตรงนี้คือส่วนที่มึงต้องลบ HTML เก่าทิ้ง เพราะ Java จะสร้างใหม่ให้กดได้จริง
+    const container = document.getElementById("settleBar").parentElement;
+    container.innerHTML = `
+        <div style="display:flex; gap:10px; align-items: center; width:100%;">
+            <div id="settleBar" style="flex: 8; height: 50px; background:${bgBar}; display:flex; align-items:center; justify-content:center; font-weight:900; border-radius:15px; font-size: 14px; color:#1e293b; border:1px solid rgba(0,0,0,0.05);">
+                ${statusTxt}
+            </div>
+            <button onclick="saveAndGo('${d}', ${tot}, ${sEarn}, ${bEarn})" style="flex: 2; height: 50px; background:#ff4500; color:white; border:none; border-radius:15px; font-size:20px; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(255, 69, 0, 0.3); cursor:pointer;">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>`;
+}
+
+function saveAndGo(date, total, shop, barber) {
+    if (total === 0 && !confirm("ไม่มีข้อมูลยอด ปิดงานเลยมั้ย?")) return;
+    go(3); // ย้ายไปหน้าสรุป
 }
     function sendDailyListToLine() {
     const d = document.getElementById("dateInp").value;
