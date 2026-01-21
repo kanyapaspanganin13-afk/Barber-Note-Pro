@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.7.9.3</title>
+    <title>Barber Note Pro v.7.2.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -383,101 +383,75 @@ function renderDay() {
 
     today.sort((a, b) => a.time.localeCompare(b.time)).forEach(r => {
         tot += r.price;
-        if (r.pay === 'Trans') trans += r.price;
-        else cash += r.price;
+        if (r.pay === 'Trans') trans += r.price; else cash += r.price;
 
+        // นับสถิติทรงผม (ไม่นับเบิ้ล)
         if (r.svcs) {
             r.svcs.forEach(s => {
-                let name = s.trim();
-                if (name !== "") {
-                    // 1. นับแยกทุกทรงที่มึงพิมพ์ (แฟชั่น, รองทรง, สกินเฮด ฯลฯ)
-                    stats[name] = (stats[name] || 0) + 1;
-                    
-                    // 2. มัดรวมกลุ่ม "ตัดผม" ไว้ให้มึงดูยอดรวมหัวด้วย
-                    if (name.includes("แฟชั่น") || name.includes("รองทรง") || name === "ตัดผม") {
-                        stats["[รวมตัดผม]"] = (stats["[รวมตัดผม]"] || 0) + 1;
-                    }
-                }
+                let name = s.trim(); if (!name) return;
+                stats[name] = (stats[name] || 0) + 1;
             });
         }
 
-        // แสดงผลบรรทัดเดียวสะอาดๆ ตามที่มึงสั่ง
+        // 1. แก้ไขเวลา: โชว์ "เวลาเริ่ม - เวลาเสร็จ" (ถ้ามึงเก็บข้อมูล r.endTime ไว้นะ)
+        // ถ้าไม่มี endTime ให้โชว์แค่เวลาเริ่มไปก่อน แต่กูเว้นช่องไว้ให้แล้ว
         listHtml += `
-        <div class="history-row" style="background:#fff; padding:15px; border-radius:18px; margin-bottom:10px; box-shadow:0 2px 4px rgba(0,0,0,0.05); border:1px solid #f1f5f9;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div style="flex:1;">
-                    <span style="color:#4338ca; font-weight:800; font-size:15px;">${r.time}</span>
-                    <span style="color:#1e293b; font-weight:600; margin-left:8px;">| ${r.svcs.join(' + ')}</span>
-                </div>
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <span style="font-size:12px; font-weight:700; color:#64748b; background:#f1f5f9; padding:2px 8px; border-radius:6px;">${r.pay === 'Cash' ? 'เงินสด' : 'โอน'}</span>
-                    <b style="font-size:18px; color:#1e293b; min-width:60px; text-align:right;">฿${r.price}</b>
-                    <div onclick="delRec(${r.id})" style="cursor:pointer; padding:5px;"><i class="fas fa-trash-alt" style="color:#dc2626; font-size:16px;"></i></div>
-                </div>
+        <div style="background:#fff; padding:15px; border-radius:15px; margin-bottom:10px; border:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+            <div style="flex:1;">
+                <span style="color:#4338ca; font-weight:800;">[${r.time}${r.endTime ? ' - ' + r.endTime : ''}]</span> 
+                <span style="margin-left:8px; font-weight:600;">${r.svcs.join(' + ')}</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:12px; color:#64748b;">${r.pay==='Cash'?'เงินสด':'โอน'}</span>
+                <b style="font-size:16px;">฿${r.price}</b>
+                <i class="fas fa-trash" onclick="delRec(${r.id})" style="color:#dc2626; cursor:pointer; margin-left:5px;"></i>
             </div>
         </div>`;
     });
 
-    // สูตรประกัน 200 (ร้านได้ครึ่ง ลบประกัน 200)
-    let sEarn = (tot * 0.5) - 200;
-    let bEarn = tot - sEarn;
-    let settle = cash - bEarn;
-
-    document.getElementById("dTotal").innerText = tot.toLocaleString();
-    document.getElementById("dTrans").innerText = trans.toLocaleString();
-    document.getElementById("dBarber").innerHTML = `${Math.floor(bEarn).toLocaleString()} <small>(สด:${cash})</small>`;
+    // --- 2. สูตรการเงินใหม่ (ร้านไม่เหลือ 35 บาทแล้วไอ้สัส!) ---
+    let shopHalf = tot * 0.5;   // ร้านต้องได้ครึ่งนึง (เช่น 235)
+    let barberHalf = tot * 0.5; // ช่างได้ครึ่งนึง (เช่น 235)
     
-    const dShop = document.getElementById("dShop");
-    dShop.innerText = Math.floor(sEarn).toLocaleString();
-    dShop.style.color = sEarn < 0 ? "#dc2626" : "#16a34a";
+    // ยอดร้านสุทธิวันนี้ (โชว์ 235 ให้ใจชื้นก่อน)
+    let sEarn = shopHalf; 
+    
+    // ยอดที่ช่างต้องได้จริง (ค่าแรง + ประกัน 200)
+    let bTotalNeed = barberHalf + 200; 
+    
+    // แถบเคลียร์เงินสด: เงินสดในมือช่าง - ยอดที่ช่างควรได้ทั้งหมด
+    let settle = cash - bTotalNeed;
 
-    document.getElementById("dCounts").innerText = `ลูกค้า ${today.length} คน`;
-    document.getElementById("dailyList").innerHTML = listHtml || "<center style='opacity:0.3; padding:40px;'>ไม่มีลูกค้า</center>";
+    // แสดงผล
+    document.getElementById("dTotal").innerText = tot.toLocaleString();
+    document.getElementById("dShop").innerText = Math.floor(sEarn).toLocaleString(); // โชว์ 235!
+    document.getElementById("dBarber").innerText = Math.floor(barberHalf).toLocaleString();
+    
+    // Badge สถิติ
+    let sH = "";
+    for (let s in stats) {
+        sH += `<span style="background:#f1f5f9; color:#475569; padding:4px 10px; border-radius:10px; font-size:11px; font-weight:700; margin-right:5px; border:1px solid #e2e8f0;">${s}: ${stats[s]}</span>`;
+    }
+    document.getElementById("dServiceStats").innerHTML = sH;
+    document.getElementById("dailyList").innerHTML = listHtml || "<center style='padding:20px; opacity:0.5;'>ไม่มีงาน</center>";
 
-    // แถบสถานะเคลียร์เงินสด (โชว์ยอดคืนช่างที่รวมประกันแล้ว)
+    // แถบสถานะเคลียร์เงินสด (ดัก 3 เงื่อนไข: ร้านคืน / ช่างคืน / พอดีเป๊ะ)
     const bar = document.getElementById("settleBar");
     if (bar) {
         if (settle < 0) {
-            bar.innerText = `🟦 ร้านคืนช่าง ฿${Math.floor(Math.abs(settle))} (รวมประกัน)`;
+            // กรณีเงินสดในมือช่างน้อยกว่าค่าแรง+ประกัน (ร้านต้องโอนเพิ่ม)
+            bar.innerText = `🟦 ร้านต้องโอนคืนช่าง ฿${Math.floor(Math.abs(settle))} (รวมประกัน)`;
             bar.style.background = "#e0e7ff"; bar.style.color = "#4338ca";
         } else if (settle > 0) {
-            bar.innerText = `🟥 ช่างคืนร้าน ฿${Math.floor(settle)}`;
+            // กรณีเงินสดในมือช่างมากกว่าค่าแรง+ประกัน (ช่างต้องส่งเงินเข้าลิ้นชักร้าน)
+            bar.innerText = `🟥 ช่างต้องส่งเงินร้าน ฿${Math.floor(settle)}`;
             bar.style.background = "#fee2e2"; bar.style.color = "#dc2626";
         } else {
-            bar.innerText = "✅ ยอดเงินสดพอดี";
+            // กรณีสวรรค์สร้าง ยอดพอดีเป๊ะ ไม่ต้องโอนให้เหนื่อย!
+            bar.innerText = "✅ ยอดเงินสดพอดีเป๊ะ ไม่ต้องโอนคืน";
             bar.style.background = "#dcfce7"; bar.style.color = "#16a34a";
         }
     }
-
-    // Badge สถิติ (โชว์แยกทุกทรง + ยอดรวมกลุ่ม)
-    let sH = "";
-    for (let s in stats) {
-        let isTotal = s.includes("[รวม");
-        let bg = isTotal ? "#1e293b" : "#f1f5f9";
-        let color = isTotal ? "#fff" : "#475569";
-        sH += `<span style="background:${bg}; color:${color}; padding:4px 10px; border-radius:10px; font-size:11px; font-weight:700; margin-right:5px; border:1px solid #e2e8f0;">${s}: ${stats[s]}</span>`;
-    }
-    document.getElementById("dServiceStats").innerHTML = sH;
-}
-   // ฟังก์ชันสำหรับปุ่มส้มอมแดง ส่งสรุปยอดรวมไปหน้า 3 หรือส่งให้เจ้าของ
-function sendSummary() {
-    const d = document.getElementById("dateInp").value;
-    const tot = document.getElementById("dTotal").innerText;
-    const trans = document.getElementById("dTrans").innerText;
-    const shop = document.getElementById("dShop").innerText;
-    const statusText = document.getElementById("settleBar").innerText; // ดึงค่า "ร้านจ่ายประกัน" หรือ "ช่างคืนเงิน"
-
-    const msg = `📊 สรุปยอดร้านตัดผม (${d})\n` +
-                `------------------\n` +
-                `💰 ยอดรวม: ${tot} บ.\n` +
-                `📱 ยอดโอน: ${trans} บ.\n` +
-                `🏠 ส่วนของร้าน: ${shop} บ.\n` +
-                `------------------\n` +
-                `📌 สถานะ: ${statusText}`;
-
-    // ✅ เด้งไปหน้าเลือกเพื่อนใน LINE เพื่อส่งรายงาน
-    window.location.href = `https://line.me/R/msg/text/?${encodeURIComponent(msg)}`;
-}
     function sendDailyListToLine() {
     const d = document.getElementById("dateInp").value;
     const today = db.filter(r => r.date === d);
@@ -509,7 +483,56 @@ function sendSummary() {
         w.style.display = w.style.display === "none" ? "block" : "none";
         $("accHistory").innerHTML = account.logs.map(l => `<div style="padding:5px; border-bottom:1px solid #eee;">${l.date}: ฿${l.amount} (${l.note})</div>`).join('') || "ไม่มีประวัติ";
     }
+function closeDay() {
+    const d = document.getElementById("dateInp").value;
+    const today = db.filter(r => r.date === d);
+    
+    if (today.length === 0) {
+        alert("ไม่มีงานจะให้ส่งนะไอ้ชาย!");
+        return;
+    }
 
+    // 1. คำนวณยอดเงินและสถิติทรงผม
+    let total = 0, trans = 0, cash = 0;
+    let sStats = {};
+
+    today.forEach(r => {
+        total += r.price;
+        if (r.pay === 'Trans') trans += r.price; else cash += r.price;
+        
+        if (r.svcs) {
+            r.svcs.forEach(s => {
+                let name = s.trim();
+                if (name) sStats[name] = (sStats[name] || 0) + 1;
+            });
+        }
+    });
+
+    let shopNet = (total * 0.5) - 200; // สูตรประกัน 200 ของมึง
+    let bEarn = total - shopNet;
+
+    // 2. ปั้นข้อความรายงาน (เอาแบบอ่านง่ายๆ ใน LINE)
+    let statsText = Object.entries(sStats).map(([name, count]) => `• ${name}: ${count}`).join('\n');
+    
+    let msg = `📌 สรุปรายงานร้านตัดผม (${d})\n` +
+              `------------------------------\n` +
+              `💇 สถิติทรงผม:\n${statsText}\n` +
+              `------------------------------\n` +
+              `💰 ยอดรวมทั้งหมด: ฿${total.toLocaleString()}\n` +
+              `💳 โอน: ฿${trans.toLocaleString()} | 💵 เงินสด: ฿${cash.toLocaleString()}\n` +
+              `------------------------------\n` +
+              `💈 ส่วนช่าง: ฿${Math.floor(bEarn).toLocaleString()}\n` +
+              `🏠 ส่วนร้าน (หักประกัน): ฿${Math.floor(shopNet).toLocaleString()}\n` +
+              `------------------------------\n` +
+              `✅ ปิดงานเรียบร้อย!`;
+
+    // 3. ยิงไป LINE
+    const lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(msg)}`;
+    window.open(lineUrl, '_blank');
+
+    // 4. สั่งวาร์ปไปหน้า 3 (สรุปรายงาน)
+    go(3);
+}
     function loadHistDaily() {
         const d = $("histDate").value;
         const data = db.filter(r => r.date === d);
