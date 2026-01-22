@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.6.3</title>
+    <title>Barber Note Pro v.7.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -147,7 +147,7 @@
         </div>
 
         <div class="card" style="margin-top:20px; padding: 15px;">
-            <h2 style="text-align:center;">📊 สรุปประวัติ</h2>
+            <h2 style="text-align:center;">📊 สรุปรายงาน</h2>
             <label>📅 ดูสรุปรายเดือน</label>
             <input type="month" id="histMonth" onchange="loadHistMonth()" style="margin:10px 0; width:100%; padding:10px; border-radius:10px; border:1px solid #ddd;">
             <div id="histMonthArea"></div>
@@ -281,27 +281,8 @@ function handleHoliday() {
             location.reload();
         }
     }
-function updateDateDisplay(val) {
-    if (!val) return; // กัน Error ถ้าค่าว่าง
-    const d = new Date(val);
-    // แสดงผลแบบไทย เช่น "20 ม.ค."
-    document.getElementById("dateDisplay").innerText = d.toLocaleDateString('th-TH', { 
-        day: 'numeric', 
-        month: 'short',
-        year: '2-digit' // แถม: ใส่ปีท้ายนิดนึงให้ดูอินเตอร์
-    });
-    if (typeof renderDay === "function") renderDay();
-}
-window.addEventListener('DOMContentLoaded', () => {
-    const dateInp = document.getElementById("dateInp");
-    const now = new Date();
-    const today = now.getFullYear() + '-' + 
-                  String(now.getMonth() + 1).padStart(2, '0') + '-' + 
-                  String(now.getDate()).padStart(2, '0');
-    
-    dateInp.value = today;       // ใส่วันที่ปัจจุบันลงในปฏิทิน
-    updateDateDisplay(today);    // สั่งให้คำว่า "เลือกวันที่" หายไป แล้วเป็นวันที่วันนี้แทน
-});
+       function updateDateDisplay(v){if(!v)return;const d=new Date(v);document.getElementById("dateDisplay").innerText=d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});if(typeof renderDay==="function")renderDay();}
+       window.addEventListener('DOMContentLoaded',()=>{const i=$("dateInp"),n=new Date(),t=n.toISOString().split('T')[0];i.value=t;updateDateDisplay(t);});
 
     function selectPay(m) {
         payMethod = m;
@@ -310,16 +291,17 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 function renderDay() {
     const dInp = $("dateInp").value, today = db.filter(r => r.date === dInp), stats = {};
-    let tot = 0, trans = 0, cash = 0, listHtml = "";
+    let tot = 0, trans = 0, cash = 0, tips = 0, listHtml = "";
     today.slice().sort((a,b) => a.time.localeCompare(b.time)).forEach((r, i) => {
-        tot += r.price; (r.pay === 'Trans') ? trans += (r.price + (r.tip||0)) : cash += r.price;
-        const counted = new Set(["ตัดผม"]); if (r.hair && r.hair.includes("เด็ก")) counted.add("เด็ก");
-        (r.svcs || []).forEach(s => { if (s && !["เด็ก","รองทรง","แฟชั่น","นักเรียน","ตัดผม"].some(x => s.includes(x))) counted.add(s); });
-        counted.forEach(k => stats[k] = (stats[k] || 0) + 1);
+        const p = Number(r.price)||0, t = Number(r.tip)||0; tot += p; tips += t;
+        (r.pay === 'Trans') ? trans += (p + t) : cash += p;
+        const c = new Set(["ตัดผม"]); if (r.hair && r.hair.includes("เด็ก")) c.add("เด็ก");
+        (r.svcs || []).forEach(s => { if (s && !["เด็ก","รองทรง","แฟชั่น","นักเรียน","ตัดผม"].some(x => s.includes(x))) c.add(s); });
+        c.forEach(k => stats[k] = (stats[k] || 0) + 1);
         const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
-        listHtml += `<div class="history-row" style="padding:15px; border-bottom:1px solid #f1f5f9; background:#fff;"><div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-weight:800; font-size:14px; color:#1e293b;">${i+1}. [${timeShow}] | ${(r.svcs||[]).join('+')}</span><div style="text-align:right;"><b style="font-size:16px; display:block;">฿${r.price}${r.tip?` <small style="color:#be185d;">(+${r.tip})</small>`:''}</b><span style="font-size:12px; font-weight:700;">${r.pay==='Trans'?'📱 โอน':'💵 สด'} <i class="fas fa-trash-alt" style="color:#ef4444; cursor:pointer; margin-left:8px;" onclick="delRec(${r.id})"></i></span></div></div></div>`;
+        listHtml += `<div class="history-row" style="padding:15px; border-bottom:1px solid #f1f5f9; background:#fff;"><div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-weight:800; font-size:14px; color:#1e293b;">${i+1}. [${timeShow}] | ${(r.svcs||[]).join('+')}</span><div style="text-align:right;"><b style="font-size:16px; display:block;">฿${p}${t?` <small style="color:#be185d;">(+${t})</small>`:''}</b><span style="font-size:12px; font-weight:700;">${r.pay==='Trans'?'📱 โอน':'💵 สด'} <i class="fas fa-trash-alt" style="color:#ef4444; cursor:pointer; margin-left:8px;" onclick="delRec(${r.id})"></i></span></div></div></div>`;
     });
-    const bEarn = Math.max(tot * (conf.perc / 100), conf.guar), sEarn = tot - bEarn, settle = cash - bEarn;
+    const bEarn = Math.max(tot * (conf.perc / 100), conf.guar) + tips, sEarn = tot - (bEarn - tips), settle = cash - bEarn;
     $("dTotal").innerText = tot.toLocaleString(); $("dTrans").innerText = trans.toLocaleString(); $("dCash").innerText = cash.toLocaleString();
     $("dBarber").innerText = Math.floor(bEarn).toLocaleString(); $("dShop").innerText = Math.floor(sEarn).toLocaleString(); $("dCounts").innerText = `ลูกค้า: ${today.length} คน`;
     let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:10px;">`;
@@ -327,7 +309,7 @@ function renderDay() {
     for (let s in stats) { if (!["ตัดผม", "เด็ก"].includes(s)) sH += `<span style="background:#64748b;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${s}: ${stats[s]}</span>`; }
     $("dServiceStats").innerHTML = sH + `</div>`;
     $("dailyList").innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;"><b style="font-size:16px;">📋 รายงานวันนี้:</b><i class="fab fa-line" style="color:#22c55e;font-size:32px;cursor:pointer" onclick="shareLine()"></i></div>` + (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>");
-    let txt = "", bg = ""; if (tot === 0) { txt = "🟦 ร้านจ่ายประกัน"; bg = "#e0f2fe"; } else if (settle > 0) { txt = `🟥 ช่างคืนร้าน ฿${settle.toLocaleString()}`; bg = "#fee2e2"; } else if (settle < 0) { txt = `🟦 ร้านคืนช่าง ฿${Math.abs(settle).toLocaleString()}`; bg = "#e0e7ff"; } else { txt = "✅ ยอดพอดี"; bg = "#dcfce7"; }
+    let txt = "", bg = ""; if (tot === 0) { txt = "🟦 ร้านจ่ายประกัน"; bg = "#e0f2fe"; } else if (settle > 0) { txt = `🟥 ช่างคืนร้าน ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; bg = "#fee2e2"; } else if (settle < 0) { txt = `🟦 ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; bg = "#e0e7ff"; } else { txt = "✅ ยอดพอดี"; bg = "#dcfce7"; }
     const container = $("settleBar").parentElement; container.style.cssText = "display:flex; gap:10px; margin-top:10px;";
     container.innerHTML = `<div id="settleBar" style="flex:8; height:55px; background:${bg}; display:flex; align-items:center; justify-content:center; border-radius:15px; font-weight:900; font-size:15px; color:#1e293b; border:1px solid rgba(0,0,0,0.05);">${txt}</div><button onclick="saveAndGo('${dInp}', ${tot}, ${sEarn}, ${bEarn})" style="flex:2; height:55px; background:#f97316; color:#fff; border-radius:15px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"><i class="fas fa-paper-plane"></i></button>`;
 }
@@ -441,45 +423,22 @@ function saveAndGo(date, total, shop, barber) {
     </div>`;
     }
 function shareLine() {
-    const dInp = $("dateInp").value; // ดึงค่า 2026-01-22
-    const today = db.filter(r => r.date === dInp);
-    if (!today.length) return;
-
-    // --- จุดที่ 1: ย้ายวันที่มาไว้หน้า พ.ศ. (22/01/2026) ---
-    const dateParts = dInp.split('-');
-    const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
-
-    let tot = 0, cash = 0, trans = 0, stats = {};
-    let clientList = today.sort((a,b) => a.time.localeCompare(b.time)).map((r, i) => {
-        tot += r.price; r.pay === 'Trans' ? trans += r.price : cash += r.price;
-        
-        // เก็บสถิติทุกอย่างไว้ก่อน (เพื่อเอาไปกรองทีหลัง)
-        if (r.hair && r.hair.includes("เด็ก")) stats["เด็ก"] = (stats["เด็ก"] || 0) + 1;
-        (r.svcs || []).forEach(s => {
-            if (!s) return;
-            stats[s] = (stats[s] || 0) + 1;
-        });
+    const dInp = $("dateInp").value, today = db.filter(r => r.date === dInp); if (!today.length) return;
+    const dp = dInp.split('-'), fDate = `${dp[2]}/${dp[1]}/${dp[0]}`;
+    let tot=0, cash=0, trans=0, tips=0, stats={};
+    let clientList = today.sort((a,b)=>a.time.localeCompare(b.time)).map((r,i)=>{
+        const p = Number(r.price)||0, t = Number(r.tip)||0; tot+=p; tips+=t;
+        r.pay==='Trans' ? trans+=p : cash+=p;
+        if(r.hair&&r.hair.includes("เด็ก")) stats["เด็ก"]=(stats["เด็ก"]||0)+1;
+        (r.svcs||[]).forEach(s=>{ if(s) stats[s]=(stats[s]||0)+1; });
         const tShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
-        return `${i+1}. [${tShow}] ${(r.svcs || []).join('+')} = ${r.price} ${r.pay === 'Trans' ? '📱' : '💵'}`;
+        return `${i+1}. [${tShow}] ${(r.svcs||[]).join('+')} = ${p}${t?` (+ทิป ${t})`:''} ${r.pay==='Trans'?'📱':'💵'}`;
     }).join('\n');
-    const allowedStats = ["เด็ก", "สระผม", "โกนหนวด", "ย้อมผม", "ย้อมสี"];
-    let statText = Object.entries(stats)
-        .filter(([k]) => allowedStats.some(a => k.includes(a))) // เอาเฉพาะที่ตรงกับคำที่สั่ง
-        .map(([k, v]) => {
-            let icon = "🔹";
-            if (k.includes("เด็ก")) icon = "🧒";
-            else if (k.includes("สระ")) icon = "🧼";
-            else if (k.includes("โกน")) icon = "🪒";
-            else if (k.includes("ย้อม")) icon = "🎨";
-            return `${icon} ${k}: ${v}`;
-        }).join('\n');
-    
-    let bEarn = Math.max(tot * (conf.perc / 100), conf.guar);
-    let settle = cash - bEarn;
-    let settleMsg = settle > 0 ? `⚠️ ช่างคืนร้าน ${Math.floor(Math.abs(settle))}` : `🟦 ร้านคืนช่าง ${Math.floor(Math.abs(settle))}`;
-    
-    let msg = `💈 รายงานร้าน: Barber Shop\n📅 วันที่: ${formattedDate}\n-------------------------\n📝 ลูกค้า (รวม ${today.length} คน):\n${clientList}\n-------------------------\n📊 สรุปงาน:\n${statText}\n-------------------------\n💰 ยอดรวม: ${tot}\n📱 โอน: ${trans} | 💵 สด: ${cash}\n🤵 ช่าง: ${Math.floor(bEarn)}\n🏠 ร้าน: ${Math.floor(tot - bEarn)}\n-------------------------\n${settleMsg}`;
-    
+    const allowed = ["เด็ก","สระผม","โกนหนวด","ย้อมผม","ย้อมสี"], icons = {"เด็ก":"🧒","สระ":"🧼","โกน":"🪒","ย้อม":"🎨"};
+    let statText = Object.entries(stats).filter(([k])=>allowed.some(a=>k.includes(a))).map(([k,v])=>`${icons[Object.keys(icons).find(i=>k.includes(i))]||'🔹'} ${k}: ${v}`).join('\n');
+    let bEarn = Math.max(tot*(conf.perc/100), conf.guar) + tips; // ช่างได้ = ส่วนแบ่ง + ทิปทั้งหมด
+    let settle = cash - bEarn, settleMsg = settle > 0 ? `⚠️ ช่างคืนร้าน ${Math.floor(Math.abs(settle))}` : `🟦 ร้านคืนช่าง ${Math.floor(Math.abs(settle))}`;
+    let msg = `💈 รายงานร้าน: Barber Shop\n📅 วันที่: ${fDate}\n-------------------------\n📝 ลูกค้า (${today.length} คน):\n${clientList}\n-------------------------\n📊 สถิติ:\n${statText}\n-------------------------\n💰 ยอด: ${tot} | 🧧 ทิป: ${tips}\n📱 โอน: ${trans} | 💵 สด: ${cash}\n🤵 ช่างได้: ${Math.floor(bEarn)}\n🏠 ร้านได้: ${Math.floor(tot-(bEarn-tips))}\n-------------------------\n${settleMsg}`;
     window.open(`https://line.me/R/msg/text/?${encodeURIComponent(msg)}`);
 }
     function saveDB() { localStorage.setItem("barber_db", JSON.stringify(db)); localStorage.setItem("barber_conf", JSON.stringify(conf)); }
