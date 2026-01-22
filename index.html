@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.7.3</title>
+    <title>Barber Note Pro v.3.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -148,7 +148,8 @@
 
         <div class="card" style="margin-top:20px; padding: 15px;">
             <h2 style="text-align:center;">📊 สรุปรายงาน</h2>
-            <label>📅 ดูสรุปรายเดือน</label>
+            
+         <label>📅 ดูสรุปรายเดือน</label>
             <input type="month" id="histMonth" onchange="loadHistMonth()" style="margin:10px 0; width:100%; padding:10px; border-radius:10px; border:1px solid #ddd;">
             <div id="histMonthArea"></div>
             <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
@@ -299,7 +300,7 @@ function renderDay() {
         (r.svcs || []).forEach(s => { if (s && !["เด็ก","รองทรง","แฟชั่น","นักเรียน","ตัดผม"].some(x => s.includes(x))) c.add(s); });
         c.forEach(k => stats[k] = (stats[k] || 0) + 1);
         const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
-        listHtml += `<div class="history-row" style="padding:15px; border-bottom:1px solid #f1f5f9; background:#fff;"><div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-weight:800; font-size:14px; color:#1e293b;">${i+1}. [${timeShow}] | ${(r.svcs||[]).join('+')}</span><div style="text-align:right;"><b style="font-size:16px; display:block;">฿${p}${t?` <small style="color:#be185d;">(+${t})</small>`:''}</b><span style="font-size:12px; font-weight:700;">${r.pay==='Trans'?'📱 โอน':'💵 สด'} <i class="fas fa-trash-alt" style="color:#ef4444; cursor:pointer; margin-left:8px;" onclick="delRec(${r.id})"></i></span></div></div></div>`;
+        listHtml += `<div class="history-row" style="padding:15px; border-bottom:1px solid #f1f5f9; background:#fff;"><div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-weight:800; font-size:14px; color:#1e293b;">${i+1}. [${timeShow}] | ${(r.svcs||[]).join('+')}</span><div style="text-align:right;"><b style="font-size:16px; display:block;">฿${p}</b>${t?`<small style="color:#be185d; display:block; font-size:11px; font-weight:700;">(ทิป: ฿${t})</small>`:''}<span style="font-size:12px; font-weight:700;">${r.pay==='Trans'?'📱 โอน':'💵 สด'} <i class="fas fa-trash-alt" style="color:#ef4444; cursor:pointer; margin-left:8px;" onclick="delRec(${r.id})"></i></span></div></div></div>`;
     });
     const bEarn = Math.max(tot * (conf.perc / 100), conf.guar) + tips, sEarn = tot - (bEarn - tips), settle = cash - bEarn;
     $("dTotal").innerText = tot.toLocaleString(); $("dTrans").innerText = trans.toLocaleString(); $("dCash").innerText = cash.toLocaleString();
