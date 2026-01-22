@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.9</title>
+    <title>Barber Note Pro v.7</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -122,32 +122,43 @@
         <hr style="border:0; border-top:1px solid #e2e8f0; margin-top:15px;">
         <div id="dailyList"></div>
     </div> 
-<div id="p3" class="page" style="padding:10px;background:#f4f7fa;">
-    <div class="card" style="background:#fff;border-radius:20px;padding:15px;box-shadow:0 5px 15px rgba(0,0,0,0.05);margin-bottom:10px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-            <b style="font-size:14px;color:#92400e;"><i class="fas fa-wallet"></i> บัญชีสุทธิ</b>
-            <div id="accLight" style="background:#22c55e;width:8px;height:8px;border-radius:50%;"></div>
+<div id="p3" class="page" style="padding:10px; background:#f4f7fa;">
+    <div class="card" style="background:#fff; border-radius:20px; padding:15px; box-shadow:0 5px 15px rgba(0,0,0,0.05); margin-bottom:10px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <b style="font-size:14px; color:#92400e;"><i class="fas fa-wallet"></i> บัญชีสรุป</b>
+            <div id="accLight" style="background:#22c55e; width:8px; height:8px; border-radius:50%;"></div>
         </div>
-        <div style="display:flex;gap:8px;margin-bottom:15px;font-size:12px;text-align:center;">
-            <div style="flex:1;background:#fffcf5;border:1px solid #fde68a;border-radius:12px;padding:8px;">ค้างเดิม<br><b id="accOldVal">฿0</b></div>
-            <div style="flex:1;background:#f0f9ff;border:1px solid #bae6fd;border-radius:12px;padding:8px;">วันนี้<br><b id="accTodayVal">฿0</b></div>
+
+        <div style="display:flex; gap:8px; margin-bottom:10px; text-align:center; font-size:11px;">
+            <div style="flex:1; background:#fffcf5; border:1px solid #fde68a; border-radius:12px; padding:8px;">ค้างเดิม<br><b id="accOldVal">฿0</b></div>
+            <div style="flex:1; background:#f0f9ff; border:1px solid #bae6fd; border-radius:12px; padding:8px;">วันนี้<br><b id="accTodayVal">฿0</b></div>
         </div>
-        <div style="text-align:center;margin-bottom:15px;font-size:40px;font-weight:900;color:var(--primary);">฿<span id="accNet">0</span></div>
-        <div style="display:flex;gap:8px;margin-bottom:10px;">
-            <div style="background:#f1f5f9;border-radius:12px;width:50px;height:50px;display:flex;justify-content:center;align-items:center;color:#6366f1;"><i class="fas fa-calendar-alt"></i></div>
-            <input type="text" id="accNote" placeholder="บันทึก..." style="flex:1;border:1px solid #e2e8f0;border-radius:12px;padding:10px;font-size:14px;background:#f8fafc;">
+
+        <div style="text-align:center; margin-bottom:10px;">
+            <div style="font-size:35px; font-weight:900; color:var(--primary); line-height:1;">฿<span id="accNet">0</span></div>
+            <div id="accStatus" style="font-size:12px; font-weight:700; margin-top:5px; color:#64748b;">(รอข้อมูลจากอิส้ม...)</div>
         </div>
-        <button onclick="clearAccount()" style="width:100%;background:linear-gradient(135deg,#74c69d,#40916c);color:#fff;border:none;border-radius:15px;padding:15px;font-weight:900;margin-bottom:8px;">ยืนยันการเคลียร์</button>
-        <button onclick="openHistoryModal()" style="width:100%;background:none;color:#3b82f6;border:1px solid #3b82f6;border-radius:12px;padding:8px;font-size:12px;">ประวัติ</button>
+
+        <div style="display:flex; gap:5px; margin-bottom:10px;">
+            <div onclick="$('accDate').showPicker()" style="background:#f1f5f9; border-radius:12px; width:45px; height:45px; display:flex; justify-content:center; align-items:center; color:#6366f1; cursor:pointer; position:relative;">
+                <i class="fas fa-calendar-alt"></i>
+                <input type="date" id="accDate" style="position:absolute; opacity:0; width:100%; height:100%; left:0;">
+            </div>
+            <input type="text" id="accNote" placeholder="บันทึก..." style="flex:1; border:1px solid #e2e8f0; border-radius:12px; padding:10px; font-size:13px;">
+        </div>
+
+        <button onclick="clearAccount()" style="width:100%; background:linear-gradient(135deg,#74c69d,#40916c); color:#fff; border:none; border-radius:15px; padding:12px; font-weight:900; font-size:15px; margin-bottom:8px;">บันทึกเคลียร์เงิน</button>
+        <button onclick="openHistoryModal()" style="width:100%; background:none; color:#3b82f6; border:1px solid #3b82f6; border-radius:12px; padding:6px; font-size:11px;">ประวัติ</button>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-        <div onclick="$('histDate').showPicker()" style="background:#fff;border-radius:15px;padding:15px;text-align:center;position:relative;box-shadow:0 2px 8px rgba(0,0,0,0.03);">
-            <i class="fas fa-search-dollar" style="font-size:20px;color:#059669;margin-bottom:5px;"></i><br><b style="font-size:12px;">รายวัน</b>
-            <input type="date" id="histDate" onchange="loadHistDaily()" style="opacity:0;position:absolute;inset:0;">
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div onclick="$('histDate').showPicker()" style="background:#fff; border-radius:15px; padding:12px; text-align:center; position:relative; box-shadow:0 2px 8px rgba(0,0,0,0.03);">
+            <i class="fas fa-search-dollar" style="color:#059669; font-size:18px;"></i><br><b style="font-size:11px;">รายวัน</b>
+            <input type="date" id="histDate" onchange="loadHistDaily()" style="opacity:0; position:absolute; inset:0;">
         </div>
-        <div onclick="$('histMonth').showPicker()" style="background:#fff;border-radius:15px;padding:15px;text-align:center;position:relative;box-shadow:0 2px 8px rgba(0,0,0,0.03);">
-            <i class="fas fa-calendar-check" style="font-size:20px;color:#4f46e5;margin-bottom:5px;"></i><br><b style="font-size:12px;">รายเดือน</b>
-            <input type="month" id="histMonth" onchange="loadHistMonth()" style="opacity:0;position:absolute;inset:0;">
+        <div onclick="$('histMonth').showPicker()" style="background:#fff; border-radius:15px; padding:12px; text-align:center; position:relative; box-shadow:0 2px 8px rgba(0,0,0,0.03);">
+            <i class="fas fa-calendar-check" style="color:#4f46e5; font-size:18px;"></i><br><b style="font-size:11px;">รายเดือน</b>
+            <input type="month" id="histMonth" onchange="loadHistMonth()" style="opacity:0; position:absolute; inset:0;">
         </div>
     </div>
 </div>
@@ -315,18 +326,31 @@ function saveAndGo(date, total, shop, barber) {
         w.style.display = w.style.display === "none" ? "block" : "none";
         $("accHistory").innerHTML = account.logs.map(l => `<div style="padding:5px; border-bottom:1px solid #eee;">${l.date}: ฿${l.amount} (${l.note})</div>`).join('') || "ไม่มีประวัติ";
     }
-   function clearAccount() {
-    const n = $("accNet"), a = parseInt(n.innerText) || 0, nt = $("accNote").value, d = $("accDate").value || new Date().toLocaleDateString('th-TH');
-    if (a <= 0) return alert("ยอดเป็น 0 จะเคลียร์หาพระแสงอะไรอิดอก!");
-    if (confirm(`ยืนยันเคลียร์ ฿${a.toLocaleString()}?`)) {
-        const db = JSON.parse(localStorage.getItem("barber_acc_logs") || "[]");
-        db.unshift({ date: d, amount: a, note: nt || "ไม่มีหมายเหตุ" });
-        localStorage.setItem("barber_acc_logs", JSON.stringify(db));
-        n.innerText = "0"; $("accTodayVal").innerText = $("accOldVal").innerText = "฿0"; $("accNote").value = "";
-        if($("accLight")) $("accLight").style.background = "#ccc";
-        if(typeof speak === 'function') speak("เคลียร์เงินเรียบร้อยแล้วค่ะ");
-        alert("✅ บันทึกยอดการเคลียร์เงินสำเร็จ!");
-    }
+  function loadAccountStatus() {
+    const settle = parseFloat(($('dSettle')?.innerText || "0").replace(/,/g,'')) || 0;
+    const net = (account.balance || 0) + settle;
+    const d = new Date($("dateInp").value);
+    const dThai = `${d.getDate()}/${d.getMonth()+1}/${(d.getFullYear()+543).toString().slice(-2)}`;
+
+    $("accOldVal").innerText = `฿${(account.balance || 0).toLocaleString()}`;
+    $("accTodayVal").innerText = `฿${settle.toLocaleString()}`;
+    $("accNet").innerText = Math.abs(net).toLocaleString();
+
+    let txt="✅ พอดี", light="#16a34a";
+    if(net > 0){ txt=`🚩 ${dThai}: ช่างคืนร้าน ฿${Math.abs(net).toLocaleString()}`; light="#dc2626"; }
+    else if(net < 0){ txt=`🚩 ${dThai}: ร้านคืนช่าง ฿${Math.abs(net).toLocaleString()}`; light="#1e3a8a"; }
+
+    $("accStatus").innerText = txt;
+    $("accLight").style.background = light;
+}
+
+function clearAccount(){
+    const d = $("accDate").value, settle = parseFloat(($('dSettle')?.innerText || "0").replace(/,/g,'')) || 0;
+    if(!d) return alert("เลือกวันที่!");
+    account.logs.unshift({ date: d, amount: (account.balance || 0) + settle, note: $("accNote").value || "เคลียร์ยอด" });
+    account.balance = -settle;
+    localStorage.setItem("barber_account", JSON.stringify(account));
+    speak("เคลียร์เงินเรียบร้อย"); $("accNote").value = ""; loadAccountHistory(); loadAccountStatus();
 }
 function renderHistoryList() {
     const db = JSON.parse(localStorage.getItem("barber_acc_logs") || "[]");
