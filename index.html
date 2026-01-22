@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.3.3</title>
+    <title>Barber Note Pro v.5.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -367,11 +367,11 @@ window.addEventListener('DOMContentLoaded', () => {
         $("btnTrans").className = `btn btn-pay ${m === 'Trans' ? 'active-trans' : ''}`;
     }
 function renderDay() {
-    const d = $("dateInp").value;
-    const today = db.filter(r => r.date === d);
+    const dInp = $("dateInp").value;
+    const today = db.filter(r => r.date === dInp);
     let tot = 0, trans = 0, cash = 0, stats = {}, listHtml = "";
 
-    today.slice().sort((a, b) => a.time.localeCompare(b.time)).forEach(r => {
+    today.slice().sort((a, b) => a.time.localeCompare(b.time)).forEach((r, idx) => {
         tot += r.price;
         r.pay === 'Trans' ? trans += r.price : cash += r.price;
 
@@ -386,11 +386,13 @@ function renderDay() {
 
         const timeShow = r.endTime ? `${r.time} - ${r.endTime}` : r.time;
 
-        // รายการลูกค้าบรรทัดเดียว (เอาชื่อทรงผมข้างล่างออก)
+        // รายการลูกค้าบรรทัดเดียวพร้อมลำดับ 1. 2. 3.
         listHtml += `
         <div class="history-row" style="padding:15px; border-bottom:1px solid #f1f5f9; background:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-weight:800; font-size:14px; color:#1e293b;">[${timeShow}] | ${(r.svcs || []).join('+')}</span>
+                <span style="font-weight:800; font-size:14px; color:#1e293b;">
+                    ${idx + 1}. [${timeShow}] | ${(r.svcs || []).join('+')}
+                </span>
                 <div style="text-align:right;">
                     <b style="font-size:16px; display:block;">฿${r.price}</b>
                     <span style="font-size:12px; font-weight:700;">
@@ -403,22 +405,29 @@ function renderDay() {
     });
 
     const bEarn = Math.max(tot * (conf.perc / 100), conf.guar), sEarn = tot - bEarn, settle = cash - bEarn;
-    $("dTotal").innerText = tot.toLocaleString(); $("dTrans").innerText = trans.toLocaleString();
-    $("dBarber").innerHTML = `${Math.floor(bEarn).toLocaleString()} <small>(สด: ${cash})</small>`;
-    $("dShop").innerText = Math.floor(sEarn).toLocaleString(); $("dCounts").innerText = `ลูกค้า: ${today.length} คน`;
+
+    // อัปเดตส่วนหัว: แยก "โอน" และ "สด" ให้เห็นชัดๆ ตามสั่ง
+    $("dTotal").innerText = tot.toLocaleString(); 
+    $("dTrans").innerText = trans.toLocaleString(); 
+    // เพิ่มบรรทัดแสดงเงินสดเพียวๆ (ถ้ามึงมี ID dCash ใน HTML ให้ใส่ตรงนี้)
+    if($("dCash")) $("dCash").innerText = cash.toLocaleString(); 
+    
+    $("dBarber").innerHTML = `${Math.floor(bEarn).toLocaleString()} <span style="font-size:12px; color:#64748b; margin-left:5px;">สด: ${cash.toLocaleString()}</span>`; 
+    $("dShop").innerText = Math.floor(sEarn).toLocaleString(); 
+    $("dCounts").innerText = `ลูกค้า: ${today.length} คน`; 
 
     let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:10px;">`;
     ["ตัดผม", "เด็ก"].forEach(k => { if (stats[k]) sH += `<span style="background:#4338ca;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${k}: ${stats[k]}</span>`; });
     for (let s in stats) { if (!["ตัดผม", "เด็ก"].includes(s)) sH += `<span style="background:#64748b;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${s}: ${stats[s]}</span>`; }
     $("dServiceStats").innerHTML = sH + `</div>`;
 
+    // ส่วนรายงานวันนี้ (ไม่มีชื่อร้าน Barber Shop ด้านบนแล้ว)
     $("dailyList").innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
-        <b>📋 รายงานวันนี้:</b>
+        <b style="font-size:16px;">📋 รายงานวันนี้:</b>
         <i class="fab fa-line" style="color:#22c55e;font-size:32px;cursor:pointer" onclick="shareLine()"></i>
     </div>` + (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>");
 
-    // แถบสถานะครบถ้วน + ปุ่มจรวดส้มย้ายมาขวา
     let statusTxt = "", bgBar = "";
     if (tot === 0) { statusTxt = "🟦 ร้านจ่ายประกัน"; bgBar = "#e0f2fe"; }
     else if (settle > 0) { statusTxt = `🟥 ช่างคืนร้าน ฿${settle.toLocaleString()}`; bgBar = "#fee2e2"; }
@@ -431,7 +440,7 @@ function renderDay() {
         <div id="settleBar" style="flex:8; height:55px; background:${bgBar}; display:flex; align-items:center; justify-content:center; border-radius:15px; font-weight:900; font-size:15px; color:#1e293b; border:1px solid rgba(0,0,0,0.05);">
             ${statusTxt}
         </div>
-        <button onclick="saveAndGo('${d}', ${tot}, ${sEarn}, ${bEarn})" style="flex:2; height:55px; background:#f97316; color:#fff; border-radius:15px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <button onclick="saveAndGo('${dInp}', ${tot}, ${sEarn}, ${bEarn})" style="flex:2; height:55px; background:#f97316; color:#fff; border-radius:15px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             <i class="fas fa-paper-plane"></i>
         </button>`;
 }
