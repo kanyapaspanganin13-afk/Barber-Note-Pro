@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.3</title>
+    <title>Barber Note Pro v.2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -13,15 +13,12 @@
     }
     * { box-sizing: border-box; font-family: 'Kanit', sans-serif; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 90px; overflow-x: hidden; }
-
-    /* --- ส่วนที่แก้เพื่อความลื่น --- */
     .container { padding: 15px 15px 100px 15px !important; max-width: 500px; margin: auto; position: relative; z-index: 1; }
-    
     .nav-bar {
         position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
         height: 75px !important; background: white !important; display: flex !important; 
         justify-content: space-around !important; align-items: center !important; 
-        z-index: 99999 !important; /* ดันขึ้นมาบนสุด */
+        z-index: 99999 !important; 
         border-top: 1px solid #eee;
         box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
     }
@@ -41,19 +38,15 @@
     .grid-3 {display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 6px; margin-bottom: 8px;}
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
     .icon-card { position: relative; border-radius: 15px; padding: 15px 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1.5px solid transparent; background: #fff; }
-    
     input, select { width: 100%; height: 68px !important; border-radius: 14px !important; font-size: 18px !important; font-weight: 600; text-align: center; border: 1.5px solid var(--border); background: #f1f5f9; }
     .price-box { font-size: 55px !important; height: 90px !important; font-weight: 700 !important; margin-bottom: 12px !important; border: 2px solid var(--primary) !important; display: flex; align-items: center; justify-content: center; background: #fff; color: var(--text);}
-    
     .btn { border: none; padding: 12px; border-radius: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; transition: 0.2s; }
     .btn-pay { background: #e2e8f0; color: #64748b; border:2px solid transparent; height: 70px; font-size: 18px;}
     .btn-pay.active-cash { background: #dcfce7; color: #15803d; border-color: #22c55e; }
     .btn-pay.active-trans { background: #e0f2fe; color: #0369a1; border-color: #0ea5e9; }
     .btn-main { background: var(--primary); color: white; width: 100%; height: 85px; border-radius: 20px; font-size: 35px; margin-top: 10px; border:none; }
-
     .page { display: none; } 
     .page.active { display: block; }
-    
     .modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); display: none; z-index: 100000; align-items: center; justify-content: center; }
     .modal-content { background: #fff; width: 90%; max-width: 400px; border-radius: 25px; padding: 25px; max-height: 85vh; overflow-y: auto; }
     .status-bar { padding: 12px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 14px; margin-bottom: 10px; box-shadow: inset 0 0 5px rgba(0,0,0,0.05); }
@@ -65,7 +58,6 @@
 <body>
     <div class="container">
         <h2 id="shopNameDisp" style="text-align:center; color:var(--primary); margin: 10px 0;">Barber Shop</h2>
-
         <div id="p1" class="page active">
             <div class="grid-3">
                 <div class="icon-card" style="background: #fffbeb; border-color: #fde68a;" onclick="handleInsurance()"><span>🛡️</span><span style="color: #b45309;">ประกันรายได้</span></div>
@@ -84,11 +76,9 @@
 
             <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
                 <select id="hairStyle" style="height: 70px;">
-                    <option value="">💇 เลือกทรงผม</option>
-                    <option value="เด็ก">👶 ตัดผมเด็ก</option>
-                    <option>รองทรง</option><option>แฟชั่น</option><option>สกินเฟด</option><option>เปิดข้าง</option><option>ตำรวจ/ทหาร</option><option>ทรงนักเรียน</option>
-                    <option>แก้ผม</option><option>โกนผม</option>
-                </select>
+                <option value="">💇 เลือกทรงผม</option><option value="เด็ก">👶 ตัดผมเด็ก</option>
+                <option>รองทรง</option><option>แฟชั่น</option><option>สกินเฟด</option><option>เปิดข้าง</option><option>ตำรวจ/ทหาร</option><option>ทรงนักเรียน</option>
+                <option>แก้ผม</option><option>โกนผม</option></select>
                 <select id="extra1" style="height: 50px;"><option value="">บริการ 1</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option><option>ย้อมผม</option></select>
                 <select id="extra2" style="height: 50px;"><option value="">บริการ 2</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option><option>ย้อมผม</option></select>
             </div>
@@ -96,55 +86,53 @@
             <input type="number" id="priceInp" class="price-box" placeholder="0" inputmode="numeric">
 
             <div class="grid-2">
-                <button id="btnCash" class="btn btn-pay" onclick="selectPay('Cash')">💵 เงินสด</button>
-                <button id="btnTrans" class="btn btn-pay" onclick="selectPay('Trans')">📱 โอน</button>
-            </div>
+            <button id="btnCash" class="btn btn-pay" onclick="selectPay('Cash')">💵 เงินสด</button>
+            <button id="btnTrans" class="btn btn-pay" onclick="selectPay('Trans')">📱 โอน</button></div>
             <button class="btn btn-main" onclick="handleSave()">บันทึกข้อมูล</button>
         </div> <div id="p2" class="page" style="padding: 15px;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
-                <div style="background: white; padding:18px 15px; border-radius:20px; text-align:center; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
-                    <small style="font-weight:800; color:#64748b; text-transform: uppercase;">ยอดรวมวันนี้</small>
-                    <div id="dTotal" style="font-size:36px; font-weight:900; color:#4338ca; margin: 5px 0;">0</div>
-                    <div id="dCounts" style="font-size:13px; font-weight:700; color:#1e293b; background:#e0e7ff; display:inline-block; padding:2px 10px; border-radius:10px;">ลูกค้า 0 คน</div>
-                </div>
-                <div style="background:white; padding:15px; border-radius:20px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; display:flex; flex-direction:column; justify-content:center; gap:8px;">
-                    <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:700;"><span style="color:#0ea5e9;">📱 โอน:</span> <b id="dTrans">0</b></div>
-                    <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:700;"><span style="color:#6366f1;">🤵 ช่าง:</span> <b id="dBarber">0</b></div>
-                    <hr style="border:0; border-top:1px dashed #cbd5e1; margin:4px 0;">
-                    <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:800;"><span style="color:#64748b;">🏠 ร้าน:</span> <b id="dShop">0</b></div>
-                </div>
-            </div>
-           <div id="settleBarContainer" style="margin-bottom:18px;"><div id="settleBar"></div>
+            <div style="background: white; padding:18px 15px; border-radius:20px; text-align:center; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
+            <small style="font-weight:800; color:#64748b; text-transform: uppercase;">ยอดรวมวันนี้</small>
+            <div id="dTotal" style="font-size:36px; font-weight:900; color:#4338ca; margin: 5px 0;">0</div>
+            <div id="dCounts" style="font-size:13px; font-weight:700; color:#1e293b; background:#e0e7ff; display:inline-block; padding:2px 10px; border-radius:10px;">ลูกค้า 0 คน</div>
        </div>
+            <div style="background:white; padding:15px; border-radius:20px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; display:flex; flex-direction:column; justify-content:center; gap:8px;">
+            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:700;"><span style="color:#0ea5e9;">📱 โอน:</span> <b id="dTrans">0</b></div>
+            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:700;"><span style="color:#6366f1;">🤵 ช่าง:</span> <b id="dBarber">0</b></div>
+            <hr style="border:0; border-top:1px dashed #cbd5e1; margin:4px 0;">
+            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:800;"><span style="color:#64748b;">🏠 ร้าน:</span> <b id="dShop">0</b></div>
+       </div>
+  </div>
+           <div id="settleBarContainer" style="margin-bottom:18px;"><div id="settleBar"></div>
+  </div>
            <div id="dServiceStats"></div><hr style="border:0; border-top:1px solid #e2e8f0; margin-top:15px;">
            <div id="dailyList"></div>
            </button>
-        </div>
+   </div>
          <div id="p3" class="page"> 
              <div class="acc-main-card">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h3 style="margin:0; font-size:16px; color:#b45309;"><i class="fas fa-wallet"></i> สรุปยอดบัญชีสุทธิ</h3>
-                    <div id="accLight" style="background:gray; width:12px; height:12px; border-radius:50%;"></div>
-                </div>
-                <div style="font-size:13px; color:#64748b; margin:15px 0; background:rgba(0,0,0,0.03); padding:12px; border-radius:15px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>ยอดค้างเดิม:</span><b id="accOldVal">฿0</b></div>
-                    <div style="display:flex; justify-content:space-between;"><span>ยอดวันนี้:</span><b id="accTodayVal" style="color:var(--primary)">฿0</b></div>
-                </div>
-                <div style="text-align:center; margin:20px 0;">
-                    <div style="font-size:14px; opacity:0.6;">สถานะบัญชี</div>
-                    <div style="font-size:48px; font-weight:900; color:var(--primary);">฿<span id="accNet">0</span></div>
-                </div>
-                <div id="accStatus" class="status-bar">กำลังโหลด...</div>
-                <button class="btn" onclick="toggleAccHistory()" style="width:100%; border:1px dashed var(--primary); background:#f0f7ff; color:var(--primary); margin-bottom:15px;">ประวัติการเคลียร์เงิน</button>
-                <div id="accHistoryWrapper" style="display:none; margin-bottom:15px;"><div id="accHistory" class="card" style="font-size:12px; max-height:150px; overflow-y:auto;"></div></div>
-                <div style="background:#f8fafc; padding:15px; border-radius:20px; border:1px solid var(--border);">
-                    <input type="date" id="accDate" style="margin-bottom:10px;">
-                    <input type="text" id="accNote" placeholder="บันทึกช่วยจำ" style="margin-bottom:10px;">
-                    <button class="btn-save" onclick="clearAccount()">✅ ยืนยันการเคลียร์เงิน</button>
-                </div>
-            </div>
+             <div style="display:flex; justify-content:space-between; align-items:center;">
+             <h3 style="margin:0; font-size:16px; color:#b45309;"><i class="fas fa-wallet"></i> สรุปยอดบัญชีสุทธิ</h3>
+             <div id="accLight" style="background:gray; width:12px; height:12px; border-radius:50%;"></div>
+   </div>
+             <div style="font-size:13px; color:#64748b; margin:15px 0; background:rgba(0,0,0,0.03); padding:12px; border-radius:15px;">
+             <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>ยอดค้างเดิม:</span><b id="accOldVal">฿0</b></div>
+             <div style="display:flex; justify-content:space-between;"><span>ยอดวันนี้:</span><b id="accTodayVal" style="color:var(--primary)">฿0</b></div>
+   </div>
+             <div style="text-align:center; margin:20px 0;">
+             <div style="font-size:14px; opacity:0.6;">สถานะบัญชี</div>
+             <div style="font-size:48px; font-weight:900; color:var(--primary);">฿<span id="accNet">0</span></div>
+   </div>
+             <div id="accStatus" class="status-bar">กำลังโหลด...</div>
+             <button class="btn" onclick="toggleAccHistory()" style="width:100%; border:1px dashed var(--primary); background:#f0f7ff; color:var(--primary); margin-bottom:15px;">ประวัติการเคลียร์เงิน</button>
+             <div id="accHistoryWrapper" style="display:none; margin-bottom:15px;"><div id="accHistory" class="card" style="font-size:12px; max-height:150px; overflow-y:auto;"></div></div>
+             <div style="background:#f8fafc; padding:15px; border-radius:20px; border:1px solid var(--border);">
+             <input type="date" id="accDate" style="margin-bottom:10px;">
+             <input type="text" id="accNote" placeholder="บันทึกช่วยจำ" style="margin-bottom:10px;">
+             <button class="btn-save" onclick="clearAccount()">✅ ยืนยันการเคลียร์เงิน</button></div>
+  </div>
             <div class="card" style="margin-top:20px; padding: 15px;">
-               <div id="page3" class="page" style="display:none;">
+            <div id="page3" class="page" style="display:none;">
     <div class="card">
         <h2 style="text-align:center;">📊 สรุปประวัติ</h2>
         
@@ -251,7 +239,7 @@ function handleInsurance() {
         window.speechSynthesis.speak(msg);
     };
     if (guaranteeAmount <= 0) {
-        speak("พี่คะ กรุณาตั้งค่าประกันก่อนค่ะ"); // เสียงพูดเตือน
+        speak("กรุณาตั้งค่าประกัน"); // เสียงพูดเตือน
         alert("⚠️ กรุณาตั้งค่ายอดประกันรายได้ในเมนู 'ตั้งค่าระบบ' ก่อน");
         return;
     }
@@ -261,7 +249,7 @@ function handleInsurance() {
         alert("🛡️ วันนี้เปิดระบบประกันรายได้ไปแล้วครับพี่");
         return;
     }
-    if (confirm(`🛡️ ยืนยันใช้ระบบ 'ประกันรายได้' ใช่ไหมพี่?`)) {
+    if (confirm(`🛡️ ยืนยันใช้ระบบ 'ประกันรายได้'?`)) {
         db.push({ 
             id: Date.now(), 
             date: today, 
@@ -273,7 +261,7 @@ function handleInsurance() {
         });
 
         saveDB(); 
-        speak(`เปิดระบบประกันรายวัน ${guaranteeAmount} บาท เรียบร้อยแล้วค่ะ`);
+        speak(`เปิดระบบประกันรายวัน ${guaranteeAmount} บาท เรียบร้อยแล้ว`);
         alert("✅ เปิดระบบประกันเรียบร้อย");
         renderDay();
     }
@@ -281,10 +269,8 @@ function handleInsurance() {
    function handleHoliday() {
     const today = $("dateInp").value;
     if (!today) return alert("กรุณาเลือกวันที่ก่อน");
-
-    // ฟังก์ชันสั่งให้พูด
     const speak = (txt) => {
-        const msg = new SpeechSynthesisUtterance(txt);
+    const msg = new SpeechSynthesisUtterance(txt);
         msg.lang = 'th-TH';
         window.speechSynthesis.speak(msg);
     };
@@ -293,14 +279,14 @@ function handleInsurance() {
             id: Date.now(),
             date: today,
             time: "00:00",
-            svcs: ["🏖️ วันหยุดร้าน"], // ใส่ไอคอนให้ชัด
+            svcs: ["🏖️ วันหยุด"], // ใส่ไอคอนให้ชัด
             price: 0,
             pay: "N/A",
             type: "HOLIDAY" // มาร์กประเภทไว้เผื่อดึงข้อมูลทำสรุปรายเดือน
         };
         db.push(holidayRecord);
         saveDB();
-        speak("บันทึกเป็นวันหยุดเรียบร้อยแล้วค่ะพักผ่อนให้สบายนะคะ"); // เสียงพูด
+        speak("บันทึกเป็นวันหยุดเรียบร้อยแล้ว"); // เสียงพูด
         alert("🏖️ บันทึกวันหยุดเรียบร้อย");
         renderDay();
     }
@@ -591,47 +577,26 @@ function saveAndGo(date, total, shop, barber) {
         </div>
     </div>`;
     }
- function shareLine() {
-    const d = document.getElementById("dateInp").value;
-    const today = db.filter(r => r.date === d);
-    if (!today.length) return alert("ไม่มีข้อมูลของวันนี้ครับ!");
-
-    let tot = 0, trans = 0, cash = 0;
-    let finalStats = {}; 
-
-    let msg = `💈 รายงานร้าน: ${conf.shop}\n📅 วันที่: ${d}\n-------------------------\n📝 ลูกค้า (รวม ${today.length} คน):\n`;
-    today.forEach((r, i) => {
-        tot += r.price;
-        r.pay === 'Trans' ? trans += r.price : cash += r.price;
-        let name = r.hair || r.svcs[0];
-        msg += `${i + 1}. [${r.time}] ${name} = ${r.price} ${r.pay === 'Cash' ? '💵' : '📱'}\n`;
-        const counted = new Set();
-        counted.add("ตัดผม"); // ทุกบิลนับตัดผม 1 เสมอ
-
+function sendSummary() {
+    const d = $("dateInp").value, today = db.filter(r => r.date === d);
+    if (!today.length) return;
+    let tot = 0, cash = 0, trans = 0, stats = {};
+    let clientList = today.sort((a,b) => a.time.localeCompare(b.time)).map((r, i) => {
+        tot += r.price; r.pay === 'Trans' ? trans += r.price : cash += r.price;
+        const counted = new Set(); counted.add("ตัดผม");
         if (r.hair && r.hair.includes("เด็ก")) counted.add("เด็ก");
-        r.svcs.forEach(s => {
-            if (!s) return;
-            if (s.includes("เด็ก") || s.includes("รองทรง") || s.includes("แฟชั่น") || s.includes("นักเรียน") || s.includes("ตัดผม")) return;
-            counted.add(s);
-        });
-        counted.forEach(k => {
-            finalStats[k] = (finalStats[k] || 0) + 1;
-        });
-    });
-
-    const bE = Math.max(tot * (conf.perc / 100), conf.guar);
-    const settle = Math.floor(cash - bE);
-
-    msg += `-------------------------\n📊 สรุปงาน:\n`;
-    const icons = {"ตัดผม":"✂️", "เด็ก":"🧒", "สระผม":"🧼", "โกนหนวด":"🪒", "ย้อมผม":"🎨", "แฟชั่น":"✨"};
-    for (let k in finalStats) {
-        let icon = icons[k] || "🔹";
-        msg += `${icon} ${k}: ${finalStats[k]} \n`;
-    }
-    msg += `-------------------------\n💰 ยอดรวม: ${tot}\n📱 โอน: ${trans} | 💵 สด: ${cash}\n🤵 ช่าง: ${Math.floor(bE)}\n🏠 ร้าน: ${Math.floor(tot - bE)}\n-------------------------\n`;
-    msg += settle === 0 ? `✅ ยอดพอดี` : `⚠️ ${settle > 0 ? 'ช่างคืนร้าน ' : 'ร้านคืนช่าง '}${Math.abs(settle)} บาท`;
-
-    window.open(`https://line.me/R/msg/text/?${encodeURIComponent(msg)}`, '_blank');
+        r.svcs.forEach(s => { if (s && !s.includes("เด็ก") && !s.includes("ตัดผม")) counted.add(s); });
+        counted.forEach(k => stats[k] = (stats[k] || 0) + 1);
+        // ในไลน์โชว์ 2 เวลา [เริ่ม-เสร็จ]
+        const tShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
+        return `${i+1}. [${tShow}] ${r.svcs.join('+')} = ${r.price} ${r.pay === 'Trans' ? '📱' : '💵'}`;
+    }).join('\n');
+    let statText = Object.entries(stats).map(([k, v]) => `${k === "ตัดผม" ? "✂️" : k === "เด็ก" ? "🧒" : "🔹"} ${k}: ${v}`).join('\n');
+    let bEarn = Math.max(tot * (conf.perc / 100), conf.guar);
+    let settle = cash - bEarn;
+    let settleMsg = settle > 0 ? `⚠️ ช่างคืนร้าน ${Math.floor(Math.abs(settle))}` : `🟦 ร้านคืนช่าง ${Math.floor(Math.abs(settle))}`;
+    let msg = `💈 รายงานร้าน: Barber Shop\n📅 วันที่: ${d}\n-------------------------\n📝 ลูกค้า (รวม ${today.length} คน):\n${clientList}\n-------------------------\n📊 สรุปงาน:\n${statText}\n-------------------------\n💰 ยอดรวม: ${tot}\n📱 โอน: ${trans} | 💵 สด: ${cash}\n🤵 ช่าง: ${Math.floor(bEarn)}\n🏠 ร้าน: ${Math.floor(tot - bEarn)}\n-------------------------\n${settleMsg}`;
+    window.open(`https://line.me/R/msg/text/?${encodeURIComponent(msg)}`);
 }
     function saveDB() { localStorage.setItem("barber_db", JSON.stringify(db)); localStorage.setItem("barber_conf", JSON.stringify(conf)); }
     function go(n) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); if(document.getElementById('p'+n)) document.getElementById('p'+n).classList.add('active'); if(document.getElementById('n'+n)) document.getElementById('n'+n).classList.add('active'); renderDay(); }
