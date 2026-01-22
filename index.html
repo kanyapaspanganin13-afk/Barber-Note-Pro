@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.1.3</title>
+    <title>Barber Note Pro v.2.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -369,88 +369,56 @@ window.addEventListener('DOMContentLoaded', () => {
 function renderDay() {
     const d = $("dateInp").value;
     const today = db.filter(r => r.date === d);
-
     let tot = 0, trans = 0, cash = 0, stats = {}, listHtml = "";
 
-    today
-    .slice()
-    .sort((a, b) => a.time.localeCompare(b.time))
-    .forEach(r => {
+    today.slice().sort((a, b) => a.time.localeCompare(b.time)).forEach(r => {
         tot += r.price;
         r.pay === 'Trans' ? trans += r.price : cash += r.price;
 
-        // --- LOGIC สถิติ (นับไม่เบิ้ลต่อบิล) ---
         const counted = new Set();
         counted.add("ตัดผม");
         if (r.hair && r.hair.includes("เด็ก")) counted.add("เด็ก");
-
         (r.svcs || []).forEach(s => {
-            if (!s) return;
-            if (
-                s.includes("เด็ก") ||
-                s.includes("รองทรง") ||
-                s.includes("แฟชั่น") ||
-                s.includes("นักเรียน") ||
-                s.includes("ตัดผม")
-            ) return;
+            if (!s || s.includes("เด็ก") || s.includes("รองทรง") || s.includes("แฟชั่น") || s.includes("นักเรียน") || s.includes("ตัดผม")) return;
             counted.add(s);
         });
-
         counted.forEach(k => stats[k] = (stats[k] || 0) + 1);
 
         const timeShow = r.endTime ? `${r.time} - ${r.endTime}` : r.time;
 
+        // รายการลูกค้าบรรทัดเดียว (เอาชื่อทรงผมข้างล่างออก)
         listHtml += `
-        <div class="history-row" style="padding:12px; border-bottom:1px solid #f1f5f9; background:#fff;">
+        <div class="history-row" style="padding:15px; border-bottom:1px solid #f1f5f9; background:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-weight:800; font-size:14px; color:#1e293b;">
-                    [${timeShow}] | ${(r.svcs || []).join('+')}
-                </span>
-                <b style="font-size:16px;">฿${r.price}</b>
-            </div>
-            <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:12px;">
-                <span>${r.hair || '-'}</span>
-                <span>
-                    ${r.pay === 'Trans' ? '📱 โอน' : '💵 สด'}
-                    <i class="fas fa-trash-alt" style="color:#ef4444; cursor:pointer;" onclick="delRec(${r.id})"></i>
-                </span>
+                <span style="font-weight:800; font-size:14px; color:#1e293b;">[${timeShow}] | ${(r.svcs || []).join('+')}</span>
+                <div style="text-align:right;">
+                    <b style="font-size:16px; display:block;">฿${r.price}</b>
+                    <span style="font-size:12px; font-weight:700;">
+                        ${r.pay === 'Trans' ? '📱 โอน' : '💵 สด'} 
+                        <i class="fas fa-trash-alt" style="color:#ef4444; cursor:pointer; margin-left:8px;" onclick="delRec(${r.id})"></i>
+                    </span>
+                </div>
             </div>
         </div>`;
     });
 
-    const bEarn = Math.max(tot * (conf.perc / 100), conf.guar);
-    const sEarn = tot - bEarn;
-    const settle = cash - bEarn;
-
-    $("dTotal").innerText = tot.toLocaleString();
-    $("dTrans").innerText = trans.toLocaleString();
+    const bEarn = Math.max(tot * (conf.perc / 100), conf.guar), sEarn = tot - bEarn, settle = cash - bEarn;
+    $("dTotal").innerText = tot.toLocaleString(); $("dTrans").innerText = trans.toLocaleString();
     $("dBarber").innerHTML = `${Math.floor(bEarn).toLocaleString()} <small>(สด: ${cash})</small>`;
-    $("dShop").innerText = Math.floor(sEarn).toLocaleString();
-    $("dCounts").innerText = `ลูกค้า: ${today.length} คน`;
+    $("dShop").innerText = Math.floor(sEarn).toLocaleString(); $("dCounts").innerText = `ลูกค้า: ${today.length} คน`;
 
-    // badge สถิติ
-    let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center;">`;
-    ["ตัดผม", "เด็ก"].forEach(k => {
-        if (stats[k]) {
-            sH += `<span style="background:#4338ca;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;">${k}: ${stats[k]}</span>`;
-        }
-    });
-    for (let s in stats) {
-        if (!["ตัดผม", "เด็ก"].includes(s)) {
-            sH += `<span style="background:#64748b;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;">${s}: ${stats[s]}</span>`;
-        }
-    }
-    sH += `</div>`;
-    $("dServiceStats").innerHTML = sH;
+    let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:10px;">`;
+    ["ตัดผม", "เด็ก"].forEach(k => { if (stats[k]) sH += `<span style="background:#4338ca;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${k}: ${stats[k]}</span>`; });
+    for (let s in stats) { if (!["ตัดผม", "เด็ก"].includes(s)) sH += `<span style="background:#64748b;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${s}: ${stats[s]}</span>`; }
+    $("dServiceStats").innerHTML = sH + `</div>`;
 
-    const headerHtml = `
-    <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0;">
+    $("dailyList").innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
         <b>📋 รายงานวันนี้:</b>
         <i class="fab fa-line" style="color:#22c55e;font-size:32px;cursor:pointer" onclick="shareLine()"></i>
-    </div>`;
+    </div>` + (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>");
 
-    $("dailyList").innerHTML = headerHtml + (listHtml || "<center>ไม่มีข้อมูล</center>");
-
+    // แถบสถานะครบถ้วน + ปุ่มจรวดส้มย้ายมาขวา
     let statusTxt = "", bgBar = "";
     if (tot === 0) { statusTxt = "🟦 ร้านจ่ายประกัน"; bgBar = "#e0f2fe"; }
     else if (settle > 0) { statusTxt = `🟥 ช่างคืนร้าน ฿${settle.toLocaleString()}`; bgBar = "#fee2e2"; }
@@ -458,11 +426,12 @@ function renderDay() {
     else { statusTxt = "✅ ยอดพอดี"; bgBar = "#dcfce7"; }
 
     const container = $("settleBar").parentElement;
+    container.style.display = "flex"; container.style.gap = "10px"; container.style.marginTop = "10px";
     container.innerHTML = `
-        <div id="settleBar" style="flex:8;height:50px;background:${bgBar};display:flex;align-items:center;justify-content:center;">
+        <div id="settleBar" style="flex:8; height:55px; background:${bgBar}; display:flex; align-items:center; justify-content:center; border-radius:15px; font-weight:900; font-size:15px; color:#1e293b; border:1px solid rgba(0,0,0,0.05);">
             ${statusTxt}
         </div>
-        <button onclick="saveAndGo('${d}', ${tot}, ${sEarn}, ${bEarn})" style="flex:2;height:50px;background:#ff4500;color:#fff;border-radius:15px;">
+        <button onclick="saveAndGo('${d}', ${tot}, ${sEarn}, ${bEarn})" style="flex:2; height:55px; background:#f97316; color:#fff; border-radius:15px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             <i class="fas fa-paper-plane"></i>
         </button>`;
 }
@@ -594,20 +563,35 @@ function shareLine() {
     const d = $("dateInp").value, today = db.filter(r => r.date === d);
     if (!today.length) return;
     let tot = 0, cash = 0, trans = 0, stats = {};
+    
     let clientList = today.sort((a,b) => a.time.localeCompare(b.time)).map((r, i) => {
         tot += r.price; r.pay === 'Trans' ? trans += r.price : cash += r.price;
-        const counted = new Set(); counted.add("ตัดผม");
+        const counted = new Set();
+        counted.add("ตัดผม"); // ในแอปยังนับปกติ
         if (r.hair && r.hair.includes("เด็ก")) counted.add("เด็ก");
         r.svcs.forEach(s => { if (s && !s.includes("เด็ก") && !s.includes("ตัดผม")) counted.add(s); });
         counted.forEach(k => stats[k] = (stats[k] || 0) + 1);
-        // ในไลน์โชว์ 2 เวลา [เริ่ม-เสร็จ]
+        
         const tShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
         return `${i+1}. [${tShow}] ${r.svcs.join('+')} = ${r.price} ${r.pay === 'Trans' ? '📱' : '💵'}`;
     }).join('\n');
-    let statText = Object.entries(stats).map(([k, v]) => `${k === "ตัดผม" ? "✂️" : k === "เด็ก" ? "🧒" : "🔹"} ${k}: ${v}`).join('\n');
+
+    // --- กรอง "ตัดผม" ออกจากรายงานสรุปงานใน LINE ---
+    let statText = Object.entries(stats)
+    .filter(([k, v]) => k !== "ตัดผม") // <-- ดักเอา "ตัดผม" ออก ไม่ต้องโชว์ในไลน์
+    .map(([k, v]) => {
+        let icon = "🔹";
+        if (k === "เด็ก") icon = "🧒";
+        else if (k === "สระผม") icon = "🧼";
+        else if (k === "โกนหนวด") icon = "🪒";
+        else if (k === "ย้อมผม" ) icon = "🎨";
+        return `${icon} ${k}: ${v}`;
+    }).join('\n');
+
     let bEarn = Math.max(tot * (conf.perc / 100), conf.guar);
     let settle = cash - bEarn;
     let settleMsg = settle > 0 ? `⚠️ ช่างคืนร้าน ${Math.floor(Math.abs(settle))}` : `🟦 ร้านคืนช่าง ${Math.floor(Math.abs(settle))}`;
+    
     let msg = `💈 รายงานร้าน: Barber Shop\n📅 วันที่: ${d}\n-------------------------\n📝 ลูกค้า (รวม ${today.length} คน):\n${clientList}\n-------------------------\n📊 สรุปงาน:\n${statText}\n-------------------------\n💰 ยอดรวม: ${tot}\n📱 โอน: ${trans} | 💵 สด: ${cash}\n🤵 ช่าง: ${Math.floor(bEarn)}\n🏠 ร้าน: ${Math.floor(tot - bEarn)}\n-------------------------\n${settleMsg}`;
     window.open(`https://line.me/R/msg/text/?${encodeURIComponent(msg)}`);
 }
