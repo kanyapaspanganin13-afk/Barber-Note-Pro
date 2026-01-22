@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.5.3</title>
+    <title>Barber Note Pro v.7.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -56,132 +56,132 @@
 </style>
 </head>
 <body>
-    <div class="container">
+<div class="container">
+    <div id="p1" class="page active">
         <h2 id="shopNameDisp" style="text-align:center; color:var(--primary); margin: 10px 0;">Barber Shop</h2>
-        <div id="p1" class="page active">
-            <div class="grid-3">
-                <div class="icon-card" style="background: #fffbeb; border-color: #fde68a;" onclick="handleInsurance()"><span>🛡️</span><span style="color: #b45309;">ประกันรายได้</span></div>
-                <div class="icon-card" style="background: #fff1f2; border-color: #fecdd3;" onclick="handleHoliday()"><span>🏖️</span><span style="color: #be185d;">บันทึกวันหยุด</span></div>
-                <div class="icon-card" style="background: #f1f5f9; border-color: #cbd5e1;" onclick="openSettings()"><span>⚙️</span><span style="color: #475569;">ตั้งค่าระบบ</span></div>
-            </div>
+        
+        <div class="grid-3">
+            <div class="icon-card" style="background: #fffbeb; border-color: #fde68a;" onclick="handleInsurance()"><span>🛡️</span><span style="color: #b45309;">ประกันรายได้</span></div>
+            <div class="icon-card" style="background: #fff1f2; border-color: #fecdd3;" onclick="handleHoliday()"><span>🏖️</span><span style="color: #be185d;">บันทึกวันหยุด</span></div>
+            <div class="icon-card" style="background: #f1f5f9; border-color: #cbd5e1;" onclick="openSettings()"><span>⚙️</span><span style="color: #475569;">ตั้งค่าระบบ</span></div>
+        </div>
 
-            <div class="grid-3">
-                <div class="icon-card" style="background: #f1f5f9; border-color: #cbd5e1; padding: 1px; height: 55px; position: relative;">
-                    <span id="dateDisplay" style="font-size: 18px; font-weight: 700;">เลือกวันที่</span>
-                    <input type="date" id="dateInp" onchange="document.getElementById('dateDisplay').innerText = this.value; if(window.updateDateDisplay) updateDateDisplay(this.value)" style="position: absolute; top: 0; left: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; z-index: 2;">
-                </div>
-                <input type="time" id="tStart" placeholder="เริ่ม" style="text-align:center; height: 50px;">
-                <input type="time" id="tEnd" placeholder="เสร็จ" style="text-align:center; height: 50px;">
+        <div class="grid-3">
+            <div class="icon-card" style="background: #f1f5f9; border-color: #cbd5e1; padding: 1px; height: 55px; position: relative;">
+                <span id="dateDisplay" style="font-size: 18px; font-weight: 700;">เลือกวันที่</span>
+                <input type="date" id="dateInp" onchange="document.getElementById('dateDisplay').innerText = this.value; if(window.updateDateDisplay) updateDateDisplay(this.value)" style="position: absolute; top: 0; left: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; z-index: 2;">
             </div>
+            <input type="time" id="tStart" placeholder="เริ่ม" style="text-align:center; height: 50px;">
+            <input type="time" id="tEnd" placeholder="เสร็จ" style="text-align:center; height: 50px;">
+        </div>
 
-            <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
-                <select id="hairStyle" style="height: 70px;">
-                <option value="">💇 เลือกทรงผม</option><option value="เด็ก">👶 ตัดผมเด็ก</option>
+        <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+            <select id="hairStyle" style="height: 70px;">
+                <option value="">💇 เลือกทรงผม</option>
+                <option value="เด็ก">👶 ตัดผมเด็ก</option>
                 <option>รองทรง</option><option>แฟชั่น</option><option>สกินเฟด</option><option>เปิดข้าง</option><option>ตำรวจ/ทหาร</option><option>ทรงนักเรียน</option>
-                <option>แก้ผม</option><option>โกนผม</option></select>
-                <select id="extra1" style="height: 50px;"><option value="">บริการ 1</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option><option>ย้อมผม</option></select>
-                <select id="extra2" style="height: 50px;"><option value="">บริการ 2</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option><option>ย้อมผม</option></select>
+                <option>แก้ผม</option><option>โกนผม</option>
+            </select>
+            <select id="extra1" style="height: 50px;"><option value="">บริการ 1</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option><option>ย้อมผม</option></select>
+            <select id="extra2" style="height: 50px;"><option value="">บริการ 2</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option><option>ย้อมผม</option></select>
+        </div>
+
+        <input type="number" id="priceInp" class="price-box" placeholder="0" inputmode="numeric">
+
+        <div class="grid-2">
+            <button id="btnCash" class="btn btn-pay" onclick="selectPay('Cash')">💵 เงินสด</button>
+            <button id="btnTrans" class="btn btn-pay" onclick="selectPay('Trans')">📱 โอน</button>
+        </div>
+        <button class="btn btn-main" onclick="handleSave()">บันทึกข้อมูล</button>
+    </div> <div id="p2" class="page" style="padding: 15px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+            <div style="background: white; padding:18px 15px; border-radius:20px; text-align:center; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
+                <small style="font-weight:800; color:#64748b; text-transform: uppercase;">ยอดรวมวันนี้</small>
+                <div id="dTotal" style="font-size:36px; font-weight:900; color:#4338ca; margin: 5px 0;">0</div>
+                <div id="dCounts" style="font-size:13px; font-weight:700; color:#1e293b; background:#e0e7ff; display:inline-block; padding:2px 10px; border-radius:10px;">ลูกค้า 0 คน</div>
             </div>
 
-            <input type="number" id="priceInp" class="price-box" placeholder="0" inputmode="numeric">
-
-            <div class="grid-2">
-            <button id="btnCash" class="btn btn-pay" onclick="selectPay('Cash')">💵 เงินสด</button>
-            <button id="btnTrans" class="btn btn-pay" onclick="selectPay('Trans')">📱 โอน</button></div>
-            <button class="btn btn-main" onclick="handleSave()">บันทึกข้อมูล</button>
-        </div> <div id="p2" class="page" style="padding: 15px;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
-            <div style="background: white; padding:18px 15px; border-radius:20px; text-align:center; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
-            <small style="font-weight:800; color:#64748b; text-transform: uppercase;">ยอดรวมวันนี้</small>
-            <div id="dTotal" style="font-size:36px; font-weight:900; color:#4338ca; margin: 5px 0;">0</div>
-            <div id="dCounts" style="font-size:13px; font-weight:700; color:#1e293b; background:#e0e7ff; display:inline-block; padding:2px 10px; border-radius:10px;">ลูกค้า 0 คน</div>
-       </div>
             <div style="background:white; padding:15px; border-radius:20px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; display:flex; flex-direction:column; justify-content:center; gap:8px;">
-            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:700;"><span style="color:#0ea5e9;">📱 โอน:</span> <b id="dTrans">0</b></div>
-            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:700;"><span style="color:#6366f1;">🤵 ช่าง:</span> <b id="dBarber">0</b></div>
-            <hr style="border:0; border-top:1px dashed #cbd5e1; margin:4px 0;">
-            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:800;"><span style="color:#64748b;">🏠 ร้าน:</span> <b id="dShop">0</b></div>
-       </div>
-  </div>
-           <div id="settleBarContainer" style="margin-bottom:18px;"><div id="settleBar"></div>
-  </div>
-           <div id="dServiceStats"></div><hr style="border:0; border-top:1px solid #e2e8f0; margin-top:15px;">
-           <div id="dailyList"></div>
-           </button>
-   </div>
-         <div id="p3" class="page"> 
-             <div class="acc-main-card">
-             <div style="display:flex; justify-content:space-between; align-items:center;">
-             <h3 style="margin:0; font-size:16px; color:#b45309;"><i class="fas fa-wallet"></i> สรุปยอดบัญชีสุทธิ</h3>
-             <div id="accLight" style="background:gray; width:12px; height:12px; border-radius:50%;"></div>
-   </div>
-             <div style="font-size:13px; color:#64748b; margin:15px 0; background:rgba(0,0,0,0.03); padding:12px; border-radius:15px;">
-             <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>ยอดค้างเดิม:</span><b id="accOldVal">฿0</b></div>
-             <div style="display:flex; justify-content:space-between;"><span>ยอดวันนี้:</span><b id="accTodayVal" style="color:var(--primary)">฿0</b></div>
-   </div>
-             <div style="text-align:center; margin:20px 0;">
-             <div style="font-size:14px; opacity:0.6;">สถานะบัญชี</div>
-             <div style="font-size:48px; font-weight:900; color:var(--primary);">฿<span id="accNet">0</span></div>
-   </div>
-             <div id="accStatus" class="status-bar">กำลังโหลด...</div>
-             <button class="btn" onclick="toggleAccHistory()" style="width:100%; border:1px dashed var(--primary); background:#f0f7ff; color:var(--primary); margin-bottom:15px;">ประวัติการเคลียร์เงิน</button>
-             <div id="accHistoryWrapper" style="display:none; margin-bottom:15px;"><div id="accHistory" class="card" style="font-size:12px; max-height:150px; overflow-y:auto;"></div></div>
-             <div style="background:#f8fafc; padding:15px; border-radius:20px; border:1px solid var(--border);">
-             <input type="date" id="accDate" style="margin-bottom:10px;">
-             <input type="text" id="accNote" placeholder="บันทึกช่วยจำ" style="margin-bottom:10px;">
-             <button class="btn-save" onclick="clearAccount()">✅ ยืนยันการเคลียร์เงิน</button></div>
-  </div>
-            <div class="card" style="margin-top:20px; padding: 15px;">
-            <div id="page3" class="page" style="display:none;">
-    <div class="card">
-        <h2 style="text-align:center;">📊 สรุปประวัติ</h2>
-        
-        <label>📅 ดูสรุปรายเดือน</label>
-        <input type="month" id="histMonth" onchange="loadHistMonth()" style="margin:10px 0; width:100%; padding:10px; border-radius:10px; border:1px solid #ddd;">
-        <div id="histMonthArea"></div>
-        
-        <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
-        
-        <label>📅 ค้นหาประวัติรายวัน</label>
-        <input type="date" id="histDate" onchange="loadHistDaily()" style="margin:10px 0; width:100%; padding:10px; border-radius:10px; border:1px solid #ddd;">
-        <div id="histDailyArea"></div>
+                <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:700;"><span style="color:#0ea5e9;">📱 โอน:</span> <b id="dTrans">0</b></div>
+                <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:700;"><span style="color:#f59e0b;">💵 สด:</span> <b id="dCash">0</b></div>
+                <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:700;"><span style="color:#6366f1;">🤵 ช่าง:</span> <b id="dBarber">0</b></div>
+                <hr style="border:0; border-top:1px dashed #cbd5e1; margin:4px 0;">
+                <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:800;"><span style="color:#64748b;">🏠 ร้าน:</span> <b id="dShop">0</b></div>
+            </div>
+        </div>
+        <div id="settleBarContainer" style="margin-bottom:18px;">
+            <div id="settleBar"></div> </div>
+        <div id="dServiceStats"></div>
+        <hr style="border:0; border-top:1px solid #e2e8f0; margin-top:15px;">
+        <div id="dailyList"></div>
+    </div> <div id="p3" class="page" style="padding: 15px;">
+        <h2 style="text-align:center;">สรุปบัญชี</h2>
+        <div class="acc-main-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="margin:0; font-size:16px; color:#b45309;"><i class="fas fa-wallet"></i> บัญชีสุทธิ</h3>
+                <div id="accLight" style="background:gray; width:12px; height:12px; border-radius:50%;"></div>
+            </div>
+            <div style="font-size:13px; color:#64748b; margin:15px 0; background:rgba(0,0,0,0.03); padding:12px; border-radius:15px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>ยอดค้างเดิม:</span><b id="accOldVal">฿0</b></div>
+                <div style="display:flex; justify-content:space-between;"><span>ยอดวันนี้:</span><b id="accTodayVal" style="color:var(--primary)">฿0</b></div>
+            </div>
+            <div style="text-align:center; margin:20px 0;">
+                <div style="font-size:14px; opacity:0.6;">สถานะบัญชีสุทธิ</div>
+                <div style="font-size:48px; font-weight:900; color:var(--primary);">฿<span id="accNet">0</span></div>
+            </div>
+            <div id="accStatus" class="status-bar">กำลังโหลด...</div>
+            <button class="btn" onclick="toggleAccHistory()" style="width:100%; border:1px dashed var(--primary); background:#f0f7ff; color:var(--primary); margin-bottom:15px;">ประวัติการเคลียร์เงิน</button>
+            <div id="accHistoryWrapper" style="display:none; margin-bottom:15px;"><div id="accHistory" class="card" style="font-size:12px; max-height:150px; overflow-y:auto;"></div></div>
+            <div style="background:#f8fafc; padding:15px; border-radius:20px; border:1px solid var(--border);">
+                <input type="date" id="accDate" style="margin-bottom:10px;">
+                <input type="text" id="accNote" placeholder="บันทึกช่วยจำ" style="margin-bottom:10px;">
+                <button class="btn-save" onclick="clearAccount()">✅ ยืนยันการเคลียร์เงิน</button>
+            </div>
+        </div>
 
-        <button onclick="go(1)" style="width:100%; margin-top:20px; padding:15px; background:#64748b; color:white; border:none; border-radius:15px; font-weight:bold;">กลับหน้าแรก</button>
+        <div class="card" style="margin-top:20px; padding: 15px;">
+            <h2 style="text-align:center;">📊 สรุปประวัติ</h2>
+            <label>📅 ดูสรุปรายเดือน</label>
+            <input type="month" id="histMonth" onchange="loadHistMonth()" style="margin:10px 0; width:100%; padding:10px; border-radius:10px; border:1px solid #ddd;">
+            <div id="histMonthArea"></div>
+            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+            <label>📅 ค้นหาประวัติรายวัน</label>
+            <input type="date" id="histDate" onchange="loadHistDaily()" style="margin:10px 0; width:100%; padding:10px; border-radius:10px; border:1px solid #ddd;">
+            <div id="histDailyArea"></div>
+        </div>
+    </div> </div> <div id="modalSet" class="modal">
+    <div class="modal-content">
+        <h3 style="margin-top:0; color:var(--primary); text-align: center;">⚙️ ตั้งค่าระบบ</h3> 
+        <label style="font-size:11px; font-weight:600;">ชื่อร้าน</label> <input id="setShop" style="margin-bottom:10px;">
+        <div class="grid-2">
+            <div><label style="font-size:11px; font-weight:600;">% ช่าง</label><input type="number" id="setPerc" placeholder="เช่น 50"></div>
+            <div><label style="font-size:11px; font-weight:600;">ประกัน/วัน</label><input type="number" id="setGuar" placeholder="0"></div>
+        </div>
+        <div style="margin-top:10px">
+            <label style="font-size:11px; font-weight:600;">ธีมแอป</label>
+            <select id="setTheme">
+                <option value="neon-light">🌤 Neon Light</option>
+                <option value="deep-navy">🌌 Deep Navy</option>
+                <option value="barber-dark">🌑 Barber Dark</option>
+            </select>
+        </div>
+        <div class="grid-2" style="margin-top:10px">
+            <div><label style="font-size:11px; font-weight:600;">ระบบเสียง</label> <select id="setSound"><option value="on">🔊 เปิด</option><option value="off">🔇 ปิด</option></select></div>
+            <div><label style="font-size:11px; font-weight:600;">เสียงพูด</label><select id="setVoice"><option value="female">👩 หญิง</option><option value="male">👨 ชาย</option></select></div>
+        </div>
+        <div class="grid-2" style="margin-top:20px">
+            <button class="btn" style="background:var(--primary); color:#fff" onclick="saveSettings()">บันทึก</button>
+            <button class="btn" style="background:#e2e8f0; color:var(--text)" onclick="closeSettings()">ปิด</button>
+        </div>
+        <button class="btn" style="width:100%; background:var(--danger); color:#fff; margin-top:10px; font-size:12px;" onclick="clearAllData()">⚠️ ล้างข้อมูลทั้งหมด</button>
     </div>
 </div>
-        </div> </div> <div id="modalSet" class="modal">
-        <div class="modal-content">
-            <h3 style="margin-top:0; color:var(--primary); text-align: center;">⚙️ ตั้งค่าระบบ</h3> 
-            <label style="font-size:11px; font-weight:600;">ชื่อร้าน</label> <input id="setShop" style="margin-bottom:10px;">
-            <div class="grid-2">
-                <div><label style="font-size:11px; font-weight:600;">% ช่าง</label><input type="number" id="setPerc" placeholder="เช่น 50"></div>
-                <div><label style="font-size:11px; font-weight:600;">ประกัน/วัน</label><input type="number" id="setGuar" placeholder="0"></div>
-            </div>
-            <div style="margin-top:10px">
-                <label style="font-size:11px; font-weight:600;">ธีมแอป</label>
-                <select id="setTheme">
-                    <option value="neon-light">🌤 Neon Light</option>
-                    <option value="deep-navy">🌌 Deep Navy</option>
-                    <option value="barber-dark">🌑 Barber Dark</option>
-                </select>
-            </div>
-            <div class="grid-2" style="margin-top:10px">
-                <div><label style="font-size:11px; font-weight:600;">ระบบเสียง</label> <select id="setSound"><option value="on">🔊 เปิด</option><option value="off">🔇 ปิด</option></select></div>
-                <div><label style="font-size:11px; font-weight:600;">เสียงพูด</label><select id="setVoice"><option value="female">👩 หญิง</option><option value="male">👨 ชาย</option></select></div>
-            </div>
-            <div class="grid-2" style="margin-top:20px">
-                <button class="btn" style="background:var(--primary); color:#fff" onclick="saveSettings()">บันทึก</button>
-                <button class="btn" style="background:#e2e8f0; color:var(--text)" onclick="closeSettings()">ปิด</button>
-            </div>
-            <button class="btn" style="width:100%; background:var(--danger); color:#fff; margin-top:10px; font-size:12px;" onclick="clearAllData()">⚠️ ล้างข้อมูลทั้งหมด</button>
-        </div>
-    </div>
-      
-    <nav class="nav-bar">
-        <div class="nav-item active" id="n1" onclick="go(1)"><i class="fas fa-edit"></i><span>บันทึก</span></div>
-        <div class="nav-item" id="n2" onclick="go(2)"><i class="fas fa-file-invoice"></i><span>รายงาน</span></div>
-        <div class="nav-item" id="n3" onclick="go(3)"><i class="fas fa-wallet"></i><span>บัญชี</span></div>
-    </nav>
+
+<nav class="nav-bar">
+    <div class="nav-item active" id="n1" onclick="go(1)"><i class="fas fa-edit"></i><span>บันทึก</span></div>
+    <div class="nav-item" id="n2" onclick="go(2)"><i class="fas fa-file-invoice"></i><span>รายงาน</span></div>
+    <div class="nav-item" id="n3" onclick="go(3)"><i class="fas fa-wallet"></i><span>บัญชี</span></div>
+</nav>
  <script>
     let archives = JSON.parse(localStorage.getItem("barber_archives")) || [];
     function save() {localStorage.setItem("barber_archives", JSON.stringify(archives));}
