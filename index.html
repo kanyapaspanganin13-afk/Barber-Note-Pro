@@ -4,76 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.9</title>
+    <title>Barber Note Pro v.2.9</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-    :root { 
-        --primary: #6366f1; --accent: #0ea5e9; --danger: #ef4444; --success: #22c55e; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --border: #e2e8f0;
-    }
-    * { box-sizing: border-box; font-family: 'Kanit', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 90px; overflow-x: hidden; }
-    .container { padding: 15px 15px 100px 15px !important; max-width: 500px; margin: auto; position: relative; z-index: 1; }
-    .nav-bar {
-        position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
-        height: 75px !important; background: white !important; display: flex !important; 
-        justify-content: space-around !important; align-items: center !important; 
-        z-index: 99999 !important; 
-        border-top: 1px solid #eee;
-        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-    }
-    .nav-item {
-        flex: 1 !important; display: flex !important; flex-direction: column !important;
-        align-items: center !important; justify-content: center !important; cursor: pointer !important;
-        pointer-events: auto !important;
-    }
-    .nav-item.active { color: #6366f1; }
-    .nav-item i { font-size: 24px; }
-    .nav-item span { font-size: 13px; font-weight: 500; }
-    body.deep-navy { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --border: #334155; }
-    body.deep-navy .icon-card, body.deep-navy input, body.deep-navy select { background: #1e293b; color: white; border-color: #334155; }
-    body.barber-dark { --bg: #121212; --card: #1a1a1a; --text: #e0e0e0; --primary: #fbbf24; --border: #333; }
-    body.barber-dark .icon-card, body.barber-dark input, body.barber-dark select { background: #1a1a1a; color: #fbbf24; border-color: #333; }   
-    
-    .grid-3 {display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 6px; margin-bottom: 8px;}
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
-    .icon-card { position: relative; border-radius: 15px; padding: 15px 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1.5px solid transparent; background: #fff; }
-    input, select { width: 100%; height: 68px !important; border-radius: 14px !important; font-size: 18px !important; font-weight: 600; text-align: center; border: 1.5px solid var(--border); background: #f1f5f9; }
-    .btn { border: none; padding: 12px; border-radius: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; transition: 0.2s; }
-    .btn-pay { background: #e2e8f0; color: #64748b; border:2px solid transparent; height: 70px; font-size: 18px;}
-    .btn-pay.active-cash { background: #dcfce7; color: #15803d; border-color: #22c55e; }
-    .btn-pay.active-trans { background: #e0f2fe; color: #0369a1; border-color: #0ea5e9; }
-    .btn-main { background: var(--primary); color: white; width: 100%; height: 85px; border-radius: 20px; font-size: 35px; margin-top: 10px; border:none; }
-    .page { display: none; } 
-    .page.active { display: block; }
-    .modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); display: none; z-index: 100000; align-items: center; justify-content: center; }
-    .modal-content { background: #fff; width: 90%; max-width: 400px; border-radius: 25px; padding: 25px; max-height: 85vh; overflow-y: auto; }
-    .status-bar { padding: 12px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 14px; margin-bottom: 10px; box-shadow: inset 0 0 5px rgba(0,0,0,0.05); }
-    .acc-main-card { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #fffbeb; }
-    .btn-save { background: var(--success); color: white; border: none; width: 100%; padding: 15px; border-radius: 15px; font-weight: 700; font-size: 16px; cursor: pointer; }
-    #accHistory { font-size: 12px; max-height: 150px; overflow-y: auto; }
-     /* ย่อเละแต่สิริสวยเหมือนเดิม */
-.bank-net-card{background:linear-gradient(135deg,#4f46e5,#6366f1);color:#fff;border-radius:28px;padding:22px;box-shadow:0 15px 30px rgba(79,70,229,.35);margin-bottom:15px;}
-.bank-top{display:flex;justify-content:space-between;align-items:center;}
-.bank-title{font-size:15px;font-weight:700;opacity:.9;}
-.bank-dot{width:12px;height:12px;border-radius:50%;background:#22c55e;box-shadow:0 0 10px #22c55e;}
-.bank-balance{text-align:center;margin:25px 0;}
-.bank-label{font-size:13px;opacity:.85;}
-.bank-amount{font-size:52px;font-weight:900;margin-top:6px;}
-.bank-sub{background:rgba(255,255,255,.18);border-radius:18px;padding:12px 15px;font-size:14px;}
-.bank-row{display:flex;justify-content:space-between;margin-bottom:6px;}
-.bank-row:last-child{margin-bottom:0;}
-.bank-status{margin-top:14px;padding:10px;text-align:center;border-radius:14px;font-weight:800;font-size:13px;background:rgba(255,255,255,.25);}
-.bank-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.bank-action-card{background:#fff;border-radius:22px;padding:20px 10px;text-align:center;font-weight:800;cursor:pointer;box-shadow:0 8px 18px rgba(0,0,0,.08);display:flex;flex-direction:column;gap:6px;}
-.bank-action-card i{font-size:30px;}
-.bank-action-card.daily{background:#eff6ff;color:#1d4ed8;}
-.bank-action-card.month{background:#ecfeff;color:#0369a1;}
-.date-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-.price-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: 10px; margin: 15px 0; align-items: center; }
-#priceInp, #tipInp { width: 100% !important; height: 75px !important; border-radius: 18px !important; margin: 0 !important; }
-#tipInp { background: #fff1f2 !important; border: 2.5px solid #fecdd3 !important; color: #be185d !important; font-size: 20px; font-weight: 800; }
-</style>
+    :root { --p:#6366f1; --a:#0ea5e9; --d:#ef4444; --s:#22c55e; --bg:#f8fafc; --c:#fff; --t:#1e293b; --b:#e2e8f0; }
+*{ box-sizing:border-box; font-family:'Kanit',sans-serif; -webkit-tap-highlight-color:transparent; }
+body{ margin:0; background:var(--bg); color:var(--t); padding-bottom:90px; overflow-x:hidden; }
+.container{ padding:15px; max-width:500px; margin:auto; }
+
+/* --- NAVIGATION --- */
+.nav-bar{ position:fixed; bottom:0; left:0; right:0; height:75px; background:#fff; display:flex; justify-content:space-around; align-items:center; z-index:99; border-top:1px solid #eee; box-shadow:0 -2px 10px rgba(0,0,0,.05); }
+.nav-item{ flex:1; display:flex; flex-direction:column; align-items:center; cursor:pointer; color:#64748b; }
+.nav-item.active{ color:var(--p); } .nav-item i{ font-size:24px; } .nav-item span{ font-size:12px; font-weight:500; }
+
+/* --- LAYOUT & CARDS --- */
+.page{ display:none; } .page.active{ display:block; }
+.grid-3, .grid-2{ display:grid; gap:6px; margin-bottom:8px; }
+.grid-3{ grid-template-columns:repeat(3,1fr); } .grid-2{ grid-template-columns:1fr 1fr; }
+.icon-card{ border-radius:15px; padding:12px 5px; display:flex; flex-direction:column; align-items:center; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.05); border:1px solid var(--b); cursor:pointer; }
+.shop-frame { display:inline-block; border:2px solid var(--p); color:var(--p); padding:5px 25px; border-radius:15px; font-weight:900; font-size:20px; background:#f5f3ff; margin-bottom:15px; }
+
+/* --- INPUTS & BUTTONS --- */
+input, select{ width:100%; height:55px; border-radius:14px; font-size:16px; font-weight:600; text-align:center; border:1px solid var(--b); background:#fff; }
+.price-row{ display:grid; grid-template-columns:1.6fr 1fr; gap:10px; margin:10px 0; }
+#priceInp{ height:85px; font-size:48px; font-weight:800; border:2px solid var(--p); }
+#tipInp{ height:85px; background:#fff1f2; border:2px solid #fecdd3; color:#be185d; font-size:22px; font-weight:800; }
+.btn-main{ width:100%; height:75px; font-size:28px; border-radius:20px; background:var(--p); color:#fff; border:none; font-weight:900; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 4px 15px rgba(99,102,241,0.3); }
+.btn-pay{ height:65px; background:#f1f5f9; color:#64748b; border-radius:15px; border:none; font-weight:700; cursor:pointer; }
+.btn-pay.active-cash{ background:#dcfce7; color:#15803d; border:2px solid var(--s); }
+.btn-pay.active-trans{ background:#e0f2fe; color:#0369a1; border:2px solid var(--a); }
+
+/* --- BANK CARD (PAGE 3) --- */
+.bank-net-card{ background:linear-gradient(135deg,#4f46e5,#6366f1); color:#fff; border-radius:28px; padding:20px; box-shadow:0 12px 25px rgba(79,70,229,.3); margin-bottom:15px; }
+.bank-amount{ font-size:48px; font-weight:900; text-align:center; margin:15px 0; }
+.bank-sub{ background:rgba(255,255,255,.15); border-radius:18px; padding:12px; font-size:13px; }
+.bank-row{ display:flex; justify-content:space-between; margin-bottom:5px; }
+.bank-status{ margin-top:12px; padding:8px; text-align:center; border-radius:12px; font-weight:800; background:rgba(255,255,255,.2); }
+.bank-actions{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.bank-action-card{ background:#fff; border-radius:20px; padding:15px 5px; text-align:center; font-weight:800; box-shadow:0 6px 15px rgba(0,0,0,.06); cursor:pointer; }
+.bank-action-card.daily{ background:#eff6ff; color:#1d4ed8; } .bank-action-card.month{ background:#ecfeff; color:#0369a1; }
+<style>
 </head>
 <body>
 <div class="container">
