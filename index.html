@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.8.7</title>
+    <title>Barber Note Pro v.7.7</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -275,28 +275,14 @@ function saveSettings() {
             location.reload();
         }
     }
-function updateDateDisplay(val) {
-    if (!val) return; // กัน Error ถ้าค่าว่าง
+function updateThaiDate(val) {
+    if(!val) return;
     const d = new Date(val);
-    // แสดงผลแบบไทย เช่น "20 ม.ค."
-    document.getElementById("dateDisplay").innerText = d.toLocaleDateString('th-TH', { 
-        day: 'numeric', 
-        month: 'short',
-        year: '2-digit' // แถม: ใส่ปีท้ายนิดนึงให้ดูอินเตอร์
-    });
-    if (typeof renderDay === "function") renderDay();
+    const months = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+    const year = (d.getFullYear() + 543).toString().slice(-2);
+    document.getElementById('dateShow').innerText = `${d.getDate()} ${months[d.getMonth()]} ${year}`;
+    renderAll(); // อัปเดตเลขหน้าอื่นด้วย
 }
-window.addEventListener('DOMContentLoaded', () => {
-    const dateInp = document.getElementById("dateInp");
-    const now = new Date();
-    const today = now.getFullYear() + '-' + 
-                  String(now.getMonth() + 1).padStart(2, '0') + '-' + 
-                  String(now.getDate()).padStart(2, '0');
-    
-    dateInp.value = today;       // ใส่วันที่ปัจจุบันลงในปฏิทิน
-    updateDateDisplay(today);    // สั่งให้คำว่า "เลือกวันที่" หายไป แล้วเป็นวันที่วันนี้แทน
-});
-
     function selectPay(m) {
         payMethod = m;
         $("btnCash").className = `btn btn-pay ${m === 'Cash' ? 'active-cash' : ''}`;
