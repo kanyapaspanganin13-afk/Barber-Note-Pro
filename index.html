@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.7.3</title>
+    <title>Barber Note Pro v.1.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -105,7 +105,6 @@
                 <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:700;"><span style="color:#0ea5e9;">📱 โอน:</span> <b id="dTrans">0</b></div>
                 <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:700;"><span style="color:#f59e0b;">💵 สด:</span> <b id="dCash">0</b></div>
                 <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:700;"><span style="color:#6366f1;">🤵 ช่าง:</span> <b id="dBarber">0</b></div>
-                <hr style="border:0; border-top:1px dashed #cbd5e1; margin:4px 0;">
                 <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:800;"><span style="color:#64748b;">🏠 ร้าน:</span> <b id="dShop">0</b></div>
             </div>
         </div>
@@ -406,15 +405,12 @@ function renderDay() {
 
     const bEarn = Math.max(tot * (conf.perc / 100), conf.guar), sEarn = tot - bEarn, settle = cash - bEarn;
 
-    // อัปเดตส่วนหัว: แยก "โอน" และ "สด" ให้เห็นชัดๆ ตามสั่ง
-    $("dTotal").innerText = tot.toLocaleString(); 
-    $("dTrans").innerText = trans.toLocaleString(); 
-    // เพิ่มบรรทัดแสดงเงินสดเพียวๆ (ถ้ามึงมี ID dCash ใน HTML ให้ใส่ตรงนี้)
-    if($("dCash")) $("dCash").innerText = cash.toLocaleString(); 
-    
-    $("dBarber").innerHTML = `${Math.floor(bEarn).toLocaleString()} <span style="font-size:12px; color:#64748b; margin-left:5px;">สด: ${cash.toLocaleString()}</span>`; 
-    $("dShop").innerText = Math.floor(sEarn).toLocaleString(); 
-    $("dCounts").innerText = `ลูกค้า: ${today.length} คน`; 
+    $("dTotal").innerText = tot.toLocaleString();
+    $("dTrans").innerText = trans.toLocaleString();
+    $("dCash").innerText = cash.toLocaleString(); // ยอดสดแยกมาโชว์บรรทัดนี้แทนแล้ว
+    $("dBarber").innerText = Math.floor(bEarn).toLocaleString(); // ยอดช่างเพียวๆ
+    $("dShop").innerText = Math.floor(sEarn).toLocaleString();
+    $("dCounts").innerText = `ลูกค้า: ${today.length} คน`;
 
     let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:10px;">`;
     ["ตัดผม", "เด็ก"].forEach(k => { if (stats[k]) sH += `<span style="background:#4338ca;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${k}: ${stats[k]}</span>`; });
