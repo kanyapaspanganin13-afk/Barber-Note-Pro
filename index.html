@@ -4,100 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.3.9</title>
+    <title>Barber Note Pro v.1.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-    :root { 
-        --primary: #6366f1; --accent: #0ea5e9; --danger: #ef4444; --success: #22c55e; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --border: #e2e8f0;
-    }
-    * { box-sizing: border-box; font-family: 'Kanit', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 90px; overflow-x: hidden; }
-    .container { padding: 15px 15px 100px 15px !important; max-width: 500px; margin: auto; position: relative; z-index: 1; }
-    .nav-bar {
-        position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
-        height: 75px !important; background: white !important; display: flex !important; 
-        justify-content: space-around !important; align-items: center !important; 
-        z-index: 99999 !important; 
-        border-top: 1px solid #eee;
-        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-    }
-    .nav-item {
-        flex: 1 !important; display: flex !important; flex-direction: column !important;
-        align-items: center !important; justify-content: center !important; cursor: pointer !important;
-        pointer-events: auto !important;
-    }
-    .nav-item.active { color: #6366f1; }
-    .nav-item i { font-size: 24px; }
-    .nav-item span { font-size: 13px; font-weight: 500; }
-    body.deep-navy { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --border: #334155; }
-    body.deep-navy .icon-card, body.deep-navy input, body.deep-navy select { background: #1e293b; color: white; border-color: #334155; }
-    body.barber-dark { --bg: #121212; --card: #1a1a1a; --text: #e0e0e0; --primary: #fbbf24; --border: #333; }
-    body.barber-dark .icon-card, body.barber-dark input, body.barber-dark select { background: #1a1a1a; color: #fbbf24; border-color: #333; }   
-    
-    .grid-3 {display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 6px; margin-bottom: 8px;}
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
-    .icon-card { position: relative; border-radius: 15px; padding: 15px 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1.5px solid transparent; background: #fff; }
-    input, select { width: 100%; height: 68px !important; border-radius: 14px !important; font-size: 18px !important; font-weight: 600; text-align: center; border: 1.5px solid var(--border); background: #f1f5f9; }
-    .price-box { font-size: 55px !important; height: 90px !important; font-weight: 700 !important; margin-bottom: 12px !important; border: 2px solid var(--primary) !important; display: flex; align-items: center; justify-content: center; background: #fff; color: var(--text);}
-    .btn { border: none; padding: 12px; border-radius: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; transition: 0.2s; }
-    .btn-pay { background: #e2e8f0; color: #64748b; border:2px solid transparent; height: 70px; font-size: 18px;}
-    .btn-pay.active-cash { background: #dcfce7; color: #15803d; border-color: #22c55e; }
-    .btn-pay.active-trans { background: #e0f2fe; color: #0369a1; border-color: #0ea5e9; }
-    .btn-main { background: var(--primary); color: white; width: 100%; height: 85px; border-radius: 20px; font-size: 35px; margin-top: 10px; border:none; }
-    .page { display: none; } 
-    .page.active { display: block; }
-    .modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); display: none; z-index: 100000; align-items: center; justify-content: center; }
-    .modal-content { background: #fff; width: 90%; max-width: 400px; border-radius: 25px; padding: 25px; max-height: 85vh; overflow-y: auto; }
-    .status-bar { padding: 12px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 14px; margin-bottom: 10px; box-shadow: inset 0 0 5px rgba(0,0,0,0.05); }
-    .acc-main-card { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #fffbeb; }
-    .btn-save { background: var(--success); color: white; border: none; width: 100%; padding: 15px; border-radius: 15px; font-weight: 700; font-size: 16px; cursor: pointer; }
-    #accHistory { font-size: 12px; max-height: 150px; overflow-y: auto; }
-     /* ย่อเละแต่สิริสวยเหมือนเดิม */
-.bank-net-card{background:linear-gradient(135deg,#4f46e5,#6366f1);color:#fff;border-radius:28px;padding:22px;box-shadow:0 15px 30px rgba(79,70,229,.35);margin-bottom:15px;}
-.bank-top{display:flex;justify-content:space-between;align-items:center;}
-.bank-title{font-size:15px;font-weight:700;opacity:.9;}
-.bank-dot{width:12px;height:12px;border-radius:50%;background:#22c55e;box-shadow:0 0 10px #22c55e;}
-.bank-balance{text-align:center;margin:25px 0;}
-.bank-label{font-size:13px;opacity:.85;}
-.bank-amount{font-size:52px;font-weight:900;margin-top:6px;}
-.bank-sub{background:rgba(255,255,255,.18);border-radius:18px;padding:12px 15px;font-size:14px;}
-.bank-row{display:flex;justify-content:space-between;margin-bottom:6px;}
-.bank-row:last-child{margin-bottom:0;}
-.bank-status{margin-top:14px;padding:10px;text-align:center;border-radius:14px;font-weight:800;font-size:13px;background:rgba(255,255,255,.25);}
-.bank-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.bank-action-card{background:#fff;border-radius:22px;padding:20px 10px;text-align:center;font-weight:800;cursor:pointer;box-shadow:0 8px 18px rgba(0,0,0,.08);display:flex;flex-direction:column;gap:6px;}
-.bank-action-card i{font-size:30px;}
-.bank-action-card.daily{background:#eff6ff;color:#1d4ed8;}
-.bank-action-card.month{background:#ecfeff;color:#0369a1;}
-.price-row{display:grid;grid-template-columns:1.5fr 1fr;gap:10px;margin:15px 0;}
-.tip-input{background:#fff1f2!important;border:2.5px solid #fecdd3!important;color:#be185d!important;border-radius:18px;text-align:center;font-weight:700;font-size:22px;height:75px;}
-.date-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-.price-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: 10px; margin: 15px 0; align-items: center; }
-#priceInp, #tipInp { width: 100% !important; height: 75px !important; border-radius: 18px !important; margin: 0 !important; }
-#tipInp { background: #fff1f2 !important; border: 2.5px solid #fecdd3 !important; color: #be185d !important; font-size: 20px; font-weight: 800; }
+    :root { 
+        --primary: #6366f1; --accent: #0ea5e9; --danger: #ef4444; --success: #22c55e; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; font-family: 'Kanit', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 90px; overflow-x: hidden; }
+    .container { padding: 15px 15px 100px 15px !important; max-width: 500px; margin: auto; position: relative; z-index: 1; }
+    .nav-bar {
+        position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
+        height: 75px !important; background: white !important; display: flex !important; 
+        justify-content: space-around !important; align-items: center !important; 
+        z-index: 99999 !important; 
+        border-top: 1px solid #eee;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    }
+    .nav-item {
+        flex: 1 !important; display: flex !important; flex-direction: column !important;
+        align-items: center !important; justify-content: center !important; cursor: pointer !important;
+        pointer-events: auto !important;
+    }
+    .nav-item.active { color: #6366f1; }
+    .nav-item i { font-size: 24px; }
+    .nav-item span { font-size: 13px; font-weight: 500; }
+    body.deep-navy { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --border: #334155; }
+    body.deep-navy .icon-card, body.deep-navy input, body.deep-navy select { background: #1e293b; color: white; border-color: #334155; }
+    body.barber-dark { --bg: #121212; --card: #1a1a1a; --text: #e0e0e0; --primary: #fbbf24; --border: #333; }
+    body.barber-dark .icon-card, body.barber-dark input, body.barber-dark select { background: #1a1a1a; color: #fbbf24; border-color: #333; }   
+    
+    .grid-3 {display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 6px; margin-bottom: 8px;}
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+    .icon-card { position: relative; border-radius: 15px; padding: 15px 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1.5px solid transparent; background: #fff; }
+    input, select { width: 100%; height: 68px !important; border-radius: 14px !important; font-size: 18px !important; font-weight: 600; text-align: center; border: 1.5px solid var(--border); background: #f1f5f9; }
+    .price-box { font-size: 55px !important; height: 90px !important; font-weight: 700 !important; margin-bottom: 12px !important; border: 2px solid var(--primary) !important; display: flex; align-items: center; justify-content: center; background: #fff; color: var(--text);}
+    .btn { border: none; padding: 12px; border-radius: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; transition: 0.2s; }
+    .btn-pay { background: #e2e8f0; color: #64748b; border:2px solid transparent; height: 70px; font-size: 18px;}
+    .btn-pay.active-cash { background: #dcfce7; color: #15803d; border-color: #22c55e; }
+    .btn-pay.active-trans { background: #e0f2fe; color: #0369a1; border-color: #0ea5e9; }
+    .btn-main { background: var(--primary); color: white; width: 100%; height: 85px; border-radius: 20px; font-size: 35px; margin-top: 10px; border:none; }
+    .page { display: none; } 
+    .page.active { display: block; }
+    .modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); display: none; z-index: 100000; align-items: center; justify-content: center; }
+    .modal-content { background: #fff; width: 90%; max-width: 400px; border-radius: 25px; padding: 25px; max-height: 85vh; overflow-y: auto; }
+    .status-bar { padding: 12px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 14px; margin-bottom: 10px; box-shadow: inset 0 0 5px rgba(0,0,0,0.05); }
+    .acc-main-card { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #fffbeb; }
+    .btn-save { background: var(--success); color: white; border: none; width: 100%; padding: 15px; border-radius: 15px; font-weight: 700; font-size: 16px; cursor: pointer; }
+    #accHistory { font-size: 12px; max-height: 150px; overflow-y: auto; }
 </style>
 </head>
 <body>
 <div class="container">
     <div id="p1" class="page active">
-       <div style="text-align:center; margin: 10px 0;">
-    <span id="shopNameDisp" style="border: 2px solid #6366f1; color: #6366f1; padding: 5px 20px; border-radius: 12px; font-weight: 900; font-size: 20px; background: #f5f3ff;">Barber Shop</span>
-</div>
-<div class="grid-3" style="gap: 8px; margin-bottom: 8px;">
-    <div class="icon-card" style="background:#fffbeb; color:#92400e;" onclick="handleInsurance()">🛡️ ประกัน</div>
-    <div class="icon-card" style="background:#fff1f2; color:#be185d;" onclick="handleHoliday()">🏖️ หยุด</div>
-    <div class="icon-card" style="background:#f8fafc; color:#475569;" onclick="openSettings()">⚙️ ตั้งค่า</div>
-</div>
+        <h2 id="shopNameDisp" style="text-align:center; color:var(--primary); margin: 10px 0;">Barber Shop</h2>
+        
+        <div class="grid-3">
+            <div class="icon-card" style="background: #fffbeb; border-color: #fde68a;" onclick="handleInsurance()"><span>🛡️</span><span style="color: #b45309;">ประกันรายได้</span></div>
+            <div class="icon-card" style="background: #fff1f2; border-color: #fecdd3;" onclick="handleHoliday()"><span>🏖️</span><span style="color: #be185d;">บันทึกวันหยุด</span></div>
+            <div class="icon-card" style="background: #f1f5f9; border-color: #cbd5e1;" onclick="openSettings()"><span>⚙️</span><span style="color: #475569;">ตั้งค่าระบบ</span></div>
+        </div>
 
-<div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 6px; margin-bottom: 10px;">
-    <div id="dateBtn" style="height:50px; background:#f1f5f9; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; position:relative;">
-        <span id="dateShow">22 ม.ค. 69</span>
-        <input type="date" id="dateInp" onchange="updateThaiDate(this.value)" style="position:absolute; opacity:0; width:100%; height:100%;">
-    </div>
-    <input type="time" id="tStart" style="height:50px; border-radius:12px; border:1px solid #e2e8f0; text-align:center;">
-    <input type="time" id="tEnd" style="height:50px; border-radius:12px; border:1px solid #e2e8f0; text-align:center;">
-</div>
+        <div class="grid-3">
+            <div class="icon-card" style="background: #f1f5f9; border-color: #cbd5e1; padding: 1px; height: 55px; position: relative;">
+                <span id="dateDisplay" style="font-size: 18px; font-weight: 700;">เลือกวันที่</span>
+                <input type="date" id="dateInp" onchange="document.getElementById('dateDisplay').innerText = this.value; if(window.updateDateDisplay) updateDateDisplay(this.value)" style="position: absolute; top: 0; left: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; z-index: 2;">
+            </div>
+            <input type="time" id="tStart" placeholder="เริ่ม" style="text-align:center; height: 50px;">
+            <input type="time" id="tEnd" placeholder="เสร็จ" style="text-align:center; height: 50px;">
+        </div>
+
         <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
             <select id="hairStyle" style="height: 70px;">
                 <option value="">💇 เลือกทรงผม</option>
@@ -109,7 +86,8 @@
             <select id="extra2" style="height: 50px;"><option value="">บริการ 2</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option><option>ย้อมผม</option></select>
         </div>
 
-        <div class="price-row"><input type="number" id="priceInp" class="price-box" placeholder="0" inputmode="numeric"><input type="number" id="tipInp" class="tip-input" placeholder="+ทิปโอน" inputmode="numeric"></div>
+        <input type="number" id="priceInp" class="price-box" placeholder="0" inputmode="numeric">
+
         <div class="grid-2">
             <button id="btnCash" class="btn btn-pay" onclick="selectPay('Cash')">💵 เงินสด</button>
             <button id="btnTrans" class="btn btn-pay" onclick="selectPay('Trans')">📱 โอน</button>
@@ -130,24 +108,46 @@
                 <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:800;"><span style="color:#64748b;">🏠 ร้าน:</span> <b id="dShop">0</b></div>
             </div>
         </div>
-     
-   <div id="p3" class="page" style="padding:15px;">
-    <div class="bank-net-card">
-        <div class="bank-top"><span class="bank-title">บัญชีสุทธิ</span><div id="accLight" class="bank-dot"></div></div>
-        <div class="bank-balance"><div class="bank-label">ยอดคงเหลือสุทธิ</div><div class="bank-amount">฿<span id="accNet">0</span></div></div>
-        <div class="bank-sub">
-            <div class="bank-row"><span>ยอดค้างเดิม</span><b id="accOldVal">฿0</b></div>
-            <div class="bank-row"><span>ยอดวันนี้</span><b id="accTodayVal">฿0</b></div>
+        <div id="settleBarContainer" style="margin-bottom:18px;">
+            <div id="settleBar"></div> </div>
+        <div id="dServiceStats"></div>
+        <hr style="border:0; border-top:1px solid #e2e8f0; margin-top:15px;">
+        <div id="dailyList"></div>
+    </div> <div id="p3" class="page" style="padding: 15px;">
+        <h2 style="text-align:center;">สรุปบัญชี</h2>
+        <div class="acc-main-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="margin:0; font-size:16px; color:#b45309;"><i class="fas fa-wallet"></i> บัญชีสุทธิ</h3>
+                <div id="accLight" style="background:gray; width:12px; height:12px; border-radius:50%;"></div>
+            </div>
+            <div style="font-size:13px; color:#64748b; margin:15px 0; background:rgba(0,0,0,0.03); padding:12px; border-radius:15px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>ยอดค้างเดิม:</span><b id="accOldVal">฿0</b></div>
+                <div style="display:flex; justify-content:space-between;"><span>ยอดวันนี้:</span><b id="accTodayVal" style="color:var(--primary)">฿0</b></div>
+            </div>
+            <div style="text-align:center; margin:20px 0;">
+                <div style="font-size:14px; opacity:0.6;">สถานะบัญชีสุทธิ</div>
+                <div style="font-size:48px; font-weight:900; color:var(--primary);">฿<span id="accNet">0</span></div>
+            </div>
+            <div id="accStatus" class="status-bar">กำลังโหลด...</div>
+            <button class="btn" onclick="toggleAccHistory()" style="width:100%; border:1px dashed var(--primary); background:#f0f7ff; color:var(--primary); margin-bottom:15px;">ประวัติการเคลียร์เงิน</button>
+            <div id="accHistoryWrapper" style="display:none; margin-bottom:15px;"><div id="accHistory" class="card" style="font-size:12px; max-height:150px; overflow-y:auto;"></div></div>
+            <div style="background:#f8fafc; padding:15px; border-radius:20px; border:1px solid var(--border);">
+                <input type="date" id="accDate" style="margin-bottom:10px;">
+                <input type="text" id="accNote" placeholder="บันทึกช่วยจำ" style="margin-bottom:10px;">
+                <button class="btn-save" onclick="clearAccount()">✅ ยืนยันการเคลียร์เงิน</button>
+            </div>
         </div>
-        <div id="accStatus" class="bank-status">กำลังโหลด...</div>
-    </div>
-    <div class="bank-actions">
-        <div class="bank-action-card daily" onclick="openDailyPopup()"><i class="fas fa-calendar-day"></i><span>ย้อนหลังรายวัน</span></div>
-        <div class="bank-action-card month" onclick="openMonthlyPopup()"><i class="fas fa-chart-pie"></i><span>สรุปรายเดือน</span></div>
-    </div>
-    <button class="btn-save" onclick="clearAccount()" style="margin-top:15px; background:var(--primary); width:100%;">✅ บันทึกการเคลียร์เงิน</button>
-</div>
-    
+
+        <div class="card" style="margin-top:20px; padding: 15px;">
+            <h2 style="text-align:center;">📊 สรุปประวัติ</h2>
+            <label>📅 ดูสรุปรายเดือน</label>
+            <input type="month" id="histMonth" onchange="loadHistMonth()" style="margin:10px 0; width:100%; padding:10px; border-radius:10px; border:1px solid #ddd;">
+            <div id="histMonthArea"></div>
+            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+            <label>📅 ค้นหาประวัติรายวัน</label>
+            <input type="date" id="histDate" onchange="loadHistDaily()" style="margin:10px 0; width:100%; padding:10px; border-radius:10px; border:1px solid #ddd;">
+            <div id="histDailyArea"></div>
+        </div>
     </div> </div> <div id="modalSet" class="modal">
     <div class="modal-content">
         <h3 style="margin-top:0; color:var(--primary); text-align: center;">⚙️ ตั้งค่าระบบ</h3> 
@@ -181,8 +181,6 @@
     <div class="nav-item" id="n2" onclick="go(2)"><i class="fas fa-file-invoice"></i><span>รายงาน</span></div>
     <div class="nav-item" id="n3" onclick="go(3)"><i class="fas fa-wallet"></i><span>บัญชี</span></div>
 </nav>
- <div id="dailyPopup" class="modal"><div class="modal-content"><h3>📅 ย้อนหลังรายวัน</h3><input type="date" id="histDate" onchange="loadHistDaily()"><div id="histDailyArea" style="max-height:300px;overflow-y:auto;"></div><button class="btn" onclick="closePop('dailyPopup')" style="width:100%;margin-top:10px;">ปิด</button></div></div>
-<div id="monthlyPopup" class="modal"><div class="modal-content"><h3>📊 สรุปรายเดือน</h3><input type="month" id="histMonth" onchange="loadHistMonth()"><div id="histMonthArea" style="max-height:300px;overflow-y:auto;"></div><button class="btn" onclick="closePop('monthlyPopup')" style="width:100%;margin-top:10px;">ปิด</button></div></div>
  <script>
     let archives = JSON.parse(localStorage.getItem("barber_archives")) || [];
     function save() {localStorage.setItem("barber_archives", JSON.stringify(archives));}
@@ -203,34 +201,93 @@
     d.setHours(h, m + mins, 0, 0);
     return d.toTimeString().slice(0, 5);
 }
-function handleSave() {
-    const p = parseInt($("priceInp").value), t = parseInt($("tipInp").value) || 0;
-    if (!p || !payMethod) return alert("ใส่ราคาและเลือกวิธีจ่ายก่อน!");
+    function handleSave() {
+    const p = parseInt($("priceInp").value);
+    if (!p || !payMethod) return alert("ใส่ราคาและเลือกวิธีจ่ายก่อนนะจ๊ะ!");
     const start = $("tStart").value || new Date().toTimeString().slice(0, 5);
+    const end = $("tEnd").value || addMinutes(start, 30); 
     const rec = {
-        id: Date.now(), date: $("dateInp").value, time: start, endTime: $("tEnd").value || addMinutes(start, 30),
-        svcs: [$("hairStyle").value, $("extra1").value, $("extra2").value].filter(Boolean),
-        hair: $("hairStyle").value, price: p, tip: t, pay: payMethod, type: "SERVICE"
+        id: Date.now(),
+        date: $("dateInp").value,
+        time: start,
+        endTime: end,  
+        svcs: [
+            $("hairStyle").value,
+            $("extra1").value,
+            $("extra2").value
+        ].filter(Boolean),
+        hair: $("hairStyle").value, 
+        price: p,
+        pay: payMethod, // 'Cash' หรือ 'Trans'
+        type: "SERVICE"
     };
-    db.push(rec); saveDB(); renderDay(); // บันทึกและวาดหน้า 2 ใหม่
-    ["priceInp", "tipInp", "tStart", "tEnd"].forEach(id => $(id).value = ""); // ล้างช่องกรอก
+    db.push(rec);
+    saveDB(); // บันทึกลง LocalStorage
+    renderDay(); // สั่งให้หน้า 2 วาดรายการใหม่ทันที
+    $("tStart").value = "";
+    $("tEnd").value = "";
+    $("priceInp").value = "";
 }
 function handleInsurance() {
-    const d = $("dateInp").value || new Date().toISOString().split('T')[0], g = parseInt(conf.guar) || 0;
-    const speak = (t) => { const m = new SpeechSynthesisUtterance(t); m.lang = 'th-TH'; window.speechSynthesis.speak(m); };
-    if (g <= 0) return (speak("กรุณาตั้งค่าประกัน"), alert("⚠️ ตั้งค่ายอดประกันใน 'ตั้งค่าระบบ' ก่อน"));
-    if (db.find(r => r.date === d && r.type === "GUARANTEE_CLAIM")) return (speak("วันนี้เปิดประกันไปแล้วค่ะ"), alert("🛡️ วันนี้เปิดระบบประกันไปแล้วครับ"));
+    const today = $("dateInp").value || new Date().toISOString().split('T')[0];
+    const guaranteeAmount = parseInt(conf.guar) || 0;
+
+    const speak = (txt) => {
+        const msg = new SpeechSynthesisUtterance(txt);
+        msg.lang = 'th-TH';
+        window.speechSynthesis.speak(msg);
+    };
+    if (guaranteeAmount <= 0) {
+        speak("กรุณาตั้งค่าประกัน"); // เสียงพูดเตือน
+        alert("⚠️ กรุณาตั้งค่ายอดประกันรายได้ในเมนู 'ตั้งค่าระบบ' ก่อน");
+        return;
+    }
+    const alreadyGuar = db.find(r => r.date === today && r.type === "GUARANTEE_CLAIM");
+    if (alreadyGuar) {
+        speak("วันนี้เปิดประกันไปแล้วค่ะ");
+        alert("🛡️ วันนี้เปิดระบบประกันรายได้ไปแล้วครับพี่");
+        return;
+    }
     if (confirm(`🛡️ ยืนยันใช้ระบบ 'ประกันรายได้'?`)) {
-        db.push({ id: Date.now(), date: d, time: "00:00", svcs: ["🛡️ ประกันรายวัน"], price: 0, pay: "N/A", type: "GUARANTEE_CLAIM" });
-        saveDB(); speak(`เปิดระบบประกัน ${g} บาท เรียบร้อย`); alert("✅ เปิดระบบประกันเรียบร้อย"); renderDay();
+        db.push({ 
+            id: Date.now(), 
+            date: today, 
+            time: "00:00", 
+            svcs: ["🛡️ ประกันรายวัน"], 
+            price: 0, 
+            pay: "N/A",
+            type: "GUARANTEE_CLAIM" 
+        });
+
+        saveDB(); 
+        speak(`เปิดระบบประกันรายวัน ${guaranteeAmount} บาท เรียบร้อยแล้ว`);
+        alert("✅ เปิดระบบประกันเรียบร้อย");
+        renderDay();
     }
 }
-function handleHoliday() {
-    const d = $("dateInp").value; if (!d) return alert("เลือกวันที่ก่อน");
-    const speak = (t) => { const m = new SpeechSynthesisUtterance(t); m.lang = 'th-TH'; window.speechSynthesis.speak(m); };
-    if (confirm(`ยืนยันบันทึกวันที่ ${d} เป็น "วันหยุด"?`)) {
-        db.push({ id: Date.now(), date: d, time: "00:00", svcs: ["🏖️ วันหยุด"], price: 0, pay: "N/A", type: "HOLIDAY" });
-        saveDB(); speak("บันทึกเป็นวันหยุดเรียบร้อย"); alert("🏖️ บันทึกวันหยุดเรียบร้อย"); renderDay();
+   function handleHoliday() {
+    const today = $("dateInp").value;
+    if (!today) return alert("กรุณาเลือกวันที่ก่อน");
+    const speak = (txt) => {
+    const msg = new SpeechSynthesisUtterance(txt);
+        msg.lang = 'th-TH';
+        window.speechSynthesis.speak(msg);
+    };
+    if (confirm(`ยืนยันการบันทึกให้วันที่ ${today} เป็น "วันหยุด"?`)) {
+        const holidayRecord = {
+            id: Date.now(),
+            date: today,
+            time: "00:00",
+            svcs: ["🏖️ วันหยุด"], // ใส่ไอคอนให้ชัด
+            price: 0,
+            pay: "N/A",
+            type: "HOLIDAY" // มาร์กประเภทไว้เผื่อดึงข้อมูลทำสรุปรายเดือน
+        };
+        db.push(holidayRecord);
+        saveDB();
+        speak("บันทึกเป็นวันหยุดเรียบร้อยแล้ว"); // เสียงพูด
+        alert("🏖️ บันทึกวันหยุดเรียบร้อย");
+        renderDay();
     }
 }
     function openSettings() {
@@ -242,18 +299,24 @@ function handleHoliday() {
             modal.style.display = 'flex'; 
         }
     }
-function saveSettings() {
-    conf.shop = $("setShop").value; conf.perc = parseInt($("setPerc").value);
-    conf.guar = parseInt($("setGuar").value); conf.theme = $("setTheme").value;
-    conf.sound = $("setSound").value; conf.voice = $("setVoice").value;
+    function saveSettings() {
+    conf.shop = $("setShop").value;
+    conf.perc = parseInt($("setPerc").value);
+    conf.guar = parseInt($("setGuar").value);
+    conf.theme = $("setTheme").value;
+    conf.sound = $("setSound").value;
+    conf.voice = $("setVoice").value;
     conf.bright = $("setBright").value;
-    
+
     localStorage.setItem("barber_conf", JSON.stringify(conf));
-    applyTheme(conf.theme); changeBrightness(conf.bright);
+    
+    applyTheme(conf.theme);
+    changeBrightness(conf.bright);
     $("shopNameDisp").innerText = conf.shop;
     
-    if (typeof speak === 'function') speak("บันทึกข้อมูลเรียบร้อยแล้ว");
-    alert("✅ บันทึกเรียบร้อย"); closeSettings();
+    speak("บันทึกข้อมูลเรียบร้อยแล้ว");
+    alert("✅ บันทึกเรียบร้อย");
+    closeSettings();
 }
     function closeSettings() {
         if ($("modalSet")) $("modalSet").style.display = 'none';
@@ -275,88 +338,137 @@ function saveSettings() {
             location.reload();
         }
     }
-function updateThaiDate(val) {
-    if(!val) return;
+function updateDateDisplay(val) {
+    if (!val) return; // กัน Error ถ้าค่าว่าง
     const d = new Date(val);
-    const months = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
-    const year = (d.getFullYear() + 543).toString().slice(-2);
-    document.getElementById('dateShow').innerText = `${d.getDate()} ${months[d.getMonth()]} ${year}`;
-    renderAll(); // อัปเดตเลขหน้าอื่นด้วย
+    // แสดงผลแบบไทย เช่น "20 ม.ค."
+    document.getElementById("dateDisplay").innerText = d.toLocaleDateString('th-TH', { 
+        day: 'numeric', 
+        month: 'short',
+        year: '2-digit' // แถม: ใส่ปีท้ายนิดนึงให้ดูอินเตอร์
+    });
+    if (typeof renderDay === "function") renderDay();
 }
+window.addEventListener('DOMContentLoaded', () => {
+    const dateInp = document.getElementById("dateInp");
+    const now = new Date();
+    const today = now.getFullYear() + '-' + 
+                  String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                  String(now.getDate()).padStart(2, '0');
+    
+    dateInp.value = today;       // ใส่วันที่ปัจจุบันลงในปฏิทิน
+    updateDateDisplay(today);    // สั่งให้คำว่า "เลือกวันที่" หายไป แล้วเป็นวันที่วันนี้แทน
+});
+
     function selectPay(m) {
         payMethod = m;
         $("btnCash").className = `btn btn-pay ${m === 'Cash' ? 'active-cash' : ''}`;
         $("btnTrans").className = `btn btn-pay ${m === 'Trans' ? 'active-trans' : ''}`;
     }
 function renderDay() {
-    const dInp = $("dateInp").value, today = db.filter(r => r.date === dInp), stats = {};
-    let tot = 0, trans = 0, cash = 0, listHtml = "";
-    today.slice().sort((a,b) => a.time.localeCompare(b.time)).forEach((r, i) => {
-        tot += r.price; (r.pay === 'Trans') ? trans += (r.price + (r.tip||0)) : cash += r.price;
-        const counted = new Set(["ตัดผม"]); if (r.hair && r.hair.includes("เด็ก")) counted.add("เด็ก");
-        (r.svcs || []).forEach(s => { if (s && !["เด็ก","รองทรง","แฟชั่น","นักเรียน","ตัดผม"].some(x => s.includes(x))) counted.add(s); });
+    const dInp = $("dateInp").value;
+    const today = db.filter(r => r.date === dInp);
+    let tot = 0, trans = 0, cash = 0, stats = {}, listHtml = "";
+
+    today.slice().sort((a, b) => a.time.localeCompare(b.time)).forEach((r, idx) => {
+        tot += r.price;
+        r.pay === 'Trans' ? trans += r.price : cash += r.price;
+
+        const counted = new Set();
+        counted.add("ตัดผม");
+        if (r.hair && r.hair.includes("เด็ก")) counted.add("เด็ก");
+        (r.svcs || []).forEach(s => {
+            if (!s || s.includes("เด็ก") || s.includes("รองทรง") || s.includes("แฟชั่น") || s.includes("นักเรียน") || s.includes("ตัดผม")) return;
+            counted.add(s);
+        });
         counted.forEach(k => stats[k] = (stats[k] || 0) + 1);
-        const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
-        listHtml += `<div class="history-row" style="padding:15px; border-bottom:1px solid #f1f5f9; background:#fff;"><div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-weight:800; font-size:14px; color:#1e293b;">${i+1}. [${timeShow}] | ${(r.svcs||[]).join('+')}</span><div style="text-align:right;"><b style="font-size:16px; display:block;">฿${r.price}${r.tip?` <small style="color:#be185d;">(+${r.tip})</small>`:''}</b><span style="font-size:12px; font-weight:700;">${r.pay==='Trans'?'📱 โอน':'💵 สด'} <i class="fas fa-trash-alt" style="color:#ef4444; cursor:pointer; margin-left:8px;" onclick="delRec(${r.id})"></i></span></div></div></div>`;
+
+        const timeShow = r.endTime ? `${r.time} - ${r.endTime}` : r.time;
+
+        // รายการลูกค้าบรรทัดเดียวพร้อมลำดับ 1. 2. 3.
+        listHtml += `
+        <div class="history-row" style="padding:15px; border-bottom:1px solid #f1f5f9; background:#fff;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:800; font-size:14px; color:#1e293b;">
+                    ${idx + 1}. [${timeShow}] | ${(r.svcs || []).join('+')}
+                </span>
+                <div style="text-align:right;">
+                    <b style="font-size:16px; display:block;">฿${r.price}</b>
+                    <span style="font-size:12px; font-weight:700;">
+                        ${r.pay === 'Trans' ? '📱 โอน' : '💵 สด'} 
+                        <i class="fas fa-trash-alt" style="color:#ef4444; cursor:pointer; margin-left:8px;" onclick="delRec(${r.id})"></i>
+                    </span>
+                </div>
+            </div>
+        </div>`;
     });
+
     const bEarn = Math.max(tot * (conf.perc / 100), conf.guar), sEarn = tot - bEarn, settle = cash - bEarn;
-    $("dTotal").innerText = tot.toLocaleString(); $("dTrans").innerText = trans.toLocaleString(); $("dCash").innerText = cash.toLocaleString();
-    $("dBarber").innerText = Math.floor(bEarn).toLocaleString(); $("dShop").innerText = Math.floor(sEarn).toLocaleString(); $("dCounts").innerText = `ลูกค้า: ${today.length} คน`;
+
+    $("dTotal").innerText = tot.toLocaleString();
+    $("dTrans").innerText = trans.toLocaleString();
+    $("dCash").innerText = cash.toLocaleString(); // ยอดสดแยกมาโชว์บรรทัดนี้แทนแล้ว
+    $("dBarber").innerText = Math.floor(bEarn).toLocaleString(); // ยอดช่างเพียวๆ
+    $("dShop").innerText = Math.floor(sEarn).toLocaleString();
+    $("dCounts").innerText = `ลูกค้า: ${today.length} คน`;
+
     let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:10px;">`;
     ["ตัดผม", "เด็ก"].forEach(k => { if (stats[k]) sH += `<span style="background:#4338ca;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${k}: ${stats[k]}</span>`; });
     for (let s in stats) { if (!["ตัดผม", "เด็ก"].includes(s)) sH += `<span style="background:#64748b;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${s}: ${stats[s]}</span>`; }
     $("dServiceStats").innerHTML = sH + `</div>`;
-    $("dailyList").innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;"><b style="font-size:16px;">📋 รายงานวันนี้:</b><i class="fab fa-line" style="color:#22c55e;font-size:32px;cursor:pointer" onclick="shareLine()"></i></div>` + (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>");
-    let txt = "", bg = ""; if (tot === 0) { txt = "🟦 ร้านจ่ายประกัน"; bg = "#e0f2fe"; } else if (settle > 0) { txt = `🟥 ช่างคืนร้าน ฿${settle.toLocaleString()}`; bg = "#fee2e2"; } else if (settle < 0) { txt = `🟦 ร้านคืนช่าง ฿${Math.abs(settle).toLocaleString()}`; bg = "#e0e7ff"; } else { txt = "✅ ยอดพอดี"; bg = "#dcfce7"; }
-    const container = $("settleBar").parentElement; container.style.cssText = "display:flex; gap:10px; margin-top:10px;";
-    container.innerHTML = `<div id="settleBar" style="flex:8; height:55px; background:${bg}; display:flex; align-items:center; justify-content:center; border-radius:15px; font-weight:900; font-size:15px; color:#1e293b; border:1px solid rgba(0,0,0,0.05);">${txt}</div><button onclick="saveAndGo('${dInp}', ${tot}, ${sEarn}, ${bEarn})" style="flex:2; height:55px; background:#f97316; color:#fff; border-radius:15px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"><i class="fas fa-paper-plane"></i></button>`;
+
+    // ส่วนรายงานวันนี้ (ไม่มีชื่อร้าน Barber Shop ด้านบนแล้ว)
+    $("dailyList").innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
+        <b style="font-size:16px;">📋 รายงานวันนี้:</b>
+        <i class="fab fa-line" style="color:#22c55e;font-size:32px;cursor:pointer" onclick="shareLine()"></i>
+    </div>` + (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>");
+
+    let statusTxt = "", bgBar = "";
+    if (tot === 0) { statusTxt = "🟦 ร้านจ่ายประกัน"; bgBar = "#e0f2fe"; }
+    else if (settle > 0) { statusTxt = `🟥 ช่างคืนร้าน ฿${settle.toLocaleString()}`; bgBar = "#fee2e2"; }
+    else if (settle < 0) { statusTxt = `🟦 ร้านคืนช่าง ฿${Math.abs(settle).toLocaleString()}`; bgBar = "#e0e7ff"; }
+    else { statusTxt = "✅ ยอดพอดี"; bgBar = "#dcfce7"; }
+
+    const container = $("settleBar").parentElement;
+    container.style.display = "flex"; container.style.gap = "10px"; container.style.marginTop = "10px";
+    container.innerHTML = `
+        <div id="settleBar" style="flex:8; height:55px; background:${bgBar}; display:flex; align-items:center; justify-content:center; border-radius:15px; font-weight:900; font-size:15px; color:#1e293b; border:1px solid rgba(0,0,0,0.05);">
+            ${statusTxt}
+        </div>
+        <button onclick="saveAndGo('${dInp}', ${tot}, ${sEarn}, ${bEarn})" style="flex:2; height:55px; background:#f97316; color:#fff; border-radius:15px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <i class="fas fa-paper-plane"></i>
+        </button>`;
 }
+
 function saveAndGo(date, total, shop, barber) {
+    const todayData = db.filter(r => r.date === date);
     if (total === 0 && !confirm("ไม่มีข้อมูลยอด ปิดงานเลยมั้ย?")) return;
-    let s = {}; db.filter(r => r.date === date).forEach(r => { 
-        r.svcs.forEach(v => s[v] = (s[v]||0)+1); if(r.hair) s["ทรง:"+r.hair] = (s["ทรง:"+r.hair]||0)+1; 
+
+    let todayStats = {};
+    todayData.forEach(r => {
+        r.svcs.forEach(s => todayStats[s] = (todayStats[s] || 0) + 1);
+        if(r.hair) todayStats["ทรง:" + r.hair] = (todayStats["ทรง:" + r.hair] || 0) + 1;
     });
-    const entry = { date, total, barber, shop: total-barber, count: db.filter(r => r.date === date).length, stats: s };
-    const i = archives.findIndex(a => a.date === date); (i > -1) ? archives[i] = entry : archives.push(entry);
-    save(); alert("✅ บันทึกเรียบร้อย!"); go(3);
+
+    const entry = {
+        date: date, total: total, barber: barber, shop: total - barber,
+        count: todayData.length, stats: todayStats
+    };
+
+    const idx = archives.findIndex(a => a.date === date);
+    if(idx > -1) archives[idx] = entry; else archives.push(entry);
+    
+    save(); 
+    alert("✅ บันทึกข้อมูลไปรายวันเรียบร้อย!");
+    go(3); 
 }
     function toggleAccHistory() {
         const w = $("accHistoryWrapper");
         w.style.display = w.style.display === "none" ? "block" : "none";
         $("accHistory").innerHTML = account.logs.map(l => `<div style="padding:5px; border-bottom:1px solid #eee;">${l.date}: ฿${l.amount} (${l.note})</div>`).join('') || "ไม่มีประวัติ";
     }
-function renderAll() {
-    // 1. ดึงข้อมูลเลขหน้า 2 (สรุปรายวัน)
-    const today = document.getElementById('dateInp').value;
-    const todayEntries = db.filter(e => e.date === today);
-    
-    let total = 0, cash = 0, trans = 0, bTotal = 0, sTotal = 0;
-    todayEntries.forEach(e => {
-        total += e.total;
-        if(e.method === 'Cash') cash += e.price;
-        else trans += (e.price + (e.tip || 0));
-        bTotal += e.bEarn;
-        sTotal += e.sEarn;
-    });
 
-    // ยัดเลขลงหน้า 2
-    document.getElementById('todayTotal').innerText = total;
-    document.getElementById('todayCash').innerText = cash;
-    document.getElementById('todayTrans').innerText = trans;
-    document.getElementById('todayShop').innerText = sTotal;
-    document.getElementById('todayBarber').innerText = bTotal;
-
-    // 2. ดึงข้อมูลเลขหน้า 3 (บัญชีสุทธิ)
-    const accNet = bTotal + (parseFloat(localStorage.getItem('oldDebt')) || 0);
-    document.getElementById('accNet').innerText = accNet;
-    document.getElementById('accTodayVal').innerText = "฿" + bTotal;
-    document.getElementById('accOldVal').innerText = "฿" + (localStorage.getItem('oldDebt') || 0);
-    
-    // เปลี่ยนสีไฟสถานะ
-    const light = document.getElementById('accLight');
-    if(accNet > 0) { light.style.background = '#22c55e'; light.style.boxShadow = '0 0 10px #22c55e'; }
-    else { light.style.background = 'gray'; light.style.boxShadow = 'none'; }
-}
    function loadHistDaily() {const d = $("histDate").value; const found = archives.find(a => a.date === d); const area = $("histDailyArea"); 
     if(!found) { area.innerHTML = "<center style='color:#ccc; padding:40px;'>❌ ไม่พบข้อมูลในประวัติ</center>"; return; }
     let rows = found.details.map(r => `
@@ -498,9 +610,7 @@ function shareLine() {
     function go(n) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); if(document.getElementById('p'+n)) document.getElementById('p'+n).classList.add('active'); if(document.getElementById('n'+n)) document.getElementById('n'+n).classList.add('active'); renderDay(); }
     function delRec(id) { if (confirm("จะลบรายการนี้ใช่ไหมครับพี่?")) { db = db.filter(r => r.id !== id); saveDB(); renderDay(); } }
     function editTime(id) {const rec = db.find(r => r.id === id);if (!rec) return;const newStart = prompt("แก้เวลาเริ่ม (HH:MM)", rec.time);if (!newStart) return;const newEnd = prompt("แก้เวลาเสร็จ (HH:MM)", rec.endTime || "");rec.time = newStart;rec.endTime = newEnd || addMinutes(newStart, 30);saveDB();renderDay();}
-    function openDailyPopup(){ document.getElementById('dailyPopup').style.display="flex"; }
-    function openMonthlyPopup(){ document.getElementById('monthlyPopup').style.display="flex"; }
-    function closePop(id){ document.getElementById(id).style.display="none"; }
+
   
 </script>
 </body>
