@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.1</title>
+    <title>Barber Note Pro v.2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -39,7 +39,7 @@
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
     .icon-card { position: relative; border-radius: 15px; padding: 15px 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1.5px solid transparent; background: #fff; }
     input, select { width: 100%; height: 68px !important; border-radius: 14px !important; font-size: 18px !important; font-weight: 600; text-align: center; border: 1.5px solid var(--border); background: #f1f5f9; }
-    .price-box { font-size: 55px !important; height: 90px !important; font-weight: 700 !important; margin-bottom: 12px !important; border: 2px solid var(--primary) !important; display: flex; align-items: center; justify-content: center; background: #fff; color: var(--text);}
+   
     .btn { border: none; padding: 12px; border-radius: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; transition: 0.2s; }
     .btn-pay { background: #e2e8f0; color: #64748b; border:2px solid transparent; height: 70px; font-size: 18px;}
     .btn-pay.active-cash { background: #dcfce7; color: #15803d; border-color: #22c55e; }
@@ -53,6 +53,10 @@
     .acc-main-card { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #fffbeb; }
     .btn-save { background: var(--success); color: white; border: none; width: 100%; padding: 15px; border-radius: 15px; font-weight: 700; font-size: 16px; cursor: pointer; }
     #accHistory { font-size: 12px; max-height: 150px; overflow-y: auto; }
+   .date-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+   .price-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: 10px; margin: 15px 0; align-items: center; }
+   #priceInp, #tipInp { width: 100% !important; height: 75px !important; border-radius: 18px !important; margin: 0 !important; }
+   #tipInp { background: #fff1f2 !important; border: 2.5px solid #fecdd3 !important; color: #be185d !important; font-size: 20px; font-weight: 800; }
 </style>
 </head>
 <body>
@@ -65,15 +69,12 @@
             <div class="icon-card" style="background: #fff1f2; border-color: #fecdd3;" onclick="handleHoliday()"><span>🏖️</span><span style="color: #be185d;">บันทึกวันหยุด</span></div>
             <div class="icon-card" style="background: #f1f5f9; border-color: #cbd5e1;" onclick="openSettings()"><span>⚙️</span><span style="color: #475569;">ตั้งค่าระบบ</span></div>
         </div>
-
-        <div class="grid-3">
-            <div class="icon-card" style="background: #f1f5f9; border-color: #cbd5e1; padding: 1px; height: 55px; position: relative;">
-                <span id="dateDisplay" style="font-size: 18px; font-weight: 700;">เลือกวันที่</span>
-                <input type="date" id="dateInp" onchange="document.getElementById('dateDisplay').innerText = this.value; if(window.updateDateDisplay) updateDateDisplay(this.value)" style="position: absolute; top: 0; left: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; z-index: 2;">
-            </div>
-            <input type="time" id="tStart" placeholder="เริ่ม" style="text-align:center; height: 50px;">
-            <input type="time" id="tEnd" placeholder="เสร็จ" style="text-align:center; height: 50px;">
-        </div>
+     <div class="grid-3">
+       <div class="date-row-yoe" style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+    <input type="date" id="dateInp" onchange="renderAll()" style="height:55px; border-radius:15px; border:1px solid #cbd5e1; padding:0 5px; font-size:14px; text-align:center;">
+    <input type="time" id="tStart" style="height:55px; border-radius:15px; border:1px solid #cbd5e1; text-align:center;">
+    <input type="time" id="tEnd" style="height:55px; border-radius:15px; border:1px solid #cbd5e1; text-align:center;">
+</div>
 
         <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
             <select id="hairStyle" style="height: 70px;">
@@ -97,7 +98,7 @@
         </div>
        <button class="btn btn-main" onclick="handleSave()" style="display:flex; align-items:center; justify-content:center; gap:12px;">
     <i class="fas fa-save" style="font-size: 35px;"></i>
-    <span style="font-size: 24px; font-weight: 900;">บันทึกข้อมูล</span>
+    <span style="font-size: 24px; font-weight: 900;">บันทึก</span>
 </button>
     </div> <div id="p2" class="page" style="padding: 15px;">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
