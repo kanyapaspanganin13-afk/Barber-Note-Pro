@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.9.7</title>
+    <title>Barber Note Pro v.8.7</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -81,18 +81,22 @@
 <body>
 <div class="container">
     <div id="p1" class="page active">
-        <h2 id="shopNameDisp" style="text-align:center; color:var(--primary); margin: 10px 0;">Barber Shop</h2>
-        
-        <div class="grid-3">
-            <div class="icon-card" style="background: #fffbeb; border-color: #fde68a;" onclick="handleInsurance()"><span>🛡️</span><span style="color: #b45309;">ประกันรายได้</span></div>
-            <div class="icon-card" style="background: #fff1f2; border-color: #fecdd3;" onclick="handleHoliday()"><span>🏖️</span><span style="color: #be185d;">บันทึกวันหยุด</span></div>
-            <div class="icon-card" style="background: #f1f5f9; border-color: #cbd5e1;" onclick="openSettings()"><span>⚙️</span><span style="color: #475569;">ตั้งค่าระบบ</span></div>
-        </div>
+       <div style="text-align:center; margin: 10px 0;">
+    <span id="shopNameDisp" style="border: 2px solid #6366f1; color: #6366f1; padding: 5px 20px; border-radius: 12px; font-weight: 900; font-size: 20px; background: #f5f3ff;">Barber Shop</span>
+</div>
+<div class="grid-3" style="gap: 8px; margin-bottom: 8px;">
+    <div class="icon-card" style="background:#fffbeb; color:#92400e;" onclick="handleInsurance()">🛡️ ประกัน</div>
+    <div class="icon-card" style="background:#fff1f2; color:#be185d;" onclick="handleHoliday()">🏖️ หยุด</div>
+    <div class="icon-card" style="background:#f8fafc; color:#475569;" onclick="openSettings()">⚙️ ตั้งค่า</div>
+</div>
 
-        <div class="date-row-yoe" style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
-    <input type="date" id="dateInp" onchange="renderAll()" style="height:55px; border-radius:15px; border:1px solid #cbd5e1; padding:0 5px; font-size:14px; text-align:center;">
-    <input type="time" id="tStart" style="height:55px; border-radius:15px; border:1px solid #cbd5e1; text-align:center;">
-    <input type="time" id="tEnd" style="height:55px; border-radius:15px; border:1px solid #cbd5e1; text-align:center;">
+<div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 6px; margin-bottom: 10px;">
+    <div id="dateBtn" style="height:50px; background:#f1f5f9; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; position:relative;">
+        <span id="dateShow">22 ม.ค. 69</span>
+        <input type="date" id="dateInp" onchange="updateThaiDate(this.value)" style="position:absolute; opacity:0; width:100%; height:100%;">
+    </div>
+    <input type="time" id="tStart" style="height:50px; border-radius:12px; border:1px solid #e2e8f0; text-align:center;">
+    <input type="time" id="tEnd" style="height:50px; border-radius:12px; border:1px solid #e2e8f0; text-align:center;">
 </div>
         <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
             <select id="hairStyle" style="height: 70px;">
