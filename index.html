@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.0</title>
+    <title>Barber Note Pro v.01</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -259,10 +259,16 @@
 
     </div>
 </div>
-</div> </div> <nav class="nav-bar">
-    <div class="nav-item active" id="n1" onclick="go(1)"><i class="fas fa-edit"></i><span>บันทึก</span></div>
-    <div class="nav-item" id="n2" onclick="go(2)"><i class="fas fa-file-invoice"></i><span>รายงาน</span></div>
-    <div class="nav-item" id="n3" onclick="go(3)"><i class="fas fa-wallet"></i><span>บัญชี</span></div>
+<nav style="position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:space-around;padding:15px;box-shadow:0 -5px 20px rgba(0,0,0,0.2);z-index:9999;border-top:1px solid #eee;">
+    <div onclick="go(1)" class="nav-item active" style="text-align:center;color:#1a237e;flex:1;">
+        <i class="fas fa-edit" style="font-size:24px;"></i><br><span style="font-size:12px;font-weight:800;">บันทึก</span>
+    </div>
+    <div onclick="go(2)" class="nav-item" style="text-align:center;color:#1a237e;flex:1;">
+        <i class="fas fa-list-alt" style="font-size:24px;"></i><br><span style="font-size:12px;font-weight:800;">รายงาน</span>
+    </div>
+    <div onclick="openSettings()" class="nav-item" style="text-align:center;color:#1a237e;flex:1;">
+        <i class="fas fa-wallet" style="font-size:24px;"></i><br><span style="font-size:12px;font-weight:800;">บัญชี</span>
+    </div>
 </nav>
  <script>
     let archives = JSON.parse(localStorage.getItem("barber_archives")) || [];
