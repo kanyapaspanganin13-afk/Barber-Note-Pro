@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.11</title>
+    <title>Barber Note Pro v.119</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -30,11 +30,11 @@
     .nav-item.active { color: #6366f1; }
     .nav-item i { font-size: 24px; }
     .nav-item span { font-size: 13px; font-weight: 500; }
-    body.deep-navy { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --border: #334155; }
-    body.deep-navy .icon-card, body.deep-navy input, body.deep-navy select { background: #1e293b; color: white; border-color: #334155; }
-    body.barber-dark { --bg: #121212; --card: #1a1a1a; --text: #e0e0e0; --primary: #fbbf24; --border: #333; }
-    body.barber-dark .icon-card, body.barber-dark input, body.barber-dark select { background: #1a1a1a; color: #fbbf24; border-color: #333; }   
-    
+    body.light { --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --accent: #1a237e; }
+    body.navy { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --accent: #38bdf8; }
+     body.dark { --bg: #121212; --card: #1a1a1a; --text: #fbbf24; --accent: #fbbf24; }
+     body { background-color: var(--bg); color: var(--text); transition: all 0.3s ease; }
+    .icon-card, input, select { background: var(--card); color: var(--text); border: 1px solid rgba(255,255,255,0.1); }
     .grid-3 {display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 6px; margin-bottom: 8px;}
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
     .icon-card { position: relative; border-radius: 15px; padding: 10px 2px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: none !important; background: #fff; height: 75px !important; font-size: 14px !important; }
@@ -221,31 +221,35 @@
 
     </div>
 </div>
-<div id="modalSet" class="modal" style="display:none;position:fixed;z-index:99999;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:15px;">
-    <div style="background:#fff;padding:25px;width:100%;max-width:360px;border-radius:35px;box-shadow:0 30px 60px rgba(0,0,0,0.5);margin-bottom:100px;">
+<div id="modalSet" style="display:none; position:fixed; z-index:99999; inset:0; background:rgba(0,0,0,0.8); backdrop-filter:blur(10px); display:flex; align-items:center; justify-content:center; padding:15px;">
+    
+    <div style="background:var(--card, white); padding:25px; width:95%; max-width:550px; border-radius:35px; box-shadow:0 30px 60px rgba(0,0,0,0.5); margin-bottom:120px;">
         
-        <h3 style="text-align:center;color:#1e293b;margin:0 0 15px;font-size:20px;font-weight:800;">⚙️ ตั้งค่าระบบ</h3>
+        <h3 style="text-align:center; margin:0 0 20px 0; font-weight:800; font-size:20px; color:var(--text, #1a237e);">⚙️ ตั้งค่าระบบ</h3>
         
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
-            <div style="grid-column:span 2;"><label style="font-size:11px;font-weight:700;color:#94a3b8;">ชื่อร้าน</label><input id="setShop" style="width:100%;height:45px;border-radius:12px;border:1.5px solid #e2e8f0;text-align:center;font-weight:700;background:#f8fafc;"></div>
-            <div style="grid-column:span 2;"><label style="font-size:11px;font-weight:700;color:#94a3b8;">ธีมระบบ</label><select id="setTheme" style="width:100%;height:45px;border-radius:12px;border:1.5px solid #e2e8f0;text-align:center;font-weight:700;"><option value="light">🌤 สว่าง</option><option value="navy">🌌 น้ำเงิน</option><option value="dark">🌑 ดำ-ทอง</option></select></div>
-            <div><label style="font-size:11px;font-weight:700;color:#94a3b8;">% ช่าง</label><input type="number" id="setPerc" style="width:100%;height:45px;border-radius:12px;border:1.5px solid #e2e8f0;text-align:center;"></div>
-            <div><label style="font-size:11px;font-weight:700;color:#94a3b8;">ประกัน</label><input type="number" id="setGuar" style="width:100%;height:45px;border-radius:12px;border:1.5px solid #e2e8f0;text-align:center;"></div>
-            <div><label style="font-size:11px;font-weight:700;color:#94a3b8;">เสียง</label><select id="setVoice" style="width:100%;height:45px;border-radius:12px;border:1.5px solid #e2e8f0;text-align:center;"><option value="female">👩‍💼 หญิง</option><option value="male">👨‍💼 ชาย</option></select></div>
-            <div><label style="font-size:11px;font-weight:700;color:#94a3b8;">เปิด/ปิด</label><select id="setSound" style="width:100%;height:45px;border-radius:12px;border:1.5px solid #e2e8f0;text-align:center;"><option value="on">🔊 เปิด</option><option value="off">🔇 ปิด</option></select></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:25px;">
+            <div style="grid-column:span 2;"><label style="font-size:11px; font-weight:700; opacity:0.6;">ชื่อร้าน</label><input id="setShop" style="width:100%; height:45px; border-radius:12px; text-align:center; font-weight:700;"></div>
+            <div style="grid-column:span 2;"><label style="font-size:11px; font-weight:700; opacity:0.6;">เลือกธีม</label><select id="setTheme" style="width:100%; height:45px; border-radius:12px; text-align:center; font-weight:700;"><option value="light">🌤 สว่าง</option><option value="navy">🌌 ธนาคารน้ำเงิน</option><option value="dark">🌑 ดำ-ทอง</option></select></div>
+            <div><label style="font-size:11px; font-weight:700; opacity:0.6;">% ช่าง</label><input type="number" id="setPerc" style="width:100%; height:45px; border-radius:12px; text-align:center;"></div>
+            <div><label style="font-size:11px; font-weight:700; opacity:0.6;">ประกัน</label><input type="number" id="setGuar" style="width:100%; height:45px; border-radius:12px; text-align:center;"></div>
         </div>
 
-        <div style="display:grid; grid-template-columns: 2fr 1fr 0.8fr; gap: 10px; align-items: center;">
-            <button onclick="saveSettings()" style="background:linear-gradient(135deg, #1a237e, #283593); color:#fff; height:60px; border-radius:18px; border:none; font-weight:800; font-size:16px; box-shadow:0 10px 20px rgba(26,35,126,0.3);">✅ บันทึก</button>
+        <div style="display:flex; gap:12px; align-items:center; justify-content:center; width:100%;">
+            <button onclick="saveSettings()" style="flex: 2; background: linear-gradient(135deg, #1a237e, #0f172a); color: white; height: 65px; border-radius: 22px; border: none; font-weight: 900; font-size: 16px; box-shadow: 0 8px 15px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                💾 <span>บันทึก</span>
+            </button>
             
-            <button onclick="closeSettings()" style="background:#fff1f2; color:#e11d48; height:60px; border-radius:18px; border:2px solid #fb7185; font-size:26px; font-weight:bold;">⏻</button>
+            <button onclick="closeSettings()" style="flex: 1; background: #e11d48; color: white; height: 65px; border-radius: 22px; border: 4px solid #be123c; font-size: 32px; font-weight: 900; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 0 #9f1239;">
+                ⏻
+            </button>
             
-            <button onclick="clearAllData()" style="background:#f8fafc; color:#94a3b8; height:50px; border-radius:15px; border:1px solid #e2e8f0; font-size:20px; opacity:0.7;">🗑️</button>
+            <button onclick="clearAllData()" style="flex: 0.8; background: #fff1f2; color: #e11d48; height: 65px; border-radius: 22px; border: 2.5px solid #e11d48; font-size: 26px; display: flex; align-items: center; justify-content: center;">
+                🗑️
+            </button>
         </div>
 
     </div>
 </div>
-
 </div> </div> <nav class="nav-bar">
     <div class="nav-item active" id="n1" onclick="go(1)"><i class="fas fa-edit"></i><span>บันทึก</span></div>
     <div class="nav-item" id="n2" onclick="go(2)"><i class="fas fa-file-invoice"></i><span>รายงาน</span></div>
@@ -309,10 +313,10 @@ function handleHoliday() {
             $("setGuar").value = conf.guar || 0;
             modal.style.display = 'flex'; 
         }
-    }
-    function saveSettings(){conf={...conf,shop:$("setShop").value,perc:parseInt($("setPerc").value),guar:parseInt($("setGuar").value),theme:$("setTheme").value,sound:$("setSound").value,voice:$("setVoice").value};localStorage.setItem("barber_conf",JSON.stringify(conf));applyTheme(conf.theme);$("shopNameDisp").innerText=conf.shop;speak("บันทึกเรียบร้อย");alert("✅ บันทึกเรียบร้อย");closeSettings()}
-function closeSettings(){if($("modalSet"))$("modalSet").style.display='none'}
+    } 
+function saveSettings(){conf={...conf,shop:$("setShop").value,perc:parseInt($("setPerc").value),guar:parseInt($("setGuar").value),theme:$("setTheme").value,sound:$("setSound").value,voice:$("setVoice").value};localStorage.setItem("barber_conf",JSON.stringify(conf));applyTheme(conf.theme);$("shopNameDisp").innerText=conf.shop;if(typeof speak==='function')speak("บันทึกเรียบร้อย");alert("✅ บันทึกพรีเมียมเรียบร้อย");closeSettings()}
 function applyTheme(t){document.body.className=t}
+function closeSettings(){document.getElementById("modalSet").style.display='none'}
 function speak(t){if(conf.sound==='off')return;window.speechSynthesis.cancel();const m=new SpeechSynthesisUtterance(t);m.lang='th-TH';m.pitch=(conf.voice==='male')?0.8:1.2;window.speechSynthesis.speak(m)}
 function clearAllData(){if(confirm("ล้างข้อมูลทั้งหมดไหม? ข้อมูลถูกล้างจากระบบเรียบร้อย!")){localStorage.clear();location.reload()}}
 function updateDateDisplay(v){if(!v)return;const d=new Date(v);document.getElementById("dateDisplay").innerText=d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});if(typeof renderDay==="function")renderDay();}
