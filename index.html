@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.7.7</title>
+    <title>Barber Note Pro v.8.7</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -122,8 +122,8 @@
         <hr style="border:0; border-top:1px solid #e2e8f0; margin-top:15px;">
         <div id="dailyList"></div>
     </div> 
-<div id="p3" class="page" style="padding: 12px; background: #f4f7fa;">
-    <div class="card" style="background:#fff; border-radius:25px; padding:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border:1px solid #fff; margin-bottom: 12px;">
+<div id="p3" class="page" style="padding: 12px; background: #f8fafc;">
+    <div class="card" style="background:#fff; border-radius:25px; padding:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border:1px solid #fff; margin-bottom: 15px;">
         
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
             <b style="font-size:16px; color:#92400e;"><i class="fas fa-wallet"></i> บัญชีสุทธิ</b>
@@ -146,22 +146,22 @@
         </div>
 
         <div style="margin-bottom:15px;">
-            <div style="display:flex; align-items:center; background:#f8fafc; border:1px solid #e2e8f0; border-radius:15px; padding:5px 12px; margin-bottom:8px; height:55px;">
-                <i class="fas fa-calendar-day" style="color:#6366f1; margin-right:10px;"></i>
-                <input type="date" id="accDate" style="flex:1; border:none; background:none; font-size:16px; font-weight:600; color:#1e293b; outline:none;">
+            <div style="display:flex; align-items:center; background:#f1f5f9; border-radius:15px; padding:0 15px; margin-bottom:8px; height:50px;">
+                <i class="fas fa-calendar-alt" style="color:#6366f1; font-size:18px;"></i>
+                <input type="date" id="accDate" style="flex:1; border:none; background:none; font-size:16px; font-weight:600; padding-left:10px; outline:none; color:#334155;">
             </div>
-            <div style="display:flex; align-items:center; background:#f8fafc; border:1px solid #e2e8f0; border-radius:15px; padding:5px 12px; height:55px;">
-                <i class="fas fa-pen" style="color:#94a3b8; margin-right:10px;"></i>
-                <input type="text" id="accNote" placeholder="บันทึกช่วยจำ..." style="flex:1; border:none; background:none; font-size:15px; outline:none;">
+            <div style="display:flex; align-items:center; background:#f1f5f9; border-radius:15px; padding:0 15px; height:50px;">
+                <i class="fas fa-pen-nib" style="color:#94a3b8; font-size:16px;"></i>
+                <input type="text" id="accNote" placeholder="บันทึกช่วยจำ..." style="flex:1; border:none; background:none; font-size:15px; padding-left:10px; outline:none;">
             </div>
         </div>
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <button onclick="clearAccount()" style="background:linear-gradient(135deg, #52b788, #2d6a4f); color:#fff; border:none; border-radius:15px; padding:15px 5px; font-size:14px; font-weight:800; display:flex; flex-direction:column; align-items:center; gap:5px; box-shadow:0 4px 12px rgba(45,106,79,0.2);">
-                <i class="fas fa-check-circle" style="font-size:18px;"></i>
+            <button onclick="clearAccount()" style="background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; border-radius:18px; padding:15px 5px; font-size:14px; font-weight:800; display:flex; flex-direction:column; align-items:center; gap:5px;">
+                <i class="fas fa-check-double" style="font-size:18px;"></i>
                 ยืนยันเคลียร์เงิน
             </button>
-            <button onclick="openHistoryModal()" style="background:#fff; color:#3b82f6; border:2px solid #3b82f6; border-radius:15px; padding:15px 5px; font-size:14px; font-weight:800; display:flex; flex-direction:column; align-items:center; gap:5px;">
+            <button onclick="openHistoryModal()" style="background:#fff; color:#3b82f6; border:2px solid #3b82f6; border-radius:18px; padding:15px 5px; font-size:14px; font-weight:800; display:flex; flex-direction:column; align-items:center; gap:5px;">
                 <i class="fas fa-history" style="font-size:18px;"></i>
                 ประวัติการเคลียร์
             </button>
@@ -170,16 +170,16 @@
 
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
         
-        <div onclick="document.getElementById('histDate').showPicker()" style="background:linear-gradient(135deg, #10b981, #059669); border-radius:25px; padding:25px 15px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 20px rgba(16,185,129,0.2);">
-            <i class="fas fa-search-dollar" style="font-size:32px; margin-bottom:10px; display:block;"></i>
-            <b style="font-size:16px;">ค้นหารายวัน</b>
-            <input type="date" id="histDate" onchange="loadHistDaily()" style="opacity:0; position:absolute; inset:0; width:100%;">
+        <div onclick="document.getElementById('histDate').showPicker()" style="background:linear-gradient(135deg, #f59e0b, #d97706); border-radius:25px; padding:25px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(245,158,11,0.2); cursor:pointer;">
+            <i class="fas fa-search-dollar" style="font-size:30px; margin-bottom:8px; display:block;"></i>
+            <b style="font-size:15px; display:block;">ค้นหารายวัน</b>
+            <input type="date" id="histDate" onchange="loadHistDaily()" style="position:absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer; z-index:10;">
         </div>
 
-        <div onclick="document.getElementById('histMonth').showPicker()" style="background:linear-gradient(135deg, #6366f1, #4338ca); border-radius:25px; padding:25px 15px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 20px rgba(99,102,241,0.2);">
-            <i class="fas fa-calendar-check" style="font-size:32px; margin-bottom:10px; display:block;"></i>
-            <b style="font-size:16px;">สรุปรายเดือน</b>
-            <input type="month" id="histMonth" onchange="loadHistMonth()" style="opacity:0; position:absolute; inset:0; width:100%;">
+        <div onclick="document.getElementById('histMonth').showPicker()" style="background:linear-gradient(135deg, #6366f1, #4338ca); border-radius:25px; padding:25px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(99,102,241,0.2); cursor:pointer;">
+            <i class="fas fa-calendar-check" style="font-size:30px; margin-bottom:8px; display:block;"></i>
+            <b style="font-size:15px; display:block;">สรุปรายเดือน</b>
+            <input type="month" id="histMonth" onchange="loadHistMonth()" style="position:absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer; z-index:10;">
         </div>
 
     </div>
