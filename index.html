@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.112</title>
+    <title>Barber Note Pro v.11</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -221,23 +221,29 @@
 
     </div>
 </div>
+<div id="modalSet" class="modal" style="display:none;position:fixed;z-index:99999;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:15px;">
+    <div style="background:#fff;padding:25px;width:100%;max-width:360px;border-radius:35px;box-shadow:0 30px 60px rgba(0,0,0,0.5);margin-bottom:100px;">
+        
+        <h3 style="text-align:center;color:#1e293b;margin:0 0 15px;font-size:20px;font-weight:800;">⚙️ ตั้งค่าระบบ</h3>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
+            <div style="grid-column:span 2;"><label style="font-size:11px;font-weight:700;color:#94a3b8;">ชื่อร้าน</label><input id="setShop" style="width:100%;height:45px;border-radius:12px;border:1.5px solid #e2e8f0;text-align:center;font-weight:700;background:#f8fafc;"></div>
+            <div style="grid-column:span 2;"><label style="font-size:11px;font-weight:700;color:#94a3b8;">ธีมระบบ</label><select id="setTheme" style="width:100%;height:45px;border-radius:12px;border:1.5px solid #e2e8f0;text-align:center;font-weight:700;"><option value="light">🌤 สว่าง</option><option value="navy">🌌 น้ำเงิน</option><option value="dark">🌑 ดำ-ทอง</option></select></div>
+            <div><label style="font-size:11px;font-weight:700;color:#94a3b8;">% ช่าง</label><input type="number" id="setPerc" style="width:100%;height:45px;border-radius:12px;border:1.5px solid #e2e8f0;text-align:center;"></div>
+            <div><label style="font-size:11px;font-weight:700;color:#94a3b8;">ประกัน</label><input type="number" id="setGuar" style="width:100%;height:45px;border-radius:12px;border:1.5px solid #e2e8f0;text-align:center;"></div>
+            <div><label style="font-size:11px;font-weight:700;color:#94a3b8;">เสียง</label><select id="setVoice" style="width:100%;height:45px;border-radius:12px;border:1.5px solid #e2e8f0;text-align:center;"><option value="female">👩‍💼 หญิง</option><option value="male">👨‍💼 ชาย</option></select></div>
+            <div><label style="font-size:11px;font-weight:700;color:#94a3b8;">เปิด/ปิด</label><select id="setSound" style="width:100%;height:45px;border-radius:12px;border:1.5px solid #e2e8f0;text-align:center;"><option value="on">🔊 เปิด</option><option value="off">🔇 ปิด</option></select></div>
+        </div>
 
-<div id="modalSet" class="modal" style="display:none;position:fixed;z-index:9999;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:15px;">
-    <div style="background:#fff;padding:25px;width:100%;max-width:380px;border-radius:30px;box-shadow:0 20px 40px rgba(0,0,0,0.2);">
-        <h3 style="text-align:center;color:#1a237e;margin:0 0 15px;font-size:20px;font-weight:800;">⚙️ ตั้งค่าระบบ</h3>
-        <input id="setShop" placeholder="ชื่อร้าน" style="width:100%;height:50px;border-radius:15px;border:1.5px solid #eee;margin-bottom:12px;text-align:center;font-weight:700;">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:15px;">
-            <div style="grid-column:span 2;"><label style="font-size:11px;font-weight:700;color:#64748b;">เลือกธีม</label><select id="setTheme" style="width:100%;height:45px;border-radius:12px;border:1.5px solid #eee;text-align:center;font-weight:700;"><option value="light">🌤 ธีมสว่าง (Light)</option><option value="navy">🌌 ธนาคารน้ำเงิน (Navy)</option><option value="dark">🌑 ดำ-ทอง (Dark Gold)</option></select></div>
-            <div style="text-align:center;"><label style="font-size:11px;font-weight:700;color:#64748b;">% ช่าง</label><input type="number" id="setPerc" style="width:100%;height:45px;border-radius:12px;border:1.5px solid #eee;text-align:center;font-weight:700;"></div>
-            <div style="text-align:center;"><label style="font-size:11px;font-weight:700;color:#64748b;">ประกัน</label><input type="number" id="setGuar" style="width:100%;height:45px;border-radius:12px;border:1.5px solid #eee;text-align:center;font-weight:700;"></div>
-            <div style="text-align:center;"><label style="font-size:11px;font-weight:700;color:#64748b;">เสียง</label><select id="voiceType" style="width:100%;height:45px;border-radius:12px;border:1.5px solid #eee;"><option value="female">👩‍💼 หญิง</option><option value="male">👨‍💼 ชาย</option></select></div>
-            <div style="text-align:center;"><label style="font-size:11px;font-weight:700;color:#64748b;">เปิด/ปิด</label><select id="setSound" style="width:100%;height:45px;border-radius:12px;border:1.5px solid #eee;"><option value="on">🔊 เปิด</option><option value="off">🔇 ปิด</option></select></div>
-<div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 20px;">
-    <button onclick="saveSettings()" style="background:#1a237e; color:#fff; height:60px; border-radius:20px; border:none; font-size:24px; box-shadow:0 8px 20px rgba(26,35,126,0.2); cursor:pointer;">✅</button> 
-    
-    <button onclick="closeSettings()" style="background:#f1f5f9; color:#64748b; height:60px; border-radius:20px; border:none; font-size:28px; cursor:pointer;">⏻</button>
-    
-    <button onclick="clearAllData()" style="background:#fff1f2; color:#ef4444; height:60px; border-radius:20px; border:1.5px solid #fecdd3; font-size:24px; cursor:pointer;">🗑️</button>
+        <div style="display:grid; grid-template-columns: 2fr 1fr 0.8fr; gap: 10px; align-items: center;">
+            <button onclick="saveSettings()" style="background:linear-gradient(135deg, #1a237e, #283593); color:#fff; height:60px; border-radius:18px; border:none; font-weight:800; font-size:16px; box-shadow:0 10px 20px rgba(26,35,126,0.3);">✅ บันทึก</button>
+            
+            <button onclick="closeSettings()" style="background:#fff1f2; color:#e11d48; height:60px; border-radius:18px; border:2px solid #fb7185; font-size:26px; font-weight:bold;">⏻</button>
+            
+            <button onclick="clearAllData()" style="background:#f8fafc; color:#94a3b8; height:50px; border-radius:15px; border:1px solid #e2e8f0; font-size:20px; opacity:0.7;">🗑️</button>
+        </div>
+
+    </div>
 </div>
 
 </div> </div> <nav class="nav-bar">
