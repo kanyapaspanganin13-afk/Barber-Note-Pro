@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.01</title>
+    <title>Barber Note Pro v.011</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -215,11 +215,11 @@
         
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:25px;">
             <div style="grid-column:span 2;">
-                <label style="font-size:11px; font-weight:700; opacity:0.6;">ชื่อร้าน</label>
+                <label style="font-size:14px; font-weight:700; opacity:0.6;">ชื่อร้าน</label>
                 <input id="setShop" style="width:100%; height:45px; border-radius:12px; text-align:center; font-weight:700; border:1px solid #ddd;">
             </div>
             <div style="grid-column:span 2;">
-                <label style="font-size:11px; font-weight:700; opacity:0.6;">เลือกธีม</label>
+                <label style="font-size:14px; font-weight:700; opacity:0.6;">เลือกธีม</label>
                 <select id="setTheme" style="width:100%; height:45px; border-radius:12px; text-align:center; font-weight:700;">
                     <option value="light">🌤 สว่าง</option>
                     <option value="navy">🌌 ธนาคารน้ำเงิน</option>
@@ -227,25 +227,25 @@
                 </select>
             </div>
             <div>
-                <label style="font-size:11px; font-weight:700; opacity:0.6;">เสียงพูด</label>
+                <label style="font-size:14px; font-weight:700; opacity:0.6;">เสียงพูด</label>
                 <select id="setVoice" style="width:100%; height:45px; border-radius:12px; text-align:center; font-weight:700;">
                     <option value="female">👩‍💼 หญิง</option>
                     <option value="male">👨‍💼 ชาย</option>
                 </select>
             </div>
             <div>
-                <label style="font-size:11px; font-weight:700; opacity:0.6;">ระบบเสียง</label>
+                <label style="font-size:14px; font-weight:700; opacity:0.6;">ระบบเสียง</label>
                 <select id="setSound" style="width:100%; height:45px; border-radius:12px; text-align:center; font-weight:700;">
                     <option value="on">🔊 เปิด</option>
                     <option value="off">🔇 ปิด</option>
                 </select>
             </div>
             <div>
-                <label style="font-size:11px; font-weight:700; opacity:0.6;">% ช่าง</label>
+                <label style="font-size:14px; font-weight:700; opacity:0.6;">% ช่าง</label>
                 <input type="number" id="setPerc" style="width:100%; height:45px; border-radius:12px; text-align:center; border:1px solid #ddd;">
             </div>
             <div>
-                <label style="font-size:11px; font-weight:700; opacity:0.6;">ประกัน</label>
+                <label style="font-size:14px; font-weight:700; opacity:0.6;">ประกัน</label>
                 <input type="number" id="setGuar" style="width:100%; height:45px; border-radius:12px; text-align:center; border:1px solid #ddd;">
             </div>
         </div>
@@ -315,9 +315,11 @@ function handleInsurance() {
             modal.style.display = 'flex'; 
         }
     }
-function openSettings(){const d=$("modalSet");if(d)d.style.display='flex';$("setShop").value=conf.shop||'';$("setPerc").value=conf.perc||50;$("setGuar").value=conf.guar||0;$("setTheme").value=conf.theme||'light';$("setVoice").value=conf.voice||'female';$("setSound").value=conf.sound||'on'}
-function saveSettings(){try{conf={...conf,shop:$("setShop").value,perc:parseInt($("setPerc").value)||0,guar:parseInt($("setGuar").value)||0,theme:$("setTheme").value,voice:$("setVoice").value,sound:$("setSound").value};localStorage.setItem("barber_conf",JSON.stringify(conf));applyTheme(conf.theme);if($("shopNameDisp"))$("shopNameDisp").innerText=conf.shop;alert("✅ บันทึกเรียบร้อย");closeAndGoHome();renderDay()}catch(e){alert("❌ พังเพราะ:"+e.message)}}
-function closeAndGoHome(){$("modalSet").style.display='none';if(typeof showPage==='function')showPage(1);else if(typeof go==='function')go(1);else location.reload()}
+const $ = i => document.getElementById(i);
+function applyTheme(t){document.body.className=t;const o=$("navyStyle");if(o)o.remove();const s=document.documentElement.style;if(t==='dark'){s.setProperty('--card','#262626');s.setProperty('--text','#fbbf24');document.body.style.background='#171717'}else{s.setProperty('--card','#fff');s.setProperty('--text','#1a237e');document.body.style.background=''}if(t==='navy'){const st=document.createElement("style");st.id="navyStyle";st.innerHTML=`body.navy{background:#1a237e!important;color:#fff!important}.navy div[style*="background:white"] b,.navy div[style*="background:white"] span,.navy .card b,.navy .card span{color:#1e293b!important}.navy #dTotal,.navy #accNet{color:#1a237e!important}`;document.head.appendChild(st)}}
+function openSettings(){const d=$("modalSet");if(d)d.style.display='flex';$("setShop").value=conf.shop||'';$("setTheme").value=conf.theme||'light';$("setVoice").value=conf.voice||'female';$("setSound").value=conf.sound||'on';$("setPerc").value=conf.perc||50;$("setGuar").value=conf.guar||0}
+function saveSettings(){try{conf={...conf,shop:$("setShop").value,perc:parseInt($("setPerc").value)||0,guar:parseInt($("setGuar").value)||0,theme:$("setTheme").value,voice:$("setVoice").value,sound:$("setSound").value};localStorage.setItem("barber_conf",JSON.stringify(conf));applyTheme(conf.theme);if($("shopNameDisp"))$("shopNameDisp").innerText=conf.shop;alert("✅ บันทึกเรียบร้อย");closeAndGoHome();if(typeof renderDay==='function')renderDay()}catch(e){alert("❌ พังเพราะ:"+e.message)}}
+function closeAndGoHome(){if($("modalSet"))$("modalSet").style.display='none';if(typeof showPage==='function')showPage(1);else if(typeof go==='function')go(1);else location.reload()}
 function speak(t){if(conf.sound==='off')return;window.speechSynthesis.cancel();const m=new SpeechSynthesisUtterance(t);m.lang='th-TH';m.pitch=(conf.voice==='male')?0.8:1.1;window.speechSynthesis.speak(m)}
 function clearAllData(){if(confirm("💣 ล้างบางข้อมูลทั้งหมด?")){localStorage.clear();location.reload()}}
 function updateDateDisplay(v){if(!v)return;const d=new Date(v);const el=$("dateDisplay");if(el)el.innerText=d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});if(typeof renderDay==="function")renderDay()}
