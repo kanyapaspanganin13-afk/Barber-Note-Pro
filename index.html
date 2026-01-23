@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.01</title>
+    <title>Barber Note Pro v.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -27,11 +27,11 @@
         align-items: center !important; justify-content: center !important; cursor: pointer !important;
         pointer-events: auto !important;
     }
-    .nav-item { color: #64748b; opacity: 0.5; } /* สีเทาเข้มจางๆ สำหรับปุ่มที่ไม่ได้กด */
-   .nav-item.active { color: #1a237e !important; opacity: 1; font-weight: 900; } /* สีน้ำเงินเข้มจัด สำหรับปุ่มที่กดอยู่ */
-   .nav-item i { font-size: 24px; margin-bottom: 4px; }
-   .nav-item span { font-size: 12px; font-weight: 800; display: block; }
-    body.light { --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --accent: #1a237e; }
+ nav{position:fixed;bottom:0;left:0;right:0;background:#0f172a;display:flex;justify-content:space-around;padding:12px 0;box-shadow:0 -5px 20px rgba(0,0,0,0.3);z-index:9999}
+.nav-item{text-align:center;color:#94a3b8;flex:1;opacity:0.6}
+.nav-item.active{color:#ffffff!important;opacity:1} /* ตัวที่กดจะเป็นขาวสว่าง */
+.nav-item i{font-size:24px;display:block;margin-bottom:2px}
+.nav-item span{font-size:12px;font-weight:700;display:block}    body.light { --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --accent: #1a237e; }
     body.navy { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --accent: #38bdf8; }
      body.dark { --bg: #121212; --card: #1a1a1a; --text: #fbbf24; --accent: #fbbf24; }
      body { background-color: var(--bg); color: var(--text); transition: all 0.3s ease; }
@@ -259,16 +259,10 @@
 
     </div>
 </div>
-<nav style="position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:space-around;padding:15px;box-shadow:0 -5px 20px rgba(0,0,0,0.2);z-index:9999;border-top:1px solid #eee;">
-    <div onclick="go(1)" class="nav-item active" style="text-align:center;color:#1a237e;flex:1;">
-        <i class="fas fa-edit" style="font-size:24px;"></i><br><span style="font-size:12px;font-weight:800;">บันทึก</span>
-    </div>
-    <div onclick="go(2)" class="nav-item" style="text-align:center;color:#1a237e;flex:1;">
-        <i class="fas fa-list-alt" style="font-size:24px;"></i><br><span style="font-size:12px;font-weight:800;">รายงาน</span>
-    </div>
-    <div onclick="openSettings()" class="nav-item" style="text-align:center;color:#1a237e;flex:1;">
-        <i class="fas fa-wallet" style="font-size:24px;"></i><br><span style="font-size:12px;font-weight:800;">บัญชี</span>
-    </div>
+<nav>
+    <div onclick="go(1)" class="nav-item active"><i class="fas fa-edit"></i><span>บันทึก</span></div>
+    <div onclick="go(2)" class="nav-item"><i class="fas fa-history"></i><span>ประวัติ</span></div>
+    <div onclick="go(3)" class="nav-item"><i class="fas fa-cog"></i><span>ตั้งค่า</span></div>
 </nav>
  <script>
     let archives = JSON.parse(localStorage.getItem("barber_archives")) || [];
@@ -489,18 +483,13 @@ function loadHistMonth() {
     let msg = `💈 รายงานร้าน: Barber Shop\n📅 วันที่: ${fDate}\n-------------------------\n📝 ลูกค้า (${today.length} คน):\n${clientList}\n-------------------------\n📊 สถิติ:\n${statText}\n-------------------------\n💰 ยอด: ${tot} | 🧧 ทิป: ${tips}\n📱 โอน: ${trans} | 💵 สด: ${cash}\n🤵 ช่างได้: ${Math.floor(bEarn)}\n🏠 ร้านได้: ${Math.floor(tot-(bEarn-tips))}\n-------------------------\n${settleMsg}`;
     window.open(`https://line.me/R/msg/text/?${encodeURIComponent(msg)}`);
 }
-  function go(n) {
-    document.querySelectorAll('.page, .nav-item').forEach(el => el.classList.remove('active'));
-    if(document.getElementById('p'+n)) document.getElementById('p'+n).classList.add('active');
-    if(document.getElementById('n'+n)) document.getElementById('n'+n).classList.add('active');
-    renderDay();
-    if(n===3) {
-        const share = parseInt((document.getElementById('dBarber')?.innerText || "0").replace(/,/g,'')) || 0;
-        const old = parseInt(localStorage.getItem('barber_old_balance') || "0");
-        if(document.getElementById('accTodayVal')) document.getElementById('accTodayVal').innerText = "฿"+share.toLocaleString();
-        if(document.getElementById('accOldVal')) document.getElementById('accOldVal').innerText = "฿"+old.toLocaleString();
-        if(document.getElementById('accNet')) document.getElementById('accNet').innerText = (share+old).toLocaleString();
+ function go(p) {
+    if (p === 3) { 
+        const m = document.getElementById("modalSet"); if (m) m.style.display = 'flex';
+    } else if (typeof showPage === 'function') {
+        showPage(p);
     }
+    document.querySelectorAll('.nav-item').forEach((b, i) => b.classList.toggle('active', (i + 1) === p));
 } 
     function saveDB() { localStorage.setItem("barber_db", JSON.stringify(db)); localStorage.setItem("barber_conf", JSON.stringify(conf)); }
     function delRec(id) { if (confirm("จะลบรายการนี้ใช่ไหมครับพี่?")) { db = db.filter(r => r.id !== id); saveDB(); renderDay(); } }
