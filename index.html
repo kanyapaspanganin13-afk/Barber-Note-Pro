@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.113</title>
+    <title>Barber Note Pro v.13</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -296,7 +296,6 @@ function handleInsurance() {
             modal.style.display = 'flex'; 
         }
     }
-  const $=i=>document.getElementById(i);
 function openSettings(){const d=$("modalSet");if(d)d.style.display='flex';$("setShop").value=conf.shop||'';$("setPerc").value=conf.perc||50;$("setGuar").value=conf.guar||0;$("setTheme").value=conf.theme||'light'}
 function saveSettings(){try{conf={...conf,shop:$("setShop").value,perc:parseInt($("setPerc").value)||0,guar:parseInt($("setGuar").value)||0,theme:$("setTheme").value,voice:$("setVoice").value,sound:$("setSound").value};localStorage.setItem("barber_conf",JSON.stringify(conf));applyTheme(conf.theme);if($("shopNameDisp"))$("shopNameDisp").innerText=conf.shop;alert("✅ บันทึกเรียบร้อย");closeSettings();renderDay()}catch(e){alert("❌ บันทึกไม่ได้เพราะ: "+e.message)}}
 function closeSettings(){$("modalSet").style.display='none'}
