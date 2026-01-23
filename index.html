@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.11</title>
+    <title>Barber Note Pro v.113</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -226,20 +226,18 @@
             <div><label style="font-size:11px; font-weight:700; opacity:0.6;">% ช่าง</label><input type="number" id="setPerc" style="width:100%; height:45px; border-radius:12px; text-align:center;"></div>
             <div><label style="font-size:11px; font-weight:700; opacity:0.6;">ประกัน</label><input type="number" id="setGuar" style="width:100%; height:45px; border-radius:12px; text-align:center;"></div>
         </div>
-
-        <div style="display:flex; gap:12px; align-items:center; justify-content:center; width:100%;">
-            <button onclick="saveSettings()" style="flex: 2; background: linear-gradient(135deg, #1a237e, #0f172a); color: white; height: 65px; border-radius: 22px; border: none; font-weight: 900; font-size: 16px; box-shadow: 0 8px 15px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; gap: 8px;">
-                💾 <span>บันทึก</span>
-            </button>
-            <button onclick="closeSettings()" style="flex: 1; background: #e11d48; color: white; height: 65px; border-radius: 22px; border: 4px solid #be123c; font-size: 32px; font-weight: 900; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 0 #9f1239;">
-                ⏻
-            </button>
-            <button onclick="clearAllData()" style="flex: 0.8; background: #fff1f2; color: #e11d48; height: 65px; border-radius: 22px; border: 2.5px solid #e11d48; font-size: 26px; display: flex; align-items: center; justify-content: center;">
-                🗑️
-            </button>
-        </div>
-
-    </div>
+       <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; width:100%; margin-top:20px;">
+    <button onclick="saveSettings()" style="background:#1e293b; color:white; height:60px; border-radius:20px; border:none; font-weight:900; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+        💾 บันทึก
+    </button>
+    <button onclick="closeSettings()" style="background:#f59e0b; color:white; height:60px; border-radius:20px; border:none; font-size:32px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow: 0 5px 0 #b45309;">
+        ⏻
+    </button>
+    <button onclick="clearAllData()" style="background:#fee2e2; color:#ef4444; height:60px; border-radius:20px; border:none; font-size:28px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+        🪄
+    </button>
+          </div>
+      </div>
 </div>
 </div> </div> <nav class="nav-bar">
     <div class="nav-item active" id="n1" onclick="go(1)"><i class="fas fa-edit"></i><span>บันทึก</span></div>
@@ -297,11 +295,12 @@ function handleInsurance() {
             $("setGuar").value = conf.guar || 0;
             modal.style.display = 'flex'; 
         }
-    } 
+    }
+  const $=i=>document.getElementById(i);
 function openSettings(){const d=$("modalSet");if(d)d.style.display='flex';$("setShop").value=conf.shop||'';$("setPerc").value=conf.perc||50;$("setGuar").value=conf.guar||0;$("setTheme").value=conf.theme||'light'}
-function saveSettings(){try{conf={...conf,shop:$("setShop").value,perc:parseInt($("setPerc").value)||0,guar:parseInt($("setGuar").value)||0,theme:$("setTheme").value};localStorage.setItem("barber_conf",JSON.stringify(conf));applyTheme(conf.theme);$("shopNameDisp").innerText=conf.shop;alert("✅ บันทึกเรียบร้อย");closeSettings()}catch(e){alert("❌ พังเพราะไอดีไม่ครบ: "+e.message)}}
-function applyTheme(t){document.body.className=t}
+function saveSettings(){try{conf={...conf,shop:$("setShop").value,perc:parseInt($("setPerc").value)||0,guar:parseInt($("setGuar").value)||0,theme:$("setTheme").value,voice:$("setVoice").value,sound:$("setSound").value};localStorage.setItem("barber_conf",JSON.stringify(conf));applyTheme(conf.theme);if($("shopNameDisp"))$("shopNameDisp").innerText=conf.shop;alert("✅ บันทึกเรียบร้อย");closeSettings();renderDay()}catch(e){alert("❌ บันทึกไม่ได้เพราะ: "+e.message)}}
 function closeSettings(){$("modalSet").style.display='none'}
+function applyTheme(t){document.body.className=t}
 function speak(t){if(conf.sound==='off')return;window.speechSynthesis.cancel();const m=new SpeechSynthesisUtterance(t);m.lang='th-TH';m.pitch=(conf.voice==='male')?0.8:1.2;window.speechSynthesis.speak(m)}
 function clearAllData(){if(confirm("ล้างข้อมูลทั้งหมดไหม? ข้อมูลถูกล้างจากระบบเรียบร้อย!")){localStorage.clear();location.reload()}}
 function updateDateDisplay(v){if(!v)return;const d=new Date(v);document.getElementById("dateDisplay").innerText=d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});if(typeof renderDay==="function")renderDay();}
