@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.0</title>
+    <title>Barber Note Pro v.10</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -261,8 +261,8 @@
 </div>
 <nav>
     <div onclick="go(1)" class="nav-item active"><i class="fas fa-edit"></i><span>บันทึก</span></div>
-    <div onclick="go(2)" class="nav-item"><i class="fas fa-history"></i><span>ประวัติ</span></div>
-    <div onclick="go(3)" class="nav-item"><i class="fas fa-cog"></i><span>ตั้งค่า</span></div>
+    <div onclick="go(2)" class="nav-item"><i class="fas fa-history"></i><span>รายงาน</span></div>
+    <div onclick="go(3)" class="nav-item"><i class="fas fa-wallet"></i><span>บัญชี</span></div>
 </nav>
  <script>
     let archives = JSON.parse(localStorage.getItem("barber_archives")) || [];
@@ -484,13 +484,16 @@ function loadHistMonth() {
     window.open(`https://line.me/R/msg/text/?${encodeURIComponent(msg)}`);
 }
  function go(p) {
-    if (p === 3) { 
-        const m = document.getElementById("modalSet"); if (m) m.style.display = 'flex';
-    } else if (typeof showPage === 'function') {
-        showPage(p);
+    if (p === 3) {
+        const m = document.getElementById("modalSet"); if (m) m.style.display = "flex";
+    } else {
+        const p1 = document.getElementById("page1"), p2 = document.getElementById("page2");
+        if (p1) p1.style.display = (p === 1) ? "block" : "none";
+        if (p2) p2.style.display = (p === 2) ? "block" : "none";
     }
+    // สลับสีไอคอนให้สว่าง (Active) เมื่อถูกกด
     document.querySelectorAll('.nav-item').forEach((b, i) => b.classList.toggle('active', (i + 1) === p));
-} 
+}
     function saveDB() { localStorage.setItem("barber_db", JSON.stringify(db)); localStorage.setItem("barber_conf", JSON.stringify(conf)); }
     function delRec(id) { if (confirm("จะลบรายการนี้ใช่ไหมครับพี่?")) { db = db.filter(r => r.id !== id); saveDB(); renderDay(); } }
     function editTime(id) {const rec = db.find(r => r.id === id);if (!rec) return;const newStart = prompt("แก้เวลาเริ่ม (HH:MM)", rec.time);if (!newStart) return;const newEnd = prompt("แก้เวลาเสร็จ (HH:MM)", rec.endTime || "");rec.time = newStart;rec.endTime = newEnd || addMinutes(newStart, 30);saveDB();renderDay();}
