@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.011</title>
+    <title>Barber Note Pro v.01</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -315,7 +315,6 @@ function handleInsurance() {
             modal.style.display = 'flex'; 
         }
     }
-const $ = i => document.getElementById(i);
 function applyTheme(t){document.body.className=t;const o=$("navyStyle");if(o)o.remove();const s=document.documentElement.style;if(t==='dark'){s.setProperty('--card','#262626');s.setProperty('--text','#fbbf24');document.body.style.background='#171717'}else{s.setProperty('--card','#fff');s.setProperty('--text','#1a237e');document.body.style.background=''}if(t==='navy'){const st=document.createElement("style");st.id="navyStyle";st.innerHTML=`body.navy{background:#1a237e!important;color:#fff!important}.navy div[style*="background:white"] b,.navy div[style*="background:white"] span,.navy .card b,.navy .card span{color:#1e293b!important}.navy #dTotal,.navy #accNet{color:#1a237e!important}`;document.head.appendChild(st)}}
 function openSettings(){const d=$("modalSet");if(d)d.style.display='flex';$("setShop").value=conf.shop||'';$("setTheme").value=conf.theme||'light';$("setVoice").value=conf.voice||'female';$("setSound").value=conf.sound||'on';$("setPerc").value=conf.perc||50;$("setGuar").value=conf.guar||0}
 function saveSettings(){try{conf={...conf,shop:$("setShop").value,perc:parseInt($("setPerc").value)||0,guar:parseInt($("setGuar").value)||0,theme:$("setTheme").value,voice:$("setVoice").value,sound:$("setSound").value};localStorage.setItem("barber_conf",JSON.stringify(conf));applyTheme(conf.theme);if($("shopNameDisp"))$("shopNameDisp").innerText=conf.shop;alert("✅ บันทึกเรียบร้อย");closeAndGoHome();if(typeof renderDay==='function')renderDay()}catch(e){alert("❌ พังเพราะ:"+e.message)}}
