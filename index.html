@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.02</title>
+    <title>Barber Note Pro v.03</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -297,16 +297,13 @@ function handleInsurance() {
             modal.style.display = 'flex'; 
         }
     }
-function openSettings(){const d=$("modalSet");if(d)d.style.display='flex';$("setShop").value=conf.shop||'';$("setPerc").value=conf.perc||50;$("setGuar").value=conf.guar||0;$("setTheme").value=conf.theme||'light'}
-function saveSettings(){try{conf={...conf,shop:$("setShop").value,perc:parseInt($("setPerc").value)||0,guar:parseInt($("setGuar").value)||0,theme:$("setTheme").value,voice:$("setVoice").value,sound:$("setSound").value};localStorage.setItem("barber_conf",JSON.stringify(conf));applyTheme(conf.theme);if($("shopNameDisp"))$("shopNameDisp").innerText=conf.shop;alert("✅ บันทึกเรียบร้อย");closeSettings();renderDay()}catch(e){alert("❌ บันทึกไม่ได้เพราะ: "+e.message)}}
-function closeSettings(){$("modalSet").style.display='none'}
-function saveSettings(){try{conf={...conf,shop:$("setShop").value,perc:parseInt($("setPerc").value)||0,guar:parseInt($("setGuar").value)||0,theme:$("setTheme").value,voice:$("setVoice").value,sound:$("setSound").value};localStorage.setItem("barber_conf",JSON.stringify(conf));applyTheme(conf.theme);if($("shopNameDisp"))$("shopNameDisp").innerText=conf.shop;alert("✅ บันทึกเรียบร้อย");closeAndGoHome()}catch(e){alert("❌ พังเพราะ:"+e.message)}} function closeAndGoHome(){$("modalSet").style.display='none';if(typeof showPage==='function')showPage(1);else location.reload()}
-function speak(t){if(conf.sound==='off')return;window.speechSynthesis.cancel();const m=new SpeechSynthesisUtterance(t);m.lang='th-TH';m.pitch=(conf.voice==='male')?0.8:1.2;window.speechSynthesis.speak(m)}
-function clearAllData(){if(confirm("ล้างข้อมูลทั้งหมดไหม? ข้อมูลถูกล้างจากระบบเรียบร้อย!")){localStorage.clear();location.reload()}}
-function updateDateDisplay(v){if(!v)return;const d=new Date(v);document.getElementById("dateDisplay").innerText=d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});if(typeof renderDay==="function")renderDay();}
-
-window.addEventListener('DOMContentLoaded',()=>{const i=$("dateInp"),n=new Date(),t=n.toISOString().split('T')[0];i.value=t;updateDateDisplay(t);});
-    
+const $=i=>document.getElementById(i); function openSettings(){const d=$("modalSet");if(d)d.style.display='flex';$("setShop").value=conf.shop||'';$("setPerc").value=conf.perc||50;$("setGuar").value=conf.guar||0;$("setTheme").value=conf.theme||'light';$("setVoice").value=conf.voice||'female';$("setSound").value=conf.sound||'on'}
+function saveSettings(){try{conf={...conf,shop:$("setShop").value,perc:parseInt($("setPerc").value)||0,guar:parseInt($("setGuar").value)||0,theme:$("setTheme").value,voice:$("setVoice").value,sound:$("setSound").value};localStorage.setItem("barber_conf",JSON.stringify(conf));applyTheme(conf.theme);if($("shopNameDisp"))$("shopNameDisp").innerText=conf.shop;alert("✅ บันทึกเรียบร้อย");closeAndGoHome();renderDay()}catch(e){alert("❌ พังเพราะ:"+e.message)}}
+function closeAndGoHome(){$("modalSet").style.display='none';if(typeof showPage==='function')showPage(1);else location.reload()}
+function speak(t){if(conf.sound==='off')return;window.speechSynthesis.cancel();const m=new SpeechSynthesisUtterance(t);m.lang='th-TH';m.rate=1;m.pitch=(conf.voice==='male')?0.8:1.1;window.speechSynthesis.speak(m)}
+function clearAllData(){if(confirm("💣 ล้างบางข้อมูลทั้งหมด?")){localStorage.clear();location.reload()}}
+function updateDateDisplay(v){if(!v)return;const d=new Date(v);$("dateDisplay").innerText=d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});if(typeof renderDay==="function")renderDay()}
+window.addEventListener('DOMContentLoaded',()=>{const i=$("dateInp"),t=new Date().toISOString().split('T')[0];if(i){i.value=t;updateDateDisplay(t)}});
   function selectPay(m) {
         payMethod = m;
         $("btnCash").className = `btn btn-pay ${m === 'Cash' ? 'active-cash' : ''}`;
