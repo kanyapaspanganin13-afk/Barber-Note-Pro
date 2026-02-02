@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.1</title>
+    <title>Barber Note Pro v.16</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -589,22 +589,6 @@ function saveAndGo(date, total, shop, barber) {
     go(3);
     if (typeof loadAccountStatus === "function") loadAccountStatus();
 }
-
-  function updateAccountFromOrange() {
-            const barberShareStr = document.getElementById('dBarber').innerText || "0";
-            const barberShare = parseInt(barberShareStr.replace(/,/g, '')) || 0;
-            const oldBalance = parseInt(localStorage.getItem('barber_old_balance') || "0");
-
-            if (document.getElementById('accTodayVal')) {
-                document.getElementById('accTodayVal').innerText = "฿" + barberShare.toLocaleString();
-            }
-            if (document.getElementById('accOldVal')) {
-                document.getElementById('accOldVal').innerText = "฿" + oldBalance.toLocaleString();
-            }
-            if (document.getElementById('accNet')) {
-                document.getElementById('accNet').innerText = (barberShare + oldBalance).toLocaleString();
-            }
-        }  
   function toggleAccHistory() {
         const w = $("accHistoryWrapper");
         w.style.display = w.style.display === "none" ? "block" : "none";
@@ -628,21 +612,15 @@ function saveAndGo(date, total, shop, barber) {
     }
 }
 function loadAccountStatus() {
-    const d = $("dateInp").value || new Date().toISOString().split('T')[0];
-    const arc = archives.find(a => a.date === d);
-    
-    // ดึงค่า settle ของวันที่เลือก (ถ้าไม่มีให้เป็น 0)
-    const settle = arc ? (arc.settle || 0) : 0;
-    
-    // ยอดสุทธิ = ยอดค้างเก่าจากบัญชีหลัก + ยอดต้องเคลียร์ของวันนี้
-    const net = (account.balance || 0) + settle;
+    // 1. ดึงยอดสะสมสุทธิจากบัญชีหลักมาเลย (ไม่ต้องบวกอะไรเพิ่มแล้ว!)
+    const net = Number(account.balance) || 0;
 
-    // แสดงผลตัวเลข
-    $("accOldVal").innerText = `฿${(account.balance || 0).toLocaleString()}`;
-    $("accTodayVal").innerText = `฿${settle.toLocaleString()}`;
+    // 2. แสดงผลตัวเลข (ให้ Today เป็น 0 เพราะมันถูกรวมไปใน Net แล้วใน saveAndGo)
+    $("accOldVal").innerText = `฿${net.toLocaleString()}`;
+    $("accTodayVal").innerText = `฿0`; 
     $("accNet").innerText = Math.abs(net).toLocaleString();
 
-    // จัดการไฟสถานะและข้อความกำกับ (ถ้ามี ID สำหรับข้อความ)
+    // 3. จัดการไฟสถานะตามยอดสุทธิในบัญชี
     let light = "#16a34a"; // สีเขียว = ยอดพอดี
     let statusTxt = "ยอดสมดุล";
 
@@ -654,12 +632,14 @@ function loadAccountStatus() {
         statusTxt = "ร้านค้างจ่ายช่าง";
     }
 
-    $("accLight").style.background = light;
-    $("accLight").style.boxShadow = `0 0 12px ${light}`;
+    // อัปเดต UI
+    if ($("accLight")) {
+        $("accLight").style.background = light;
+        $("accLight").style.boxShadow = `0 0 12px ${light}`;
+    }
     
     if ($("accStatusLabel")) $("accStatusLabel").innerText = statusTxt;
 }
-
 function clearAccount() {
     const d = $("accDate").value; // วันที่ที่จะบันทึกการเคลียร์
     if (!d) return alert("⚠️ กรุณาเลือกวันที่!");
