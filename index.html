@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.15</title>
+    <title>Barber Note Pro v.18</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -487,7 +487,6 @@ function renderDay() {
     const isHoliday = allRec.some(r => r.type === 'HOLIDAY');
 
     const stats = {};
-    // รายชื่อบริการที่ไม่นับเป็น "หัวตัดผม"
     const extraSvcs = ["โกนหนวด", "กันหน้า", "สระผม"];
 
     let tot = 0, trans = 0, cash = 0, tips = 0;
@@ -502,12 +501,9 @@ function renderDay() {
 
         tot += p;
         tips += t;
-        // 👉 ยอดโอน (Trans) = ราคา + ทิป | ยอดเงินสด = ราคาอย่างเดียว
         (r.pay === 'Trans') ? trans += (p + t) : cash += p;
 
         const currentSvcs = Array.isArray(r.svcs) ? r.svcs : [];
-        
-        // --- 🛠️ แก้จุดนี้นับหัว: ถ้ามีอย่างอื่นที่ไม่ใช่ โกน/กัน/สระ ถึงจะนับเป็น 1 หัว ---
         const hasRealHaircut = currentSvcs.some(s => s && !extraSvcs.includes(s));
 
         currentSvcs.forEach(s => {
@@ -519,26 +515,33 @@ function renderDay() {
             stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
         }
 
-        const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
+       const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
+        
+        // กำหนดไอคอนเงิน
+        const payIcon = r.pay === 'Trans' ? '📱' : '💵';
 
         listHtml += `
         <div class="history-row" style="padding:15px; border-bottom:1px solid #f1f5f9; background:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div style="display:flex; flex-direction:column;">
-                    <span style="font-weight:800; font-size:14px; color:#1e293b;">
-                        ${i+1}. [${timeShow}] | ${currentSvcs.join(' + ')}
-                    </span>
-                    ${t ? `<small style="color:#be185d; font-weight:700; font-size:11px;">🔹 ทิป: ฿${t}</small>` : ''}
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="width:28px; height:28px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#64748b; flex-shrink:0;">
+                        ${i+1}
+                    </div>
+                    <div style="display:flex; flex-direction:column;">
+                        <div style="font-weight:800; font-size:14px; color:#1e293b; margin-bottom:2px;">
+                            <span style="color:#64748b; font-weight:500;">[${timeShow}]</span> ${currentSvcs.join(' + ')}
+                        </div>
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            ${t ? `<small style="color:#be185d; font-weight:700; font-size:11px;">🔹 ทิป: ฿${t}</small>` : '<small style="color:#94a3b8; font-size:11px;">(ไม่มีทิป)</small>'}
+                        </div>
+                    </div>
                 </div>
                 <div style="text-align:right;">
-                    <b style="font-size:16px; display:block;">
-                        ฿${p}${t ? ` <span style="color:#be185d;">(+${t})</span>` : ''}
+                    <b style="font-size:16px; display:block; color:#1e293b;">
+                        <span style="font-size:14px;">${payIcon}</span> ฿${p}${t ? ` <span style="color:#be185d;">(+${t})</span>` : ''}
                     </b>
-                    <span style="font-size:12px; font-weight:700;">
-                        ${r.pay === 'Trans' ? '📱 โอน' : '💵 สด'}
-                        <i class="fas fa-trash-alt"
-                           style="color:#ef4444; cursor:pointer; margin-left:8px;"
-                           onclick="delRec(${r.id})"></i>
+                    <span style="font-size:11px; font-weight:700; color:#ef4444; cursor:pointer;" onclick="delRec(${r.id})">
+                        ลบรายการ <i class="fas fa-trash-alt"></i>
                     </span>
                 </div>
             </div>
@@ -556,24 +559,12 @@ function renderDay() {
     $("dShop").innerText   = Math.floor(sEarn).toLocaleString();
     $("dCounts").innerText = isHoliday ? "🏪 วันหยุด" : `ลูกค้า: ${today.length} คน`;
 
-    // ---- 📊 BADGES (นับหัวตัดผมให้แม่นตามที่แก้ด้านบน) ----
     let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:10px;">`;
     const priority = ["ตัดผม", "เด็ก"];
-
-    priority.forEach(k => {
-        if (stats[k]) {
-            sH += `<span style="background:#4338ca;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${k}: ${stats[k]}</span>`;
-        }
-    });
-
-    for (let s in stats) {
-        if (!priority.includes(s)) {
-            sH += `<span style="background:#64748b;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${s}: ${stats[s]}</span>`;
-        }
-    }
+    priority.forEach(k => { if (stats[k]) sH += `<span style="background:#4338ca;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${k}: ${stats[k]}</span>`; });
+    for (let s in stats) { if (!priority.includes(s)) sH += `<span style="background:#64748b;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${s}: ${stats[s]}</span>`; }
     $("dServiceStats").innerHTML = sH + `</div>`;
 
-    // ---- STATUS BAR ----
     let txt = "", bg = "";
     if (isHoliday) { txt = "🏖️ พักผ่อนวันหยุด"; bg = "#f1f5f9"; }
     else if (tot === 0) { txt = "🛡️ ร้านจ่ายประกัน"; bg = "#e0f2fe"; }
@@ -587,31 +578,15 @@ function renderDay() {
             <i class="fab fa-line" style="color:#22c55e;font-size:32px;cursor:pointer" onclick="shareLine()"></i>
         </div>` +
         (isHoliday
-            ? `<div style="text-align:center; padding:40px; color:#64748b; font-weight:800;">
-                🏖️ วันหยุดร้าน (ไม่มีรายการ)
-                <i class="fas fa-trash-alt" style="color:#ef4444; cursor:pointer; margin-left:8px;"
-                   onclick="delRec(${allRec.find(x=>x.type==='HOLIDAY')?.id})"></i>
-               </div>`
+            ? `<div style="text-align:center; padding:40px; color:#64748b; font-weight:800;">🏖️ วันหยุดร้าน (ไม่มีรายการ) <i class="fas fa-trash-alt" style="color:#ef4444; cursor:pointer;" onclick="delRec(${allRec.find(x=>x.type==='HOLIDAY')?.id})"></i></div>`
             : (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>")
         );
 
     const container = $("settleBar").parentElement;
     container.style.cssText = "display:flex; gap:10px; margin-top:10px;";
     container.innerHTML = `
-        <div id="settleBar"
-             style="flex:8; height:55px; background:${bg};
-             display:flex; align-items:center; justify-content:center;
-             border-radius:15px; font-weight:900; font-size:15px;
-             color:#1e293b; border:1px solid rgba(0,0,0,0.05);">
-            ${txt}
-        </div>
-        <button onclick="saveAndGo('${dInp}', ${tot})"
-                style="flex:2; height:55px; background:#f97316; color:#fff;
-                border-radius:15px; border:none; font-size:22px; cursor:pointer;
-                display:flex; align-items:center; justify-content:center;
-                box-shadow:0 4px 6px rgba(0,0,0,0.1);">
-            <i class="fas fa-paper-plane"></i>
-        </button>`;
+        <div id="settleBar" style="flex:8; height:55px; background:${bg}; display:flex; align-items:center; justify-content:center; border-radius:15px; font-weight:900; font-size:15px; color:#1e293b; border:1px solid rgba(0,0,0,0.05);">${txt}</div>
+        <button onclick="saveAndGo('${dInp}', ${tot})" style="flex:2; height:55px; background:#f97316; color:#fff; border-radius:15px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 6px rgba(0,0,0,0.1);"><i class="fas fa-paper-plane"></i></button>`;
 }
 function saveAndGo(date, total) {
     const todayData = db.filter(r => r.date === date && r.type === 'SERVICE');
@@ -771,28 +746,36 @@ function loadHistDaily() {
     const f = archives.find(a => a.date === d);
     if (!f) return alert("ไม่พบข้อมูลของวันนี้");
 
-    // 1. สถิติ - ป้ายแบบเม็ดยา (Pill Shape) ไร้เส้นขอบ
+    // คำนวณยอดเงินสด และเงินโอน (ถ้าใน f ไม่มีเก็บแยกไว้กูคำนวณจาก details ให้)
+    let cashTotal = f.cash || 0;
+    let transTotal = f.trans || 0;
+    let customerCount = f.count || (f.details ? f.details.length : 0);
+
+    // 1. สถิติ - ป้ายแบบเม็ดยา
     const statsHTML = Object.entries(f.stats || {}).map(([name, count]) => `
-        <div style="background:#f1f5f9; padding:6px 14px; border-radius:20px; 
-                    display:flex; align-items:center; gap:8px;">
+        <div style="background:#f1f5f9; padding:6px 14px; border-radius:20px; display:flex; align-items:center; gap:8px;">
             <span style="font-size:12px; color:#64748b; font-weight:500;">${name}</span>
             <span style="font-weight:800; color:#1e293b; font-size:13px;">${count}</span>
         </div>
     `).join("");
 
-    // 2. รายการย่อย - สไตล์ List ในแอป SCB/KPlus ไร้เส้นขอบ
-    const rows = (f.details || []).map(r => {
+    // 2. รายการย่อย - ปรับตามสั่ง (ใส่ลำดับแทนไอคอน / ไอคอนย้ายไปที่ราคา)
+    const rows = (f.details || []).map((r, index) => {
         const p = Number(r.price) || 0, t = Number(r.tip) || 0;
         const isTrans = r.pay === "Trans";
         const lineTotal = isTrans ? (p + t) : p;
         const timeStr = (r.time && r.endTime) ? `${r.time} - ${r.endTime}` : (r.time || "--:--");
+        
+        // ไอคอนประเภทเงิน
+        const payIcon = isTrans ? '📱' : '💵';
+        const payColor = isTrans ? '#3b82f6' : '#10b981';
 
         return `
-        <div style="padding:16px 0; display:flex; justify-content:space-between; align-items:center;">
+        <div style="padding:16px 0; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f8fafc;">
             <div style="display:flex; gap:12px; align-items:center;">
-                <div style="width:40px; height:40px; border-radius:12px; background:${isTrans ? '#eff6ff' : '#fff7ed'}; 
-                            display:flex; align-items:center; justify-content:center; color:${isTrans ? '#3b82f6' : '#f97316'}; font-size:18px;">
-                    <i class="fas ${isTrans ? 'fa-mobile-alt' : 'fa-wallet'}"></i>
+                <div style="width:32px; height:32px; border-radius:10px; background:#f1f5f9; border:1px solid #e2e8f0;
+                            display:flex; align-items:center; justify-content:center; color:#64748b; font-size:14px; font-weight:800;">
+                    ${index + 1}
                 </div>
                 <div>
                     <div style="font-weight:700; color:#1e293b; font-size:14px; margin-bottom:2px;">
@@ -802,9 +785,11 @@ function loadHistDaily() {
                 </div>
             </div>
             <div style="text-align:right;">
-                <div style="font-weight:800; color:#1e293b; font-size:15px;">฿${lineTotal.toLocaleString()}</div>
+                <div style="font-weight:800; color:#1e293b; font-size:15px;">
+                    <span style="margin-right:4px;">${payIcon}</span>฿${lineTotal.toLocaleString()}
+                </div>
                 ${t > 0 ? `<div style="font-size:11px; color:#be185d; font-weight:700;">Tip ฿${t}</div>` : 
-                `<div style="font-size:10px; color:#94a3b8; font-weight:600;">SUCCESS</div>`}
+                `<div style="font-size:10px; color:${payColor}; font-weight:600;">SUCCESS</div>`}
             </div>
         </div>`;
     }).join("");
@@ -816,17 +801,32 @@ function loadHistDaily() {
                         padding:24px; border-radius:24px; color:white; 
                         box-shadow: 0 10px 20px rgba(30,41,59,0.2); margin-bottom:24px;">
                 <div style="font-size:13px; opacity:0.7; margin-bottom:8px; font-weight:300; letter-spacing:0.5px;">ยอดเงินรวมทิป</div>
-                <div style="font-size:36px; font-weight:800; margin-bottom:20px; letter-spacing:-1px;">฿${((f.cash || 0) + (f.trans || 0)).toLocaleString()}</div>
+                <div style="font-size:36px; font-weight:800; margin-bottom:20px; letter-spacing:-1px;">฿${(cashTotal + transTotal).toLocaleString()}</div>
                 
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                    <div style="background:rgba(255,255,255,0.1); padding:12px; border-radius:16px; backdrop-filter:blur(5px);">
-                        <div style="font-size:11px; opacity:0.7; margin-bottom:4px;">ช่างได้รับ</div>
-                        <div style="font-size:16px; font-weight:700; color:#4ade80;">฿${Math.floor(f.barber || 0).toLocaleString()}</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+                    <div style="background:rgba(255,255,255,0.1); padding:10px; border-radius:16px; backdrop-filter:blur(5px); text-align:center;">
+                        <div style="font-size:10px; opacity:0.7; margin-bottom:4px;">💵 เงินสด</div>
+                        <div style="font-size:14px; font-weight:700; color:#4ade80;">฿${cashTotal.toLocaleString()}</div>
                     </div>
-                    <div style="background:rgba(255,255,255,0.1); padding:12px; border-radius:16px; backdrop-filter:blur(5px);">
-                        <div style="font-size:11px; opacity:0.7; margin-bottom:4px;">ร้านได้รับ</div>
-                        <div style="font-size:16px; font-weight:700; color:#60a5fa;">฿${Math.floor(f.shop || 0).toLocaleString()}</div>
+                    <div style="background:rgba(255,255,255,0.1); padding:10px; border-radius:16px; backdrop-filter:blur(5px); text-align:center;">
+                        <div style="font-size:10px; opacity:0.7; margin-bottom:4px;">📱 โอน</div>
+                        <div style="font-size:14px; font-weight:700; color:#60a5fa;">฿${transTotal.toLocaleString()}</div>
                     </div>
+                    <div style="background:rgba(255,255,255,0.1); padding:10px; border-radius:16px; backdrop-filter:blur(5px); text-align:center;">
+                        <div style="font-size:10px; opacity:0.7; margin-bottom:4px;">👥 ลูกค้า</div>
+                        <div style="font-size:14px; font-weight:700; color:#facc15;">${customerCount} หัว</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px;">
+                <div style="background:white; padding:12px; border-radius:16px; border:1px solid #e2e8f0; text-align:center;">
+                    <div style="font-size:11px; color:#64748b; margin-bottom:4px;">ช่างได้รับ</div>
+                    <div style="font-size:16px; font-weight:700; color:#1e293b;">฿${Math.floor(f.barber || 0).toLocaleString()}</div>
+                </div>
+                <div style="background:white; padding:12px; border-radius:16px; border:1px solid #e2e8f0; text-align:center;">
+                    <div style="font-size:11px; color:#64748b; margin-bottom:4px;">ร้านได้รับ</div>
+                    <div style="font-size:16px; font-weight:700; color:#1e293b;">฿${Math.floor(f.shop || 0).toLocaleString()}</div>
                 </div>
             </div>
 
@@ -840,7 +840,7 @@ function loadHistDaily() {
             <div style="background:#fff; border-radius:24px; padding:20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                     <div style="font-weight:800; font-size:15px; color:#1e293b;">รายการธุรกรรม</div>
-                    <div style="font-size:12px; color:#64748b; font-weight:600;">${f.count || 0} หัว</div>
+                    <div style="font-size:12px; color:#64748b; font-weight:600;">เรียงตามเวลา</div>
                 </div>
                 <div style="max-height:350px; overflow-y:auto; scrollbar-width: none;">
                     ${rows}
