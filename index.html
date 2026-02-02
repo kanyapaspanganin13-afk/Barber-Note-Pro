@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.15</title>
+    <title>Barber Note Pro v.1</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -322,31 +322,33 @@ window.onload = () => {
     return d.toTimeString().slice(0, 5);
 }
 function openReportModal(title, htmlContent) {
-    // 1. ดึง Element (เช็ค ID ให้ตรงกับ HTML มึงนะ)
     const modal = $("reportModal");
-    const modalContent = $("reportModalContent"); 
-    const modalHeader = $("reportModalTitle");
+    const modalTitle = $("reportTitle");     
+    const modalContent = $("reportContent"); 
     const modalInner = modalContent.parentElement; // ตัวกล่องขาว
 
-    // 2. ใส่ข้อมูล
-    modalHeader.innerText = title;
+    if (!modal || !modalTitle || !modalContent) {
+        console.error("❌ หา ID Modal ไม่เจอ เช็ค HTML ด่วน!");
+        return;
+    }
+
+    // 1. ใส่ข้อมูล
+    modalTitle.innerText = title;
     modalContent.innerHTML = htmlContent;
 
-    // 3. ปรับขนาดให้ใหญ่ (Responsive)
-    modalInner.style.display = "block";
-    modalInner.style.width = "95%";            // กว้างเกือบเต็มจอมือถือ
-    modalInner.style.maxWidth = "700px";       // ขยายเพิ่มเป็น 700px ไปเลย จะได้ดูรายเดือนชัดๆ
-    modalInner.style.maxHeight = "90vh";       // สูงได้ถึง 90% ของหน้าจอ
-    modalInner.style.overflowY = "auto";       // ถ้าข้อมูลยาวเกิน ให้รูดขึ้นลงได้
-    modalInner.style.borderRadius = "24px";    // ขอบมนเท่ๆ
-    modalInner.style.padding = "25px";         // เพิ่มพื้นที่ว่างข้างใน
+    // 2. ปรับขนาดให้ใหญ่และรูดได้ (Responsive)
+    modalInner.style.width = "95%";            
+    modalInner.style.maxWidth = "650px";       // กว้างกำลังดีสำหรับตารางบัญชี
+    modalInner.style.maxHeight = "85vh";       // สูงไม่เลยจอ
+    modalInner.style.overflowY = "auto";       // รายเดือนยาวแค่ไหนก็รูดดูได้
+    modalInner.style.borderRadius = "24px";    
+    modalInner.style.padding = "20px";
     modalInner.style.margin = "auto";
-    modalInner.style.position = "relative";
 
-    // 4. สั่งแสดงผล
-    modal.style.display = "flex";    
-    modal.style.alignItems = "center";         // จัดกลางแนวตั้ง
-    modal.style.justifyContent = "center";      // จัดกลางแนวนอน
+    // 3. แสดงผลจัดกลางจอ
+    modal.style.display = "flex";
+    modal.style.alignItems = "center";
+    modal.style.justifyContent = "center";
 }
 function closeReportModal() {
     $("reportModal").style.display = "none";
