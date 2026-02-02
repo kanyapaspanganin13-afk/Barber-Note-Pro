@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.05</title>
+    <title>Barber Note Pro v.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -566,23 +566,26 @@ function renderDay() {
 function saveAndGo(date, total, shop, barber) {
     const today = db.filter(r => r.date === date && r.type === 'SERVICE');
     const isHoliday = db.some(r => r.date === date && r.type === 'HOLIDAY');
-    let cash = 0, trans = 0, count = 0, tips = 0, stats = {};
+    if (Number(total) === 0 && !isHoliday && !confirm("ยอดเป็น 0 ยืนยันไหม?")) return;
 
+    let cash = 0, trans = 0, tips = 0, count = 0, stats = {};
     today.forEach(r => {
-        const p = Number(r.price) || 0, t = Number(r.tip) || 0;
+        const p = Number(r.price)||0, t = Number(r.tip)||0;
         tips += t;
         r.pay === "Cash" ? cash += p : trans += (p + t);
         if (r.svcs?.some(s => !["โกนหนวด","กันหน้า","สระผม"].includes(s))) count++;
         r.svcs?.forEach(s => stats[s] = (stats[s] || 0) + 1);
     });
 
-    const bEarn = isHoliday ? 0 : Math.max(total * (conf.perc/100), conf.guar) + tips;
+    const bEarn = isHoliday ? 0 : Math.floor(Math.max(Number(total) * (conf.perc/100), conf.guar) + tips);
+    const sEarn = isHoliday ? 0 : Math.floor(Number(total) - (bEarn - tips));
     const settle = isHoliday ? 0 : cash - bEarn;
-    const data = { date, total: Number(total), cash, trans, barber: Math.floor(bEarn), shop: total - (bEarn - tips), settle, count, stats, details: today };
 
+    const data = { date, total: Number(total), cash, trans, barber: bEarn, shop: sEarn, settle, count, stats, details: today };
     const idx = archives.findIndex(a => a.date === date);
-    if (idx > -1) { account.balance += (settle - archives[idx].settle); archives[idx] = data; } 
-    else { account.balance += settle; archives.push(data); }
+    
+    account.balance = (Number(account.balance)||0) + (idx > -1 ? settle - (archives[idx].settle||0) : settle);
+    idx > -1 ? archives[idx] = data : archives.push(data);
 
     db = db.filter(r => r.date !== date);
     save(); alert("✅ บันทึกแล้ว"); go(3);
@@ -692,75 +695,64 @@ function loadHistDaily() {
     const f = archives.find(a => a.date === d);
     if (!f || !f.details) return alert("ไม่พบข้อมูล");
 
-    // 1. ดึงค่าจาก Object f มาตรงๆ (ค่าที่มึงบันทึกจาก saveAndGo)
-    const totalDaily = Number(f.total) || 0;
-    const cashDaily = Number(f.cash) || 0;
-    const transDaily = Number(f.trans) || 0; // ยอดนี้มึงบวกทิปไปแล้วใน saveAndGo
-    const barberDaily = Number(f.barber) || 0;
-    const shopDaily = Number(f.shop) || 0;
-    const headCount = Number(f.count) || 0;
+    // --- 1. ส่วนสถิติ (ดึงมาจาก f.stats ที่มึงบันทึกไว้) ---
+    const statsHTML = Object.entries(f.stats || {}).map(([name, count]) => `
+        <div style="background:#f1f5f9; padding:8px 12px; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:12px; color:#475569;">${name}</span>
+            <span style="font-weight:700; color:#1e293b;">${count}</span>
+        </div>
+    `).join("");
 
-    // 2. รายการย่อย (Transaction)
+    // --- 2. รายการย่อย (โชว์ยอดโอน+ทิปตามที่มึงต้องการ) ---
     const rows = f.details.map(r => {
         const p = Number(r.price) || 0;
         const t = Number(r.tip) || 0;
         const isCash = r.pay === "Cash";
-        
-        // แสดงยอดตามที่มึงบันทึก: ถ้าโอน ให้โชว์ (ราคา+ทิป) ถ้าเงินสด โชว์แค่ราคา
-        const displayPrice = isCash ? p : (p + t);
+        // ถ้าโอน ยอดรวมในบรรทัดต้องเป็น p + t
+        const lineTotal = isCash ? p : (p + t);
 
         return `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid #f1f5f9;">
+        <div style="padding:12px 0; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;">
             <div>
                 <div style="font-weight:700; color:#1e293b;">${(r.svcs || []).join("+")}</div>
-                <div style="font-size:12px; color:#94a3b8;">${r.timeStart || "-"} • ${r.hair || "ทั่วไป"}</div>
+                <div style="font-size:11px; color:#94a3b8;">${r.timeStart || "-"} • ${r.hair || ""}</div>
+                ${t > 0 ? `<div style="font-size:11px; color:#f59e0b; font-weight:700;">+ ทิป ฿${t}</div>` : ""}
             </div>
             <div style="text-align:right;">
-                <div style="font-weight:800; color:#1e293b;">฿${displayPrice.toLocaleString()}</div>
-                <div style="font-size:11px; color:${isCash ? '#b45309' : '#0ea5e9'}; font-weight:600;">
-                    ${isCash ? '💵 เงินสด' : '📱 โอนเงิน'} ${t > 0 && isCash ? `(+ทิป ฿${t})` : ''}
-                </div>
+                <div style="font-weight:800; color:#1e293b;">฿${lineTotal.toLocaleString()}</div>
+                <div style="font-size:10px; color:${isCash ? '#b45309' : '#0ea5e9'}; font-weight:600;">${isCash ? 'เงินสด' : 'เงินโอน'}</div>
             </div>
         </div>`;
     }).join("");
 
-    // 3. หน้าตา Dashboard (เน้นตัวเลขที่มึงบันทึกไว้ใน archives)
     openReportModal(`📅 รายงานวันที่ ${d}`, `
-        <div style="background:#1e293b; padding:20px; border-radius:20px; color:white; margin-bottom:15px;">
-            <div style="text-align:center; margin-bottom:15px;">
-                <div style="font-size:12px; opacity:0.6;">ยอดรับรวม (รวมทิปโอน)</div>
-                <div style="font-size:32px; font-weight:800;">฿${(cashDaily + transDaily).toLocaleString()}</div>
-            </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; text-align:center;">
-                <div style="background:rgba(255,255,255,0.1); padding:10px; border-radius:12px;">
-                    <div style="font-size:10px; opacity:0.6;">💵 เงินสด (ไม่รวมทิป)</div>
-                    <div style="font-size:16px; font-weight:700;">${cashDaily.toLocaleString()}</div>
+        <div style="background:#1e293b; padding:20px; border-radius:20px; color:white; margin-bottom:15px; text-align:center;">
+            <div style="font-size:12px; opacity:0.6;">ยอดรวม (รวมทิปโอน)</div>
+            <div style="font-size:32px; font-weight:800;">฿${(f.total + (f.trans - (f.total - f.cash))).toLocaleString()}</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;">
+                <div style="background:rgba(255,255,255,0.1); padding:8px; border-radius:12px;">
+                    <div style="font-size:10px; opacity:0.6;">ช่างได้</div>
+                    <div style="font-size:14px; font-weight:700;">฿${f.barber.toLocaleString()}</div>
                 </div>
-                <div style="background:rgba(255,255,255,0.1); padding:10px; border-radius:12px;">
-                    <div style="font-size:10px; opacity:0.6;">📱 โอน (รวมทิปแล้ว)</div>
-                    <div style="font-size:16px; font-weight:700;">${transDaily.toLocaleString()}</div>
+                <div style="background:rgba(255,255,255,0.1); padding:8px; border-radius:12px;">
+                    <div style="font-size:10px; opacity:0.6;">ร้านได้</div>
+                    <div style="font-size:14px; font-weight:700;">฿${f.shop.toLocaleString()}</div>
                 </div>
             </div>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:15px; text-align:center;">
-            <div style="background:#f8fafc; padding:10px; border-radius:12px; border:1px solid #e2e8f0;">
-                <div style="font-size:10px; color:#64748b;">🤵 ช่างได้</div>
-                <div style="font-size:15px; font-weight:800; color:#10b981;">฿${barberDaily.toLocaleString()}</div>
-            </div>
-            <div style="background:#f8fafc; padding:10px; border-radius:12px; border:1px solid #e2e8f0;">
-                <div style="font-size:10px; color:#64748b;">🏠 ร้านได้</div>
-                <div style="font-size:15px; font-weight:800; color:#0ea5e9;">฿${shopDaily.toLocaleString()}</div>
-            </div>
-            <div style="background:#f8fafc; padding:10px; border-radius:12px; border:1px solid #e2e8f0;">
-                <div style="font-size:10px; color:#64748b;">👥 จำนวน</div>
-                <div style="font-size:15px; font-weight:800;">${headCount} คน</div>
+        <div style="margin-bottom:15px;">
+            <div style="font-weight:800; font-size:14px; margin-bottom:8px; color:#1e293b;">📊 สถิติบริการ</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                ${statsHTML}
             </div>
         </div>
 
         <div style="background:#fff; border-radius:20px; border:1px solid #f1f5f9; padding:15px;">
-            <div style="font-weight:800; margin-bottom:10px; font-size:14px;">รายการทั้งหมด</div>
-            <div style="max-height:300px; overflow-y:auto;">${rows}</div>
+            <div style="font-weight:800; font-size:14px; margin-bottom:10px;">รายการทั้งหมด (${f.count} หัว)</div>
+            <div style="max-height:250px; overflow-y:auto;">
+                ${rows}
+            </div>
         </div>
     `);
 }
