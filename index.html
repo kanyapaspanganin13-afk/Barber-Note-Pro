@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.12</title>
+    <title>Barber Note Pro v.1</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -29,9 +29,9 @@
     }
 nav {
     position: fixed; bottom: 0; left: 0; right: 0;
-    background: #1a237e !important; /* น้ำเงินธนาคารเป๊ะๆ */
+    background: #1a237e !important; 
     display: flex; justify-content: space-around; padding: 12px 0;
-    box-shadow: 0 -10px 30px rgba(0,0,0,0.4); /* ใส่เงาให้บาร์ลอยเด่นขึ้นมาจากพื้นหลัง */
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.4); 
     z-index: 9999; border-top: 1px solid rgba(255,255,255,0.1);
 }
 .nav-item { text-align: center; color: rgba(255,255,255,0.5); flex: 1; transition: 0.2s; }
@@ -311,19 +311,95 @@ function handleInsurance() {
         saveDB(); speak(`เปิดระบบประกัน ${g} บาท เรียบร้อย`); alert("✅ เปิดระบบประกันเรียบร้อย"); renderDay();
     }
 }
-  function handleHoliday(){const d=$("dateInp").value;if(!d)return alert("เลือกวันที่ก่อน");if(confirm(`ยืนยันบันทึกวันที่ ${d} เป็น "วันหยุด"?`)){db.push({id:Date.now(),date:d,time:"00:00",svcs:["🏖️ วันหยุด"],price:0,pay:"N/A",type:"HOLIDAY"});saveDB();const m=new SpeechSynthesisUtterance("บันทึกวันหยุดเรียบร้อย");m.lang='th-TH';if(conf.voice==='male'){const v=window.speechSynthesis.getVoices().find(x=>x.name.includes('Male')||x.name.includes('Google'));if(v)m.voice=v}window.speechSynthesis.speak(m);alert("🏖️ บันทึกวันหยุดเรียบร้อย");renderDay()}}   
-  function openSettings() {
-        const modal = $("modalSet");
-        if (modal) {
-            $("setShop").value = conf.shop || "";
-            $("setPerc").value = conf.perc || 50;
-            $("setGuar").value = conf.guar || 0;
-            modal.style.display = 'flex'; 
-        }
+ function handleHoliday(){const d=$("dateInp").value;if(!d)return alert("เลือกวันที่ก่อน");if(confirm(`ยืนยันบันทึกวันที่ ${d} เป็น "วันหยุด"?`)){db.push({id:Date.now(),date:d,time:"00:00",svcs:["🏖️ วันหยุด"],price:0,pay:"N/A",type:"HOLIDAY"});saveDB();const m=new SpeechSynthesisUtterance("บันทึกวันหยุดเรียบร้อย");m.lang='th-TH';if(conf.voice==='male'){const v=window.speechSynthesis.getVoices().find(x=>x.name.includes('Male')||x.name.includes('Google'));if(v)m.voice=v}window.speechSynthesis.speak(m);alert("🏖️ บันทึกวันหยุดเรียบร้อย");renderDay()}}   
+ function openSettings() {
+    const modal = $("modalSet");
+    if (!modal) return console.error("หา Modal 'modalSet' ไม่เจอ");
+
+    // ตรวจสอบว่ามีตัวแปร conf ไหม ถ้าไม่มีให้สร้าง Object ว่างป้องกัน Error
+    const config = window.conf || {};
+
+    // ดึงค่าไปใส่ในช่อง Input (ใช้ optional chaining หรือค่า Default)
+    if ($("setShop"))  $("setShop").value  = config.shop  || "";
+    if ($("setTheme")) $("setTheme").value = config.theme || "light";
+    if ($("setVoice")) $("setVoice").value = config.voice || "female";
+    if ($("setSound")) $("setSound").value = config.sound || "on";
+    if ($("setPerc"))  $("setPerc").value  = config.perc  || 50;
+    if ($("setGuar"))  $("setGuar").value  = config.guar  || 0;
+
+    modal.style.display = "flex";
+}
+function applyTheme(t) {
+    document.body.className = t;
+    
+    // 1. ล้าง Style เก่าที่เคยฉีดไว้
+    const oldStyle = document.getElementById("navyStyle");
+    if (oldStyle) oldStyle.remove();
+
+    const s = document.documentElement.style;
+    
+    // 2. กำหนดค่าเริ่มต้น (Reset เป็น Light ก่อนเสมอ)
+    s.setProperty('--card', '#ffffff');
+    s.setProperty('--text', '#1a237e');
+    document.body.style.background = '#f3f4f6'; // สีเทาอ่อนแบบในรูปแอปคุณ
+
+    // 3. เงื่อนไขแต่ละธีม
+    if (t === 'dark') {
+        s.setProperty('--card', '#262626');
+        s.setProperty('--text', '#fbbf24');
+        document.body.style.background = '#171717';
+    } 
+    else if (t === 'navy') {
+        s.setProperty('--card', '#ffffff'); // การ์ดยังคงขาวเพื่อให้ตัวเลขเด่น
+        s.setProperty('--text', '#1a237e');
+        document.body.style.background = '#1a237e';
+
+        const st = document.createElement("style");
+        st.id = "navyStyle";
+        st.innerHTML = `
+            body.navy { background: #1a237e !important; color: #ffffff !important; }
+            .navy .card b, .navy .card span { color: #1e293b !important; }
+            .navy #dTotal, .navy #accNet { color: #1a237e !important; }
+            .nav-item { color: #ffffff !important; opacity: 0.7; }
+            .nav-item.active { color: #facc15 !important; opacity: 1; font-weight: bold; }
+        `;
+        document.head.appendChild(st);
     }
-function applyTheme(t){document.body.className=t;const o=document.getElementById("navyStyle");if(o)o.remove();const s=document.documentElement.style;if(t==='dark'){s.setProperty('--card','#262626');s.setProperty('--text','#fbbf24');document.body.style.background='#171717'}else{s.setProperty('--card','#fff');s.setProperty('--text','#1a237e');document.body.style.background=(t==='navy')?'#1a237e':''}if(t==='navy'){const st=document.createElement("style");st.id="navyStyle";st.innerHTML=`body.navy{background:#1a237e!important;color:#fff!important}.navy .card b,.navy .card span,.navy div[style*="background:white"] b{color:#1e293b!important}.navy #dTotal,.navy #accNet{color:#1a237e!important}.nav-item{color:#fff!important;opacity:0.8}.nav-item.active{color:#8b5cf6!important;opacity:1}`;document.head.appendChild(st)}}
-function openSettings(){const m=document.getElementById("modalSet");if(m)m.style.display='flex';document.getElementById("setShop").value=conf.shop||'';document.getElementById("setTheme").value=conf.theme||'light';document.getElementById("setVoice").value=conf.voice||'female';document.getElementById("setSound").value=conf.sound||'on';document.getElementById("setPerc").value=conf.perc||50;document.getElementById("setGuar").value=conf.guar||0}
-function saveSettings(){try{conf={...conf,shop:document.getElementById("setShop").value,perc:parseInt(document.getElementById("setPerc").value)||0,guar:parseInt(document.getElementById("setGuar").value)||0,theme:document.getElementById("setTheme").value,voice:document.getElementById("setVoice").value,sound:document.getElementById("setSound").value};localStorage.setItem("barber_conf",JSON.stringify(conf));applyTheme(conf.theme);if(document.getElementById("shopNameDisp"))document.getElementById("shopNameDisp").innerText=conf.shop;alert("✅ บันทึกเรียบร้อย");closeAndGoHome();if(typeof renderDay==='function')renderDay()}catch(e){alert("❌ พังเพราะ:"+e.message)}}
+}
+  function saveSettings() {
+    try {
+        // ดึงค่าตั้งต้นป้องกัน conf หาย
+        let currentConf = JSON.parse(localStorage.getItem("barber_conf")) || {};
+
+        const getVal = (id) => document.getElementById(id)?.value;
+
+        window.conf = {
+            ...currentConf,
+            shop: getVal("setShop") || "",
+            perc: parseInt(getVal("setPerc")) || 0,
+            guar: parseInt(getVal("setGuar")) || 0,
+            theme: getVal("setTheme") || "light",
+            voice: getVal("setVoice") || "female",
+            sound: getVal("setSound") || "on"
+        };
+
+        localStorage.setItem("barber_conf", JSON.stringify(window.conf));
+
+        // อัปเดต UI ทันที
+        if (typeof applyTheme === 'function') applyTheme(window.conf.theme);
+        const shopDisp = document.getElementById("shopNameDisp");
+        if (shopDisp) shopDisp.innerText = window.conf.shop;
+
+        alert("✅ บันทึกเรียบร้อย");
+        
+        // ปิด Modal และรีเฟรชหน้าจอ
+        if (window.closeModal) closeModal("modalSet"); // หรือใช้ฟังก์ชันที่คุณมี
+        if (typeof renderDay === 'function') renderDay();
+
+    } catch (e) {
+        alert("❌ พังเพราะ: " + e.message);
+    }
+}
 function closeAndGoHome(){const m=document.getElementById("modalSet");if(m)m.style.display='none';if(typeof go==='function')go(1);else location.reload()}
 function speak(t){if(conf.sound==='off')return;window.speechSynthesis.cancel();const m=new SpeechSynthesisUtterance(t);m.lang='th-TH';m.pitch=(conf.voice==='male')?0.8:1.1;window.speechSynthesis.speak(m)}
 function clearAllData(){if(confirm("💣 ลบข้อมูลทั้งหมด?")){localStorage.clear();location.reload()}}
@@ -381,13 +457,43 @@ function renderDay() {
     container.innerHTML = `<div id="settleBar" style="flex:8; height:55px; background:${bg}; display:flex; align-items:center; justify-content:center; border-radius:15px; font-weight:900; font-size:15px; color:#1e293b; border:1px solid rgba(0,0,0,0.05);">${txt}</div><button onclick="saveAndGo('${dInp}', ${tot}, ${sEarn}, ${bEarn})" style="flex:2; height:55px; background:#f97316; color:#fff; border-radius:15px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"><i class="fas fa-paper-plane"></i></button>`;
 }
 function saveAndGo(date, total, shop, barber) {
+    // 1. ดึงข้อมูลล่าสุดจาก LocalStorage กันพลาด
+    const currentDb = JSON.parse(localStorage.getItem("barber_db") || "[]");
+    
     if (total === 0 && !confirm("ไม่มีข้อมูลยอด ปิดงานเลยมั้ย?")) return;
-    let s = {}; db.filter(r => r.date === date).forEach(r => { 
-        r.svcs.forEach(v => s[v] = (s[v]||0)+1); if(r.hair) s["ทรง:"+r.hair] = (s["ทรง:"+r.hair]||0)+1; 
+
+    // 2. คำนวณสถิติ
+    let s = {}; 
+    const todayData = currentDb.filter(r => r.date === date);
+    
+    todayData.forEach(r => { 
+        if(r.svcs) r.svcs.forEach(v => s[v] = (s[v]||0)+1); 
+        if(r.hair) s["ทรง:"+r.hair] = (s["ทรง:"+r.hair]||0)+1; 
     });
-    const entry = { date, total, barber, shop: total-barber, count: db.filter(r => r.date === date).length, stats: s };
-    const i = archives.findIndex(a => a.date === date); (i > -1) ? archives[i] = entry : archives.push(entry);
-    save(); alert("✅ บันทึกเรียบร้อย!"); go(3);
+
+    // 3. เตรียมข้อมูล Archive
+    const entry = { 
+        date, 
+        total: Number(total), 
+        barber: Number(barber), 
+        shop: Number(total) - Number(barber), 
+        count: todayData.length, 
+        stats: s 
+    };
+
+    // 4. บันทึกลง Archives
+    const i = archives.findIndex(a => a.date === date);
+    (i > -1) ? archives[i] = entry : archives.push(entry);
+
+    // 5. บันทึกข้อมูลทั้งหมด
+    save(); 
+    
+    // 6. อัปเดต UI ส่วนบัญชี (ถ้ามีการเปลี่ยนแปลงยอด Balance)
+    if (typeof loadAccountStatus === 'function') loadAccountStatus();
+    if (typeof loadAccountHistory === 'function') loadAccountHistory();
+
+    alert("✅ บันทึกยอดประจำวันเรียบร้อย!");
+    go(3); // ไปหน้าสรุปรายงาน
 }
   function updateAccountFromOrange() {
             const barberShareStr = document.getElementById('dBarber').innerText || "0";
@@ -409,6 +515,47 @@ function saveAndGo(date, total, shop, barber) {
         w.style.display = w.style.display === "none" ? "block" : "none";
         $("accHistory").innerHTML = account.logs.map(l => `<div style="padding:5px; border-bottom:1px solid #eee;">${l.date}: ฿${l.amount} (${l.note})</div>`).join('') || "ไม่มีประวัติ";
     }
+  function loadAccountHistory() {
+    // 1. เช็คข้อมูล (เพิ่ม Number check)
+    if (!account || !Array.isArray(account.logs)) return;
+
+    const wrap = document.getElementById("accHistory");
+    if (!wrap) return;
+
+    // 2. จัดการแสดงผล
+    if (account.logs.length === 0) {
+        wrap.innerHTML = `
+            <div style="text-align:center; padding:20px; color:#94a3b8; font-weight:700;">
+                ยังไม่มีประวัติการเคลียร์
+            </div>`;
+        return;
+    }
+
+    wrap.innerHTML = account.logs.map((l, i) => {
+        const amt = Number(l.amount) || 0;
+        // ปรับสี: ถ้าเป็นยอดจ่ายออก (บวก) ให้สีแดง, ถ้าเป็นยอดติดลบ ให้สีน้ำเงิน (หรือสลับตามต้องการ)
+        const color = amt >= 0 ? '#dc2626' : '#1e40af';
+        
+        return `
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:flex-start;
+                padding:10px 5px;
+                border-bottom:1px dashed #e2e8f0;
+                font-size:13px;
+            ">
+                <div style="flex:1;">
+                    <b style="color:#1e293b;">${i + 1}. 📅 ${l.date}</b><br>
+                    <small style="color:#64748b; font-size:11px;">${l.note || '-'}</small>
+                </div>
+                <div style="font-weight:900; color:${color}; min-width:80px; text-align:right;">
+                    ฿${Math.abs(amt).toLocaleString(undefined, {minimumFractionDigits: 0})}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
   function loadAccountStatus() {
     const settle = parseFloat(($('dSettle')?.innerText || "0").replace(/,/g,'')) || 0;
     const net = (account.balance || 0) + settle;
