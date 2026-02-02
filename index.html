@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.11</title>
+    <title>Barber Note Pro v.12</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -893,7 +893,9 @@ function go(p) {
     });
 };
 window.addEventListener('load', () => { const n = new Date(), t = n.getHours().toString().padStart(2, '0') + ':' + n.getMinutes().toString().padStart(2, '0'); if(document.getElementById('tStart')) document.getElementById('tStart').value = t; if(document.getElementById('tEnd')) document.getElementById('tEnd').value = t; });
-function exportBackup() {
+<script>
+        // 1. ฟังก์ชันส่งออกข้อมูล
+        function exportBackup() {
             const data = {
                 db: JSON.parse(localStorage.getItem("barber_db") || "[]"),
                 archives: JSON.parse(localStorage.getItem("barber_archives") || "[]")
@@ -905,6 +907,8 @@ function exportBackup() {
             a.download = `backup-barber-${new Date().toLocaleDateString()}.json`;
             a.click();
         }
+
+        // 2. ฟังก์ชันนำเข้าข้อมูล
         function importBackup(input) {
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -921,9 +925,19 @@ function exportBackup() {
                 }
             };
             if (input.files[0]) {
-                reader.readAsText(input.files[0]);}}
-            
+                reader.readAsText(input.files[0]);
+            }
+        }
+
+        // 3. ตัวลงทะเบียน Service Worker (เพื่อให้ใช้งานออฟไลน์ได้)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(reg => console.log('Service Worker จดทะเบียนสำเร็จ!'))
+                    .catch(err => console.log('จดทะเบียนไม่สำเร็จ:', err));
+            });
+        }
         
- </script>
+</script>
 </body>
 </html>
