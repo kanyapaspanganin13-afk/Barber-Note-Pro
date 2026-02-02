@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.12</title>
+    <title>Barber Note Pro v.2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -523,47 +523,40 @@ function saveAndGo(date, total, shop, barber) {
 
     if (total === 0 && !isHoliday && !confirm("ไม่มีข้อมูลยอด ปิดงานเลยมั้ย?")) return;
 
-    // 1. คำนวณฝั่งรายได้
     const cash = todayData.filter(r => r.pay === 'Cash').reduce((s, r) => s + (Number(r.price) || 0), 0);
     const tips = todayData.reduce((s, r) => s + (Number(r.tip) || 0), 0);
-    
-    // 2. คำนวณค่าคอมช่าง (เทียบประกันรายวัน)
     const commission = Math.max(total * (conf.perc / 100), conf.guar);
     const bEarn = isHoliday ? 0 : commission + tips;
-    
-    // 3. คำนวณเงินเคลียร์ (เงินสดในมือช่าง - สิ่งที่ช่างควรได้)
-    const settle = isHoliday ? 0 : cash - bEarn;
+    const settle = isHoliday ? 0 : cash - bEarn; // ยอดที่ช่างต้องส่งร้าน (ติดลบคือร้านจ่ายประกันเพิ่ม)
 
     let stats = {};
     todayData.forEach(r => {
-        (r.svcs || []).forEach(s => {
-            if (s) stats[s] = (stats[s] || 0) + 1;
-        });
+        (r.svcs || []).forEach(s => { if (s) stats[s] = (stats[s] || 0) + 1; });
     });
 
     const entry = {
-        date,
-        total: isHoliday ? 0 : total,
+        date, total: isHoliday ? 0 : total,
         barber: Math.floor(bEarn),
-        shop: Math.floor(total - (isHoliday ? 0 : commission)), // ร้านได้ = ยอดรวม - ค่าคอมช่าง(ไม่เกี่ยวทิป)
-        count: todayData.length,
-        stats,
-        details: todayData,
-        settle: settle,
-        isHoliday
+        shop: Math.floor(total - (isHoliday ? 0 : commission)),
+        count: todayData.length, stats, settle, isHoliday
     };
 
+    // อัปเดต archives
     const i = archives.findIndex(a => a.date === date);
     if (i > -1) {
+        // ถ้าเป็นการแก้ไขยอดวันเดิม ให้ลบยอดเก่าออกจาก balance ก่อนค่อยบวกใหม่
+        account.balance -= archives[i].settle;
         archives[i] = entry;
     } else {
         archives.push(entry);
     }
 
-    save(); // มั่นใจนะว่ามีฟังก์ชัน save() ที่สั่ง localStorage.setItem
-    if (typeof speak === "function") speak("บันทึกยอดประจำวันเรียบร้อย");
-    alert("✅ บันทึกยอดประจำวันเรียบร้อย!");
-    go(3);
+    // บวกยอดวันนี้เข้าบัญชีสุทธิ
+    account.balance = (account.balance || 0) + settle;
+
+    save();
+    alert("✅ บันทึกยอดเรียบร้อย!");
+    go(3); // ฟังก์ชัน go(3) จะเรียก loadAccountStatus เอง
 }
 
   function updateAccountFromOrange() {
