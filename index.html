@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.13</title>
+    <title>Barber Note Pro v.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -528,7 +528,7 @@ function renderDay() {
     container.innerHTML = `<div id="settleBar" style="flex:8; height:55px; background:${bg}; display:flex; align-items:center; justify-content:center; border-radius:15px; font-weight:900; font-size:15px; color:#1e293b; border:1px solid rgba(0,0,0,0.05);">${txt}</div><button onclick="saveAndGo('${dInp}', ${tot}, ${sEarn}, ${bEarn})" style="flex:2; height:55px; background:#f97316; color:#fff; border-radius:15px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"><i class="fas fa-paper-plane"></i></button>`;
 }
 function saveAndGo(date, total, shop, barber) {
-    // 1. ดึงข้อมูลดิบและคำนวณเหมือนเดิม
+    // 1. ดึงข้อมูลดิบและคำนวณ
     const todayData = db.filter(r => r.date === date && r.type === 'SERVICE');
     const isHoliday = db.some(r => r.date === date && r.type === 'HOLIDAY');
 
@@ -543,6 +543,7 @@ function saveAndGo(date, total, shop, barber) {
     const i = archives.findIndex(a => a.date === date);
     let diff = 0;
 
+    // ✅ แก้ไขตรงนี้: เติมเครื่องหมาย }); เพื่อปิด map ให้ถูกต้อง
     const updatedDetails = todayData.map(r => ({ 
         time: r.time, 
         timeEnd: r.endTime || "", 
@@ -550,14 +551,16 @@ function saveAndGo(date, total, shop, barber) {
         price: Number(r.price) || 0,
         pay: r.pay || "",        
         tip: Number(r.tip) || 0   
+    })); 
 
     if (i > -1) {
+        // --- กรณีอัปเดตข้อมูลเดิม ---
         diff = Number(settle) - (Number(archives[i].settle) || 0);
         
         archives[i].total = isHoliday ? 0 : Number(total);
         archives[i].barber = Math.floor(bEarn);
         archives[i].settle = Number(settle);
-        archives[i].details = updatedDetails; // ✅ ใช้แบบใหม่ที่เก็บครบ
+        archives[i].details = updatedDetails; 
     } else {
         // --- กรณีคีย์ครั้งแรกของวันนั้นๆ ---
         diff = Number(settle); 
@@ -574,13 +577,19 @@ function saveAndGo(date, total, shop, barber) {
             details: updatedDetails 
         });
     }
+
+    // อัปเดตยอดคงเหลือในบัญชีกลาง
     account.balance = (Number(account.balance) || 0) + diff;
+    
+    // ล้างข้อมูลในหน้าบันทึก (db) เฉพาะวันที่นั้นๆ
     db = db.filter(r => r.date !== date); 
-    save();
+    
+    save(); // บันทึกลง LocalStorage
+
     const statusMsg = diff >= 0 ? `ช่างค้างเพิ่ม: ฿${Math.abs(diff)}` : `ร้านจ่ายเพิ่ม: ฿${Math.abs(diff)}`;
     alert(`✅ บันทึกเรียบร้อย!\n${statusMsg}\n💰 ยอดสะสมรวม: ฿${account.balance.toLocaleString()}`);
 
-    go(3);
+    go(3); // ไปหน้าบัญชี
     if (typeof loadAccountStatus === "function") loadAccountStatus();
 }
   function toggleAccHistory() {
