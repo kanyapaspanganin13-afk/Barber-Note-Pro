@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.3</title>
+    <title>Barber Note Pro v.13</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -210,7 +210,6 @@ nav {
         <div id="reportContent" style="max-height:400px; overflow-y:auto;"></div>
     </div>
 </div>
-
 <!-- Modal สำหรับประวัติการเคลียร์ -->
 <div id="historyModal" class="modal">
     <div class="modal-content">
@@ -285,10 +284,14 @@ nav {
         </div>
     </div>
 </div>
+<div id="p1" class="page active"> </div>
+<div id="p2" class="page" style="display:none;"> </div>
+<div id="p3" class="page" style="display:none;"> </div>
+
 <nav>
-    <div onclick="go(1)" class="nav-item active"><i class="fas fa-edit"></i><span>บันทึก</span></div>
-    <div onclick="go(2)" class="nav-item"><i class="fas fa-history"></i><span>รายงาน</span></div>
-    <div onclick="go(3)" class="nav-item"><i class="fas fa-wallet"></i><span>บัญชี</span></div>
+  <button onclick="go(1)" class="nav-item active">หน้า 1</button>
+  <button onclick="go(2)" class="nav-item">หน้า 2</button>
+  <button onclick="go(3)" class="nav-item">หน้า 3</button>
 </nav>
  <script>
     let archives = JSON.parse(localStorage.getItem("barber_archives")) || [];
