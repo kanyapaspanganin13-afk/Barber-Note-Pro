@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.25</title>
+    <title>Barber Note Pro v.5</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -321,12 +321,22 @@ window.onload = () => {
     d.setHours(h, m + mins, 0, 0);
     return d.toTimeString().slice(0, 5);
 }
-function openReportModal(title, content) {
-    $("reportTitle").innerText = title;
-    $("reportContent").innerHTML = content;
-    $("reportModal").style.display = "flex";
-}
+function openReportModal(title, htmlContent) {
+    // ดึง Element Modal ของมึงมา (สมมติว่าชื่อ reportModal)
+    const modalContent = $("reportModalContent"); 
+    const modalHeader = $("reportModalTitle");
+    modalHeader.innerText = title;
+    modalContent.innerHTML = htmlContent;
+    const modalInner = modalContent.parentElement;
+    modalInner.style.width = "95%";            
+    modalInner.style.maxWidth = "600px";      
+    modalInner.style.maxHeight = "85vh";      
+    modalInner.style.overflowY = "auto";      
+    modalInner.style.borderRadius = "20px";    
+    modalInner.style.padding = "20px";
 
+    $("reportModal").style.display = "flex";   
+}
 function closeReportModal() {
     $("reportModal").style.display = "none";
 }
