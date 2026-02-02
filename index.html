@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.18</title>
+    <title>Barber Note Pro v.13</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -685,27 +685,10 @@ function loadHistDaily() {
                 <small>(อาจยังไม่มีการบันทึกงานของวันนี้)</small>
             </div>`);
     }
-    const totalIncome = Number(f.total) || 0;
-    const barberEarn = Number(f.barber) || 0;function loadHistDaily() {
-    const d = $("histDate").value; 
-    if (!d) return;
-
-    const f = archives.find(a => a.date === d);
-    
-    if (!f) {
-        return openReportModal("🔍 ค้นหารายวัน", `
-            <div style="padding:60px; text-align:center; color:#94a3b8;">
-                <div style="font-size:40px; margin-bottom:10px;">❌</div>
-                ไม่พบข้อมูลวันที่ ${d}<br>
-                <small>(อาจยังไม่มีการบันทึกงานของวันนี้)</small>
-            </div>`);
-    }
 
     const totalIncome = Number(f.total) || 0;
     const settleAmount = Number(f.settle) || 0; 
-    // คำนวณรายได้ช่าง/ร้าน จากยอด settle (ถ้าติดลบคือร้านจ่ายช่าง)
-    const barberEarn = totalIncome - (totalIncome * 0.5); // หรือจะใช้ logic อื่นตามที่มึงตั้งไว้
-    const shopNet = totalIncome - barberEarn; 
+    const barberEarn = Number(f.barber) || 0;
     const customerCount = f.details ? f.details.length : (f.count || 0);
 
     let statusHTML = "";
@@ -716,10 +699,11 @@ function loadHistDaily() {
     } else {
         statusHTML = `<div style="background:#f0fdf4; color:#16a34a; padding:15px; border-radius:18px; text-align:center; border:2px solid #bbf7d0; font-weight:900; font-size:18px;">✅ ยอดเคลียร์พอดี</div>`;
     }
+
     let rows = (f.details || []).map(r => {
-        const tStart = r.timeStart || r.time || "-";
+        const tStart = r.time || "-";
         const tEnd = r.timeEnd ? ` → ${r.timeEnd}` : "";
-        const payType = r.pay ? `<span style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-size:10px; margin-left:5px;">${r.pay}</span>` : "";
+        const payType = r.pay ? `<span style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-size:10px; margin-left:5px; color:#475569;">${r.pay}</span>` : "";
         const tipTxt = (Number(r.tip) > 0) ? `<span style="color:#6366f1; font-size:12px;">(+ทิป ฿${r.tip})</span>` : "";
 
         return `
@@ -753,6 +737,7 @@ function loadHistDaily() {
         </div>
     `);
 }
+
 function loadHistMonth() {
     try {
         const m = $("histMonth").value;
@@ -780,12 +765,11 @@ function loadHistMonth() {
                 const svcs = Array.isArray(d.svcs) ? d.svcs : [d.svcs];
                 if (!svcs.length) return;
 
-                let hasHaircutInThisBill = false; // ดักไว้นับรายคน
+                let hasHaircutInThisBill = false;
 
                 svcs.forEach(s => {
                     if (!s) return;
-                    const trimS = s.trim(); // กันช่องว่างแฝง
-
+                    const trimS = s.trim();
                     if (haircutList.includes(trimS)) {
                         haircutStats[trimS] = (haircutStats[trimS] || 0) + 1;
                         hasHaircutInThisBill = true;
@@ -793,7 +777,6 @@ function loadHistMonth() {
                         serviceStats[trimS] = (serviceStats[trimS] || 0) + 1;
                     }
                 });
-
                 if (hasHaircutInThisBill) haircutCount++; 
             });
         });
@@ -801,7 +784,6 @@ function loadHistMonth() {
         const renderStats = (obj, unit, color) => {
             const entries = Object.entries(obj).sort((a,b) => b[1]-a[1]);
             if (!entries.length) return `<center style="color:#94a3b8;padding:15px;font-size:13px;">ไม่มีข้อมูล</center>`;
-            
             return entries.map(([n,c]) => `
                 <div style="display:flex;justify-content:space-between;background:#fff;padding:10px 14px;border-radius:12px;margin-bottom:6px;border:1px solid #f1f5f9;box-shadow:0 1px 2px rgba(0,0,0,0.02);">
                     <span style="color:#475569;">${n}</span>
@@ -811,8 +793,8 @@ function loadHistMonth() {
         };
 
         openReportModal(`🗓️ สรุปเดือน ${m}`, `
-            <div style="text-align:center;margin-bottom:20px;padding:30px 20px;background:linear-gradient(135deg,#1e293b,#334155);border-radius:25px;color:white;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);">
-                <small style="opacity:0.8;font-weight:300;">รายได้รวมทั้งเดือน</small>
+            <div style="text-align:center;margin-bottom:20px;padding:30px 20px;background:linear-gradient(135deg,#1e293b,#334155);border-radius:25px;color:white;">
+                <small style="opacity:0.8;">รายได้รวมทั้งเดือน</small>
                 <div style="font-size:38px;font-weight:900;margin:5px 0;">฿${totalRev.toLocaleString()}</div>
                 <div style="display:inline-block;padding:4px 12px;background:rgba(255,255,255,0.1);border-radius:10px;font-size:14px;">
                     ✂️ ตัดผมทั้งหมด ${haircutCount.toLocaleString()} หัว
@@ -831,12 +813,12 @@ function loadHistMonth() {
             </div>
 
             <div style="margin-bottom:20px;">
-                <b style="color:#1e293b;display:block;margin-bottom:10px;font-size:16px;">💇 สถิติทรงผม</b>
+                <b style="color:#1e293b;display:block;margin-bottom:10px;">💇 สถิติทรงผม</b>
                 ${renderStats(haircutStats, "ครั้ง", "#6366f1")}
             </div>
 
-            <div style="margin-bottom:10px;">
-                <b style="color:#1e293b;display:block;margin-bottom:10px;font-size:16px;">🧴 สถิติบริการอื่น</b>
+            <div>
+                <b style="color:#1e293b;display:block;margin-bottom:10px;">🧴 สถิติบริการอื่น</b>
                 ${renderStats(serviceStats, "ครั้ง", "#0ea5e9")}
             </div>
         `);
