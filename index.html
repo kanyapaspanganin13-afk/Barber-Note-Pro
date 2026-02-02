@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.03</title>
+    <title>Barber Note Pro v.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -101,20 +101,16 @@ nav {
 
     <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 8px; margin-bottom: 15px;">
         <select id="hairStyle" style="height: 70px; border-radius:18px; border:none; font-weight:800; padding:0 10px; background:#fff; color:#1e293b; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
-            <option value="">✂️ ทรงผม</option>
-            <option value="เด็ก">ตัดผมเด็ก</option>
-            <option>รองทรง</option><option>แฟชั่น</option><option>สกินเฟด</option><option>เปิดข้าง</option><option>ตำรวจ/ทหาร</option><option>ทรงนักเรียน</option>
-            <option>แก้ผม</option><option>โกนผม</option>
-        </select>
-        <select id="extra1" style="height: 70px; border-radius:14px; border:none; font-weight:700; background:#fff; color:#64748b; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
-            <option value="">บริการ1</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option><option>ย้อมผม</option>
-        </select>
-        <select id="extra2" style="height: 70px; border-radius:14px; border:none; font-weight:700; background:#fff; color:#64748b; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
-            <option value="">บริการ2</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option><option>ย้อมผม</option>
-        </select>
+          <div style="display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 10px;">
+    <select id="hairCut" style="height: 70px; border-radius:14px; border:none; font-weight:700; background:#fff; color:#1e293b; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+        <option value="">✂️ ทรงผม</option><option>แฟชั่น</option><option>สกินเฟด</option><option>เปิดข้าง</option><option>รองทรง</option><option>ตำรวจ/ทหาร</option><option>ทรงนักเรียน</option><option>แก้ผม</option><option>โกนผม</option></select>
+    <select id="extra1" style="height: 70px; border-radius:14px; border:none; font-weight:700; background:#fff; color:#64748b; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+        <option value="">✨ บริการ 1</option><option value="เด็ก">🧒 เด็ก</option> <option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option><option>ย้อมผม</option></select>
+    <select id="extra2" style="height: 70px; border-radius:14px; border:none; font-weight:700; background:#fff; color:#64748b; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+        <option value="">✨ บริการ 2</option><option value="เด็ก">🧒 เด็ก</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option><option>ย้อมผม</option></select>    
     </div>
-<div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px; margin: 10px 0;">
-    <div style="position: relative; background: #ffffff; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05);">
+     <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px; margin: 10px 0;">
+     <div style="position: relative; background: #ffffff; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05);">
         <span style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 24px; color: #6366f1; font-weight: 900;">฿</span>
         <input type="number" id="priceInp" placeholder="0" inputmode="numeric" 
             style="width: 100%; height: 85px !important; background: transparent !important; font-size: 45px !important; font-weight: 900 !important; color: #1e293b !important; padding-left: 40px !important; border: none !important;">
@@ -609,27 +605,41 @@ function saveAndGo(date, total, shop, barber) {
 }
 function loadAccountStatus() {
     const net = Number(account.balance) || 0;
-    $("accOldVal").innerText = `฿${net.toLocaleString()}`;
-    $("accTodayVal").innerText = `฿0`; 
-    $("accNet").innerText = Math.abs(net).toLocaleString();
-    let light = "#16a34a"; // สีเขียว = ยอดพอดี
-    let statusTxt = "ยอดสมดุล";
+    
+    // อัปเดตตัวเลข
+    if ($("accOldVal")) $("accOldVal").innerText = `฿${net.toLocaleString()}`;
+    if ($("accTodayVal")) $("accTodayVal").innerText = `฿0`; 
+    if ($("accNet")) $("accNet").innerText = Math.abs(net).toLocaleString();
+
+    // เตรียมตัวแปรสีและข้อความ
+    const badge = $("statusBadge"); // ต้องตรงกับ ID ใน HTML ของมึง
+    let bgColor = "#f8fafc"; // สีเทา (ยอดสมดุล)
+    let textColor = "#64748b";
+    let statusTxt = "⚖️ ยอดสมดุล";
 
     if (net > 0) {
-        light = "#dc2626"; 
-        statusTxt = "ช่างค้างส่งร้าน";
+        bgColor = "#fef2f2"; // แดงอ่อน
+        textColor = "#dc2626"; // แดงเข้ม
+        statusTxt = "🚩 ช่างคืนร้าน";
     } else if (net < 0) {
-        light = "#1e3a8a"; 
-        statusTxt = "ร้านค้างจ่ายช่าง";
+        bgColor = "#eff6ff"; // น้ำเงินอ่อน
+        textColor = "#1e3a8a"; // น้ำเงินเข้ม
+        statusTxt = "📱 ร้านค้างช่าง";
     }
 
-    // อัปเดต UI
-    if ($("accLight")) {
-        $("accLight").style.background = light;
-        $("accLight").style.boxShadow = `0 0 12px ${light}`;
+    // --- อัปเดต UI ตรงแถบแจ้งสถานะ ---
+    if (badge) {
+        badge.innerText = statusTxt;
+        badge.style.background = bgColor;
+        badge.style.color = textColor;
     }
-    
-    if ($("accStatusLabel")) $("accStatusLabel").innerText = statusTxt;
+
+    // ส่วนของไฟสถานะเดิม (ถ้ายังมีอยู่)
+    if ($("accLight")) {
+        const lightColor = net > 0 ? "#dc2626" : (net < 0 ? "#1e3a8a" : "#16a34a");
+        $("accLight").style.background = lightColor;
+        $("accLight").style.boxShadow = `0 0 12px ${lightColor}`;
+    }
 }
 function clearAccount() {
     const d = $("accDate").value || new Date().toISOString().split('T')[0];
