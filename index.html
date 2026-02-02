@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.33</title>
+    <title>Barber Note Pro v.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -693,19 +693,30 @@ function loadHistDaily() {
     const totalIncome = Number(f.total) || 0;
     const settleAmount = Number(f.settle) || 0; 
     
-    // --- 1. เรียงลำดับตามเวลาเริ่ม (08:00 มาก่อน) ---
-    const sortedDetails = (f.details || []).sort((a, b) => {
+    // --- 🚩 เพิ่มส่วนการนับสถิติ ---
+    let stats = {}; 
+    const details = f.details || [];
+    const totalHeads = details.length; 
+
+    // 1. เรียงลำดับตามเวลาเริ่ม
+    const sortedDetails = [...details].sort((a, b) => {
         const timeA = a.timeStart || a.time || "00:00";
         const timeB = b.timeStart || b.time || "00:00";
         return timeA.localeCompare(timeB);
     });
 
-    // --- 2. สร้างแถวรายการบริการ ---
+    // 2. สร้างแถวรายการบริการ + เก็บสถิติประเภทบริการ
     let rows = sortedDetails.map(r => {
+        // นับสถิติ: ถ้า svcs เป็น Array ให้วนนับ ถ้าเป็น String ให้บวกเลย
+        const serviceList = Array.isArray(r.svcs) ? r.svcs : [r.svcs];
+        serviceList.forEach(s => {
+            if (s) stats[s] = (stats[s] || 0) + 1;
+        });
+
+        // ดึงเวลา: ใช้ timeStart ตามที่มึงแก้ใน saveAndGo
         const tStart = r.timeStart || r.time || "-";
-        const tEnd = r.timeEnd ? ` - ${r.timeEnd}` : ""; // โชว์เวลาเสร็จถ้ามี
+        const tEnd = r.timeEnd ? ` - ${r.timeEnd}` : ""; 
         
-        // ตกแต่งตัวจ่ายเงิน (Cash/Transfer)
         const isCash = r.pay === 'Cash';
         const payTag = `<span style="background:${isCash ? '#fef3c7' : '#dcfce7'}; color:${isCash ? '#b45309' : '#15803d'}; padding:2px 8px; border-radius:6px; font-size:11px; margin-left:8px; font-weight:bold;">${isCash ? '💵 เงินสด' : '📱 โอน'}</span>`;
         
@@ -720,7 +731,7 @@ function loadHistDaily() {
                         ${payTag}
                     </div>
                     <div style="color:#475569; margin-top:5px; font-size:14px;">
-                        ${Array.isArray(r.svcs) ? r.svcs.join(' + ') : r.svcs}
+                        ${serviceList.join(' + ')}
                     </div>
                 </div>
                 <div style="text-align:right;">
@@ -731,7 +742,12 @@ function loadHistDaily() {
         </div>`;
     }).join('');
 
-    // --- 3. แสดงผลใน Modal ---
+    // 3. สร้าง HTML สำหรับสรุปประเภทบริการ (Stats Badge)
+    const statsBadges = Object.entries(stats).map(([name, count]) => 
+        `<span style="background:#f1f5f9; color:#475569; padding:4px 10px; border-radius:8px; font-size:12px; margin:2px; display:inline-block; border:1px solid #e2e8f0;">${name} (x${count})</span>`
+    ).join('');
+
+    // 4. แสดงผลใน Modal
     let statusHTML = settleAmount > 0 
         ? `<div style="background:#fef2f2; color:#ef4444; padding:12px; border-radius:15px; text-align:center; border:1px solid #fecaca; font-weight:bold; margin-bottom:15px;">🚩 ช่างคืนร้าน: ฿${Math.floor(settleAmount).toLocaleString()}</div>`
         : `<div style="background:#f0fdf4; color:#16a34a; padding:12px; border-radius:15px; text-align:center; border:1px solid #bbf7d0; font-weight:bold; margin-bottom:15px;">✅ ร้านจ่ายช่าง: ฿${Math.floor(Math.abs(settleAmount)).toLocaleString()}</div>`;
@@ -743,15 +759,19 @@ function loadHistDaily() {
             <div style="font-size:32px; font-weight:900;">฿${totalIncome.toLocaleString()}</div>
         </div>
 
+        <div style="margin-bottom:20px; padding:15px; background:#fff; border-radius:15px; border:1px solid #e2e8f0;">
+            <b style="font-size:14px; color:#1e293b; display:block; margin-bottom:10px;">📊 สถิติรวม: ${totalHeads} หัว</b>
+            <div style="display:flex; flex-wrap:wrap;">${statsBadges || 'ไม่มีข้อมูล'}</div>
+        </div>
+
         <div style="border-top:2px dashed #e2e8f0; padding-top:10px;">
-            <b style="font-size:16px; display:block; margin-bottom:10px; color:#1e293b;">📝 รายการบริการ (เรียงตามเวลา)</b>
+            <b style="font-size:16px; display:block; margin-bottom:10px; color:#1e293b;">📝 รายการวันนี้ </b>
             <div style="max-height:450px; overflow-y:auto; padding-right:5px;">
                 ${rows || '<center style="color:#ccc; padding:20px;">ไม่มีรายการ</center>'}
             </div>
         </div>
     `);
 }
-
 function loadHistMonth() {
     try {
         const m = $("histMonth").value;
