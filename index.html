@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.24</title>
+    <title>Barber Note Pro v.25</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -505,6 +505,7 @@ function renderDay() {
     container.innerHTML = `<div id="settleBar" style="flex:8; height:55px; background:${bg}; display:flex; align-items:center; justify-content:center; border-radius:15px; font-weight:900; font-size:15px; color:#1e293b; border:1px solid rgba(0,0,0,0.05);">${txt}</div><button onclick="saveAndGo('${dInp}', ${tot}, ${sEarn}, ${bEarn})" style="flex:2; height:55px; background:#f97316; color:#fff; border-radius:15px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"><i class="fas fa-paper-plane"></i></button>`;
 }
 function saveAndGo(date, total, shop, barber) {
+    // 1. ดึงข้อมูลดิบและคำนวณเหมือนเดิม
     const todayData = db.filter(r => r.date === date && r.type === 'SERVICE');
     const isHoliday = db.some(r => r.date === date && r.type === 'HOLIDAY');
 
@@ -512,38 +513,58 @@ function saveAndGo(date, total, shop, barber) {
 
     const cash = todayData.filter(r => r.pay === 'Cash').reduce((s, r) => s + (Number(r.price) || 0), 0);
     const tips = todayData.reduce((s, r) => s + (Number(r.tip) || 0), 0);
-    const commission = Math.max(total * (conf.perc / 100), conf.guar);
+    const commission = Math.max(Number(total) * (conf.perc / 100), conf.guar);
     const bEarn = isHoliday ? 0 : commission + tips;
-    const settle = isHoliday ? 0 : cash - bEarn; // ยอดที่ช่างต้องส่งร้าน (ติดลบคือร้านจ่ายประกันเพิ่ม)
+    const settle = isHoliday ? 0 : cash - bEarn;
 
-    let stats = {};
-    todayData.forEach(r => {
-        (r.svcs || []).forEach(s => { if (s) stats[s] = (stats[s] || 0) + 1; });
-    });
-
-    const entry = {
-        date, total: isHoliday ? 0 : total,
-        barber: Math.floor(bEarn),
-        shop: Math.floor(total - (isHoliday ? 0 : commission)),
-        count: todayData.length, stats, settle, isHoliday
-    };
-
-    // อัปเดต archives
+    // 2. จัดการเรื่อง "ยอดสะสม" ในบัญชีสุทธิ
     const i = archives.findIndex(a => a.date === date);
+    let diff = 0;
+
     if (i > -1) {
-        // ถ้าเป็นการแก้ไขยอดวันเดิม ให้ลบยอดเก่าออกจาก balance ก่อนค่อยบวกใหม่
-        account.balance -= archives[i].settle;
-        archives[i] = entry;
+        // --- กรณีคีย์เพิ่ม/แก้ไขวันเดิม ---
+        // ส่วนต่าง = ยอดใหม่ - ยอดเดิมที่เคยบันทึกไว้
+        diff = Number(settle) - (Number(archives[i].settle) || 0);
+        
+        // อัปเดตข้อมูลใน archives
+        archives[i].total = isHoliday ? 0 : Number(total);
+        archives[i].barber = Math.floor(bEarn);
+        archives[i].settle = Number(settle);
+        archives[i].details = todayData.map(r => ({ time: r.time, svcs: r.svcs, price: r.price }));
+        // (วันที่ไม่ต้องแก้ เพราะเป็นวันเดิม)
     } else {
-        archives.push(entry);
+        // --- กรณีคีย์ครั้งแรกของวันนั้นๆ ---
+        diff = Number(settle); 
+        
+        // สร้างข้อมูลใหม่ลง archives
+        const dObj = new Date(date);
+        const dateThai = `${String(dObj.getDate()).padStart(2, '0')}/${String(dObj.getMonth() + 1).padStart(2, '0')}/${dObj.getFullYear() + 543}`;
+        
+        archives.push({
+            date,
+            dateDisplay: dateThai,
+            total: isHoliday ? 0 : Number(total),
+            barber: Math.floor(bEarn),
+            settle: Number(settle),
+            details: todayData.map(r => ({ time: r.time, svcs: r.svcs, price: r.price }))
+        });
     }
 
-    // บวกยอดวันนี้เข้าบัญชีสุทธิ
-    account.balance = (account.balance || 0) + settle;
+    // 3. ปรับยอดบัญชีสุทธิแค่ "ส่วนต่าง" (สำคัญมาก!)
+    // ถ้า diff เป็นบวก บัญชีจะเพิ่ม (ช่างค้างเพิ่ม)
+    // ถ้า diff เป็นลบ บัญชีจะลด (ร้านจ่ายออกเพิ่ม หรือช่างได้ส่วนแบ่งเยอะขึ้น)
+    account.balance = (Number(account.balance) || 0) + diff;
 
+    // 4. บันทึกและล้างหน้าจอ
+    db = db.filter(r => r.date !== date); 
     save();
-    alert("✅ บันทึกยอดเรียบร้อย!");
-    go(3); // ฟังก์ชัน go(3) จะเรียก loadAccountStatus เอง
+
+    // 5. แสดงผลยอดที่เปลี่ยนไป
+    const statusMsg = diff >= 0 ? `ช่างค้างเพิ่ม: ฿${Math.abs(diff)}` : `ร้านจ่ายเพิ่ม: ฿${Math.abs(diff)}`;
+    alert(`✅ บันทึกเรียบร้อย!\n${statusMsg}\n💰 ยอดสะสมรวม: ฿${account.balance.toLocaleString()}`);
+
+    go(3);
+    if (typeof loadAccountStatus === "function") loadAccountStatus();
 }
 
   function updateAccountFromOrange() {
