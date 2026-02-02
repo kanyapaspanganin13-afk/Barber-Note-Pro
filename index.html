@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.12</title>
+    <title>Barber Note Pro v.15</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -200,36 +200,18 @@ nav {
             </button>
         </div>
     </div>
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 16px; margin: 20px 0;">
-    
-    <div onclick="$('histDate').showPicker?.() || $('histDate').click()" 
-         style="background: white; border-radius: 24px; padding: 22px 10px; text-align: center; position: relative; box-shadow: 0 10px 20px rgba(0,0,0,0.03); cursor: pointer;">
-        
-        <div style="width: 44px; height: 44px; background: #fff7ed; color: #f59e0b; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 20px;">
-            <i class="fas fa-search-dollar"></i>
+ <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+        <div onclick="$('histDate').showPicker()" style="background:linear-gradient(135deg, #f59e0b, #d97706); border-radius:25px; padding:20px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(245,158,11,0.2);">
+            <i class="fas fa-search-dollar" style="font-size:28px; margin-bottom:5px; display:block;"></i>
+            <b style="font-size:14px;">ค้นหารายวัน</b>
+            <input type="date" id="histDate" onchange="loadHistDaily()" style="position:absolute; inset:0; opacity:0;">
         </div>
-        <b style="font-size: 14px; color: #334155; display: block;">ค้นหารายวัน</b>
-        <span style="font-size: 10px; color: #94a3b8;">ดูประวัติย้อนหลัง</span>
-
-        <input type="date" id="histDate" 
-               onchange="loadHistDaily()" 
-               style="position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;">
-    </div>
-
-    <div onclick="$('histMonth').showPicker?.() || $('histMonth').click()" 
-         style="background: white; border-radius: 24px; padding: 22px 10px; text-align: center; position: relative; box-shadow: 0 10px 20px rgba(0,0,0,0.03); cursor: pointer;">
-        
-        <div style="width: 44px; height: 44px; background: #eef2ff; color: #6366f1; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 20px;">
-            <i class="fas fa-calendar-check"></i>
+        <div onclick="$('histMonth').showPicker()" style="background:linear-gradient(135deg, #6366f1, #4338ca); border-radius:25px; padding:20px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(99,102,241,0.2);">
+            <i class="fas fa-calendar-check" style="font-size:28px; margin-bottom:5px; display:block;"></i>
+            <b style="font-size:14px;">สรุปรายเดือน</b>
+            <input type="month" id="histMonth" onchange="loadHistMonth()" style="position:absolute; inset:0; opacity:0;">
         </div>
-        <b style="font-size: 14px; color: #334155; display: block;">สรุปรายเดือน</b>
-        <span style="font-size: 10px; color: #94a3b8;">ดูภาพรวมเดือน</span>
-
-        <input type="month" id="histMonth" 
-               onchange="loadHistMonth()" 
-               style="position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;">
     </div>
-
 </div>
 <div id="modalSet" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); z-index:9999; align-items:flex-end; justify-content:center;">
     
@@ -868,114 +850,111 @@ function loadHistDaily() {
     `);
 }
 function loadHistMonth() {
-    const m = $("histMonth").value;
-    if (!m) return alert("กรุณาเลือกเดือนก่อน");
+    const m = $("histMonth").value;
+    if (!m) return alert("กรุณาเลือกเดือนก่อน");
 
-    const filtered = archives.filter(a => a.date && a.date.startsWith(m));
-    if (!filtered.length) {
-        return openReportModal(
-            "📊 สรุปรายเดือน",
-            "<center style='padding:60px;color:#94a3b8;font-size:14px;'>ไม่พบข้อมูลของเดือนนี้</center>"
-        );
-    }
+    const filtered = archives.filter(a => a.date && a.date.startsWith(m));
+    if (!filtered.length) {
+        return openReportModal(
+            "📊 สรุปรายเดือน",
+            "<div style='padding:80px 20px; text-align:center; color:#94a3b8;'><i class='fas fa-folder-open' style='font-size:40px;margin-bottom:10px;opacity:0.3;'></i><br>ไม่พบข้อมูลของเดือนนี้</div>"
+        );
+    }
 
-    const haircutList = ["แฟชั่น","สกินเฟด","เปิดข้าง","รองทรง","ตำรวจ/ทหาร","ทรงนักเรียน","แก้ผม","โกนผม"];
-    const serviceList = ["โกนหนวด","กันหน้า","สระผม","ย้อมผม"];
+    const haircutList = ["แฟชั่น","สกินเฟด","เปิดข้าง","รองทรง","ตำรวจ/ทหาร","ทรงนักเรียน","แก้ผม","โกนผม","เด็ก"];
+    const serviceList = ["โกนหนวด","กันหน้า","สระผม","ย้อมผม"];
 
-    let monthTotal = 0;
-    let monthBarber = 0;
-    let monthCount = 0;
+    let monthTotal = 0, monthBarber = 0, monthCount = 0;
+    let hairStats = {}, serviceStats = {};
 
-    let hairStats = {};
-    let serviceStats = {};
+    filtered.forEach(day => {
+        monthTotal += Number(day.total) || 0;
+        monthBarber += Number(day.barber) || 0;
+        (day.details || []).forEach(d => {
+            const svcs = Array.isArray(d.svcs) ? d.svcs : [];
+            let countedHair = false;
+            svcs.forEach(s => {
+                if (!s) return;
+                s = s.trim();
+                if (haircutList.includes(s)) {
+                    hairStats[s] = (hairStats[s] || 0) + 1;
+                    if (!countedHair) { monthCount++; countedHair = true; }
+                } else if (serviceList.includes(s)) {
+                    serviceStats[s] = (serviceStats[s] || 0) + 1;
+                }
+            });
+        });
+    });
 
-    filtered.forEach(day => {
-        monthTotal += Number(day.total) || 0;
-        monthBarber += Number(day.barber) || 0;
+    const monthShop = monthTotal - monthBarber;
 
-        (day.details || []).forEach(d => {
-            const svcs = Array.isArray(d.svcs) ? d.svcs : [];
-            let countedHair = false;
+    // เรนเดอร์รายการแบบ Minimalist
+    const renderBadges = (obj, accentColor) => {
+        const entries = Object.entries(obj).sort((a,b)=>b[1]-a[1]);
+        if (!entries.length) return "<div style='font-size:12px;color:#94a3b8;padding:10px;'>ไม่มีข้อมูล</div>";
+        return entries.map(([k,v]) => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 14px; background:#f8fafc; border-radius:14px; margin-bottom:8px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="width:6px; height:6px; border-radius:50%; background:${accentColor};"></div>
+                    <span style="color:#475569; font-size:14px; font-weight:500;">${k}</span>
+                </div>
+                <div style="font-weight:700; color:#1e293b; font-size:14px;">${v} <span style="font-size:11px; font-weight:400; color:#94a3b8;">ครั้ง</span></div>
+            </div>`
+        ).join("");
+    };
 
-            svcs.forEach(s => {
-                if (!s) return;
-                s = s.trim();
-                if (haircutList.includes(s) || s === "เด็ก") {
-                    hairStats[s] = (hairStats[s] || 0) + 1;
-                    if (!countedHair) {
-                        monthCount++;
-                        countedHair = true;
-                    }
-                    return;
-                }
-                if (serviceList.includes(s)) {
-                    serviceStats[s] = (serviceStats[s] || 0) + 1;
-                }
-            });
-        });
-    });
+    openReportModal(
+        `สรุปรายงานเดือน ${m}`,
+        `
+        <div style="background:#f1f5f9; margin:-16px; padding:20px; font-family:inherit;">
+            
+            <div style="background:linear-gradient(135deg, #0f172a 0%, #334155 100%); 
+                        padding:26px; border-radius:30px; color:white; margin-bottom:25px;
+                        box-shadow: 0 12px 24px rgba(0,0,0,0.15); position:relative; overflow:hidden;">
+                <div style="position:absolute; top:-20px; right:-20px; width:100px; height:100px; background:rgba(255,255,255,0.05); border-radius:50%;"></div>
+                
+                <div style="font-size:12px; opacity:0.7; margin-bottom:4px; font-weight:300; letter-spacing:1px;">ยอดเงินรวมสะสม</div>
+                <div style="font-size:38px; font-weight:800; margin-bottom:20px;">฿${monthTotal.toLocaleString()}</div>
+                
+                <div style="display:flex; gap:15px; font-size:13px; background:rgba(255,255,255,0.08); padding:12px 16px; border-radius:16px; width:fit-content;">
+                    <span style="opacity:0.8;">👥 ลูกค้า <b>${monthCount}</b> คน</span>
+                    <span style="opacity:0.3;">|</span>
+                    <span style="opacity:0.8;">📅 เปิด <b>${filtered.length}</b> วัน</span>
+                </div>
+            </div>
 
-    const monthShop = monthTotal - monthBarber;
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:25px;">
+                <div style="background:white; padding:18px; border-radius:22px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); text-align:center;">
+                    <div style="font-size:11px; color:#64748b; margin-bottom:6px; font-weight:600;">💰 ช่างได้รับ</div>
+                    <div style="font-size:19px; font-weight:800; color:#10b981;">฿${Math.floor(monthBarber).toLocaleString()}</div>
+                </div>
+                <div style="background:white; padding:18px; border-radius:22px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); text-align:center;">
+                    <div style="font-size:11px; color:#64748b; margin-bottom:6px; font-weight:600;">🏦 ร้านได้รับ</div>
+                    <div style="font-size:19px; font-weight:800; color:#3b82f6;">฿${Math.floor(monthShop).toLocaleString()}</div>
+                </div>
+            </div>
 
-    // Badge สไตล์ Minimalist
-    const renderBadges = (obj, bgColor, textColor) => {
-        const entries = Object.entries(obj).sort((a,b)=>b[1]-a[1]);
-        if (!entries.length) return "<span style='font-size:12px;color:#cbd5e1;'>ไม่มีข้อมูล</span>";
-        return entries.map(([k,v]) =>
-            `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f8fafc;font-size:13px;">
-                <span style="color:#64748b;">${k}</span>
-                <b style="color:#1e293b;">${v} ครั้ง</b>
-            </div>`
-        ).join("");
-    };
+            <div style="background:white; border-radius:28px; padding:24px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                <div style="margin-bottom:25px;">
+                    <div style="font-size:15px; font-weight:800; color:#1e293b; margin-bottom:16px; display:flex; align-items:center; gap:10px;">
+                        <div style="width:32px; height:32px; background:#eef2ff; color:#6366f1; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px;"><i class="fas fa-chart-pie"></i></div>
+                        บริการยอดนิยม
+                    </div>
+                    ${renderBadges(serviceStats, "#6366f1")}
+                </div>
 
-    openReportModal(
-        `🗓️ รายงานเดือน ${m}`,
-        `
-        <div style="background:#f8fafc; padding:20px; border-radius:24px;">
-            <div style="background:#1e293b; padding:24px; border-radius:24px; color:white; text-align:center; margin-bottom:20px; box-shadow:0 10px 20px rgba(0,0,0,0.1);">
-                <div style="font-size:12px; opacity:0.6; margin-bottom:4px; font-weight:500; letter-spacing:1px;">รายได้รวมเดือนนี้</div>
-                <div style="font-size:38px; font-weight:800; letter-spacing:-1px;">฿${monthTotal.toLocaleString()}</div>
-                <div style="display:flex; justify-content:center; gap:15px; margin-top:15px; font-size:12px; opacity:0.9;">
-                    <span>👥 <b>${monthCount}</b> คน</span>
-                    <span style="opacity:0.3;">|</span>
-                    <span>📅 <b>${filtered.length}</b> วันที่เปิด</span>
-                </div>
-            </div>
-
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
-                <div style="background:white; padding:16px; border-radius:20px; border:1px solid #edf2f7; text-align:center;">
-                    <div style="font-size:11px; color:#64748b; margin-bottom:4px;">💰 ยอดช่าง</div>
-                    <div style="font-size:18px; font-weight:800; color:#10b981;">฿${Math.floor(monthBarber).toLocaleString()}</div>
-                </div>
-                <div style="background:white; padding:16px; border-radius:20px; border:1px solid #edf2f7; text-align:center;">
-                    <div style="font-size:11px; color:#64748b; margin-bottom:4px;">🏦 ยอดร้าน</div>
-                    <div style="font-size:18px; font-weight:800; color:#0ea5e9;">฿${Math.floor(monthShop).toLocaleString()}</div>
-                </div>
-            </div>
-
-            <div style="background:white; border-radius:20px; padding:20px; border:1px solid #edf2f7;">
-                <div style="margin-bottom:20px;">
-                    <div style="font-size:14px; font-weight:800; color:#1e293b; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-                        <span style="width:4px;height:14px;background:#6366f1;border-radius:2px;"></span>
-                        📊 บริการยอดนิยม
-                    </div>
-                    ${renderBadges(serviceStats)}
-                </div>
-
-                <div>
-                    <div style="font-size:14px; font-weight:800; color:#1e293b; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-                        <span style="width:4px;height:14px;background:#10b981;border-radius:2px;"></span>
-                        💇 ทรงผมยอดนิยม
-                    </div>
-                    ${renderBadges(hairStats)}
-                </div>
-            </div>
-        </div>
-        `
-    );
-}มีอีกจุดหนึ่งที่กูอยากแนะนำ (เผื่อมึงอยากให้เนียนกว่าเดิม):
-ในหน้า สรุปรายเดือน (Monthly Report) มึงอยากให้กูเข้าไปแก้ให้มันโชว์ "จำนวนหัวตัดผมเฉลี่ยต่อวัน" หรือ "สัดส่วนงานเสริม vs งานหลัก" ด้วยไหม? เผื่อมึงเอาไว้ดูว่าเดือนนี้โกนหนวดเยอะ หรือตัดผมเยอะกว่ากัน"แก้ให้เหมือนแอปธนาคารไม่เอาเส้นขอบเอาสวยๆ
+                <div>
+                    <div style="font-size:15px; font-weight:800; color:#1e293b; margin-bottom:16px; display:flex; align-items:center; gap:10px;">
+                        <div style="width:32px; height:32px; background:#f0fdf4; color:#22c55e; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px;"><i class="fas fa-cut"></i></div>
+                        ทรงผมยอดนิยม
+                    </div>
+                    ${renderBadges(hairStats, "#22c55e")}
+                </div>
+            </div>
+        </div>
+        `
+    );
+}
   function shareLine() {
     const dInp = $("dateInp").value, today = db.filter(r => r.date === dInp); if (!today.length) return;
     const dp = dInp.split('-'), fDate = `${dp[2]}/${dp[1]}/${dp[0]}`;
