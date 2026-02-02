@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.63</title>
+    <title>Barber Note Pro v.13</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -200,26 +200,6 @@ nav {
             </button>
         </div>
     </div>
-<!-- Modal สำหรับดูรายงาน -->
-<div id="reportModal" class="modal">
-    <div class="modal-content">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h3 id="reportTitle" style="margin:0; color:#1a237e;">📊 รายงาน</h3>
-            <button onclick="closeReportModal()" style="background:#fee2e2; color:#dc2626; border:none; width:35px; height:35px; border-radius:50%; font-size:18px; cursor:pointer;">✕</button>
-        </div>
-        <div id="reportContent" style="max-height:400px; overflow-y:auto;"></div>
-    </div>
-</div>
-<!-- Modal สำหรับประวัติการเคลียร์ -->
-<div id="historyModal" class="modal">
-    <div class="modal-content">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h3 style="margin:0; color:#1a237e;">📜 ประวัติการเคลียร์</h3>
-            <button onclick="closeHistoryModal()" style="background:#fee2e2; color:#dc2626; border:none; width:35px; height:35px; border-radius:50%; font-size:18px; cursor:pointer;">✕</button>
-        </div>
-        <div id="accHistory" style="max-height:400px; overflow-y:auto;"></div>
-    </div>
-</div>
 
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
         <div onclick="$('histDate').showPicker()" style="background:linear-gradient(135deg, #f59e0b, #d97706); border-radius:25px; padding:20px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(245,158,11,0.2);">
@@ -234,16 +214,7 @@ nav {
         </div>
     </div>
 </div>
-<div id="reportModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center; padding:20px;">
-    <div style="background:#fff; width:100%; max-width:500px; border-radius:20px; overflow:hidden; position:relative;">
-        <div style="padding:15px; background:#f8fafc; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
-            <b id="reportTitle" style="font-size:18px;"></b>
-            <span onclick="closeReportModal()" style="cursor:pointer; font-size:24px; padding:0 10px;">&times;</span>
-        </div>
-        <div id="reportContent" style="padding:20px; max-height:70vh; overflow-y:auto;"></div>
-    </div>
-</div>
- <div id="modalSet" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); z-index:9999; align-items:flex-end; justify-content:center;">
+<div id="modalSet" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); z-index:9999; align-items:flex-end; justify-content:center;">
     
     <div style="background:#ffffff; width:92%; max-width:400px; border-radius:35px; margin-bottom:110px; box-shadow:0 20px 60px rgba(0,0,0,0.15); display:flex; flex-direction:column; overflow:hidden;">
         
@@ -294,31 +265,23 @@ nav {
     </div>
 </div>
 <nav>
-  <button onclick="go(1)" class="nav-item active">หน้า 1</button>
-  <button onclick="go(2)" class="nav-item">หน้า 2</button>
-  <button onclick="go(3)" class="nav-item">หน้า 3</button>
+    <div onclick="go(1)" class="nav-item active"><i class="fas fa-edit"></i><span>บันทึก</span></div>
+    <div onclick="go(2)" class="nav-item"><i class="fas fa-history"></i><span>รายงาน</span></div>
+    <div onclick="go(3)" class="nav-item"><i class="fas fa-wallet"></i><span>บัญชี</span></div>
 </nav>
  <script>
-const $ = id => document.getElementById(id);
-let db = JSON.parse(localStorage.getItem("barber_db") || "[]");
-let archives = JSON.parse(localStorage.getItem("barber_archives") || "[]");
-let account = JSON.parse(localStorage.getItem("barber_account") || '{"balance":0,"logs":[]}');
-let conf = JSON.parse(localStorage.getItem("barber_conf") || '{"shop": "Barber Shop", "perc": 50, "guar": 0}');
-let payMethod = "";
-function save() {
-    localStorage.setItem("barber_archives", JSON.stringify(archives));
-}
-window.onload = () => {
-    const today = new Date().toISOString().split('T')[0];
-    if ($("dateInp")) $("dateInp").value = today;
-    if ($("accDate")) $("accDate").value = today;
-    if ($("histDate")) $("histDate").value = today;
-    if ($("shopNameDisp")) $("shopNameDisp").innerText = conf.shop;
-    if (typeof updateDateDisplay === "function") {
+    let archives = JSON.parse(localStorage.getItem("barber_archives")) || [];
+    function save() {localStorage.setItem("barber_archives", JSON.stringify(archives));}
+    let db = JSON.parse(localStorage.getItem("barber_db")) || [];
+    let conf = JSON.parse(localStorage.getItem("barber_conf")) || { shop: "Barber Shop", perc: 50, guar: 0 };
+    let account = JSON.parse(localStorage.getItem("barber_account")) || { balance: 0, logs: [] };
+    let payMethod = "";
+    const $ = (id) => document.getElementById(id);
+    window.onload = () => {
+        const today = new Date().toISOString().split('T')[0];
+        if($("dateInp")) $("dateInp").value = today;if($("accDate")) $("accDate").value = today;if($("histDate")) $("histDate").value = today;if($("shopNameDisp")) $("shopNameDisp").innerText = conf.shop;
         updateDateDisplay(today);
-    }
-    go(1); 
-};
+    };
     function addMinutes(time, mins) {
     if (!time) return "";
     const [h, m] = time.split(":").map(Number);
@@ -493,7 +456,44 @@ function renderDay() {
     const container = $("settleBar").parentElement; container.style.cssText = "display:flex; gap:10px; margin-top:10px;";
     container.innerHTML = `<div id="settleBar" style="flex:8; height:55px; background:${bg}; display:flex; align-items:center; justify-content:center; border-radius:15px; font-weight:900; font-size:15px; color:#1e293b; border:1px solid rgba(0,0,0,0.05);">${txt}</div><button onclick="saveAndGo('${dInp}', ${tot}, ${sEarn}, ${bEarn})" style="flex:2; height:55px; background:#f97316; color:#fff; border-radius:15px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"><i class="fas fa-paper-plane"></i></button>`;
 }
-  function saveAndGo(date, total, shop, barber) {    const todayData = db.filter(r => r.date === date && r.type === 'SERVICE');    const isHoliday = db.some(r => r.date === date && r.type === 'HOLIDAY');    if (total === 0 && !isHoliday && !confirm("ไม่มีข้อมูลยอด ปิดงานเลยมั้ย?")) return;    // คำนวณ settle    const cash = todayData.filter(r => r.pay === 'Cash')        .reduce((s, r) => s + (Number(r.price) || 0), 0);    const tips = todayData.reduce((s, r) => s + (Number(r.tip) || 0), 0);    const bEarn = isHoliday ? 0 : Math.max(total * (conf.perc / 100), conf.guar) + tips;    const settle = isHoliday ? 0 : cash - bEarn;    // สร้าง stats    let stats = {};    todayData.forEach(r => {        (r.svcs || []).forEach(s => {            if (s) stats[s] = (stats[s] || 0) + 1;        });    });    const entry = {        date,        total: isHoliday ? 0 : total,        barber: Math.floor(bEarn),        shop: Math.floor(total - (bEarn - tips)),        count: todayData.length,        stats,        details: todayData,        settle,        isHoliday    };    const i = archives.findIndex(a => a.date === date);    (i > -1) ? archives[i] = entry : archives.push(entry);    save();    speak("บันทึกยอดประจำวันเรียบร้อย");    alert("✅ บันทึกยอดประจำวันเรียบร้อย!");    go(3);}
+function saveAndGo(date, total, shop, barber) {
+    const todayData = db.filter(r => r.date === date);
+
+    if (total === 0 && !confirm("ไม่มีข้อมูลยอด ปิดงานเลยมั้ย?")) return;
+
+    // คำนวณ settle จาก logic เดียวกับ renderDay
+    const cash = todayData.filter(r => r.pay === 'Cash')
+        .reduce((s,r)=>s+(Number(r.price)||0),0);
+
+    const tips = todayData.reduce((s,r)=>s+(Number(r.tip)||0),0);
+    const bEarn = Math.max(total*(conf.perc/100), conf.guar) + tips;
+    const settle = cash - bEarn;
+
+    // stats
+    let stats = {};
+    todayData.forEach(r=>{
+        (r.svcs||[]).forEach(s=> stats[s]=(stats[s]||0)+1);
+    });
+
+    const entry = {
+        date,
+        total,
+        barber: Math.floor(bEarn),
+        shop: Math.floor(total - (bEarn - tips)),
+        count: todayData.length,
+        stats,
+        details: todayData,   // ⭐ สำคัญ
+        settle                 // ⭐ สำคัญ
+    };
+
+    const i = archives.findIndex(a => a.date === date);
+    (i > -1) ? archives[i] = entry : archives.push(entry);
+
+    save();
+    alert("✅ บันทึกยอดประจำวันเรียบร้อย!");
+    go(3);
+}
+
   function updateAccountFromOrange() {
             const barberShareStr = document.getElementById('dBarber').innerText || "0";
             const barberShare = parseInt(barberShareStr.replace(/,/g, '')) || 0;
@@ -555,8 +555,33 @@ function renderDay() {
         `;
     }).join('');
 }
-function loadAccountStatus() {    const d = $("dateInp").value || new Date().toISOString().split('T')[0];    const arc = archives.find(a => a.date === d);    const settle = arc ? (arc.settle || 0) : 0;    const net = (account.balance || 0) + settle;    $("accOldVal").innerText = `฿${(account.balance || 0).toLocaleString()}`;    $("accTodayVal").innerText = `฿${settle.toLocaleString()}`;    $("accNet").innerText = Math.abs(net).toLocaleString();    let light = "#16a34a";    if (net > 0) light = "#dc2626";    else if (net < 0) light = "#1e3a8a";    $("accLight").style.background = light;    $("accLight").style.boxShadow = `0 0 12px ${light}`;}
-function clearAccount() {    const d = $("accDate").value;    if (!d) return alert("⚠️ กรุณาเลือกวันที่!");    const arc = archives.find(a => a.date === d);    const settle = arc ? (arc.settle || 0) : 0;    const totalToClear = (account.balance || 0) + settle;    if (!confirm(`ยืนยันเคลียร์เงิน ฿${Math.abs(totalToClear).toLocaleString()}?`)) return;    account.logs.unshift({        date: d,        amount: totalToClear,        note: $("accNote").value || "เคลียร์ยอดประจำวัน"    });    account.balance = 0;    localStorage.setItem("barber_account", JSON.stringify(account));    speak("เคลียร์เงินเรียบร้อยค่ะ");    alert("✅ เคลียร์เงินเรียบร้อย!");        $("accNote").value = "";    loadAccountHistory();    loadAccountStatus();}
+ function loadAccountStatus() {
+    const d = $("dateInp").value;
+    const arc = archives.find(a => a.date === d);
+    const settle = arc ? arc.settle : 0;
+
+    const net = (account.balance || 0) + settle;
+
+    $("accOldVal").innerText = `฿${(account.balance||0).toLocaleString()}`;
+    $("accTodayVal").innerText = `฿${settle.toLocaleString()}`;
+    $("accNet").innerText = Math.abs(net).toLocaleString();
+
+    let txt="✅ ยอดพอดี", light="#16a34a";
+    if(net > 0){ txt=`🚩 ช่างคืนร้าน ฿${Math.abs(net).toLocaleString()}`; light="#dc2626"; }
+    else if(net < 0){ txt=`🚩 ร้านคืนช่าง ฿${Math.abs(net).toLocaleString()}`; light="#1e3a8a"; }
+
+    $("accLight").style.background = light;
+}
+
+
+function clearAccount(){
+    const d = $("accDate").value, settle = parseFloat(($('dSettle')?.innerText || "0").replace(/,/g,'')) || 0;
+    if(!d) return alert("เลือกวันที่!");
+    account.logs.unshift({ date: d, amount: (account.balance || 0) + settle, note: $("accNote").value || "เคลียร์ยอด" });
+    account.balance = -settle;
+    localStorage.setItem("barber_account", JSON.stringify(account));
+    speak("เคลียร์เงินเรียบร้อย"); $("accNote").value = ""; loadAccountHistory(); loadAccountStatus();
+}
 function renderHistoryList() {
     const db = JSON.parse(localStorage.getItem("barber_acc_logs") || "[]");
     $("accHistoryList").innerHTML = db.length ? db.map(h => `
@@ -567,9 +592,30 @@ function renderHistoryList() {
             <div style="font-size:11px; color:#64748b; margin-top:5px;">📝 ${h.note}</div>
         </div>`).join('') : "<p style='text-align:center; color:#94a3b8;'>ยังไม่มีประวัติการเคลียร์</p>";
 }
-function loadHistDaily() {    const d = $("histDate").value;    const f = archives.find(a => a.date === d);        if (!f) {        return openReportModal("🔍 ค้นหารายวัน",             "<center style='padding:60px; color:#94a3b8; font-size:16px;'>❌ ไม่พบข้อมูลวันที่ " + d + "</center>");    }    if (f.isHoliday) {        return openReportModal(`📅 ${d}`,             "<center style='padding:60px; color:#64748b; font-size:16px;'>🏖️ วันหยุดร้าน</center>");    }    let rows = (f.details || []).map(r =>         `<div style="font-size:13px; padding:10px 0; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between;">            <span><b style="color:#6366f1;">${r.time}</b> ${(r.svcs || []).join('+')}</span>            <b>฿${r.price}</b>        </div>`    ).join('');    let st = "";    for (let s in f.stats) {        st += `<span style="background:#6366f1; color:#fff; margin:3px; padding:4px 8px; border-radius:6px; font-size:11px; display:inline-block; font-weight:700;">${s}: ${f.stats[s]}</span>`;    }    const set = f.settle || 0;    let sTxt = "🟢 ยอดพอดีเป๊ะ";    let bg = "#f0fdf4";        if (set > 0) {        sTxt = `🔴 ช่างคืนร้าน: ฿${Math.floor(set).toLocaleString()}`;        bg = "#fef2f2";    } else if (set < 0) {        sTxt = `🔵 ร้านคืนช่าง: ฿${Math.floor(Math.abs(set)).toLocaleString()}`;        bg = "#eef2ff";    }    openReportModal(`📅 ${d}`, `        <div style="background:${bg}; padding:15px; border-radius:15px; font-weight:900; text-align:center; margin-bottom:15px; font-size:15px;">            ${sTxt}        </div>        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:15px; font-size:12px;">            <div style="background:#f8fafc; padding:10px; border-radius:12px; text-align:center;">                <small style="color:#64748b;">ยอดรวม</small><br>                <b style="font-size:16px;">฿${f.total.toLocaleString()}</b>            </div>            <div style="background:#f0fdf4; padding:10px; border-radius:12px; text-align:center;">                <small style="color:#64748b;">ช่าง</small><br>                <b style="font-size:16px; color:#16a34a;">฿${Math.floor(f.barber).toLocaleString()}</b>            </div>            <div style="background:#eff6ff; padding:10px; border-radius:12px; text-align:center;">                <small style="color:#64748b;">ลูกค้า</small><br>                <b style="font-size:16px; color:#2563eb;">${f.count} คน</b>            </div>        </div>        <div style="margin-bottom:15px; text-align:center;">${st}</div>        <div style="border-top:2px dashed #e2e8f0; padding-top:10px;">${rows || '<center style="padding:20px; color:#ccc;">ไม่มีรายละเอียด</center>'}</div>    `);}
-function loadHistMonth() {    const m = $("histMonth").value;    const f = archives.filter(a => a.date.startsWith(m) && !a.isHoliday);        if (!f.length) {        return openReportModal("📊 สรุปรายเดือน",             "<center style='padding:60px; color:#94a3b8; font-size:16px;'>🌑 ไม่มีข้อมูลเดือนนี้</center>");    }    let t = 0, b = 0, c = 0, ms = {};    f.forEach(a => {        t += a.total || 0;        b += a.barber || 0;        c += a.count || 0;        if (a.stats) {            for (let s in a.stats) {                ms[s] = (ms[s] || 0) + a.stats[s];            }        }    });    let sB = "";    for (let s in ms) {        sB += `<span style="background:#6366f1; color:white; padding:4px 10px; border-radius:8px; margin:3px; font-size:11px; display:inline-block; font-weight:700;">${s}: ${ms[s]}</span>`;    }    openReportModal(`🗓️ เดือน ${m}`, `        <div style="text-align:center; margin-bottom:20px; padding:20px; background:linear-gradient(135deg, #6366f1, #8b5cf6); border-radius:20px; color:white;">            <small style="opacity:0.9;">รวมรายได้ทั้งหมด</small>            <div style="font-size:42px; font-weight:900; margin:10px 0;">฿${t.toLocaleString()}</div>            <small style="opacity:0.8;">${f.length} วันทำงาน | ${c} ลูกค้า</small>        </div>        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">            <div style="background:#f0fdf4; padding:15px; border-radius:15px; text-align:center; border:2px solid #22c55e;">                <small style="color:#15803d; font-weight:700;">ช่างรับทั้งหมด</small>                <div style="font-size:24px; font-weight:900; color:#16a34a;">฿${Math.floor(b).toLocaleString()}</div>            </div>            <div style="background:#eff6ff; padding:15px; border-radius:15px; text-align:center; border:2px solid #3b82f6;">                <small style="color:#1e40af; font-weight:700;">ร้านรับทั้งหมด</small>                <div style="font-size:24px; font-weight:900; color:#2563eb;">฿${Math.floor(t - b).toLocaleString()}</div>            </div>        </div>        <div style="background:#f8fafc; padding:15px; border-radius:15px;">            <b style="display:block; margin-bottom:10px; color:#1e293b;">📊 สรุปบริการ:</b>            ${sB || '<center style="color:#94a3b8;">ไม่มีข้อมูล</center>'}        </div>    `);}
-  function openReportModal(title, content) {    $("reportTitle").innerText = title;    $("reportContent").innerHTML = content;    $("reportModal").style.display = "flex";}function closeReportModal() {    $("reportModal").style.display = "none";}
+function loadHistDaily() {
+    const d = $("histDate").value, f = archives.find(a => a.date === d);
+    if(!f) return openReportModal("🔍 ค้นหา", "<center style='padding:40px;color:#ccc;'>❌ ไม่พบข้อมูล</center>");
+
+    let rows = f.details.map(r => `<div style="font-size:12px;padding:8px 0;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;"><span><b>${r.time}</b> ${r.svcs.join('+')}</span><b>฿${r.price}</b></div>`).join('');
+    let st = ""; for(let s in f.stats) st += `<span style="background:${s.startsWith("ทรง:")?"#10b981":"#6366f1"};color:#fff;margin:2px;padding:2px 6px;border-radius:5px;font-size:10px;display:inline-block;">${s.replace("ทรง:","")}:${f.stats[s]}</span>`;
+
+    const set = f.settle || 0, sTxt = set > 0 ? `🔴 คืนร้าน: ฿${Math.floor(set)}` : set < 0 ? `🔵 คืนช่าง: ฿${Math.floor(Math.abs(set))}` : "🟢 พอดีเป๊ะ";
+    openReportModal(`📅 ${d}`, `<div style="background:${set>0?"#fef2f2":set<0?"#eef2ff":"#f0fdf4"};padding:10px;border-radius:12px;font-weight:900;text-align:center;margin-bottom:10px;">${sTxt}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;font-size:11px;"><div style="background:#f8fafc;padding:6px;border-radius:8px;">ยอดรวม: <b>฿${f.total}</b></div><div style="background:#f0fdf4;padding:6px;border-radius:8px;">ช่าง: <b>฿${Math.floor(f.barber)}</b></div></div><div style="margin-bottom:10px;">${st}</div><div style="border-top:1px dashed #ddd;">${rows}</div>`);
+}
+
+function loadHistMonth() {
+    const m = $("histMonth").value, f = archives.filter(a => a.date.startsWith(m));
+    if(!f.length) return openReportModal("📊 รายงาน", "<center style='padding:40px;color:#ccc;'>🌑 ไม่มีข้อมูล</center>");
+
+    let t=0, b=0, c=0, ms={}, sB="", hB="";
+    f.forEach(a => { t+=a.total; b+=a.barber; c+=a.count; if(a.stats) for(let s in a.stats) ms[s]=(ms[s]||0)+a.stats[s] });
+    for(let s in ms) {
+        let tag = `<span style="background:${s.startsWith("ทรง:")?"#10b981":"#6366f1"};color:white;padding:2px 6px;border-radius:5px;margin:2px;font-size:10px;display:inline-block;">${s.replace("ทรง:","")}:${ms[s]}</span>`;
+        if(s.startsWith("ทรง:")) hB+=tag; else sB+=tag;
+    }
+
+    openReportModal(`🗓️ เดือน ${m}`, `<div style="text-align:center;margin-bottom:10px;padding:10px;background:#f8fafc;border-radius:15px;"><b>รวมรายได้</b><div style="font-size:28px;font-weight:900;">฿${t.toLocaleString()}</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;font-size:11px;"><div style="background:#f0fdf4;padding:8px;border-radius:10px;text-align:center;">ช่าง: <b>฿${Math.floor(b).toLocaleString()}</b></div><div style="background:#eff6ff;padding:8px;border-radius:10px;text-align:center;">คน: <b>${c}</b></div></div><div style="font-size:11px;"><b>📊 บริการ:</b> ${sB||'-'}<br><b>💇 ทรงผม:</b> ${hB||'-'}</div>`);
+}
   function shareLine() {
     const dInp = $("dateInp").value, today = db.filter(r => r.date === dInp); if (!today.length) return;
     const dp = dInp.split('-'), fDate = `${dp[2]}/${dp[1]}/${dp[0]}`;
@@ -589,15 +635,27 @@ function loadHistMonth() {    const m = $("histMonth").value;    const f = archi
     let msg = `💈 รายงานร้าน: Barber Shop\n📅 วันที่: ${fDate}\n-------------------------\n📝 ลูกค้า (${today.length} คน):\n${clientList}\n-------------------------\n📊 สรุปงาน:\n${statText}\n-------------------------\n💰 ยอด: ${tot} | 🧧 ทิป: ${tips}\n📱 โอน: ${trans} | 💵 สด: ${cash}\n🤵 ช่างได้: ${Math.floor(bEarn)}\n🏠 ร้านได้: ${Math.floor(tot-(bEarn-tips))}\n-------------------------\n${settleMsg}`;
     window.open(`https://line.me/R/msg/text/?${encodeURIComponent(msg)}`);
 }
-    function go(p) {    document.querySelectorAll('.page').forEach(pg => {        pg.classList.remove('active');        pg.style.display = 'none';     });    const targetPage = document.getElementById('p' + p);    if (targetPage) {        targetPage.classList.add('active');        targetPage.style.display = 'block';    }    document.querySelectorAll('.nav-item').forEach((btn, i) => {        btn.classList.toggle('active', (i + 1) === p);    });        // โหลดข้อมูลตามหน้า    if (p === 2) renderDay();    if (p === 3) {        loadAccountStatus();        loadAccountHistory();    }}
+ function go(p) {
+    document.querySelectorAll('.page').forEach(pg => {
+        pg.classList.remove('active');
+        pg.style.display = 'none'; 
+    });
+    const targetPage = document.getElementById('p' + p);
+    if (targetPage) {
+        targetPage.classList.add('active');
+        targetPage.style.display = 'block';
+    }
+    document.querySelectorAll('.nav-item').forEach((btn, i) => {
+        btn.classList.toggle('active', (i + 1) === p);
+    });
+}
     function saveDB() { localStorage.setItem("barber_db", JSON.stringify(db)); localStorage.setItem("barber_conf", JSON.stringify(conf)); }
     function delRec(id) { if (confirm("ลบรายการนี้?")) { db = db.filter(r => r.id !== id); saveDB(); renderDay(); } }
     function editTime(id) {const rec = db.find(r => r.id === id);if (!rec) return;const newStart = prompt("แก้เวลาเริ่ม (HH:MM)", rec.time);if (!newStart) return;const newEnd = prompt("แก้เวลาเสร็จ (HH:MM)", rec.endTime || "");rec.time = newStart;rec.endTime = newEnd || addMinutes(newStart, 30);saveDB();renderDay();}
     function openHistoryModal() { $("historyModal").style.display = "block"; renderHistoryList(); }
     function closeHistoryModal() { $("historyModal").style.display = "none"; }
-     window.onclick = function(e) {    if (e.target == $("reportModal")) closeReportModal();    if (e.target == $("historyModal")) closeHistoryModal();}
+     window.onclick = function(e) { if (e.target == $("historyModal")) closeHistoryModal(); }
      window.addEventListener('load', () => { const n = new Date(), t = n.getHours().toString().padStart(2, '0') + ':' + n.getMinutes().toString().padStart(2, '0'); if(document.getElementById('tStart')) document.getElementById('tStart').value = t; if(document.getElementById('tEnd')) document.getElementById('tEnd').value = t; });
-
 </script>
 </body>
 </html>
