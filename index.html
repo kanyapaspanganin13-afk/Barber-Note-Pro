@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.18</title>
+    <title>Barber Note Pro v.8</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -746,7 +746,6 @@ function loadHistDaily() {
     const f = archives.find(a => a.date === d);
     if (!f) return alert("ไม่พบข้อมูลของวันนี้");
 
-    // คำนวณยอดเงินสด และเงินโอน (ถ้าใน f ไม่มีเก็บแยกไว้กูคำนวณจาก details ให้)
     let cashTotal = f.cash || 0;
     let transTotal = f.trans || 0;
     let customerCount = f.count || (f.details ? f.details.length : 0);
@@ -758,42 +757,38 @@ function loadHistDaily() {
             <span style="font-weight:800; color:#1e293b; font-size:13px;">${count}</span>
         </div>
     `).join("");
-
-    // 2. รายการย่อย - ปรับตามสั่ง (ใส่ลำดับแทนไอคอน / ไอคอนย้ายไปที่ราคา)
-    const rows = (f.details || []).map((r, index) => {
-        const p = Number(r.price) || 0, t = Number(r.tip) || 0;
-        const isTrans = r.pay === "Trans";
-        const lineTotal = isTrans ? (p + t) : p;
-        const timeStr = (r.time && r.endTime) ? `${r.time} - ${r.endTime}` : (r.time || "--:--");
-        
-        // ไอคอนประเภทเงิน
-        const payIcon = isTrans ? '📱' : '💵';
-        const payColor = isTrans ? '#3b82f6' : '#10b981';
+   const rows = (f.details || []).map((r, index) => {
+        const p = Number(r.price) || 0;
+        const t = Number(r.tip) || 0;
+        const timeShow = (r.time && r.endTime) ? `${r.time}-${r.endTime}` : (r.time || "--:--");
+        const payIcon = r.pay === 'Trans' ? '📱' : '💵';
+        const currentSvcs = Array.isArray(r.svcs) ? r.svcs : [r.svcs];
 
         return `
-        <div style="padding:16px 0; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f8fafc;">
-            <div style="display:flex; gap:12px; align-items:center;">
-                <div style="width:32px; height:32px; border-radius:10px; background:#f1f5f9; border:1px solid #e2e8f0;
-                            display:flex; align-items:center; justify-content:center; color:#64748b; font-size:14px; font-weight:800;">
+        <div style="padding:15px 0; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1f5f9;">
+            <div style="display:flex; align-items:center; gap:12px; flex:1;">
+                <div style="width:30px; height:30px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#64748b; flex-shrink:0;">
                     ${index + 1}
                 </div>
-                <div>
-                    <div style="font-weight:700; color:#1e293b; font-size:14px; margin-bottom:2px;">
-                        ${(Array.isArray(r.svcs) ? r.svcs : [r.svcs]).join(" + ")}
+                <div style="display:flex; flex-direction:column; overflow:hidden;">
+                    <div style="font-weight:700; font-size:14px; color:#1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <span style="color:#64748b; font-weight:500;">[${timeShow}]</span> ${currentSvcs.join('+')}
                     </div>
-                    <div style="font-size:12px; color:#94a3b8; font-weight:500;">🕒 ${timeStr}</div>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        ${t ? `<small style="color:#be185d; font-weight:700; font-size:11px;">🔹 ทิป: ฿${t}</small>` : '<small style="color:#94a3b8; font-size:11px;">(ไม่มีทิป)</small>'}
+                    </div>
                 </div>
             </div>
-            <div style="text-align:right;">
-                <div style="font-weight:800; color:#1e293b; font-size:15px;">
-                    <span style="margin-right:4px;">${payIcon}</span>฿${lineTotal.toLocaleString()}
+
+            <div style="text-align:right; min-width:95px; flex-shrink:0;">
+                <div style="font-size:16px; font-weight:800; color:#1e293b; display:flex; align-items:center; justify-content:flex-end; gap:4px; line-height:1;">
+                    <span style="font-size:14px;">${payIcon}</span>
+                    <span>฿${p}${t ? `<span style="color:#be185d; font-size:12px; font-weight:600;">(+${t})</span>` : ''}</span>
                 </div>
-                ${t > 0 ? `<div style="font-size:11px; color:#be185d; font-weight:700;">Tip ฿${t}</div>` : 
-                `<div style="font-size:10px; color:${payColor}; font-weight:600;">SUCCESS</div>`}
+                <div style="font-size:10px; color:#10b981; font-weight:700; margin-top:4px; letter-spacing:0.5px;">RECORDED</div>
             </div>
         </div>`;
     }).join("");
-
     openReportModal(`รายงานวันที่ ${d}`, `
         <div style="font-family: 'Inter', sans-serif; background:#f8fafc; margin:-16px; padding:16px;">
             
@@ -998,23 +993,20 @@ function go(p) {
     function delRec(id) { if (confirm("ลบรายการนี้?")) { db = db.filter(r => r.id !== id); saveDB(); renderDay(); } }
     function editTime(id) {const rec = db.find(r => r.id === id);if (!rec) return;const newStart = prompt("แก้เวลาเริ่ม (HH:MM)", rec.time);if (!newStart) return;const newEnd = prompt("แก้เวลาเสร็จ (HH:MM)", rec.endTime || "");rec.time = newStart;rec.endTime = newEnd || addMinutes(newStart, 30);saveDB();renderDay();}
     
-    window.onclick = function(e) {
-    // สร้าง Array ของ Modal ที่มึงมีทั้งหมด
+    window.onclick = function(e) {// สร้าง Array ของ Modal ที่มึงมีทั้งหมด
     const modals = [
         { id: "reportModal", close: closeReportModal },
         { id: "historyModal", close: closeHistoryModal },
         { id: "configModal", close: closeConfigModal } // เผื่อมึงเพิ่มหน้าตั้งค่า
     ];
-
     modals.forEach(m => {
         const modalEl = $(m.id);
-        // ถ้าเป้าหมายที่คลิก (e.target) คือตัวพื้นหลัง Modal เอง และฟังก์ชันปิดมีอยู่จริง
         if (modalEl && e.target === modalEl && typeof m.close === "function") {
             m.close();
         }
     });
 };
-     window.addEventListener('load', () => { const n = new Date(), t = n.getHours().toString().padStart(2, '0') + ':' + n.getMinutes().toString().padStart(2, '0'); if(document.getElementById('tStart')) document.getElementById('tStart').value = t; if(document.getElementById('tEnd')) document.getElementById('tEnd').value = t; });
+window.addEventListener('load', () => { const n = new Date(), t = n.getHours().toString().padStart(2, '0') + ':' + n.getMinutes().toString().padStart(2, '0'); if(document.getElementById('tStart')) document.getElementById('tStart').value = t; if(document.getElementById('tEnd')) document.getElementById('tEnd').value = t; });
 </script>
 </body>
 </html>
