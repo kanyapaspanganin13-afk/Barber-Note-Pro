@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.10</title>
+    <title>Barber Note Pro v.02</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -750,95 +750,104 @@ function loadHistDaily() {
     let cashTotal = f.cash || 0;
     let transTotal = f.trans || 0;
     let customerCount = f.count || (f.details ? f.details.length : 0);
+    const barberEarn = Math.floor(f.barber || 0);
 
-    // 1. สถิติ - ป้ายแบบเม็ดยา
+    // --- Logic คำนวณเงินคืน (แบบตัวหนังสือบึ้มๆ) ---
+    let settleHTML = "";
+    if (cashTotal > barberEarn) {
+        const toShop = cashTotal - barberEarn;
+        settleHTML = `
+            <div style="background:#fff7ed; border-left:5px solid #ea580c; padding:20px; border-radius:16px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">
+                <div>
+                    <div style="font-size:13px; color:#9a3412; font-weight:700; margin-bottom:4px;">💰 ช่างคืนร้าน</div>
+                    <div style="font-size:26px; color:#ea580c; font-weight:900; letter-spacing:-1px;">฿${toShop.toLocaleString()}</div>
+                </div>
+                <div style="font-size:32px;">🤝</div>
+            </div>`;
+    } else if (barberEarn > cashTotal) {
+        const toBarber = barberEarn - cashTotal;
+        settleHTML = `
+            <div style="background:#f0f9ff; border-left:5px solid #0284c7; padding:20px; border-radius:16px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">
+                <div>
+                    <div style="font-size:13px; color:#0369a1; font-weight:700; margin-bottom:4px;">🏦 ร้านคืนช่าง</div>
+                    <div style="font-size:26px; color:#0284c7; font-weight:900; letter-spacing:-1px;">฿${toBarber.toLocaleString()}</div>
+                </div>
+                <div style="font-size:32px;">📱</div>
+            </div>`;
+    }
+
     const statsHTML = Object.entries(f.stats || {}).map(([name, count]) => `
-        <div style="background:#f1f5f9; padding:6px 14px; border-radius:20px; display:flex; align-items:center; gap:8px;">
-            <span style="font-size:12px; color:#64748b; font-weight:500;">${name}</span>
-            <span style="font-weight:800; color:#1e293b; font-size:13px;">${count}</span>
+        <div style="background:#fff; border:1px solid #e2e8f0; padding:8px 16px; border-radius:12px; display:flex; align-items:center; gap:8px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
+            <span style="font-size:13px; color:#475569; font-weight:600;">${name}</span>
+            <span style="font-weight:800; color:#0f172a; font-size:15px;">${count}</span>
         </div>
     `).join("");
-   const rows = (f.details || []).map((r, index) => {
+
+    const rows = (f.details || []).map((r, index) => {
         const p = Number(r.price) || 0;
         const t = Number(r.tip) || 0;
         const timeShow = (r.time && r.endTime) ? `${r.time}-${r.endTime}` : (r.time || "--:--");
         const payIcon = r.pay === 'Trans' ? '📱' : '💵';
-        const currentSvcs = Array.isArray(r.svcs) ? r.svcs : [r.svcs];
-
         return `
-        <div style="padding:15px 0; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1f5f9;">
-            <div style="display:flex; align-items:center; gap:12px; flex:1;">
-                <div style="width:30px; height:30px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#64748b; flex-shrink:0;">
-                    ${index + 1}
-                </div>
-                <div style="display:flex; flex-direction:column; overflow:hidden;">
-                    <div style="font-weight:700; font-size:14px; color:#1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        <span style="color:#64748b; font-weight:500;">[${timeShow}]</span> ${currentSvcs.join('+')}
-                    </div>
-                    <div style="display:flex; gap:8px; align-items:center;">
-                        ${t ? `<small style="color:#be185d; font-weight:700; font-size:11px;">🔹 ทิป: ฿${t}</small>` : '<small style="color:#94a3b8; font-size:11px;">(ไม่มีทิป)</small>'}
-                    </div>
+        <div style="padding:18px 0; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1f5f9;">
+            <div style="display:flex; align-items:center; gap:14px;">
+                <div style="width:36px; height:36px; background:#f1f5f9; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:#475569;">${index + 1}</div>
+                <div>
+                    <div style="font-weight:800; font-size:15px; color:#0f172a;">${Array.isArray(r.svcs) ? r.svcs.join('+') : r.svcs}</div>
+                    <div style="font-size:12px; color:#64748b; font-weight:500;">เวลา ${timeShow}</div>
                 </div>
             </div>
-
-            <div style="text-align:right; min-width:95px; flex-shrink:0;">
-                <div style="font-size:16px; font-weight:800; color:#1e293b; display:flex; align-items:center; justify-content:flex-end; gap:4px; line-height:1;">
-                    <span style="font-size:14px;">${payIcon}</span>
-                    <span>฿${p}${t ? `<span style="color:#be185d; font-size:12px; font-weight:600;">(+${t})</span>` : ''}</span>
-                </div>
-                <div style="font-size:10px; color:#10b981; font-weight:700; margin-top:4px; letter-spacing:0.5px;">RECORDED</div>
+            <div style="text-align:right;">
+                <div style="font-size:18px; font-weight:900; color:#0f172a;">${payIcon} ฿${(p+t).toLocaleString()}</div>
+                ${t ? `<div style="font-size:11px; color:#be185d; font-weight:700;">รวมทิป ฿${t}</div>` : ''}
             </div>
         </div>`;
     }).join("");
+
     openReportModal(`รายงานวันที่ ${d}`, `
-        <div style="font-family: 'Inter', sans-serif; background:#f8fafc; margin:-16px; padding:16px;">
+        <div style="font-family: 'Inter', -apple-system, sans-serif; background:#f8fafc; margin:-16px; padding:20px;">
             
-            <div style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); 
-                        padding:24px; border-radius:24px; color:white; 
-                        box-shadow: 0 10px 20px rgba(30,41,59,0.2); margin-bottom:24px;">
-                <div style="font-size:13px; opacity:0.7; margin-bottom:8px; font-weight:300; letter-spacing:0.5px;">ยอดเงินรวมทิป</div>
-                <div style="font-size:36px; font-weight:800; margin-bottom:20px; letter-spacing:-1px;">฿${(cashTotal + transTotal).toLocaleString()}</div>
+            <div style="background:#1e293b; padding:28px 24px; border-radius:28px; color:white; margin-bottom:24px; position:relative; overflow:hidden;">
+                <div style="font-size:14px; opacity:0.8; margin-bottom:8px; font-weight:500;">ยอดรวมทั้งหมด (รวมทิป)</div>
+                <div style="font-size:42px; font-weight:900; margin-bottom:24px; letter-spacing:-1.5px;">฿${(cashTotal + transTotal).toLocaleString()}</div>
                 
-                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
-                    <div style="background:rgba(255,255,255,0.1); padding:10px; border-radius:16px; backdrop-filter:blur(5px); text-align:center;">
-                        <div style="font-size:10px; opacity:0.7; margin-bottom:4px;">💵 เงินสด</div>
-                        <div style="font-size:14px; font-weight:700; color:#4ade80;">฿${cashTotal.toLocaleString()}</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+                    <div style="background:rgba(255,255,255,0.08); padding:12px; border-radius:18px; text-align:center; border:1px solid rgba(74,222,128,0.3);">
+                        <div style="font-size:11px; color:#4ade80; font-weight:700; margin-bottom:4px;">💵 เงินสด</div>
+                        <div style="font-size:16px; font-weight:800; color:#4ade80;">฿${cashTotal.toLocaleString()}</div>
                     </div>
-                    <div style="background:rgba(255,255,255,0.1); padding:10px; border-radius:16px; backdrop-filter:blur(5px); text-align:center;">
-                        <div style="font-size:10px; opacity:0.7; margin-bottom:4px;">📱 โอน</div>
-                        <div style="font-size:14px; font-weight:700; color:#60a5fa;">฿${transTotal.toLocaleString()}</div>
+                    <div style="background:rgba(255,255,255,0.08); padding:12px; border-radius:18px; text-align:center; border:1px solid rgba(96,165,250,0.3);">
+                        <div style="font-size:11px; color:#60a5fa; font-weight:700; margin-bottom:4px;">📱 โอน</div>
+                        <div style="font-size:16px; font-weight:800; color:#60a5fa;">฿${transTotal.toLocaleString()}</div>
                     </div>
-                    <div style="background:rgba(255,255,255,0.1); padding:10px; border-radius:16px; backdrop-filter:blur(5px); text-align:center;">
-                        <div style="font-size:10px; opacity:0.7; margin-bottom:4px;">👥 ลูกค้า</div>
-                        <div style="font-size:14px; font-weight:700; color:#facc15;">${customerCount} หัว</div>
+                    <div style="background:rgba(255,255,255,0.08); padding:12px; border-radius:18px; text-align:center; border:1px solid rgba(251,191,36,0.3);">
+                        <div style="font-size:11px; color:#fbbf24; font-weight:700; margin-bottom:4px;">👥 ลูกค้า</div>
+                        <div style="font-size:16px; font-weight:800; color:#fbbf24;">${customerCount} หัว</div>
                     </div>
                 </div>
             </div>
 
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px;">
-                <div style="background:white; padding:12px; border-radius:16px; border:1px solid #e2e8f0; text-align:center;">
-                    <div style="font-size:11px; color:#64748b; margin-bottom:4px;">ช่างได้รับ</div>
-                    <div style="font-size:16px; font-weight:700; color:#1e293b;">฿${Math.floor(f.barber || 0).toLocaleString()}</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
+                <div style="background:white; padding:16px; border-radius:20px; box-shadow:0 2px 4px rgba(0,0,0,0.04); text-align:center;">
+                    <div style="font-size:12px; color:#64748b; font-weight:600; margin-bottom:6px;">ช่างได้รับ</div>
+                    <div style="font-size:22px; font-weight:900; color:#0f172a;">฿${barberEarn.toLocaleString()}</div>
                 </div>
-                <div style="background:white; padding:12px; border-radius:16px; border:1px solid #e2e8f0; text-align:center;">
-                    <div style="font-size:11px; color:#64748b; margin-bottom:4px;">ร้านได้รับ</div>
-                    <div style="font-size:16px; font-weight:700; color:#1e293b;">฿${Math.floor(f.shop || 0).toLocaleString()}</div>
-                </div>
-            </div>
-
-            <div style="margin-bottom:24px;">
-                <div style="font-weight:800; font-size:14px; color:#1e293b; margin-bottom:12px; padding-left:4px;">สถิติการทำงาน</div>
-                <div style="display:flex; flex-wrap:wrap; gap:8px;">
-                    ${statsHTML || '<div style="font-size:12px; color:#94a3b8;">ไม่มีข้อมูลบริการ</div>'}
+                <div style="background:white; padding:16px; border-radius:20px; box-shadow:0 2px 4px rgba(0,0,0,0.04); text-align:center;">
+                    <div style="font-size:12px; color:#64748b; font-weight:600; margin-bottom:6px;">ร้านได้รับ</div>
+                    <div style="font-size:22px; font-weight:900; color:#0f172a;">฿${Math.floor(f.shop || 0).toLocaleString()}</div>
                 </div>
             </div>
 
-            <div style="background:#fff; border-radius:24px; padding:20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <div style="font-weight:800; font-size:15px; color:#1e293b;">รายการธุรกรรม</div>
-                    <div style="font-size:12px; color:#64748b; font-weight:600;">เรียงตามเวลา</div>
+            ${settleHTML} <div style="margin-bottom:28px;">
+                <div style="font-weight:900; font-size:16px; color:#0f172a; margin-bottom:14px; display:flex; align-items:center; gap:8px;">📊 สถิติบริการ</div>
+                <div style="display:flex; flex-wrap:wrap; gap:10px;">
+                    ${statsHTML || '<div style="font-size:14px; color:#94a3b8;">ไม่มีข้อมูล</div>'}
                 </div>
-                <div style="max-height:350px; overflow-y:auto; scrollbar-width: none;">
+            </div>
+
+            <div style="background:#fff; border-radius:28px; padding:24px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);">
+                <div style="font-weight:900; font-size:17px; color:#0f172a; margin-bottom:16px;">รายการ</div>
+                <div style="max-height:400px; overflow-y:auto;">
                     ${rows}
                 </div>
             </div>
