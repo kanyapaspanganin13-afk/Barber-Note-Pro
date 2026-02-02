@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.13</title>
+    <title>Barber Note Pro v.1</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -59,7 +59,7 @@ nav {
     .acc-main-card { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #fffbeb; }
     .btn-save { background: var(--success); color: white; border: none; width: 100%; padding: 15px; border-radius: 15px; font-weight: 700; font-size: 16px; cursor: pointer; }
     #accHistory { font-size: 12px; max-height: 150px; overflow-y: auto; }
- 
+
 </style>
 </head>
 <body>
@@ -264,24 +264,63 @@ nav {
         </div>
     </div>
 </div>
-<nav>
+<div id="reportModal" class="modal">
+    <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 id="reportTitle" style="margin:0; color:#1a237e;">📊 รายงาน</h3>
+            <button onclick="closeReportModal()" style="background:#fee2e2; color:#dc2626; border:none; width:35px; height:35px; border-radius:50%; font-size:18px; cursor:pointer;">✕</button>
+        </div>
+        <div id="reportContent" style="max-height:400px; overflow-y:auto;"></div>
+    </div>
+</div>
+
+<div id="historyModal" class="modal">
+    <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 style="margin:0; color:#1a237e;">📜 ประวัติการเคลียร์</h3>
+            <button onclick="closeHistoryModal()" style="background:#fee2e2; color:#dc2626; border:none; width:35px; height:35px; border-radius:50%; font-size:18px; cursor:pointer;">✕</button>
+        </div>
+        <div id="accHistory" style="max-height:400px; overflow-y:auto;"></div>
+    </div>
+</div>
+ <nav>
     <div onclick="go(1)" class="nav-item active"><i class="fas fa-edit"></i><span>บันทึก</span></div>
     <div onclick="go(2)" class="nav-item"><i class="fas fa-history"></i><span>รายงาน</span></div>
     <div onclick="go(3)" class="nav-item"><i class="fas fa-wallet"></i><span>บัญชี</span></div>
 </nav>
  <script>
-    let archives = JSON.parse(localStorage.getItem("barber_archives")) || [];
-    function save() {localStorage.setItem("barber_archives", JSON.stringify(archives));}
-    let db = JSON.parse(localStorage.getItem("barber_db")) || [];
-    let conf = JSON.parse(localStorage.getItem("barber_conf")) || { shop: "Barber Shop", perc: 50, guar: 0 };
-    let account = JSON.parse(localStorage.getItem("barber_account")) || { balance: 0, logs: [] };
-    let payMethod = "";
-    const $ = (id) => document.getElementById(id);
-    window.onload = () => {
-        const today = new Date().toISOString().split('T')[0];
-        if($("dateInp")) $("dateInp").value = today;if($("accDate")) $("accDate").value = today;if($("histDate")) $("histDate").value = today;if($("shopNameDisp")) $("shopNameDisp").innerText = conf.shop;
+    // --- 1. ประกาศตัวแปรและดึงข้อมูลจากเครื่อง ---
+const $ = (id) => document.getElementById(id);
+
+let db = JSON.parse(localStorage.getItem("barber_db")) || [];
+let archives = JSON.parse(localStorage.getItem("barber_archives")) || [];
+let account = JSON.parse(localStorage.getItem("barber_account")) || { balance: 0, logs: [] };
+let conf = JSON.parse(localStorage.getItem("barber_conf")) || { shop: "Barber Shop", perc: 50, guar: 0 };
+let payMethod = "";
+
+// --- 2. ฟังก์ชันบันทึกข้อมูลหลัก (Update เสมอ) ---
+function save() {
+    localStorage.setItem("barber_db", JSON.stringify(db));
+    localStorage.setItem("barber_archives", JSON.stringify(archives));
+    localStorage.setItem("barber_account", JSON.stringify(account));
+    localStorage.setItem("barber_conf", JSON.stringify(conf));
+}
+
+// --- 3. ระบบทำงานเมื่อเปิดหน้าเว็บ (Onload) ---
+window.onload = () => {
+    const today = new Date().toISOString().split('T')[0];
+    
+    // เช็คก่อนว่ามี ID นี้ในหน้าเว็บไหม ถ้ามีค่อยใส่ค่า (ป้องกัน Error)
+    if($("dateInp")) $("dateInp").value = today;
+    if($("accDate")) $("accDate").value = today;
+    if($("histDate")) $("histDate").value = today;
+    if($("shopNameDisp")) $("shopNameDisp").innerText = conf.shop;
+    
+    // เรียกฟังก์ชันแสดงผล (ต้องมีฟังก์ชันนี้รองรับด้วยนะ)
+    if (typeof updateDateDisplay === "function") {
         updateDateDisplay(today);
-    };
+    }
+};
     function addMinutes(time, mins) {
     if (!time) return "";
     const [h, m] = time.split(":").map(Number);
@@ -289,7 +328,22 @@ nav {
     d.setHours(h, m + mins, 0, 0);
     return d.toTimeString().slice(0, 5);
 }
-    function handleSave() {
+ function openHistoryModal() { 
+    // ใช้ flex เพื่อให้มันอยู่กลางจอตาม CSS ที่มึงตั้งไว้
+    $("historyModal").style.display = "flex"; 
+    
+    // ตรวจสอบก่อนว่าฟังก์ชันนี้มีอยู่จริงไหม จะได้ไม่ Error ค้าง
+    if (typeof renderHistoryList === "function") {
+        renderHistoryList(); 
+    } else {
+        console.error("หาฟังก์ชัน renderHistoryList ไม่เจอโว้ย!");
+    }
+}
+
+function closeHistoryModal() { 
+    $("historyModal").style.display = "none"; 
+}
+  function handleSave() {
     const p = parseInt($("priceInp").value), t = parseInt($("tipInp").value) || 0;
     if (!p || !payMethod) return alert("ใส่ราคาและเลือกวิธีจ่ายก่อน!");
     const start = $("tStart").value || new Date().toTimeString().slice(0, 5);
@@ -401,8 +455,14 @@ function applyTheme(t) {
     }
 }
 function closeAndGoHome(){const m=document.getElementById("modalSet");if(m)m.style.display='none';if(typeof go==='function')go(1);else location.reload()}
-function speak(t){if(conf.sound==='off')return;window.speechSynthesis.cancel();const m=new SpeechSynthesisUtterance(t);m.lang='th-TH';m.pitch=(conf.voice==='male')?0.8:1.1;window.speechSynthesis.speak(m)}
-function clearAllData(){if(confirm("💣 ลบข้อมูลทั้งหมด?")){localStorage.clear();location.reload()}}
+function speak(txt) {
+    if ('speechSynthesis' in window) {
+        const msg = new SpeechSynthesisUtterance(txt);
+        msg.lang = 'th-TH';
+        window.speechSynthesis.speak(msg);
+    }
+}
+ function clearAllData(){if(confirm("💣 ลบข้อมูลทั้งหมด?")){localStorage.clear();location.reload()}}
 function updateDateDisplay(v){if(!v)return;const d=new Date(v);const el=$("dateDisplay");if(el)el.innerText=d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});if(typeof renderDay==="function")renderDay()}
 window.addEventListener('DOMContentLoaded',()=>{const i=$("dateInp"),t=new Date().toISOString().split('T')[0];if(i){i.value=t;updateDateDisplay(t)}});
   
@@ -583,14 +643,17 @@ function clearAccount(){
     speak("เคลียร์เงินเรียบร้อย"); $("accNote").value = ""; loadAccountHistory(); loadAccountStatus();
 }
 function renderHistoryList() {
-    const db = JSON.parse(localStorage.getItem("barber_acc_logs") || "[]");
-    $("accHistoryList").innerHTML = db.length ? db.map(h => `
-        <div style="background:#f8fafc; padding:12px; border-radius:15px; margin-bottom:10px; border:1px solid #e2e8f0;">
-            <div style="display:flex; justify-content:space-between; font-weight:700;">
-                <span>📅 ${h.date}</span><span style="color:#10b981;">฿${h.amount.toLocaleString()}</span>
+    let h = account.logs.map(l => `
+        <div style="padding:12px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <b style="font-size:14px; color:#1e293b;">${l.date}</b><br>
+                <small style="color:#64748b;">${l.note}</small>
             </div>
-            <div style="font-size:11px; color:#64748b; margin-top:5px;">📝 ${h.note}</div>
-        </div>`).join('') : "<p style='text-align:center; color:#94a3b8;'>ยังไม่มีประวัติการเคลียร์</p>";
+            <b style="color:#16a34a;">฿${Math.abs(l.amount).toLocaleString()}</b>
+        </div>
+    `).join('');
+    
+    $("accHistory").innerHTML = h || '<center style="padding:40px; color:#94a3b8;">ไม่มีประวัติการเคลียร์</center>';
 }
 function loadHistDaily() {
     const d = $("histDate").value, f = archives.find(a => a.date === d);
@@ -652,8 +715,7 @@ function loadHistMonth() {
     function saveDB() { localStorage.setItem("barber_db", JSON.stringify(db)); localStorage.setItem("barber_conf", JSON.stringify(conf)); }
     function delRec(id) { if (confirm("ลบรายการนี้?")) { db = db.filter(r => r.id !== id); saveDB(); renderDay(); } }
     function editTime(id) {const rec = db.find(r => r.id === id);if (!rec) return;const newStart = prompt("แก้เวลาเริ่ม (HH:MM)", rec.time);if (!newStart) return;const newEnd = prompt("แก้เวลาเสร็จ (HH:MM)", rec.endTime || "");rec.time = newStart;rec.endTime = newEnd || addMinutes(newStart, 30);saveDB();renderDay();}
-    function openHistoryModal() { $("historyModal").style.display = "block"; renderHistoryList(); }
-    function closeHistoryModal() { $("historyModal").style.display = "none"; }
+    
      window.onclick = function(e) { if (e.target == $("historyModal")) closeHistoryModal(); }
      window.addEventListener('load', () => { const n = new Date(), t = n.getHours().toString().padStart(2, '0') + ':' + n.getMinutes().toString().padStart(2, '0'); if(document.getElementById('tStart')) document.getElementById('tStart').value = t; if(document.getElementById('tEnd')) document.getElementById('tEnd').value = t; });
 </script>
