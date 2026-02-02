@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.00</title>
+    <title>Barber Note Pro v.01</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -722,11 +722,11 @@ function loadHistDaily() {
     const f = archives.find(a => a.date === d);
     if (!f || !f.details) {
         return openReportModal("🔍 ค้นหารายวัน", `
-            <div style="padding:60px; text-align:center; color:#94a3b8;">ไม่พบข้อมูล</div>
+            <div style="padding:60px; text-align:center; color:#94a3b8; font-size:14px;">ไม่พบข้อมูลในระบบ</div>
         `);
     }
 
-    // 1. ตรรกะเดิมเป๊ะ: เรียงเวลา
+    // --- ตรรกะเดิมมึงเป๊ะๆ ---
     const sorted = [...f.details].sort((a, b) => {
         const ta = a.timeStart || a.time || "00:00";
         const tb = b.timeStart || b.time || "00:00";
@@ -738,74 +738,90 @@ function loadHistDaily() {
         const tStart = r.timeStart || r.time || "-";
         const tEnd = r.timeEnd ? ` - ${r.timeEnd}` : ""; 
         const isCash = r.pay === "Cash";
-        const payTxt = isCash ? "💵 เงินสด" : "📱 โอน";
+        const payTxt = isCash ? "เงินสด" : "โอนเงิน";
         const serviceText = (Array.isArray(r.svcs) ? r.svcs : [r.svcs]).filter(x => x).join("+");
         
         (Array.isArray(r.svcs) ? r.svcs : [r.svcs]).forEach(s => {
             if(s) stats[s] = (stats[s] || 0) + 1;
         });
 
-        // เปลี่ยนจากเส้นประเป็น Card มนๆ ดูสะอาดตา
+        // รายการแบบ Transaction List ในแอปธนาคาร
         return `
-        <div style="padding:12px; background:#fff; border-radius:12px; margin-bottom:8px; border:1px solid #f1f5f9;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div style="padding:16px 0; border-bottom:1px solid #f8fafc; display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div style="width:40px; height:40px; border-radius:12px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; font-size:18px;">✂️</div>
                 <div>
-                    <div style="font-weight:700; color:#1e293b; font-size:14px;">${tStart}${tEnd} | ${serviceText}</div>
-                    <div style="font-size:12px; color:#64748b; margin-top:2px;">
-                        ${r.hair || ""} <span style="margin-left:5px; color:${isCash ? '#b45309' : '#0891b2'}; font-weight:700;">(${payTxt})</span>
-                    </div>
+                    <div style="font-weight:700; color:#1e293b; font-size:14px;">${serviceText}</div>
+                    <div style="font-size:12px; color:#94a3b8;">${tStart}${tEnd} • ${r.hair || "ทั่วไป"}</div>
                 </div>
-                <div style="text-align:right; font-weight:800; font-size:16px; color:#1e293b;">
-                    ฿${Number(r.price || 0).toLocaleString()}
-                </div>
+            </div>
+            <div style="text-align:right;">
+                <div style="font-weight:800; font-size:15px; color:#1e293b;">฿${Number(r.price || 0).toLocaleString()}</div>
+                <div style="font-size:11px; color:${isCash ? '#b45309' : '#0ea5e9'}; font-weight:600;">${payTxt}</div>
             </div>
         </div>`;
     }).join("");
 
     const statBadges = Object.entries(stats)
-        .map(([k, v]) => `<span style="background:#f1f5f9; color:#475569; padding:4px 10px; border-radius:8px; font-size:12px; border:1px solid #e2e8f0; font-weight:600;">${k}: ${v}</span>`)
-        .join(" ");
+        .map(([k, v]) => `<span style="background:#fff; color:#64748b; padding:4px 12px; border-radius:20px; font-size:11px; border:1px solid #e2e8f0; font-weight:600;">${k} ${v}</span>`)
+        .join("");
 
     const settle = Number(f.settle) || 0;
     const settleHTML = settle > 0
-        ? `<div style="background:#fee2e2; color:#dc2626; padding:12px; border-radius:12px; font-weight:700; text-align:center; border:1px solid #fecaca; margin-bottom:12px;">🚩 ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}</div>`
+        ? `<div style="background:#fff1f2; color:#be123c; padding:14px; border-radius:16px; font-weight:700; text-align:center; font-size:14px; border:1px solid #ffe4e6; margin-bottom:15px;">🚩 ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}</div>`
         : settle < 0
-        ? `<div style="background:#e0e7ff; color:#3730a3; padding:12px; border-radius:12px; font-weight:700; text-align:center; border:1px solid #c7d2fe; margin-bottom:12px;">✅ ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}</div>`
-        : `<div style="background:#dcfce7; color:#166534; padding:12px; border-radius:12px; font-weight:700; text-align:center; border:1px solid #bbf7d0; margin-bottom:12px;">🤝 ยอดพอดี</div>`;
+        ? `<div style="background:#eff6ff; color:#1d4ed8; padding:14px; border-radius:16px; font-weight:700; text-align:center; font-size:14px; border:1px solid #dbeafe; margin-bottom:15px;">✅ ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}</div>`
+        : `<div style="background:#f0fdf4; color:#15803d; padding:14px; border-radius:16px; font-weight:700; text-align:center; font-size:14px; border:1px solid #dcfce7; margin-bottom:15px;">🤝 สรุปยอดเรียบร้อย</div>`;
 
     const transferTotal = (f.total || 0) - (f.cash || 0);
 
-    // ปรับโครงสร้าง Modal ให้ดู Professional ขึ้น
+    // Template ใหม่: ฟีลแอป K-Plus/SCB Easy
     openReportModal(`📅 รายงานวันที่ ${d}`, `
-        <div style="background: linear-gradient(135deg, #1e293b, #334155); padding:20px; border-radius:18px; color:white; margin-bottom:15px; text-align:center;">
-            <div style="font-size:12px; opacity:0.7; margin-bottom:4px; letter-spacing:1px;">ยอดรวมสุทธิ</div>
-            <div style="font-size:32px; font-weight:800;">฿${f.total.toLocaleString()}</div>
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:15px; font-size:11px; background:rgba(255,255,255,0.05); padding:10px; border-radius:12px;">
-                <div>เงินสด<br><b style="font-size:13px;">${(f.cash || 0).toLocaleString()}</b></div>
-                <div>เงินโอน<br><b style="font-size:13px;">${transferTotal.toLocaleString()}</b></div>
-                <div>จำนวน<br><b style="font-size:13px;">${sorted.length} หัว</b></div>
+        <div style="background:#1e293b; padding:24px; border-radius:24px; color:white; margin-bottom:20px; position:relative; overflow:hidden;">
+            <div style="position:absolute; right:-20px; top:-20px; width:100px; height:100px; background:rgba(255,255,255,0.05); border-radius:50%;"></div>
+            <div style="font-size:12px; opacity:0.6; margin-bottom:4px; font-weight:500;">ยอดรวมรายได้ทั้งหมด</div>
+            <div style="font-size:36px; font-weight:800; letter-spacing:-1px;">฿${f.total.toLocaleString()}</div>
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:20px; background:rgba(255,255,255,0.08); padding:12px; border-radius:16px;">
+                <div style="text-align:center;">
+                    <div style="font-size:10px; opacity:0.6; margin-bottom:2px;">เงินสด</div>
+                    <div style="font-size:14px; font-weight:700;">${(f.cash || 0).toLocaleString()}</div>
+                </div>
+                <div style="text-align:center; border-left:1px solid rgba(255,255,255,0.1); border-right:1px solid rgba(255,255,255,0.1);">
+                    <div style="font-size:10px; opacity:0.6; margin-bottom:2px;">เงินโอน</div>
+                    <div style="font-size:14px; font-weight:700;">${transferTotal.toLocaleString()}</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-size:10px; opacity:0.6; margin-bottom:2px;">จำนวน</div>
+                    <div style="font-size:14px; font-weight:700;">${sorted.length} หัว</div>
+                </div>
             </div>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
-            <div style="background:#fff; padding:12px; border-radius:15px; border:1px solid #f1f5f9; text-align:center;">
-                <small style="color:#64748b; font-weight:600;">🤵 ยอดช่าง</small><br><b style="color:#15803d; font-size:18px;">฿${Math.floor(f.barber || 0).toLocaleString()}</b>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:15px;">
+            <div style="background:#f8fafc; padding:16px; border-radius:20px; border:1px solid #f1f5f9;">
+                <div style="font-size:11px; color:#64748b; margin-bottom:4px; font-weight:600;">🤵 ส่วนแบ่งช่าง</div>
+                <div style="font-size:18px; font-weight:800; color:#1e293b;">฿${Math.floor(f.barber || 0).toLocaleString()}</div>
             </div>
-            <div style="background:#fff; padding:12px; border-radius:15px; border:1px solid #f1f5f9; text-align:center;">
-                <small style="color:#64748b; font-weight:600;">🏠 ยอดร้าน</small><br><b style="color:#0369a1; font-size:18px;">฿${Math.floor((f.total || 0) - (f.barber || 0)).toLocaleString()}</b>
+            <div style="background:#f8fafc; padding:16px; border-radius:20px; border:1px solid #f1f5f9;">
+                <div style="font-size:11px; color:#64748b; margin-bottom:4px; font-weight:600;">🏠 ส่วนแบ่งร้าน</div>
+                <div style="font-size:18px; font-weight:800; color:#1e293b;">฿${Math.floor((f.total || 0) - (f.barber || 0)).toLocaleString()}</div>
             </div>
         </div>
 
         ${settleHTML}
 
-        <div style="margin:15px 0 20px; display:flex; flex-wrap:wrap; gap:6px;">
-            ${statBadges || "-"}
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:20px;">
+            ${statBadges || ""}
         </div>
 
-        <div style="border-top:1px solid #f1f5f9; padding-top:15px;">
-            <div style="font-weight:800; color:#1e293b; margin-bottom:12px; font-size:15px;">📝 รายการวันนี้</div>
-            <div style="max-height:350px; overflow-y:auto; padding-right:5px;">
-                ${rows || "<center style='color:#ccc; padding:20px;'>ไม่มีรายการ</center>"}
+        <div style="background:#fff; border-radius:24px; border:1px solid #f1f5f9; padding:20px;">
+            <div style="font-weight:800; color:#1e293b; margin-bottom:10px; font-size:15px; display:flex; justify-content:space-between; align-items:center;">
+                <span>ประวัติรายการ</span>
+                <span style="font-size:11px; color:#94a3b8; font-weight:400;">ล่าสุดวันนี้</span>
+            </div>
+            <div style="max-height:300px; overflow-y:auto;">
+                ${rows || "<div style='padding:40px; text-align:center; color:#cbd5e1;'>ไม่มีรายการ</div>"}
             </div>
         </div>
     `);
@@ -818,7 +834,7 @@ function loadHistMonth() {
     if (!filtered.length) {
         return openReportModal(
             "📊 สรุปรายเดือน",
-            "<center style='padding:60px;color:#94a3b8;'>ไม่มีข้อมูลของเดือนนี้</center>"
+            "<center style='padding:60px;color:#94a3b8;font-size:14px;'>ไม่พบข้อมูลของเดือนนี้</center>"
         );
     }
 
@@ -827,7 +843,6 @@ function loadHistMonth() {
 
     let monthTotal = 0;
     let monthBarber = 0;
-    // let monthShop = 0; // 🚩 ย้ายไปคำนวณข้างนอกเพื่อความแม่นยำ
     let monthCount = 0;
 
     let hairStats = {};
@@ -844,9 +859,7 @@ function loadHistMonth() {
             svcs.forEach(s => {
                 if (!s) return;
                 s = s.trim();
-
-                // ✅ ทรงผมปกติ
-                if (haircutList.includes(s)) {
+                if (haircutList.includes(s) || s === "เด็ก") {
                     hairStats[s] = (hairStats[s] || 0) + 1;
                     if (!countedHair) {
                         monthCount++;
@@ -854,18 +867,6 @@ function loadHistMonth() {
                     }
                     return;
                 }
-
-                // ✅ เด็ก (แม้อยู่ในบริการ)
-                if (s === "เด็ก") {
-                    hairStats["เด็ก"] = (hairStats["เด็ก"] || 0) + 1;
-                    if (!countedHair) {
-                        monthCount++;
-                        countedHair = true;
-                    }
-                    return;
-                }
-
-                // ✅ บริการเสริม
                 if (serviceList.includes(s)) {
                     serviceStats[s] = (serviceStats[s] || 0) + 1;
                 }
@@ -873,60 +874,60 @@ function loadHistMonth() {
         });
     });
 
-    // 🚩 คำนวณรายได้ร้านจากยอดรวมสุทธิ (กันเลขเพี้ยน)
     const monthShop = monthTotal - monthBarber;
 
-    const renderBadges = (obj, color) => {
+    // Badge สไตล์ Minimalist
+    const renderBadges = (obj, bgColor, textColor) => {
         const entries = Object.entries(obj).sort((a,b)=>b[1]-a[1]);
-        if (!entries.length) return "<span style='opacity:.5'>-</span>";
+        if (!entries.length) return "<span style='font-size:12px;color:#cbd5e1;'>ไม่มีข้อมูล</span>";
         return entries.map(([k,v]) =>
-            `<span style="display:inline-block;margin:3px;padding:4px 10px;border-radius:999px;
-                background:${color};color:white;font-size:12px;font-weight:700;">
-                ${k} : ${v}
-            </span>`
+            `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f8fafc;font-size:13px;">
+                <span style="color:#64748b;">${k}</span>
+                <b style="color:#1e293b;">${v} ครั้ง</b>
+            </div>`
         ).join("");
     };
 
     openReportModal(
-        `🗓️ สรุปเดือน ${m}`,
+        `🗓️ รายงานเดือน ${m}`,
         `
-        <div style="padding:15px;">
-            <div style="text-align:center;margin-bottom:15px;padding:20px;
-                background:linear-gradient(135deg,#1e293b,#334155);
-                border-radius:20px;color:white;">
-                <div style="font-size:13px;opacity:.8;">✂️ ยอดตัดทั้งเดือน</div>
-                <div style="font-size:34px;font-weight:900;">
-                    ฿${monthTotal.toLocaleString()}
-                </div>
-                <div style="margin-top:6px;font-size:14px;">
-                    👥 ${monthCount} คน | 📅 ${filtered.length} วัน
+        <div style="background:#f8fafc; padding:20px; border-radius:24px;">
+            <div style="background:#1e293b; padding:24px; border-radius:24px; color:white; text-align:center; margin-bottom:20px; box-shadow:0 10px 20px rgba(0,0,0,0.1);">
+                <div style="font-size:12px; opacity:0.6; margin-bottom:4px; font-weight:500; letter-spacing:1px;">รายได้รวมเดือนนี้</div>
+                <div style="font-size:38px; font-weight:800; letter-spacing:-1px;">฿${monthTotal.toLocaleString()}</div>
+                <div style="display:flex; justify-content:center; gap:15px; margin-top:15px; font-size:12px; opacity:0.9;">
+                    <span>👥 <b>${monthCount}</b> หัว</span>
+                    <span style="opacity:0.3;">|</span>
+                    <span>📅 <b>${filtered.length}</b> วันที่เปิด</span>
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:15px;">
-                <div style="background:#dcfce7;padding:15px;border-radius:15px;text-align:center;">
-                    <div style="font-size:12px;color:#166534;">🤵 ยอดช่าง</div>
-                    <div style="font-size:20px;font-weight:800;color:#15803d;">
-                        ฿${Math.floor(monthBarber).toLocaleString()}
-                    </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
+                <div style="background:white; padding:16px; border-radius:20px; border:1px solid #edf2f7; text-align:center;">
+                    <div style="font-size:11px; color:#64748b; margin-bottom:4px;">💰 ช่างได้</div>
+                    <div style="font-size:18px; font-weight:800; color:#10b981;">฿${Math.floor(monthBarber).toLocaleString()}</div>
                 </div>
-                <div style="background:#e0f2fe;padding:15px;border-radius:15px;text-align:center;">
-                    <div style="font-size:12px;color:#0369a1;">🏠 ยอดร้าน</div>
-                    <div style="font-size:20px;font-weight:800;color:#075985;">
-                        ฿${Math.floor(monthShop).toLocaleString()}
-                    </div>
+                <div style="background:white; padding:16px; border-radius:20px; border:1px solid #edf2f7; text-align:center;">
+                    <div style="font-size:11px; color:#64748b; margin-bottom:4px;">🏦 ร้านได้</div>
+                    <div style="font-size:18px; font-weight:800; color:#0ea5e9;">฿${Math.floor(monthShop).toLocaleString()}</div>
                 </div>
             </div>
 
-            <div style="border-top:1px dashed #cbd5e1;padding-top:12px;">
-                <b style="font-size:13px;opacity:.6;">📊 สถิติบริการ</b>
-                <div style="margin:6px 0 12px;">
-                    ${renderBadges(serviceStats,"#6366f1")}
+            <div style="background:white; border-radius:20px; padding:20px; border:1px solid #edf2f7;">
+                <div style="margin-bottom:20px;">
+                    <div style="font-size:14px; font-weight:800; color:#1e293b; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                        <span style="width:4px;height:14px;background:#6366f1;border-radius:2px;"></span>
+                        📊 สถิติบริการเสริม
+                    </div>
+                    ${renderBadges(serviceStats)}
                 </div>
 
-                <b style="font-size:13px;opacity:.6;">💇 ทรงผม</b>
-                <div style="margin-top:6px;">
-                    ${renderBadges(hairStats,"#10b981")}
+                <div>
+                    <div style="font-size:14px; font-weight:800; color:#1e293b; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                        <span style="width:4px;height:14px;background:#10b981;border-radius:2px;"></span>
+                        💇 ทรงผมยอดนิยม
+                    </div>
+                    ${renderBadges(hairStats)}
                 </div>
             </div>
         </div>
