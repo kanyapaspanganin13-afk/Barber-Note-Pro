@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.29</title>
+    <title>Barber Note Pro v.</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -23,143 +23,58 @@
     </script>
 </head>
 <style>
-    :root {
-  --primary: #6366f1;
-  --accent: #0ea5e9;
-  --success: #22c55e;
-  --danger: #ef4444;
-  --bg: #f8fafc;
-  --card: #ffffff;
-  --text: #1e293b;
-  --border: #e2e8f0;
-}
-
-/* THEME SYSTEM */
-body.navy { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --accent: #38bdf8; }
-body.dark { --bg: #121212; --card: #1a1a1a; --text: #fbbf24; --accent: #fbbf24; }
-
-* { 
-  box-sizing: border-box; 
-  font-family: 'Kanit', sans-serif; 
-  -webkit-tap-highlight-color: transparent; 
-}
-
-body { 
-  margin: 0; 
-  background-color: var(--bg); 
-  color: var(--text); 
-  transition: background 0.3s ease, color 0.3s ease;
-  padding-bottom: calc(90px + env(safe-area-inset-bottom)); /* กันโดน nav บัง */
-  overflow-x: hidden;
-}
-
-/* PAGE SYSTEM */
-.page { display: none; }
-.page.active { display: block; }
-
-.container { 
-  padding: 15px; 
-  max-width: 500px; 
-  margin: auto; 
-  position: relative; 
-  z-index: 1; 
-}
-
-/* NAVIGATION BAR (ตัวจบ) */
+    :root { 
+        --primary: #6366f1; --accent: #0ea5e9; --danger: #ef4444; --success: #22c55e; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; font-family: 'Kanit', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 90px; overflow-x: hidden; }
+    .container { padding: 15px 15px 100px 15px !important; max-width: 500px; margin: auto; position: relative; z-index: 1; }
+    .nav-bar {
+        position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
+        height: 75px !important; background: white !important; display: flex !important; 
+        justify-content: space-around !important; align-items: center !important; 
+        z-index: 99999 !important; 
+        border-top: 1px solid #eee;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    }
+    .nav-item {
+        flex: 1 !important; display: flex !important; flex-direction: column !important;
+        align-items: center !important; justify-content: center !important; cursor: pointer !important;
+        pointer-events: auto !important;
+    }
 nav {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: 75px;
-  background: #1a237e; /* สีหลักของ nav */
-  background: linear-gradient(180deg, #1a237e, #0f172a); /* เพิ่มมิติแบบ iOS */
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  z-index: 999999 !important;
-  padding-bottom: env(safe-area-inset-bottom);
-  box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
-  border-top: 1px solid rgba(255,255,255,0.1);
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #1a237e !important; 
+    display: flex; justify-content: space-around; padding: 12px 0;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.4); 
+    z-index: 9999; border-top: 1px solid rgba(255,255,255,0.1);
 }
+.nav-item { text-align: center; color: rgba(255,255,255,0.5); flex: 1; transition: 0.2s; }
+.nav-item.active { color: #ffffff !important; opacity: 1; } /* ตัวที่เลือกจะขาวสว่างจ้า */
+.nav-item i { font-size: 22px; display: block; margin-bottom: 2px; }
+.nav-item span { font-size: 11px; font-weight: 700; }
+    body.navy { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --accent: #38bdf8; }
+     body.dark { --bg: #121212; --card: #1a1a1a; --text: #fbbf24; --accent: #fbbf24; }
+     body { background-color: var(--bg); color: var(--text); transition: all 0.3s ease; }
+    .icon-card, input, select { background: var(--card); color: var(--text); border: 1px solid rgba(255,255,255,0.1); }
+    .grid-3 {display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 6px; margin-bottom: 8px;}
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+    .icon-card { position: relative; border-radius: 15px; padding: 10px 2px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: none !important; background: #fff; height: 75px !important; font-size: 14px !important; }
+    input, select { width: 100%; height: 75px !important; border-radius: 20px !important; font-size: 20px !important; font-weight: 700; text-align: center; border: none !important; outline: none !important; background: #f1f5f9; appearance: none; -webkit-appearance: none; box-shadow: 0 4px 10px rgba(0,0,0,0.03); color: #1e293b; }
+    .btn { border: none; padding: 12px; border-radius: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; transition: 0.2s; }
+    .btn-pay { background: #e2e8f0; color: #64748b; border:2px solid transparent; height: 70px; font-size: 18px;}
+    .btn-pay.active-cash { background: #dcfce7; color: #15803d; border-color: #22c55e; }
+    .btn-pay.active-trans { background: #e0f2fe; color: #0369a1; border-color: #0ea5e9; }
+   
+    .page { display: none; } 
+    .page.active { display: block; }
+    .modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); display: none; z-index: 100000; align-items: center; justify-content: center; }
+    .modal-content { background: #fff; width: 90%; max-width: 400px; border-radius: 25px; padding: 25px; max-height: 85vh; overflow-y: auto; }
+    .status-bar { padding: 12px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 14px; margin-bottom: 10px; box-shadow: inset 0 0 5px rgba(0,0,0,0.05); }
+    .acc-main-card { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #fffbeb; }
+    .btn-save { background: var(--success); color: white; border: none; width: 100%; padding: 15px; border-radius: 15px; font-weight: 700; font-size: 16px; cursor: pointer; }
+    #accHistory { font-size: 12px; max-height: 150px; overflow-y: auto; }
 
-.nav-item {
-  flex: 1;
-  text-align: center;
-  color: rgba(255,255,255,0.5);
-  font-size: 12px;
-  font-weight: 700;
-  transition: all 0.25s ease;
-  cursor: pointer;
-}
-
-.nav-item i {
-  display: block;
-  font-size: 22px;
-  margin-bottom: 4px;
-  transition: transform 0.2s ease;
-}
-
-.nav-item.active {
-  color: #ffffff;
-}
-
-.nav-item.active i {
-  transform: translateY(-5px) scale(1.1);
-}
-
-/* ELEMENTS */
-.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-
-.icon-card {
-  background: var(--card);
-  color: var(--text);
-  border-radius: 18px;
-  height: 75px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-  font-weight: 600;
-  transition: transform 0.1s;
-}
-.icon-card:active { transform: scale(0.95); }
-
-input, select {
-  width: 100%; height: 70px;
-  border-radius: 18px;
-  background: var(--card);
-  color: var(--text);
-  font-size: 20px; font-weight: 700;
-  text-align: center; border: 1px solid var(--border);
-  outline: none; appearance: none;
-}
-
-.btn-save {
-  background: var(--success);
-  color: white; width: 100%; height: 65px;
-  border-radius: 18px; font-weight: 700; font-size: 18px;
-  border: none; cursor: pointer;
-}
-
-/* MODAL */
-.modal {
-  position: fixed; inset: 0;
-  background: rgba(0, 0, 0, 0.85);
-  display: none; z-index: 1000000;
-  align-items: center; justify-content: center;
-}
-
-.modal-content {
-  background: var(--card);
-  color: var(--text);
-  width: 90%; max-width: 400px;
-  border-radius: 25px; padding: 25px;
-  max-height: 85vh; overflow-y: auto;
-}
-#accHistory { font-size: 12px; max-height: 150px; overflow-y: auto; }
 </style>
 </head>
 <body>
@@ -301,35 +216,19 @@ input, select {
             </button>
         </div>
     </div>
-<input type="date" id="histDate"
-  onchange="loadHistDaily()"
-  style="position:fixed; left:-9999px; top:-9999px;">
-
-<input type="month" id="histMonth"
-  onchange="loadHistMonth()"
-  style="position:fixed; left:-9999px; top:-9999px;">
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-
-  <div onclick="openDailyPicker()"
-    style="background:linear-gradient(135deg,#f59e0b,#d97706);
-           border-radius:25px; padding:20px 10px;
-           text-align:center; color:#fff;
-           box-shadow:0 8px 15px rgba(245,158,11,.2);">
-    <i class="fas fa-search-dollar" style="font-size:28px; display:block;"></i>
-    <b>เรียกดูรายวัน</b>
-  </div>
-
-  <div onclick="openMonthPicker()"
-    style="background:linear-gradient(135deg,#6366f1,#4338ca);
-           border-radius:25px; padding:20px 10px;
-           text-align:center; color:#fff;
-           box-shadow:0 8px 15px rgba(99,102,241,.2);">
-    <i class="fas fa-calendar-check" style="font-size:28px; display:block;"></i>
-    <b>สรุปรายเดือน</b>
-  </div>
-
+ <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+        <div onclick="$('histDate').showPicker()" style="background:linear-gradient(135deg, #f59e0b, #d97706); border-radius:25px; padding:20px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(245,158,11,0.2);">
+            <i class="fas fa-search-dollar" style="font-size:28px; margin-bottom:5px; display:block;"></i>
+            <b style="font-size:16px;">เรียกดูรายวัน</b>
+            <input type="date" id="histDate" onchange="loadHistDaily()" style="position:absolute; inset:0; opacity:0;">
+        </div>
+        <div onclick="$('histMonth').showPicker()" style="background:linear-gradient(135deg, #6366f1, #4338ca); border-radius:25px; padding:20px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(99,102,241,0.2);">
+            <i class="fas fa-calendar-check" style="font-size:28px; margin-bottom:5px; display:block;"></i>
+            <b style="font-size:16px;">สรุปรายเดือน</b>
+            <input type="month" id="histMonth" onchange="loadHistMonth()" style="position:absolute; inset:0; opacity:0;">
+        </div>
+    </div>
 </div>
-
 <div id="modalSet" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); z-index:9999; align-items:flex-end; justify-content:center;">
     
     <div style="background:#ffffff; width:92%; max-width:400px; border-radius:35px; margin-bottom:110px; box-shadow:0 20px 60px rgba(0,0,0,0.15); display:flex; flex-direction:column; overflow:hidden;">
@@ -408,16 +307,10 @@ input, select {
         <div id="accHistory" style="max-height:400px; overflow-y:auto;"></div>
     </div>
 </div>
-<nav>
-    <div id="n1" onclick="go(1)" class="nav-item active">
-        <i class="fas fa-edit"></i><span>บันทึก</span>
-    </div>
-    <div id="n2" onclick="go(2)" class="nav-item">
-        <i class="fas fa-history"></i><span>รายงาน</span>
-    </div>
-    <div id="n3" onclick="go(3)" class="nav-item">
-        <i class="fas fa-wallet"></i><span>บัญชี</span>
-    </div>
+ <nav>
+    <div onclick="go(1)" class="nav-item active"><i class="fas fa-edit"></i><span>บันทึก</span></div>
+    <div onclick="go(2)" class="nav-item"><i class="fas fa-history"></i><span>รายงาน</span></div>
+    <div onclick="go(3)" class="nav-item"><i class="fas fa-wallet"></i><span>บัญชี</span></div>
 </nav>
  <script>
 const $ = (id) => document.getElementById(id);
@@ -434,17 +327,14 @@ function save() {
 }
 window.onload = () => {
     const today = new Date().toISOString().split('T')[0];
-
-    if ($("dateInp")) $("dateInp").value = today;
-    if ($("accDate")) $("accDate").value = today;
-    if ($("histDate")) $("histDate").value = today;
-    if (conf.shop) $("shopNameDisp").innerText = conf.shop;
-    if (conf.theme) applyTheme(conf.theme);
-
-    renderDay();
-    loadAccountStatus();
+    
+    if($("dateInp")) $("dateInp").value = today;
+    if($("accDate")) $("accDate").value = today;
+    if($("histDate")) $("histDate").value = today;
+    if($("shopNameDisp")) $("shopNameDisp").innerText = conf.shop;
+    renderList(); 
+    loadAccountStatus(); 
 };
-
     function addMinutes(time, mins) {
     if (!time) return "";
     const [h, m] = time.split(":").map(Number);
@@ -513,51 +403,31 @@ function handleInsurance() {
     }
 }
  function handleHoliday(){const d=$("dateInp").value;if(!d)return alert("เลือกวันที่ก่อน");if(confirm(`ยืนยันบันทึกวันที่ ${d} เป็น "วันหยุด"?`)){db.push({id:Date.now(),date:d,time:"00:00",svcs:["🏖️ วันหยุด"],price:0,pay:"N/A",type:"HOLIDAY"});saveDB();const m=new SpeechSynthesisUtterance("บันทึกวันหยุดเรียบร้อย");m.lang='th-TH';if(conf.voice==='male'){const v=window.speechSynthesis.getVoices().find(x=>x.name.includes('Male')||x.name.includes('Google'));if(v)m.voice=v}window.speechSynthesis.speak(m);alert("🏖️ บันทึกวันหยุดเรียบร้อย");renderDay()}}   
-function openSettings() {
-    if ($("setShop"))  $("setShop").value  = conf.shop || "";
-    if ($("setTheme")) $("setTheme").value = conf.theme || "light";
-    if ($("setVoice")) $("setVoice").value = conf.voice || "female";
-    if ($("setSound")) $("setSound").value = conf.sound || "on";
-    if ($("setPerc"))  $("setPerc").value  = conf.perc || 50;
-    if ($("setGuar"))  $("setGuar").value  = conf.guar || 0;
+ function openSettings() {
+    const modal = $("modalSet");
+    if (!modal) return console.error("หา Modal 'modalSet' ไม่เจอ");
+    const config = window.conf || {};
 
-    $("modalSet").style.display = "flex";
+    if ($("setShop"))  $("setShop").value  = config.shop  || "";
+    if ($("setTheme")) $("setTheme").value = config.theme || "light";
+    if ($("setVoice")) $("setVoice").value = config.voice || "female";
+    if ($("setSound")) $("setSound").value = config.sound || "on";
+    if ($("setPerc"))  $("setPerc").value  = config.perc  || 50;
+    if ($("setGuar"))  $("setGuar").value  = config.guar  || 0;
+
+    modal.style.display = "flex";
 }
-
  function applyTheme(t) {document.body.className = t;const oldStyle = document.getElementById("navyStyle");if (oldStyle) oldStyle.remove();
     const s = document.documentElement.style;s.setProperty('--card', '#ffffff');s.setProperty('--text', '#1a237e');document.body.style.background = '#f3f4f6'; 
     if (t === 'dark') {s.setProperty('--card', '#262626');s.setProperty('--text', '#fbbf24');document.body.style.background = '#171717';}
     else if (t === 'navy') {s.setProperty('--card', '#ffffff'); s.setProperty('--text', '#1a237e');document.body.style.background = '#1a237e';
     const st = document.createElement("style");st.id = "navyStyle"; st.innerHTML = ` body.navy { background: #1a237e !important; color: #ffffff !important; }.navy .card b, .navy .card span { color: #1e293b !important; }.navy #dTotal, .navy #accNet { color: #1a237e !important; }.nav-item { color: #ffffff !important; opacity: 0.7; }.nav-item.active { color: #facc15 !important; opacity: 1; font-weight: bold; } `;document.head.appendChild(st);}}
             
-function saveSettings() {
+ function saveSettings() { try { let currentConf = JSON.parse(localStorage.getItem("barber_conf")) || {}; const getVal = (id) => document.getElementById(id)?.value;
+        window.conf = {...currentConf,shop: getVal("setShop") || "",perc: parseInt(getVal("setPerc")) || 0,guar: parseInt(getVal("setGuar")) || 0,theme: getVal("setTheme") || "light",voice: getVal("setVoice") || "female",sound: getVal("setSound") || "on"};localStorage.setItem("barber_conf", JSON.stringify(window.conf));
+        if (typeof applyTheme === 'function') applyTheme(window.conf.theme);const shopDisp = document.getElementById("shopNameDisp");if (shopDisp) shopDisp.innerText = window.conf.shop;alert("✅ บันทึกเรียบร้อย");if (window.closeModal) closeModal("modalSet");if (typeof renderDay === 'function') renderDay();} catch (e) {alert("❌ พังเพราะ: " + e.message);}}
     
-    conf = {
-        ...conf, 
-        shop: document.getElementById("setShop").value || "",
-        perc: parseInt(document.getElementById("setPerc").value) || 0,
-        guar: parseInt(document.getElementById("setGuar").value) || 0,
-
-    };
-    localStorage.setItem("barber_conf", JSON.stringify(conf));
-    renderDay(); 
-    alert("บันทึกเรียบร้อย");
-}    
-function openDailyPicker() {
-    const d = document.getElementById("histDate");
-    if (!d) return;
-    d.value = "";
-    d.showPicker();
-}
-
-function openMonthPicker() {
-    const m = document.getElementById("histMonth");
-    if (!m) return;
-    m.value = "";
-    m.showPicker();
-}
-
-function closeAndGoHome(){const m=document.getElementById("modalSet");if(m)m.style.display='none';if(typeof go==='function')go(1);else location.reload()}
+ function closeAndGoHome(){const m=document.getElementById("modalSet");if(m)m.style.display='none';if(typeof go==='function')go(1);else location.reload()}
  function speak(txt) {if ('speechSynthesis' in window) {const msg = new SpeechSynthesisUtterance(txt); msg.lang = 'th-TH'; window.speechSynthesis.speak(msg);}}       
  function clearAllData(){if(confirm("ลบข้อมูลทั้งหมด?")){localStorage.clear();location.reload()}}
  function updateDateDisplay(v){if(!v)return;const d=new Date(v);const el=$("dateDisplay");if(el)el.innerText=d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});if(typeof renderDay==="function")renderDay()}window.addEventListener('DOMContentLoaded',()=>{const i=$("dateInp"),t=new Date().toISOString().split('T')[0];if(i){i.value=t;updateDateDisplay(t)}});
@@ -986,33 +856,43 @@ function loadHistMonth() {
     window.open(`https://line.me/R/msg/text/?${encodeURIComponent(msg)}`);
 }
 function go(p) {
-    // 1. สลับหน้าด้วย Class (CSS จะจัดการโชว์/ซ่อนเอง)
-    document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
-    const target = document.getElementById('p' + p);
-    if (target) target.classList.add('active');
-
-    // 2. สลับสีเมนูด้วย Class
+    document.querySelectorAll('.page').forEach(pg => {
+        pg.classList.remove('active');
+        pg.style.display = 'none'; 
+    });
+    const targetPage = document.getElementById('p' + p);
+    if (targetPage) {
+        targetPage.classList.add('active');
+        targetPage.style.display = 'block';
+    }
     document.querySelectorAll('.nav-item').forEach((btn, i) => {
         btn.classList.toggle('active', (i + 1) === p);
     });
-
-    // 3. ปลอบใจ iOS ให้จอกลับมาบนสุด
-    window.scrollTo(0, 0);
-
-    // 4. หน้าบัญชี (Logic พิเศษยังคงเดิม)
     if (p === 3) { 
+        // 1. บังคับให้วันที่ในหน้าบัญชี ตรงกับวันที่หน้าแรกก่อน
         if($("accDate") && $("dateInp")) $("accDate").value = $("dateInp").value;
+        // 2. สั่งให้ฟังก์ชันคำนวณเลขบัญชีทำงานทันที
         loadAccountStatus(); 
     }
 }
-
-    function saveDB() {localStorage.setItem("barber_db", JSON.stringify(db));localStorage.setItem("barber_conf", JSON.stringify(conf));}
+    function saveDB() { localStorage.setItem("barber_db", JSON.stringify(db)); localStorage.setItem("barber_conf", JSON.stringify(conf)); }
     function delRec(id) { if (confirm("ลบรายการนี้?")) { db = db.filter(r => r.id !== id); saveDB(); renderDay(); } }
     function editTime(id) {const rec = db.find(r => r.id === id);if (!rec) return;const newStart = prompt("แก้เวลาเริ่ม (HH:MM)", rec.time);if (!newStart) return;const newEnd = prompt("แก้เวลาเสร็จ (HH:MM)", rec.endTime || "");rec.time = newStart;rec.endTime = newEnd || addMinutes(newStart, 30);saveDB();renderDay();}
     
-    window.onclick = function(e) {const modals = [{ id: "reportModal", close: closeReportModal },{ id: "historyModal", close: closeHistoryModal },{ id: "configModal", close: closeConfigModal } ]; 
-    modals.forEach(m => {const modalEl = $(m.id);if (modalEl && e.target === modalEl && typeof m.close === "function") {m.close();}});};
-    window.addEventListener('load', () => { const n = new Date(), t = n.getHours().toString().padStart(2, '0') + ':' + n.getMinutes().toString().padStart(2, '0'); if(document.getElementById('tStart')) document.getElementById('tStart').value = t; if(document.getElementById('tEnd')) document.getElementById('tEnd').value = t; });
+    window.onclick = function(e) {
+    const modals = [
+        { id: "reportModal", close: closeReportModal },
+        { id: "historyModal", close: closeHistoryModal },
+        { id: "configModal", close: closeConfigModal } 
+    ];
+    modals.forEach(m => {
+        const modalEl = $(m.id);
+        if (modalEl && e.target === modalEl && typeof m.close === "function") {
+            m.close();
+        }
+    });
+};
+window.addEventListener('load', () => { const n = new Date(), t = n.getHours().toString().padStart(2, '0') + ':' + n.getMinutes().toString().padStart(2, '0'); if(document.getElementById('tStart')) document.getElementById('tStart').value = t; if(document.getElementById('tEnd')) document.getElementById('tEnd').value = t; });
         // 1. ฟังก์ชันส่งออกข้อมูล
         function exportBackup() {
             const data = {
