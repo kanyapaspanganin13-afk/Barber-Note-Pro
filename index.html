@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.06</title>
+    <title>Barber Note Pro v.07</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -216,17 +216,18 @@ nav {
             </button>
         </div>
     </div>
+<input type="date" id="histDate" onchange="loadHistDaily()" style="position:fixed; left:-9999px; top:-9999px;">
+<input type="month" id="histMonth" onchange="loadHistMonth()" style="position:fixed; left:-9999px; top:-9999px;">
+
 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-    <div onclick="openDaily()" style="background:linear-gradient(135deg, #f59e0b, #d97706); border-radius:25px; padding:20px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(245,158,11,0.2);">
+    <div onclick="openDaily()" style="background:linear-gradient(135deg, #f59e0b, #d97706); border-radius:25px; padding:20px 10px; text-align:center; color:#fff; cursor:pointer; box-shadow:0 8px 15px rgba(245,158,11,0.2);">
         <i class="fas fa-search-dollar" style="font-size:28px; margin-bottom:5px; display:block;"></i>
         <b style="font-size:16px;">เรียกดูรายวัน</b>
-        <input type="date" id="histDate" onchange="loadHistDaily()" style="position:absolute; inset:0; opacity:0;">
     </div>
 
-    <div onclick="openMonth()" style="background:linear-gradient(135deg, #6366f1, #4338ca); border-radius:25px; padding:20px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(99,102,241,0.2);">
+    <div onclick="openMonth()" style="background:linear-gradient(135deg, #6366f1, #4338ca); border-radius:25px; padding:20px 10px; text-align:center; color:#fff; cursor:pointer; box-shadow:0 8px 15px rgba(99,102,241,0.2);">
         <i class="fas fa-calendar-check" style="font-size:28px; margin-bottom:5px; display:block;"></i>
         <b style="font-size:16px;">สรุปรายเดือน</b>
-        <input type="month" id="histMonth" onchange="loadHistMonth()" style="position:absolute; inset:0; opacity:0;">
     </div>
 </div>
 <div id="modalSet" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); z-index:9999; align-items:flex-end; justify-content:center;">
@@ -436,16 +437,16 @@ function saveSettings() {
     renderDay(); 
     alert("บันทึกเรียบร้อย");
 }    
-function openDailyPicker() {
+function openDaily() {
     const d = $("histDate");
-    d.value = ""; // เคลียร์วันที่เก่าทิ้ง เพื่อให้ onchange ทำงานแม้เลือกวันเดิม
-    d.showPicker();
+    d.value = ""; // ล้างค่าเดิม
+    d.showPicker(); // สั่งเปิดจากนอกจอ
 }
 
-function openMonthPicker() {
+function openMonth() {
     const m = $("histMonth");
-    m.value = ""; // เคลียร์เดือนเก่าทิ้ง
-    m.showPicker();
+    m.value = ""; // ล้างค่าเดิม
+    m.showPicker(); // สั่งเปิดจากนอกจอ
 }
 function closeAndGoHome(){const m=document.getElementById("modalSet");if(m)m.style.display='none';if(typeof go==='function')go(1);else location.reload()}
  function speak(txt) {if ('speechSynthesis' in window) {const msg = new SpeechSynthesisUtterance(txt); msg.lang = 'th-TH'; window.speechSynthesis.speak(msg);}}       
