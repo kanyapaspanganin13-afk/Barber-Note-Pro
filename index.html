@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.9</title>
+    <title>Barber Note Pro v.09</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -452,17 +452,20 @@ function saveSettings() {
     renderDay(); 
     alert("บันทึกเรียบร้อย");
 }    
-function openDaily() {
-    const d = $("histDate");
-    d.value = ""; // ล้างค่าเดิม
-    d.showPicker(); // สั่งเปิดจากนอกจอ
+function openDailyPicker() {
+    const d = document.getElementById("histDate");
+    if (!d) return;
+    d.value = "";
+    d.showPicker();
 }
 
-function openMonth() {
-    const m = $("histMonth");
-    m.value = ""; // ล้างค่าเดิม
-    m.showPicker(); // สั่งเปิดจากนอกจอ
+function openMonthPicker() {
+    const m = document.getElementById("histMonth");
+    if (!m) return;
+    m.value = "";
+    m.showPicker();
 }
+
 function closeAndGoHome(){const m=document.getElementById("modalSet");if(m)m.style.display='none';if(typeof go==='function')go(1);else location.reload()}
  function speak(txt) {if ('speechSynthesis' in window) {const msg = new SpeechSynthesisUtterance(txt); msg.lang = 'th-TH'; window.speechSynthesis.speak(msg);}}       
  function clearAllData(){if(confirm("ลบข้อมูลทั้งหมด?")){localStorage.clear();location.reload()}}
