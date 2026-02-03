@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.720</title>
+    <title>Barber Note Pro v.710</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -276,54 +276,50 @@
         </div>
     </div>
 </div>
-<div id="modalSet" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); z-index:9999; display:flex; align-items:flex-start; justify-content:center; padding-top:30px;">
+<div id="modalSet" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); z-index:9999; display:flex; align-items:center; justify-content:center; padding:15px;">
     
-    <div style="background:#ffffff; width:92%; max-width:350px; border-radius:24px; display:flex; flex-direction:column; overflow:hidden; animation: slideDown 0.3s ease-out; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+    <div style="background:#ffffff; width:95%; max-width:420px; border-radius:35px; display:flex; flex-direction:column; overflow:hidden; animation: slideUp 0.3s ease-out; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
         
-        <div style="padding:15px; text-align:center; background:#f8fafc; border-bottom:1px solid #f1f5f9;">
-            <h3 style="margin:0; font-size:18px; color:#1e3a8a; font-weight:900;">⚙️ ตั้งค่าระบบ</h3>
+        <div style="padding:25px 20px 15px; text-align:center;">
+            <h3 style="margin:0; font-size:24px; color:#1e3a8a; font-weight:900;">⚙️ ตั้งค่าระบบ</h3>
         </div>
 
-        <div style="padding:15px 20px 20px;">
-            <input type="text" id="setShop" placeholder="ชื่อร้าน" style="width:100%; height:42px; border-radius:12px; border:1px solid #e2e8f0; background:#f8fafc; text-align:center; font-size:16px; margin-bottom:10px; outline:none; -webkit-appearance:none;">
+        <div style="padding:10px 25px 35px;">
+            <input type="text" id="setShop" placeholder="ชื่อร้าน" style="width:100%; height:55px; border-radius:18px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:18px; font-weight:700; color:#1e3a8a; margin-bottom:12px; outline:none;">
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px;">
-                <input type="number" id="setPerc" placeholder="% ช่าง" style="width:100%; height:42px; border-radius:12px; border:1px solid #e2e8f0; background:#f8fafc; text-align:center; font-size:16px; outline:none;">
-                <input type="number" id="setGuar" placeholder="ประกัน" style="width:100%; height:42px; border-radius:12px; border:1px solid #e2e8f0; background:#f8fafc; text-align:center; font-size:16px; outline:none;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+                <input type="number" id="setPerc" placeholder="% ช่าง" style="width:100%; height:55px; border-radius:18px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:18px; font-weight:700; outline:none;">
+                <input type="number" id="setGuar" placeholder="ประกัน" style="width:100%; height:55px; border-radius:18px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:18px; font-weight:700; outline:none;">
             </div>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px;">
-                <select id="setTheme" style="width:100%; height:42px; border-radius:12px; border:1px solid #e2e8f0; background:#f8fafc; text-align:center; font-size:14px; outline:none;">
+            <div style="margin-bottom:12px;">
+                <select id="setTheme" style="width:100%; height:55px; border-radius:18px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:16px; font-weight:700; color:#475569; outline:none;">
                     <option value="light">🌤 ธีมสว่าง</option>
                     <option value="navy">🌌 ธีมน้ำเงิน</option>
                     <option value="dark">🌑 ธีมดำ-ทอง</option>
                 </select>
-                <select id="setVoice" style="width:100%; height:42px; border-radius:12px; border:1px solid #e2e8f0; background:#f8fafc; text-align:center; font-size:14px; outline:none;">
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;">
+                <select id="setVoice" style="width:100%; height:55px; border-radius:18px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:15px; font-weight:700; outline:none;">
                     <option value="female">👸 เสียงหญิง</option>
                     <option value="male">🤵 เสียงชาย</option>
                 </select>
+                <select id="setSound" style="width:100%; height:55px; border-radius:18px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:15px; font-weight:700; outline:none;">
+                    <option value="on">🔔 เปิดเสียง</option>
+                    <option value="off">🔕 ปิดเสียง</option>
+                </select>
             </div>
 
-            <select id="setSound" style="width:100%; height:42px; border-radius:12px; border:1px solid #e2e8f0; background:#f8fafc; text-align:center; font-size:14px; margin-bottom:15px; outline:none;">
-                <option value="on">🔔 เปิดเสียงแจ้งเตือน</option>
-                <option value="off">🔕 ปิดเสียงแจ้งเตือน</option>
-            </select>
-
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px; margin-bottom:15px;">
-                <button onclick="exportBackup()" style="height:36px; background:#fff; border:1px solid #e2e8f0; border-radius:10px; font-size:12px; font-weight:700; color:#475569; display:flex; align-items:center; justify-content:center; gap:4px;">
-                    <span>💾</span> สำรองข้อมูล
-                </button>
-                <button onclick="importBackup()" style="height:36px; background:#fff; border:1px solid #e2e8f0; border-radius:10px; font-size:12px; font-weight:700; color:#475569; display:flex; align-items:center; justify-content:center; gap:4px;">
-                    <span>📂</span> คืนค่า
-                </button>
-                <button onclick="clearData()" style="height:36px; background:#fff1f2; border:1px solid #fecaca; border-radius:10px; font-size:12px; font-weight:700; color:#e11d48; display:flex; align-items:center; justify-content:center; gap:4px;">
-                    <span>🗑️</span> ล้างข้อมูล
-                </button>
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-bottom:25px;">
+                <button onclick="exportBackup()" style="height:45px; background:#fff; border:1px solid #cbd5e1; border-radius:12px; font-size:13px; font-weight:800; color:#475569;"><i class="fas fa-file-download"></i> สำรองข้อมูล</button>
+                <button onclick="importBackup()" style="height:45px; background:#fff; border:1px solid #cbd5e1; border-radius:12px; font-size:13px; font-weight:800; color:#475569;"><i class="fas fa-file-upload"></i> คืนค่า</button>
+                <button onclick="clearData()" style="height:45px; background:#fff1f2; border:1px solid #fecaca; border-radius:12px; font-size:13px; font-weight:800; color:#e11d48;"><i class="fas fa-trash-alt"></i> ลบข้อมูลทั้งหมด</button>
             </div>
 
-            <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px;">
-                <button onclick="saveSettings()" style="background:#1e3a8a; color:#fff; height:48px; border-radius:14px; border:none; font-weight:800; font-size:16px;">บันทึกข้อมูล</button>
-                <button onclick="$('modalSet').style.display='none'" style="background:#f1f5f9; color:#64748b; height:48px; border-radius:14px; border:none; font-weight:800; font-size:16px;">ปิด</button>
+            <div style="display:grid; grid-template-columns: 2fr 1.2fr; gap:12px;">
+                <button onclick="saveSettings()" style="background:#1e3a8a; color:#fff; height:65px; border-radius:22px; border:none; font-weight:800; font-size:20px; box-shadow: 0 10px 25px rgba(30,58,138,0.3);">บันทึกข้อมูล</button>
+                <button onclick="$('modalSet').style.display='none'" style="background:#f1f5f9; color:#64748b; height:65px; border-radius:22px; border:none; font-weight:800; font-size:18px;">ปิดหน้านี้</button>
             </div>
         </div>
     </div>
