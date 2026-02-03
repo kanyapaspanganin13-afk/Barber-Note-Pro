@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.01</title>
+    <title>Barber Note Pro v.03</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -423,10 +423,19 @@ function handleInsurance() {
     else if (t === 'navy') {s.setProperty('--card', '#ffffff'); s.setProperty('--text', '#1a237e');document.body.style.background = '#1a237e';
     const st = document.createElement("style");st.id = "navyStyle"; st.innerHTML = ` body.navy { background: #1a237e !important; color: #ffffff !important; }.navy .card b, .navy .card span { color: #1e293b !important; }.navy #dTotal, .navy #accNet { color: #1a237e !important; }.nav-item { color: #ffffff !important; opacity: 0.7; }.nav-item.active { color: #facc15 !important; opacity: 1; font-weight: bold; } `;document.head.appendChild(st);}}
             
- function saveSettings() { try { let currentConf = JSON.parse(localStorage.getItem("barber_conf")) || {}; const getVal = (id) => document.getElementById(id)?.value;
-        window.conf = {...currentConf,shop: getVal("setShop") || "",perc: parseInt(getVal("setPerc")) || 0,guar: parseInt(getVal("setGuar")) || 0,theme: getVal("setTheme") || "light",voice: getVal("setVoice") || "female",sound: getVal("setSound") || "on"};localStorage.setItem("barber_conf", JSON.stringify(window.conf));
-        if (typeof applyTheme === 'function') applyTheme(window.conf.theme);const shopDisp = document.getElementById("shopNameDisp");if (shopDisp) shopDisp.innerText = window.conf.shop;alert("✅ บันทึกเรียบร้อย");if (window.closeModal) closeModal("modalSet");if (typeof renderDay === 'function') renderDay();} catch (e) {alert("❌ พังเพราะ: " + e.message);}}
+function saveSettings() {
     
+    conf = {
+        ...conf, 
+        shop: document.getElementById("setShop").value || "",
+        perc: parseInt(document.getElementById("setPerc").value) || 0,
+        guar: parseInt(document.getElementById("setGuar").value) || 0,
+
+    };
+    localStorage.setItem("barber_conf", JSON.stringify(conf));
+    renderDay(); 
+    alert("บันทึกเรียบร้อย");
+}    
  function closeAndGoHome(){const m=document.getElementById("modalSet");if(m)m.style.display='none';if(typeof go==='function')go(1);else location.reload()}
  function speak(txt) {if ('speechSynthesis' in window) {const msg = new SpeechSynthesisUtterance(txt); msg.lang = 'th-TH'; window.speechSynthesis.speak(msg);}}       
  function clearAllData(){if(confirm("ลบข้อมูลทั้งหมด?")){localStorage.clear();location.reload()}}
@@ -875,24 +884,13 @@ function go(p) {
         loadAccountStatus(); 
     }
 }
-    function saveDB() { localStorage.setItem("barber_db", JSON.stringify(db)); localStorage.setItem("barber_conf", JSON.stringify(conf)); }
+    function saveDB() {localStorage.setItem("barber_db", JSON.stringify(db));localStorage.setItem("barber_conf", JSON.stringify(conf));}
     function delRec(id) { if (confirm("ลบรายการนี้?")) { db = db.filter(r => r.id !== id); saveDB(); renderDay(); } }
     function editTime(id) {const rec = db.find(r => r.id === id);if (!rec) return;const newStart = prompt("แก้เวลาเริ่ม (HH:MM)", rec.time);if (!newStart) return;const newEnd = prompt("แก้เวลาเสร็จ (HH:MM)", rec.endTime || "");rec.time = newStart;rec.endTime = newEnd || addMinutes(newStart, 30);saveDB();renderDay();}
     
-    window.onclick = function(e) {
-    const modals = [
-        { id: "reportModal", close: closeReportModal },
-        { id: "historyModal", close: closeHistoryModal },
-        { id: "configModal", close: closeConfigModal } 
-    ];
-    modals.forEach(m => {
-        const modalEl = $(m.id);
-        if (modalEl && e.target === modalEl && typeof m.close === "function") {
-            m.close();
-        }
-    });
-};
-window.addEventListener('load', () => { const n = new Date(), t = n.getHours().toString().padStart(2, '0') + ':' + n.getMinutes().toString().padStart(2, '0'); if(document.getElementById('tStart')) document.getElementById('tStart').value = t; if(document.getElementById('tEnd')) document.getElementById('tEnd').value = t; });
+    window.onclick = function(e) {const modals = [{ id: "reportModal", close: closeReportModal },{ id: "historyModal", close: closeHistoryModal },{ id: "configModal", close: closeConfigModal } ]; 
+    modals.forEach(m => {const modalEl = $(m.id);if (modalEl && e.target === modalEl && typeof m.close === "function") {m.close();}});};
+    window.addEventListener('load', () => { const n = new Date(), t = n.getHours().toString().padStart(2, '0') + ':' + n.getMinutes().toString().padStart(2, '0'); if(document.getElementById('tStart')) document.getElementById('tStart').value = t; if(document.getElementById('tEnd')) document.getElementById('tEnd').value = t; });
         // 1. ฟังก์ชันส่งออกข้อมูล
         function exportBackup() {
             const data = {
