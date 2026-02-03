@@ -9,7 +9,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.710</title>
+    <title>Barber Note Pro v.73
+        0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -458,7 +459,7 @@ function openSettings() {
     else if (t === 'navy') {s.setProperty('--card', '#ffffff'); s.setProperty('--text', '#1a237e');document.body.style.background = '#1a237e';
     const st = document.createElement("style");st.id = "navyStyle"; st.innerHTML = ` body.navy { background: #1a237e !important; color: #ffffff !important; }.navy .card b, .navy .card span { color: #1e293b !important; }.navy #dTotal, .navy #accNet { color: #1a237e !important; }.nav-item { color: #ffffff !important; opacity: 0.7; }.nav-item.active { color: #facc15 !important; opacity: 1; font-weight: bold; } `;document.head.appendChild(st);}}
 function saveSettings() {
-    // 1. ดึงค่าจากช่อง Input ใน Modal
+    // 1. ดึงค่าจากช่อง Input
     const shopName = document.getElementById('setShop').value;
     const shopPerc = document.getElementById('setPerc').value;
     const shopGuar = document.getElementById('setGuar').value;
@@ -466,7 +467,7 @@ function saveSettings() {
     const shopVoice = document.getElementById('setVoice').value;
     const shopSound = document.getElementById('setSound').value;
 
-    // 2. บันทึกลง LocalStorage (กันหายเวลาปิดเว็บ)
+    // 2. บันทึกลง LocalStorage
     localStorage.setItem('shopName', shopName);
     localStorage.setItem('shopPerc', shopPerc);
     localStorage.setItem('shopGuar', shopGuar);
@@ -474,16 +475,28 @@ function saveSettings() {
     localStorage.setItem('shopVoice', shopVoice);
     localStorage.setItem('shopSound', shopSound);
 
-    // 3. 🔥 จุดสำคัญ: สั่งให้ชื่อบนหัวเว็บเปลี่ยนทันที!
+    // 3. เปลี่ยนชื่อร้านบนหัวเว็บทันที
     if(shopName) {
         document.getElementById('shopNameDisp').innerText = shopName.toUpperCase();
     }
 
-    // 4. แจ้งเตือนและปิด Modal
+    // --- 4. 🔥 ส่วนที่เพิ่ม: สั่งเปลี่ยนธีมสีหน้าจอทันที ---
+    const body = document.body;
+    if (shopTheme === 'navy') {
+        body.style.background = '#1e3a8a'; // สีน้ำเงินเข้ม
+        body.style.color = '#ffffff';
+    } else if (shopTheme === 'dark') {
+        body.style.background = '#0f172a'; // สีดำ slate
+        body.style.color = '#e2e8f0';
+    } else {
+        body.style.background = '#f8fafc'; // สีสว่าง (Light)
+        body.style.color = '#1e293b';
+    }
+
+    // 5. แจ้งเตือนและปิด Modal
     alert("บันทึกการตั้งค่าเรียบร้อยแล้ว ✅");
     document.getElementById('modalSet').style.display = 'none';
-    
-}          
+}
  function closeAndGoHome(){const m=document.getElementById("modalSet");if(m)m.style.display='none';if(typeof go==='function')go(1);else location.reload()}
  function speak(txt) {if ('speechSynthesis' in window) {const msg = new SpeechSynthesisUtterance(txt); msg.lang = 'th-TH'; window.speechSynthesis.speak(msg);}}       
  function clearAllData(){if(confirm("ลบข้อมูลทั้งหมด?")){localStorage.clear();location.reload()}}
@@ -961,8 +974,33 @@ function go(p) {
     
     window.onclick = function(e) {const modals = [{ id: "reportModal", close: closeReportModal },{ id: "historyModal", close: closeHistoryModal },{ id: "configModal", close: closeConfigModal } ]; 
     modals.forEach(m => {const modalEl = $(m.id);if (modalEl && e.target === modalEl && typeof m.close === "function") {m.close();}});};
-    window.addEventListener('load', () => { const n = new Date(), t = n.getHours().toString().padStart(2, '0') + ':' + n.getMinutes().toString().padStart(2, '0'); if(document.getElementById('tStart')) document.getElementById('tStart').value = t; if(document.getElementById('tEnd')) document.getElementById('tEnd').value = t; });
-        // 1. ฟังก์ชันส่งออกข้อมูล
+   window.addEventListener('load', () => {
+    const n = new Date(), 
+          t = n.getHours().toString().padStart(2, '0') + ':' + n.getMinutes().toString().padStart(2, '0'); 
+    if(document.getElementById('tStart')) document.getElementById('tStart').value = t; 
+    if(document.getElementById('tEnd')) document.getElementById('tEnd').value = t;
+    const savedName = localStorage.getItem('shopName');
+    const savedTheme = localStorage.getItem('shopTheme');
+    if (savedName) {
+        document.getElementById('shopNameDisp').innerText = savedName.toUpperCase();
+        if(document.getElementById('setShop')) document.getElementById('setShop').value = savedName;
+    }
+    if (savedTheme) {
+        if(document.getElementById('setTheme')) document.getElementById('setTheme').value = savedTheme;
+        const body = document.body;
+        if (savedTheme === 'navy') {
+            body.style.background = '#1e3a8a';
+            body.style.color = '#ffffff';
+        } else if (savedTheme === 'dark') {
+            body.style.background = '#0f172a';
+            body.style.color = '#e2e8f0';
+        } else {
+            body.style.background = '#f8fafc';
+            body.style.color = '#1e293b';
+        }
+    }
+});
+     // 1. ฟังก์ชันส่งออกข้อมูล
         function exportBackup() {
             const data = {
                 db: JSON.parse(localStorage.getItem("barber_db") || "[]"),
