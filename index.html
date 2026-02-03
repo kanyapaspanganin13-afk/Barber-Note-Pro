@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.39</title>
+    <title>Barber Note Pro v.99</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -323,10 +323,16 @@ nav {
         <div id="accHistory" style="max-height:400px; overflow-y:auto;"></div>
     </div>
 </div>
- <nav>
-    <div onclick="go(1)" class="nav-item active"><i class="fas fa-edit"></i><span>บันทึก</span></div>
-    <div onclick="go(2)" class="nav-item"><i class="fas fa-history"></i><span>รายงาน</span></div>
-    <div onclick="go(3)" class="nav-item"><i class="fas fa-wallet"></i><span>บัญชี</span></div>
+<nav>
+    <div id="n1" onclick="go(1)" class="nav-item active">
+        <i class="fas fa-edit"></i><span>บันทึก</span>
+    </div>
+    <div id="n2" onclick="go(2)" class="nav-item">
+        <i class="fas fa-history"></i><span>รายงาน</span>
+    </div>
+    <div id="n3" onclick="go(3)" class="nav-item">
+        <i class="fas fa-wallet"></i><span>บัญชี</span>
+    </div>
 </nav>
  <script>
 const $ = (id) => document.getElementById(id);
@@ -905,16 +911,15 @@ function go(p) {
         targetPage.classList.add('active');
         targetPage.style.display = 'block';
     }
-
     document.querySelectorAll('.nav-item').forEach((btn, i) => {
+        // ถ้า p เป็นเลข 1, 2, 3 ตรงกับลำดับปุ่ม ก็ใช้แบบเดิมได้เลย
         btn.classList.toggle('active', (i + 1) === p);
     });
-
-    // 🔥 บังคับเมนูบาร์
     const nav = document.querySelector("nav");
     if (nav) {
         nav.style.display = "flex";
-        nav.style.zIndex = 999999;
+        nav.style.position = "fixed"; // ย้ำอีกทีเผื่อ CSS หลุด
+        nav.style.zIndex = "999999";
     }
 
     if (p === 3) { 
@@ -922,6 +927,7 @@ function go(p) {
             $("accDate").value = $("dateInp").value;
         loadAccountStatus(); 
     }
+    window.scrollTo(0, 0);
 }
 
     function saveDB() {localStorage.setItem("barber_db", JSON.stringify(db));localStorage.setItem("barber_conf", JSON.stringify(conf));}
