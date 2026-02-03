@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.1 </title>
+    <title>Barber Note Pro V.07 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -490,40 +490,33 @@ function applyTheme(t) {
         `;
         document.head.appendChild(st);
     }
-}function saveSettings() {
-    // 1. ดึงค่าจากหน้าจอ
+}
+function saveSettings() {
     const shopName = $("setShop").value;
     const shopPerc = $("setPerc").value;
     const shopGuar = $("setGuar").value;
     const shopTheme = $("setTheme").value;
-
-    // 2. 🔥 สำคัญมาก: อัปเดตตัวแปรกลาง (conf) ทันที!
-    // ถ้ามึงไม่ทำบรรทัดนี้ ฟังก์ชันคำนวณเงินจะยังใช้ค่าเก่าอยู่
     conf.shop = shopName;
-    conf.perc = parseFloat(shopPerc);
-    conf.guar = parseFloat(shopGuar);
+    conf.perc = parseFloat(shopPerc) || 0; // กันค่าว่างพัง
+    conf.guar = parseFloat(shopGuar) || 0; // กันค่าว่างพัง
     conf.theme = shopTheme;
-
-    // 3. บันทึกลง LocalStorage (อันนี้มึงทำถูกแล้ว)
     localStorage.setItem('shopName', shopName);
     localStorage.setItem('shopPerc', shopPerc);
     localStorage.setItem('shopGuar', shopGuar);
     localStorage.setItem('shopTheme', shopTheme);
 
-    // 4. อัปเดตหน้าจอทันที
     if($("shopNameDisp")) {
         $("shopNameDisp").innerText = shopName.toUpperCase();
     }
-
-    // 5. สั่งคำนวณยอดใหม่ทันทีด้วยค่า % ใหม่ใน conf
+    if (typeof applyTheme === "function") {
+        applyTheme(shopTheme); 
+    }
     if (typeof calculateMoney === "function") {
         calculateMoney(); 
     }
-    
     if (typeof renderDay === "function") {
         renderDay(); 
     }
-
     $("modalSet").style.display = 'none';
     alert("ตั้งค่าสำเร็จ!");
 }
