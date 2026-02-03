@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.03</title>
+    <title>Barber Note Pro v.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -327,14 +327,17 @@ function save() {
 }
 window.onload = () => {
     const today = new Date().toISOString().split('T')[0];
-    
-    if($("dateInp")) $("dateInp").value = today;
-    if($("accDate")) $("accDate").value = today;
-    if($("histDate")) $("histDate").value = today;
-    if($("shopNameDisp")) $("shopNameDisp").innerText = conf.shop;
-    renderList(); 
-    loadAccountStatus(); 
+
+    if ($("dateInp")) $("dateInp").value = today;
+    if ($("accDate")) $("accDate").value = today;
+    if ($("histDate")) $("histDate").value = today;
+    if (conf.shop) $("shopNameDisp").innerText = conf.shop;
+    if (conf.theme) applyTheme(conf.theme);
+
+    renderDay();
+    loadAccountStatus();
 };
+
     function addMinutes(time, mins) {
     if (!time) return "";
     const [h, m] = time.split(":").map(Number);
@@ -403,20 +406,17 @@ function handleInsurance() {
     }
 }
  function handleHoliday(){const d=$("dateInp").value;if(!d)return alert("เลือกวันที่ก่อน");if(confirm(`ยืนยันบันทึกวันที่ ${d} เป็น "วันหยุด"?`)){db.push({id:Date.now(),date:d,time:"00:00",svcs:["🏖️ วันหยุด"],price:0,pay:"N/A",type:"HOLIDAY"});saveDB();const m=new SpeechSynthesisUtterance("บันทึกวันหยุดเรียบร้อย");m.lang='th-TH';if(conf.voice==='male'){const v=window.speechSynthesis.getVoices().find(x=>x.name.includes('Male')||x.name.includes('Google'));if(v)m.voice=v}window.speechSynthesis.speak(m);alert("🏖️ บันทึกวันหยุดเรียบร้อย");renderDay()}}   
- function openSettings() {
-    const modal = $("modalSet");
-    if (!modal) return console.error("หา Modal 'modalSet' ไม่เจอ");
-    const config = window.conf || {};
+function openSettings() {
+    if ($("setShop"))  $("setShop").value  = conf.shop || "";
+    if ($("setTheme")) $("setTheme").value = conf.theme || "light";
+    if ($("setVoice")) $("setVoice").value = conf.voice || "female";
+    if ($("setSound")) $("setSound").value = conf.sound || "on";
+    if ($("setPerc"))  $("setPerc").value  = conf.perc || 50;
+    if ($("setGuar"))  $("setGuar").value  = conf.guar || 0;
 
-    if ($("setShop"))  $("setShop").value  = config.shop  || "";
-    if ($("setTheme")) $("setTheme").value = config.theme || "light";
-    if ($("setVoice")) $("setVoice").value = config.voice || "female";
-    if ($("setSound")) $("setSound").value = config.sound || "on";
-    if ($("setPerc"))  $("setPerc").value  = config.perc  || 50;
-    if ($("setGuar"))  $("setGuar").value  = config.guar  || 0;
-
-    modal.style.display = "flex";
+    $("modalSet").style.display = "flex";
 }
+
  function applyTheme(t) {document.body.className = t;const oldStyle = document.getElementById("navyStyle");if (oldStyle) oldStyle.remove();
     const s = document.documentElement.style;s.setProperty('--card', '#ffffff');s.setProperty('--text', '#1a237e');document.body.style.background = '#f3f4f6'; 
     if (t === 'dark') {s.setProperty('--card', '#262626');s.setProperty('--text', '#fbbf24');document.body.style.background = '#171717';}
