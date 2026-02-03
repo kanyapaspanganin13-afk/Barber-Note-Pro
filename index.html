@@ -452,12 +452,46 @@ function openSettings() {
 
     $("modalSet").style.display = "flex";
 }
- function applyTheme(t) {document.body.className = t;const oldStyle = document.getElementById("navyStyle");if (oldStyle) oldStyle.remove();
-    const s = document.documentElement.style;s.setProperty('--card', '#ffffff');s.setProperty('--text', '#1a237e');document.body.style.background = '#f3f4f6'; 
-    if (t === 'dark') {s.setProperty('--card', '#262626');s.setProperty('--text', '#fbbf24');document.body.style.background = '#171717';}
-    else if (t === 'navy') {s.setProperty('--card', '#ffffff'); s.setProperty('--text', '#1a237e');document.body.style.background = '#1a237e';
-    const st = document.createElement("style");st.id = "navyStyle"; st.innerHTML = ` body.navy { background: #1a237e !important; color: #ffffff !important; }.navy .card b, .navy .card span { color: #1e293b !important; }.navy #dTotal, .navy #accNet { color: #1a237e !important; }.nav-item { color: #ffffff !important; opacity: 0.7; }.nav-item.active { color: #facc15 !important; opacity: 1; font-weight: bold; } `;document.head.appendChild(st);}}
-function saveSettings() {
+function applyTheme(t) {
+    document.body.className = t;
+    const oldStyle = document.getElementById("navyStyle");
+    if (oldStyle) oldStyle.remove();
+
+    const s = document.documentElement.style;
+
+    // --- ☀️ ธีมสว่าง (Default) ---
+    s.setProperty('--card', '#ffffff');
+    s.setProperty('--text', '#1a237e');
+    s.setProperty('--modal-bg', '#f3f4f6'); // พื้นหลังรายงานสีสว่าง
+    document.body.style.background = '#f3f4f6';
+
+    if (t === 'dark') {
+        // --- 🌑 ธีมมืด-ทอง ---
+        s.setProperty('--card', '#262626');
+        s.setProperty('--text', '#fbbf24');
+        s.setProperty('--modal-bg', '#171717'); // พื้นหลังรายงานสีดำ
+        document.body.style.background = '#171717';
+    } 
+    else if (t === 'navy') {
+        // --- 🌌 ธีมน้ำเงิน ---
+        s.setProperty('--card', '#ffffff');
+        s.setProperty('--text', '#1a237e');
+        s.setProperty('--modal-bg', '#1a237e'); // พื้นหลังรายงานสีน้ำเงิน
+        document.body.style.background = '#1a237e';
+
+        const st = document.createElement("style");
+        st.id = "navyStyle";
+        st.innerHTML = `
+            body.navy { background: #1a237e !important; color: #ffffff !important; }
+            .navy .card b, .navy .card span { color: #1e293b !important; }
+            .navy #dTotal, .navy #accNet { color: #1a237e !important; }
+            .nav-item { color: #ffffff !important; opacity: 0.7; }
+            .nav-item.active { color: #facc15 !important; opacity: 1; font-weight: bold; }
+        `;
+        document.head.appendChild(st);
+    }
+}
+     function saveSettings() {
     // 1. ดึงค่าจากช่อง Input
     const shopName = document.getElementById('setShop').value;
     const shopPerc = document.getElementById('setPerc').value;
