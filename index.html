@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.090</title>
+    <title>Barber Note Pro v.90</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -484,8 +484,7 @@ function saveSettings() {
  function clearAllData(){if(confirm("ลบข้อมูลทั้งหมด?")){localStorage.clear();location.reload()}}
  function updateDateDisplay(v){if(!v)return;const d=new Date(v);const el=$("dateDisplay");if(el)el.innerText=d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});if(typeof renderDay==="function")renderDay()}window.addEventListener('DOMContentLoaded',()=>{const i=$("dateInp"),t=new Date().toISOString().split('T')[0];if(i){i.value=t;updateDateDisplay(t)}});
  function selectPay(m) {payMethod = m; $("btnCash").className = `btn btn-pay ${m === 'Cash' ? 'active-cash' : ''}`;$("btnTrans").className = `btn btn-pay ${m === 'Trans' ? 'active-trans' : ''}`;}
-       
- function renderDay() {
+function renderDay() {
     const dInp = $("dateInp").value;
     const allRec = db.filter(r => r.date === dInp);
     const today = allRec.filter(r => r.type !== 'HOLIDAY');
@@ -494,6 +493,7 @@ function saveSettings() {
     const extraSvcs = ["โกนหนวด", "กันหน้า", "สระผม"];
     let tot = 0, trans = 0, cash = 0, tips = 0;
     let listHtml = "";
+
     today
     .slice()
     .sort((a,b) => a.time.localeCompare(b.time))
@@ -513,7 +513,7 @@ function saveSettings() {
         if (hasRealHaircut) {
             stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
         }
-       const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
+        const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
         const payIcon = r.pay === 'Trans' ? '📱' : '💵';
 
         listHtml += `
@@ -548,47 +548,63 @@ function saveSettings() {
     const sEarn = isHoliday ? 0 : tot - (bEarn - tips);
     const settle = isHoliday ? 0 : cash - bEarn;
 
-    $("dTotal").innerText  = tot.toLocaleString();
-    $("dTrans").innerText  = trans.toLocaleString();
-    $("dCash").innerText   = cash.toLocaleString();
-    $("dBarber").innerText = Math.floor(bEarn).toLocaleString();
-    $("dShop").innerText   = Math.floor(sEarn).toLocaleString();
-    $("dCounts").innerText = isHoliday ? "🏪 วันหยุด" : `ลูกค้า: ${today.length} คน`;
+    // --- ส่วนอัปเดต Card บน ---
+    if($("dTotal")) $("dTotal").innerText  = tot.toLocaleString();
+    if($("dTrans")) $("dTrans").innerText  = trans.toLocaleString();
+    if($("dCash")) $("dCash").innerText   = cash.toLocaleString();
+    if($("dBarber")) $("dBarber").innerText = Math.floor(bEarn).toLocaleString();
+    if($("dShop")) $("dShop").innerText   = Math.floor(sEarn).toLocaleString();
+    if($("dCounts")) $("dCounts").innerText = isHoliday ? "🏪 วันหยุด" : `ลูกค้า: ${today.length} คน`;
 
+    // --- ส่วนสถิติ ---
     let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:10px;">`;
     const priority = ["ตัดผม", "เด็ก"];
     priority.forEach(k => { if (stats[k]) sH += `<span style="background:#4338ca;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${k}: ${stats[k]}</span>`; });
     for (let s in stats) { if (!priority.includes(s)) sH += `<span style="background:#64748b;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${s}: ${stats[s]}</span>`; }
-    $("dServiceStats").innerHTML = sH + `</div>`;
+    if($("dServiceStats")) $("dServiceStats").innerHTML = sH + `</div>`;
 
-let txt = "", statusColor = "", icon = "";
-if (isHoliday) { 
-    txt = "พักผ่อนวันหยุด"; statusColor = "#1e40af"; icon = "🏖️"; // น้ำเงินเข้ม
-} else if (tot === 0) { 
-    txt = "ร้านจ่ายประกัน"; statusColor = "#0369a1"; icon = "🛡️"; // ฟ้าเข้ม
-} else if (settle > 0) { 
-    txt = `ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`; statusColor = "#b91c1c"; icon = "👨‍🎨"; // แดงเข้ม
-} else if (settle < 0) { 
-    txt = `ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; statusColor = "#4338ca"; icon = "💈"; // ม่วงน้ำเงิน
-} else { 
-    txt = "ยอดพอดี"; statusColor = "#15803d"; icon = "✅"; // เขียวเข้ม
-}
-const lightBlueBG = "#e0e7ff"; // สีน้ำเงินอ่อนใส (เข้ากับ Theme น้ำเงินเข้ม)
-const btnBlue = "#2563eb";     // สีปุ่มส่ง (Royal Blue)
-const actionBox = document.getElementById("settleBarContainer");
-if (actionBox) {
-    actionBox.style.display = "flex";
-    actionBox.style.gap = "10px";
-    actionBox.innerHTML = `
-        <div id="settleBar" style="flex:8; height:55px; background:${lightBlueBG}; display:flex; align-items:center; justify-content:center; border-radius:18px; font-weight:800; font-size:14px; color:${statusColor}; border:1px solid rgba(165, 180, 252, 0.5);">
-            <span style="margin-right:8px; font-size:18px;">${icon}</span> ${txt}
-        </div>
-        
-        <button onclick="saveAndGo('${dInp}', ${tot})" style="flex:2.2; height:55px; background:${btnBlue}; color:#fff; border-radius:18px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 15px rgba(37, 99, 235, 0.3);">
-            <i class="fas fa-paper-plane"></i>
-        </button>
-    `;
-}
+    // --- ส่วนคำนวณแถบสถานะและปุ่ม ---
+    let txt = "", statusColor = "", icon = "";
+    if (isHoliday) { 
+        txt = "พักผ่อนวันหยุด"; statusColor = "#1e40af"; icon = "🏖️"; 
+    } else if (tot === 0) { 
+        txt = "ร้านจ่ายประกัน"; statusColor = "#0369a1"; icon = "🛡️"; 
+    } else if (settle > 0) { 
+        txt = `ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`; statusColor = "#b91c1c"; icon = "👨‍🎨"; 
+    } else if (settle < 0) { 
+        txt = `ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; statusColor = "#4338ca"; icon = "💈"; 
+    } else { 
+        txt = "ยอดพอดี"; statusColor = "#15803d"; icon = "✅"; 
+    }
+
+    const lightBlueBG = "#e0e7ff";
+    const btnBlue = "#2563eb";
+    const actionBox = document.getElementById("settleBarContainer");
+    if (actionBox) {
+        actionBox.style.display = "flex";
+        actionBox.style.gap = "10px";
+        actionBox.innerHTML = `
+            <div id="settleBar" style="flex:8; height:55px; background:${lightBlueBG}; display:flex; align-items:center; justify-content:center; border-radius:18px; font-weight:800; font-size:14px; color:${statusColor}; border:1px solid rgba(165, 180, 252, 0.5);">
+                <span style="margin-right:8px; font-size:18px;">${icon}</span> ${txt}
+            </div>
+            <button onclick="saveAndGo('${dInp}', ${tot})" style="flex:2.2; height:55px; background:${btnBlue}; color:#fff; border-radius:18px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 15px rgba(37, 99, 235, 0.3);">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        `;
+    }
+
+    // --- ส่วนแสดงรายการด้านล่าง (สำคัญ!) ---
+    const dList = document.getElementById("dailyList");
+    if (dList) {
+        dList.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
+                <b style="font-size:16px; color:#1e293b;">📋 รายงานวันนี้:</b>
+                <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()"></i>
+            </div>
+            ${isHoliday ? `<center style='padding:40px; color:#64748b;'>🏖️ วันหยุดร้าน</center>` : (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>")}
+        `;
+    }
+} 
 function saveAndGo(date, total) {
     const todayData = db.filter(r => r.date === date && r.type === 'SERVICE');
     const isHoliday = db.some(r => r.date === date && r.type === 'HOLIDAY');
