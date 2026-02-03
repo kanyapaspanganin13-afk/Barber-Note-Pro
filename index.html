@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.537</title>
+    <title>Barber Note Pro v.637</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -761,10 +761,14 @@ function loadHistDaily() {
     let cashTotal = f.cash || 0;
     let transTotal = f.trans || 0;
     let totalRevenue = cashTotal + transTotal;
-    let customerCount = f.count || (f.details ? f.details.length : 0);
+    
+    // ✅ นับจำนวนหัว (ไม่เบิ้ลตามรายการบริการ)
+    let customerCount = (f.details) ? f.details.length : (f.count || 0);
+    
     const barberEarn = Math.floor(f.barber || 0);
     const shopEarn = Math.floor(f.shop || 0);
     const svcCounts = {};
+    
     (f.details || []).forEach(r => {
         const services = Array.isArray(r.svcs) ? r.svcs : [r.svcs];
         services.forEach(s => {
@@ -773,7 +777,7 @@ function loadHistDaily() {
     });
 
     const svcHTML = Object.entries(svcCounts).map(([name, count]) => `
-        <div style="background:rgba(255,255,255,0.1); padding:8px 14px; border-radius:14px; font-size:12px; color:#bef264; font-weight:700; display:inline-block; margin:4px 2px;">
+        <div style="background:rgba(190,242,100,0.15); padding:8px 14px; border-radius:14px; font-size:12px; color:#bef264; font-weight:700; display:inline-block; margin:4px 2px; border:1px solid rgba(190,242,100,0.2);">
             ${name} x${count}
         </div>
     `).join("");
@@ -781,83 +785,82 @@ function loadHistDaily() {
     let settleHTML = "";
     if (cashTotal > barberEarn) {
         const toShop = cashTotal - barberEarn;
-        settleHTML = `<div style="background:rgba(251,146,60,0.15); padding:18px; border-radius:24px; margin-bottom:20px; text-align:center;">
-            <div style="font-size:16px; color:#fb923c; font-weight:800; text-transform:uppercase;">👨‍🎨 ช่างคืนร้าน</div>
+        settleHTML = `<div style="background:rgba(251,146,60,0.15); padding:18px; border-radius:24px; margin-bottom:20px; text-align:center; border:1px solid rgba(251,146,60,0.2);">
+            <div style="font-size:14px; color:#fb923c; font-weight:800;">👨‍🎨 ช่างคืนร้าน</div>
             <div style="font-size:26px; color:#fb923c; font-weight:900;">฿${toShop.toLocaleString()}</div>
         </div>`;
     } else if (barberEarn > cashTotal) {
         const toBarber = barberEarn - cashTotal;
-        settleHTML = `<div style="background:rgba(56,189,248,0.15); padding:18px; border-radius:24px; margin-bottom:20px; text-align:center;">
-            <div style="font-size:16px; color:#38bdf8; font-weight:800; text-transform:uppercase;">🏠 ร้านคืนช่าง</div>
-            <div style="font-size:26px; color:#0284c7; font-weight:900;">฿${toBarber.toLocaleString()}</div>
+        settleHTML = `<div style="background:rgba(56,189,248,0.15); padding:18px; border-radius:24px; margin-bottom:20px; text-align:center; border:1px solid rgba(56,189,248,0.2);">
+            <div style="font-size:14px; color:#38bdf8; font-weight:800;">🏠 ร้านคืนช่าง</div>
+            <div style="font-size:26px; color:#38bdf8; font-weight:900;">฿${toBarber.toLocaleString()}</div>
         </div>`;
     }
+
     const rows = (f.details || []).map((r, index) => {
         const p = Number(r.price) || 0;
         const t = Number(r.tip) || 0;
         const fullTime = (r.time && r.endTime) ? `${r.time}-${r.endTime}` : (r.time || "--:--");
         
         return `
-        <div style="padding:16px; background:rgba(255,255,255,0.06); border-radius:20px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="padding:16px; background:var(--card); border:1px solid rgba(255,255,255,0.05); border-radius:20px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
             <div style="display:flex; align-items:center; gap:12px;">
-                <div style="width:32px; height:32px; background:rgba(255,255,255,0.1); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900; color:#fff;">${index + 1}</div>
+                <div style="width:32px; height:32px; background:rgba(255,255,255,0.1); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900; color:var(--text);">${index + 1}</div>
                 <div>
-                    <div style="font-weight:800; font-size:15px; color:#fff;">${Array.isArray(r.svcs) ? r.svcs.join('+') : r.svcs}</div>
-                    <div style="font-size:14px; color:rgba(255,255,255,0.4); font-weight:600;">⏱ ${fullTime} • ${r.pay === 'Trans' ? 'โอน' : 'สด'}</div>
+                    <div style="font-weight:800; font-size:15px; color:var(--text);">${Array.isArray(r.svcs) ? r.svcs.join('+') : r.svcs}</div>
+                    <div style="font-size:13px; color:var(--text); opacity:0.5; font-weight:600;">⏱ ${fullTime} • ${r.pay === 'Trans' ? 'โอน' : 'สด'}</div>
                 </div>
             </div>
             <div style="text-align:right;">
                 <div style="font-size:18px; font-weight:900; color:#bef264;">฿${p.toLocaleString()}</div>
-                ${t > 0 ? `<div style="font-size:14px; font-weight:800; color:#f472b6;">+ Tip ฿${t.toLocaleString()}</div>` : ''}
+                ${t > 0 ? `<div style="font-size:13px; font-weight:800; color:#f472b6;">+ Tip ฿${t.toLocaleString()}</div>` : ''}
             </div>
         </div>`;
     }).join("");
 
     openReportModal(`รายงาน ${d}`, `
-       <div style="font-family: 'Inter', sans-serif; background: var(--card); margin:-16px; padding:24px; color: var(--text); min-height:100vh;">
-        
-        <div style="text-align:center; padding:10px 0 30px 0;">
-            <div style="font-size:18px; color: var(--text); opacity:0.6; font-weight:700; text-transform:uppercase;">ยอดเงินรวม</div>
-            <div style="font-size:45px; font-weight:900; color:#bef264; text-shadow: 0 0 20px rgba(190, 242, 100, 0.3);">฿${totalRevenue.toLocaleString()}</div>
-        </div>
-
-        <div style="font-weight:900; font-size:16px; color: var(--text); margin-bottom:15px;">รายการ</div>
-        <div style="max-height:350px; overflow-y:auto; padding-bottom:30px;">
-            ${rows.replace(/background:rgba\(255,255,255,0.06\)/g, "background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1)")} 
-        </div>
+        <div style="font-family:'Inter', sans-serif; background:var(--modal-bg, var(--card)); margin:-16px; padding:24px; color:var(--text); min-height:100vh;">
+            
+            <div style="text-align:center; padding:10px 0 30px 0;">
+                <div style="font-size:16px; color:var(--text); opacity:0.6; font-weight:700; text-transform:uppercase;">ยอดเงินรวม</div>
+                <div style="font-size:45px; font-weight:900; color:#bef264; text-shadow:0 0 20px rgba(190, 242, 100, 0.3);">฿${totalRevenue.toLocaleString()}</div>
+            </div>
 
             <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:25px;">
-                <div style="background:#22c55e; padding:15px 5px; border-radius:20px; text-align:center;">
-                    <div style="font-size:16px; color:rgba(255,255,255,0.8); font-weight:800;">💵 สด</div>
+                <div style="background:#22c55e; padding:12px 5px; border-radius:18px; text-align:center; color:#fff;">
+                    <div style="font-size:13px; opacity:0.8; font-weight:800;">💵 สด</div>
                     <div style="font-size:16px; font-weight:900;">฿${cashTotal.toLocaleString()}</div>
                 </div>
-                <div style="background:#3b82f6; padding:15px 5px; border-radius:20px; text-align:center;">
-                    <div style="font-size:16px; color:rgba(255,255,255,0.8); font-weight:800;">📱 โอน</div>
+                <div style="background:#3b82f6; padding:12px 5px; border-radius:18px; text-align:center; color:#fff;">
+                    <div style="font-size:13px; opacity:0.8; font-weight:800;">📱 โอน</div>
                     <div style="font-size:16px; font-weight:900;">฿${transTotal.toLocaleString()}</div>
                 </div>
-                <div style="background:#f59e0b; padding:15px 5px; border-radius:20px; text-align:center;">
-                    <div style="font-size:16px; color:rgba(255,255,255,0.8); font-weight:800;">👥 ลูกค้า</div>
-                    <div style="font-size:16px; font-weight:900;">${customerCount}</div>
+                <div style="background:#f59e0b; padding:12px 5px; border-radius:18px; text-align:center; color:#fff;">
+                    <div style="font-size:13px; opacity:0.8; font-weight:800;">👥 ลูกค้า</div>
+                    <div style="font-size:16px; font-weight:900;">${customerCount} คน</div>
                 </div>
             </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:25px;">
-                <div style="background:rgba(255,255,255,0.05); padding:16px; border-radius:24px; text-align:center;">
-                    <div style="font-size:16px; color:rgba(255,255,255,0.5); font-weight:700;">ยอดเงินช่าง</div>
-                    <div style="font-size:22px; font-weight:900; color:#fff;">฿${barberEarn.toLocaleString()}</div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
+                <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:14px; border-radius:20px; text-align:center;">
+                    <div style="font-size:13px; color:var(--text); opacity:0.6; font-weight:700;">เงินช่าง</div>
+                    <div style="font-size:20px; font-weight:900; color:var(--text);">฿${barberEarn.toLocaleString()}</div>
                 </div>
-                <div style="background:rgba(255,255,255,0.05); padding:16px; border-radius:24px; text-align:center;">
-                    <div style="font-size:16px; color:rgba(255,255,255,0.5); font-weight:700;">ยอดเงินร้าน</div>
-                    <div style="font-size:22px; font-weight:900; color:#fff;">฿${shopEarn.toLocaleString()}</div>
+                <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:14px; border-radius:20px; text-align:center;">
+                    <div style="font-size:13px; color:var(--text); opacity:0.6; font-weight:700;">เงินร้าน</div>
+                    <div style="font-size:20px; font-weight:900; color:var(--text);">฿${shopEarn.toLocaleString()}</div>
                 </div>
-            ${settleHTML}  
             </div>
-            <div style="margin-bottom:25px; text-align:center;">
-                <div style="font-size:11px; color:rgba(255,255,255,0.4); font-weight:800; text-transform:uppercase; margin-bottom:10px; letter-spacing:1px;">Service Summary</div>
-            </div>
+
+            ${settleHTML}
+
+            <div style="text-align:center; margin-bottom:20px;">
+                <div style="font-size:11px; color:var(--text); opacity:0.4; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">สรุปทรงผม</div>
                 ${svcHTML}
-              </div>
-            <div style="font-weight:900; font-size:16px; color:rgba(255,255,255,0.9); margin-bottom:15px; letter-spacing:1px;">รายการ</div>
-            <div style="max-height:350px; overflow-y:auto; padding-bottom:30px;">
+            </div>
+
+            <div style="font-weight:900; font-size:16px; color:var(--text); margin-bottom:15px; border-left:4px solid #bef264; padding-left:10px;">รายละเอียด</div>
+            <div style="max-height:400px; overflow-y:auto; padding-bottom:30px;">
                 ${rows}
             </div>
         </div>
