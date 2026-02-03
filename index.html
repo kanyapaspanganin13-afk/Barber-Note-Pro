@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.104</title>
+    <title>Barber Note Pro v.107</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -549,29 +549,49 @@ function saveSettings() {
     for (let s in stats) { if (!priority.includes(s)) sH += `<span style="background:#64748b;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${s}: ${stats[s]}</span>`; }
     $("dServiceStats").innerHTML = sH + `</div>`;
 
-    let txt = "", bg = "";
-    if (isHoliday) { txt = "🏖️ พักผ่อนวันหยุด"; bg = "#f1f5f9"; }
-    else if (tot === 0) { txt = "🛡️ ร้านจ่ายประกัน"; bg = "#e0f2fe"; }
-    else if (settle > 0) { txt = `👨‍🎨 ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`; bg = "#fee2e2"; }
-    else if (settle < 0) { txt = `💈 ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; bg = "#e0e7ff"; }
-    else { txt = "✅ ยอดพอดี"; bg = "#dcfce7"; }
-
-    $("dailyList").innerHTML =
-        `<div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
-            <b style="font-size:16px;">📋 รายงานวันนี้:</b>
-            <i class="fab fa-line" style="color:#22c55e;font-size:32px;cursor:pointer" onclick="shareLine()"></i>
-        </div>` +
-        (isHoliday
-            ? `<div style="text-align:center; padding:40px; color:#64748b; font-weight:800;">🏖️ วันหยุดร้าน (ไม่มีรายการ) <i class="fas fa-trash-alt" style="color:#ef4444; cursor:pointer;" onclick="delRec(${allRec.find(x=>x.type==='HOLIDAY')?.id})"></i></div>`
-            : (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>")
-        );
-
-    const container = $("settleBar").parentElement;
-    container.style.cssText = "display:flex; gap:10px; margin-top:10px;";
-    container.innerHTML = `
-        <div id="settleBar" style="flex:8; height:55px; background:${bg}; display:flex; align-items:center; justify-content:center; border-radius:15px; font-weight:900; font-size:15px; color:#1e293b; border:1px solid rgba(0,0,0,0.05);">${txt}</div>
-        <button onclick="saveAndGo('${dInp}', ${tot})" style="flex:2; height:55px; background:#f97316; color:#fff; border-radius:15px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 6px rgba(0,0,0,0.1);"><i class="fas fa-paper-plane"></i></button>`;
+   // --- ส่วนคำนวณสถานะเดิมของมึง (เก็บไว้เอาไว้ใช้แค่ตัวหนังสือและไอคอน) ---
+let txt = "", statusColor = "", icon = "";
+if (isHoliday) { 
+    txt = "พักผ่อนวันหยุด"; statusColor = "#64748b"; icon = "🏖️"; 
+} else if (tot === 0) { 
+    txt = "ร้านจ่ายประกัน"; statusColor = "#0ea5e9"; icon = "🛡️"; 
+} else if (settle > 0) { 
+    txt = `ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`; statusColor = "#ef4444"; icon = "👨‍🎨"; 
+} else if (settle < 0) { 
+    txt = `ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; statusColor = "#6366f1"; icon = "💈"; 
+} else { 
+    txt = "ยอดพอดี"; statusColor = "#22c55e"; icon = "✅"; 
 }
+
+// --- สีพื้นหลังเทาเงินที่มึงต้องการ (ใช้ตลอดทุกสถานะ) ---
+const silverBG = "#f1f5f9"; 
+const indigoPrimary = "#4338ca"; // สีน้ำเงินเข้ม Indigo สำหรับปุ่ม
+
+// 1. ส่วนรายงานวันนี้ (ย้ายไปลง dailyList)
+$("dailyList").innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
+        <b style="font-size:16px; color:#1e293b;">📋 รายงานวันนี้:</b>
+        <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()"></i>
+    </div>
+    ${isHoliday 
+        ? `<div style="text-align:center; padding:40px; color:#64748b; font-weight:800;">🏖️ วันหยุดร้าน (ไม่มีรายการ) <i class="fas fa-trash-alt" style="color:#ef4444; cursor:pointer; margin-left:10px;" onclick="delRec(${allRec.find(x=>x.type==='HOLIDAY')?.id})"></i></div>` 
+        : (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>")}
+`;
+
+// 2. ส่วนแถบสถานะ (Settle Bar) และ ปุ่มส่ง (Action Button)
+const container = $("settleBar").parentElement;
+container.style.cssText = "display:flex; gap:10px; margin-top:15px;";
+
+container.innerHTML = `
+    <div id="settleBar" style="flex:8; height:55px; background:${silverBG}; display:flex; align-items:center; justify-content:center; border-radius:18px; font-weight:800; font-size:14px; color:${statusColor}; border:1px solid #e2e8f0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+        <span style="margin-right:8px; font-size:18px;">${icon}</span> ${txt}
+    </div>
+
+    <button onclick="saveAndGo('${dInp}', ${tot})" style="flex:2.2; height:55px; background:${indigoPrimary}; color:#fff; border-radius:18px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 15px rgba(67, 56, 202, 0.3);">
+        <i class="fas fa-paper-plane"></i>
+    </button>
+`;
+ }     
 function saveAndGo(date, total) {
     const todayData = db.filter(r => r.date === date && r.type === 'SERVICE');
     const isHoliday = db.some(r => r.date === date && r.type === 'HOLIDAY');
