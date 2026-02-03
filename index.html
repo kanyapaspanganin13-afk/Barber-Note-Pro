@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro </title>
+    <title>Barber Note Pro V.1 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -490,39 +490,42 @@ function applyTheme(t) {
         `;
         document.head.appendChild(st);
     }
-}
-     function saveSettings() {
-    // 1. ดึงค่าจากช่อง Input
-    const shopName = document.getElementById('setShop').value;
-    const shopPerc = document.getElementById('setPerc').value;
-    const shopGuar = document.getElementById('setGuar').value;
-    const shopTheme = document.getElementById('setTheme').value;
-    const shopVoice = document.getElementById('setVoice').value;
-    const shopSound = document.getElementById('setSound').value;
+}function saveSettings() {
+    // 1. ดึงค่าจากหน้าจอ
+    const shopName = $("setShop").value;
+    const shopPerc = $("setPerc").value;
+    const shopGuar = $("setGuar").value;
+    const shopTheme = $("setTheme").value;
 
-    // 2. บันทึกลง LocalStorage
+    // 2. 🔥 สำคัญมาก: อัปเดตตัวแปรกลาง (conf) ทันที!
+    // ถ้ามึงไม่ทำบรรทัดนี้ ฟังก์ชันคำนวณเงินจะยังใช้ค่าเก่าอยู่
+    conf.shop = shopName;
+    conf.perc = parseFloat(shopPerc);
+    conf.guar = parseFloat(shopGuar);
+    conf.theme = shopTheme;
+
+    // 3. บันทึกลง LocalStorage (อันนี้มึงทำถูกแล้ว)
     localStorage.setItem('shopName', shopName);
     localStorage.setItem('shopPerc', shopPerc);
     localStorage.setItem('shopGuar', shopGuar);
     localStorage.setItem('shopTheme', shopTheme);
-    localStorage.setItem('shopVoice', shopVoice);
-    localStorage.setItem('shopSound', shopSound);
 
-    // 3. เปลี่ยนชื่อร้านบนหัวเว็บทันที
-    if(shopName) {
-        document.getElementById('shopNameDisp').innerText = shopName.toUpperCase();
+    // 4. อัปเดตหน้าจอทันที
+    if($("shopNameDisp")) {
+        $("shopNameDisp").innerText = shopName.toUpperCase();
     }
 
-    // 4. 🔥 สั่งรันฟังก์ชันเปลี่ยนธีม และวาดหน้าจอใหม่ทันที
-    applyTheme(shopTheme); 
+    // 5. สั่งคำนวณยอดใหม่ทันทีด้วยค่า % ใหม่ใน conf
+    if (typeof calculateMoney === "function") {
+        calculateMoney(); 
+    }
     
     if (typeof renderDay === "function") {
         renderDay(); 
     }
 
-    // 5. แจ้งเตือนและปิด Modal
-    alert("บันทึกการตั้งค่าเรียบร้อยแล้ว ✅");
-    document.getElementById('modalSet').style.display = 'none';
+    $("modalSet").style.display = 'none';
+    alert("ตั้งค่าสำเร็จ!");
 }
  function closeAndGoHome(){const m=document.getElementById("modalSet");if(m)m.style.display='none';if(typeof go==='function')go(1);else location.reload()}
  function speak(txt) {if ('speechSynthesis' in window) {const msg = new SpeechSynthesisUtterance(txt); msg.lang = 'th-TH'; window.speechSynthesis.speak(msg);}}       
