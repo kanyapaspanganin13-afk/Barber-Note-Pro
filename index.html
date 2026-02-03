@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.14</title>
+    <title>Barber Note Pro v.114</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -191,28 +191,23 @@
 <div id="p2" class="page" style="max-width:480px; margin:0 auto; padding: 15px; padding-bottom: 100px;">
     
     <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 12px; margin-bottom: 15px;">
-        <div style="background: var(--primary); padding:20px 15px; border-radius:24px; text-align:center; box-shadow: 0 10px 20px rgba(67, 56, 202, 0.3); color: white;">
-            <small style="font-weight:700; color: rgba(255,255,255,0.8); text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">ยอดรวมวันนี้</small>
-            <div id="dTotal" style="font-size:40px; font-weight:900; color: white; margin: 5px 0;">0</div>
-            <div id="dCounts" style="font-size:14px; font-weight:700; color:var(--primary); background:white; display:inline-block; padding:3px 15px; border-radius:20px;">ลูกค้า 0 คน</div>
+        <div style="background: #4338ca; padding:20px 15px; border-radius:24px; text-align:center; color: white;">
+            <small style="font-weight:700; opacity: 0.8; font-size: 11px;">ยอดรวมวันนี้</small>
+            <div id="dTotal" style="font-size:40px; font-weight:900; margin: 5px 0;">0</div>
+            <div id="dCounts" style="font-size:14px; font-weight:700; color:#4338ca; background:white; display:inline-block; padding:3px 15px; border-radius:20px;">ลูกค้า 0 คน</div>
         </div>
-
-        <div style="background: #ffffff; padding:15px; border-radius:24px; box-shadow:0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; display:flex; flex-direction:column; justify-content:center; gap:8px;">
-            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:800;"><span style="color:#0ea5e9;">📱 โอน:</span> <span id="dTrans" style="color:#1e293b">0</span></div>
-            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:800;"><span style="color:#f59e0b;">💵 สด:</span> <span id="dCash" style="color:#1e293b">0</span></div>
-            <hr style="border:0; border-top:2px dashed #cbd5e1; margin: 2px 0;">
-            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:800;"><span style="color:#6366f1;">👨‍🎨 ช่าง:</span> <span id="dBarber" style="color:#1e293b">0</span></div>
-            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:800;"><span style="color:#64748b;">🏠 ร้าน:</span> <span id="dShop" style="color:#1e293b">0</span></div>
+        <div style="background: white; padding:15px; border-radius:24px; box-shadow:0 4px 15px rgba(0,0,0,0.05); display:flex; flex-direction:column; justify-content:center; gap:8px;">
+            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:800;"><span style="color:#0ea5e9;">📱 โอน:</span> <span id="dTrans">0</span></div>
+            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:800;"><span style="color:#f59e0b;">💵 สด:</span> <span id="dCash">0</span></div>
+            <hr style="border:0; border-top:2px dashed #f1f5f9; margin: 2px 0;">
+            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:800;"><span style="color:#6366f1;">👨‍🎨 ช่าง:</span> <span id="dBarber">0</span></div>
+            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:800;"><span style="color:#64748b;">🏠 ร้าน:</span> <span id="dShop">0</span></div>
         </div>
     </div>
 
-    <div id="settleBarContainer" style="margin-bottom:18px; background:#e2e8f0; border-radius:10px; height:14px; overflow:hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
-        <div id="settleBar" style="width: 0%; height:100%; background: linear-gradient(90deg, #4338ca, #6366f1, #0ea5e9); transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
-    </div>
+    <div id="actionContainer"></div>
 
-    <div id="dServiceStats" style="margin-bottom:15px;"></div>
-    
-    <div id="dailyListContainer"></div> 
+    <div id="dailyListContainer" style="margin-top:20px;"></div>
 </div>
 <div id="p3" class="page" style="max-width:480px; margin:0 auto; padding: 12px; padding-bottom: 100px; background: #f8fafc;">
     <div class="card" style="background:#fff; border-radius:25px; padding:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border:1px solid #fff; margin-bottom: 15px;">
