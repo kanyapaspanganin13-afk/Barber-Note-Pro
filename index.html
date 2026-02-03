@@ -457,27 +457,33 @@ function openSettings() {
     if (t === 'dark') {s.setProperty('--card', '#262626');s.setProperty('--text', '#fbbf24');document.body.style.background = '#171717';}
     else if (t === 'navy') {s.setProperty('--card', '#ffffff'); s.setProperty('--text', '#1a237e');document.body.style.background = '#1a237e';
     const st = document.createElement("style");st.id = "navyStyle"; st.innerHTML = ` body.navy { background: #1a237e !important; color: #ffffff !important; }.navy .card b, .navy .card span { color: #1e293b !important; }.navy #dTotal, .navy #accNet { color: #1a237e !important; }.nav-item { color: #ffffff !important; opacity: 0.7; }.nav-item.active { color: #facc15 !important; opacity: 1; font-weight: bold; } `;document.head.appendChild(st);}}
- function saveSettings() {
-    // บันทึกค่ากลับเข้า conf ให้ครบ 6 ตัว
-    conf = {
-        ...conf, 
-        shop:  $("setShop")  ? $("setShop").value  : conf.shop,
-        perc:  $("setPerc")  ? (parseInt($("setPerc").value) || 0) : conf.perc,
-        guar:  $("setGuar")  ? (parseInt($("setGuar").value) || 0) : conf.guar,
-        theme: $("setTheme") ? $("setTheme").value : conf.theme,
-        voice: $("setVoice") ? $("setVoice").value : conf.voice,
-        sound: $("setSound") ? $("setSound").value : conf.sound
-    };
+function saveSettings() {
+    // 1. ดึงค่าจากช่อง Input ใน Modal
+    const shopName = document.getElementById('setShop').value;
+    const shopPerc = document.getElementById('setPerc').value;
+    const shopGuar = document.getElementById('setGuar').value;
+    const shopTheme = document.getElementById('setTheme').value;
+    const shopVoice = document.getElementById('setVoice').value;
+    const shopSound = document.getElementById('setSound').value;
 
-    // เซฟลงเครื่อง
-    localStorage.setItem("barber_conf", JSON.stringify(conf));
+    // 2. บันทึกลง LocalStorage (กันหายเวลาปิดเว็บ)
+    localStorage.setItem('shopName', shopName);
+    localStorage.setItem('shopPerc', shopPerc);
+    localStorage.setItem('shopGuar', shopGuar);
+    localStorage.setItem('shopTheme', shopTheme);
+    localStorage.setItem('shopVoice', shopVoice);
+    localStorage.setItem('shopSound', shopSound);
 
-    // รันการแสดงผลหน้าหลักใหม่
-    if (typeof renderDay === "function") renderDay(); 
+    // 3. 🔥 จุดสำคัญ: สั่งให้ชื่อบนหัวเว็บเปลี่ยนทันที!
+    if(shopName) {
+        document.getElementById('shopNameDisp').innerText = shopName.toUpperCase();
+    }
+
+    // 4. แจ้งเตือนและปิด Modal
+    alert("บันทึกการตั้งค่าเรียบร้อยแล้ว ✅");
+    document.getElementById('modalSet').style.display = 'none';
     
-    alert("บันทึกเรียบร้อย");
-    $("modalSet").style.display = "none"; // ปิด Modal อัตโนมัติ
-}           
+}          
  function closeAndGoHome(){const m=document.getElementById("modalSet");if(m)m.style.display='none';if(typeof go==='function')go(1);else location.reload()}
  function speak(txt) {if ('speechSynthesis' in window) {const msg = new SpeechSynthesisUtterance(txt); msg.lang = 'th-TH'; window.speechSynthesis.speak(msg);}}       
  function clearAllData(){if(confirm("ลบข้อมูลทั้งหมด?")){localStorage.clear();location.reload()}}
