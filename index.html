@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.037</title>
+    <title>Barber Note Pro v.1</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -617,7 +617,7 @@ function renderDay() {
     } else if (settle > 0) { 
         txt = `ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`; statusColor = "#b91c1c"; icon = "👨‍🎨"; 
     } else if (settle < 0) { 
-        txt = `ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; statusColor = "#4338ca"; icon = "💈"; 
+        txt = `ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; statusColor = "#4338ca"; icon = "🏠"; 
     } else { 
         txt = "ยอดพอดี"; statusColor = "#15803d"; icon = "✅"; 
     }
@@ -818,8 +818,8 @@ function loadHistDaily() {
         </div>`;
     }).join("");
 
-    openReportModal(`รายงาน ${d}`, `
-        <div style="font-family:'Inter', system-ui, sans-serif; background:#0f172a; margin:-16px; padding:24px; color:#f1f5f9; min-height:100vh;">
+   openReportModal(`รายงาน ${d}`, `
+    <div style="font-family:'Inter', system-ui, sans-serif; background:#0f172a; margin:-16px; padding:24px; color:#f1f5f9; min-height:100vh;">
             
             <div style="text-align:center; padding:20px 0 30px 0;">
                 <div style="font-size:14px; color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:1px;">ยอดเงินรวม</div>
@@ -927,7 +927,7 @@ function loadHistMonth() {
     openReportModal(
         `สรุปรายงานเดือน ${m}`,
         `
-        <div style="background:#0f172a; margin:-16px; padding:24px; font-family:'Inter', sans-serif; color:#fff; min-height:100vh;">
+        <div style="background:#0f172a; margin:-16px; padding:24px; font-family:'Inter', sans-serif; color:#f1f5f9; min-height:100vh;">
             
             <div style="text-align:center; padding:10px 0 30px 0;">
                 <div style="font-size:13px; color:#94a3b8; font-weight:700; text-transform:uppercase; letter-spacing:2px; margin-bottom:5px;">✂️ยอดตัดทั้งเดือน</div>
