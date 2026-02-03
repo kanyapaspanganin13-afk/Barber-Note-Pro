@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.17</title>
+    <title>Barber Note Pro v.177</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -187,8 +187,7 @@
     <span style="font-size: 32px; font-weight: 900; letter-spacing:1px;">บันทึกข้อมูล</span>
 </button>  
 </div>
-
-<div id="p2" class="page" style="max-width:480px; margin:0 auto; padding: 15px; padding-bottom: 100px;">
+<div id="p2" class="page" style="max-width:480px; margin:0 auto; padding: 15px; padding-bottom: 120px; min-height: calc(100vh - 70px); position: relative;">
     
     <div style="background: #4338ca; padding:25px 20px; border-radius:28px; color: white; box-shadow: 0 12px 25px rgba(67, 56, 202, 0.25); margin-bottom: 20px; display: flex; align-items: flex-end; justify-content: space-between;">
         
@@ -199,28 +198,12 @@
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end; border-left: 1px dashed rgba(255,255,255,0.2); padding-left: 15px;">
-            
-            <div style="display:flex; align-items:center; gap:8px; font-size:14px;">
-                <span style="opacity: 0.7; font-weight:600;">📱 โอน</span>
-                <span id="dTrans" style="font-weight:800; font-size:16px; min-width: 40px; text-align: right;">0</span>
-            </div>
-            
-            <div style="display:flex; align-items:center; gap:8px; font-size:14px;">
-                <span style="opacity: 0.7; font-weight:600;">💵 สด</span>
-                <span id="dCash" style="font-weight:800; font-size:16px; min-width: 40px; text-align: right;">0</span>
-            </div>
-
+            <div style="display:flex; align-items:center; gap:8px; font-size:14px;"><span style="opacity: 0.7;">📱 โอน</span><span id="dTrans" style="font-weight:800;">0</span></div>
+            <div style="display:flex; align-items:center; gap:8px; font-size:14px;"><span style="opacity: 0.7;">💵 สด</span><span id="dCash" style="font-weight:800;">0</span></div>
             <div style="width: 100%; border-top: 1px solid rgba(255,255,255,0.15); margin: 2px 0;"></div>
-
-            <div style="display:flex; align-items:center; gap:8px; font-size:14px;">
-                <span style="opacity: 0.7; font-weight:600;">👨‍🎨 ช่าง</span>
-                <span id="dBarber" style="font-weight:800; font-size:16px; min-width: 40px; text-align: right;">0</span>
-            </div>
-
-            <div style="display:flex; align-items:center; gap:8px; font-size:14px;">
-                <span style="opacity: 0.7; font-weight:600;">🏠 ร้าน</span>
-                <span id="dShop" style="font-weight:800; font-size:16px; min-width: 40px; text-align: right;">0</span>
-        </div> </div> <div id="settleBarContainer" style="margin-bottom:18px;"><div id="settleBar"></div> </div> <div id="dServiceStats"></div> <hr style="border:0; border-top:1px solid #e2e8f0; margin-top:15px;"> <div id="dailyList"></div> </div>
+            <div style="display:flex; align-items:center; gap:8px; font-size:14px;"><span style="opacity: 0.7;">👨‍🎨 ช่าง</span><span id="dBarber" style="font-weight:800;">0</span></div>
+            <div style="display:flex; align-items:center; gap:8px; font-size:14px;"><span style="opacity: 0.7;">🏠 ร้าน</span><span id="dShop" style="font-weight:800;">0</span></div>
+         </div> </div> <div id="settleBarContainer" style="margin-bottom:18px;"><div id="settleBar"></div> </div> <div id="dServiceStats"></div> <hr style="border:0; border-top:1px solid #e2e8f0; margin-top:15px;"> <div id="dailyList"></div> </div>
    
     <div id="p3" class="page" style="max-width:480px; margin:0 auto; padding: 12px; padding-bottom: 100px; background: #f8fafc;">
     <div class="card" style="background:#fff; border-radius:25px; padding:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border:1px solid #fff; margin-bottom: 15px;">
