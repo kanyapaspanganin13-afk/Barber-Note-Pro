@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.237</title>
+    <title>Barber Note Pro v.537</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -780,12 +780,17 @@ function loadHistDaily() {
     }).join("");
 
     openReportModal(`รายงาน ${d}`, `
-        <div style="font-family: 'Inter', sans-serif; background:#0f172a; margin:-16px; padding:24px; color:#fff; min-height:100vh;">
-            
-            <div style="text-align:center; padding:10px 0 30px 0;">
-                <div style="font-size:18px; color:rgba(255,255,255,0.5); font-weight:700; text-transform:uppercase; letter-spacing:2px; margin-bottom:5px;">ยอดเงินรวม</div>
-                <div style="font-size:45px; font-weight:900; color:#bef264; letter-spacing:-2px; text-shadow: 0 0 20px rgba(190, 242, 100, 0.3);">฿${totalRevenue.toLocaleString()}</div>
-            </div>
+       <div style="font-family: 'Inter', sans-serif; background: var(--card); margin:-16px; padding:24px; color: var(--text); min-height:100vh;">
+        
+        <div style="text-align:center; padding:10px 0 30px 0;">
+            <div style="font-size:18px; color: var(--text); opacity:0.6; font-weight:700; text-transform:uppercase;">ยอดเงินรวม</div>
+            <div style="font-size:45px; font-weight:900; color:#bef264; text-shadow: 0 0 20px rgba(190, 242, 100, 0.3);">฿${totalRevenue.toLocaleString()}</div>
+        </div>
+
+        <div style="font-weight:900; font-size:16px; color: var(--text); margin-bottom:15px;">รายการ</div>
+        <div style="max-height:350px; overflow-y:auto; padding-bottom:30px;">
+            ${rows.replace(/background:rgba\(255,255,255,0.06\)/g, "background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1)")} 
+        </div>
 
             <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:25px;">
                 <div style="background:#22c55e; padding:15px 5px; border-radius:20px; text-align:center;">
@@ -810,13 +815,13 @@ function loadHistDaily() {
                     <div style="font-size:16px; color:rgba(255,255,255,0.5); font-weight:700;">ยอดเงินร้าน</div>
                     <div style="font-size:22px; font-weight:900; color:#fff;">฿${shopEarn.toLocaleString()}</div>
                 </div>
-            ${settleHTML}
-             
+            ${settleHTML}  
             </div>
             <div style="margin-bottom:25px; text-align:center;">
                 <div style="font-size:11px; color:rgba(255,255,255,0.4); font-weight:800; text-transform:uppercase; margin-bottom:10px; letter-spacing:1px;">Service Summary</div>
-                ${svcHTML}
             </div>
+                ${svcHTML}
+              </div>
             <div style="font-weight:900; font-size:16px; color:rgba(255,255,255,0.9); margin-bottom:15px; letter-spacing:1px;">รายการ</div>
             <div style="max-height:350px; overflow-y:auto; padding-bottom:30px;">
                 ${rows}
@@ -875,24 +880,29 @@ function loadHistMonth() {
         ).join("");
     };
 
-    openReportModal(
-        `สรุปรายงานเดือน ${m}`,
-        `
-        <div style="background:#0f172a; margin:-16px; padding:24px; font-family:'Inter', sans-serif; color:#fff; min-height:100vh;">
+  openReportModal(
+    `สรุปรายงานเดือน ${m}`,
+    `
+    /* แก้ background และ color ให้ใช้ตัวแปร */
+    <div style="background: var(--card-bg, #0f172a); margin:-16px; padding:24px; font-family:'Inter', sans-serif; color: var(--text, #fff); min-height:100vh;">
+        
+        <div style="text-align:center; padding:20px 0 40px 0;">
+            /* แก้สีหัวข้อให้จางลงตามตัวแปร text */
+            <div style="font-size:18px; color: var(--text); opacity:0.5; font-weight:800; text-transform:uppercase; letter-spacing:2px; margin-bottom:8px;">✂️ ยอดตัดทั้งเดือน</div>
             
-            <div style="text-align:center; padding:20px 0 40px 0;">
-                <div style="font-size:18px; color:rgba(255,255,255,0.5); font-weight:800; text-transform:uppercase; letter-spacing:2px; margin-bottom:8px;">✂️ ยอดตัดทั้งเดือน</div>
-                <div style="font-size:52px; font-weight:900; color:#bef264; letter-spacing:-2px; text-shadow: 0 0 25px rgba(190, 242, 100, 0.4);">฿${monthTotal.toLocaleString()}</div>
-                
-                <div style="display:flex; justify-content:center; gap:12px; margin-top:20px;">
-                    <div style="background:rgba(255,255,255,0.1); padding:8px 16px; border-radius:12px; font-size:13px; font-weight:700;">
-                        👤 ${monthCount} <span style="opacity:0.5; font-weight:400;">คน</span>
-                    </div>
-                    <div style="background:rgba(255,255,255,0.1); padding:8px 16px; border-radius:12px; font-size:13px; font-weight:700;">
-                        📅 ${filtered.length} <span style="opacity:0.5; font-weight:400;">วัน</span>
-                    </div>
+            /* ตัวเลขยอดเงิน ให้สว่างและมีเงาเรืองแสง */
+            <div style="font-size:52px; font-weight:900; color:#bef264; letter-spacing:-2px; text-shadow: 0 0 25px rgba(190, 242, 100, 0.4);">฿${monthTotal.toLocaleString()}</div>
+            
+            <div style="display:flex; justify-content:center; gap:12px; margin-top:20px;">
+                /* ปรับสีพื้นหลังก้อนเล็กๆ ให้ดู Soft ขึ้น */
+                <div style="background: var(--bg-soft, rgba(255,255,255,0.1)); padding:8px 16px; border-radius:12px; font-size:13px; font-weight:700; color: var(--text);">
+                    👤 ${monthCount} <span style="opacity:0.5; font-weight:400;">หัว</span>
+                </div>
+                <div style="background: var(--bg-soft, rgba(255,255,255,0.1)); padding:8px 16px; border-radius:12px; font-size:13px; font-weight:700; color: var(--text);">
+                    📅 ${filtered.length} <span style="opacity:0.5; font-weight:400;">วัน</span>
                 </div>
             </div>
+        </div>
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:35px;">
                 <div style="background:rgba(34, 197, 94, 0.1); border:1px solid rgba(34, 197, 94, 0.2); padding:20px; border-radius:28px; text-align:center;">
