@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.09</title>
+    <title>Barber Note Pro v.39</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -899,21 +899,31 @@ function go(p) {
         pg.classList.remove('active');
         pg.style.display = 'none'; 
     });
+
     const targetPage = document.getElementById('p' + p);
     if (targetPage) {
         targetPage.classList.add('active');
         targetPage.style.display = 'block';
     }
+
     document.querySelectorAll('.nav-item').forEach((btn, i) => {
         btn.classList.toggle('active', (i + 1) === p);
     });
+
+    // 🔥 บังคับเมนูบาร์
+    const nav = document.querySelector("nav");
+    if (nav) {
+        nav.style.display = "flex";
+        nav.style.zIndex = 999999;
+    }
+
     if (p === 3) { 
-        // 1. บังคับให้วันที่ในหน้าบัญชี ตรงกับวันที่หน้าแรกก่อน
-        if($("accDate") && $("dateInp")) $("accDate").value = $("dateInp").value;
-        // 2. สั่งให้ฟังก์ชันคำนวณเลขบัญชีทำงานทันที
+        if($("accDate") && $("dateInp"))
+            $("accDate").value = $("dateInp").value;
         loadAccountStatus(); 
     }
 }
+
     function saveDB() {localStorage.setItem("barber_db", JSON.stringify(db));localStorage.setItem("barber_conf", JSON.stringify(conf));}
     function delRec(id) { if (confirm("ลบรายการนี้?")) { db = db.filter(r => r.id !== id); saveDB(); renderDay(); } }
     function editTime(id) {const rec = db.find(r => r.id === id);if (!rec) return;const newStart = prompt("แก้เวลาเริ่ม (HH:MM)", rec.time);if (!newStart) return;const newEnd = prompt("แก้เวลาเสร็จ (HH:MM)", rec.endTime || "");rec.time = newStart;rec.endTime = newEnd || addMinutes(newStart, 30);saveDB();renderDay();}
