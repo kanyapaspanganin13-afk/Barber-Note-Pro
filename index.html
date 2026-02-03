@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.737</title>
+    <title>Barber Note Pro v.37</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -479,17 +479,11 @@ function saveSettings() {
         document.getElementById('shopNameDisp').innerText = shopName.toUpperCase();
     }
 
-    // --- 4. 🔥 ส่วนที่เพิ่ม: สั่งเปลี่ยนธีมสีหน้าจอทันที ---
-    const body = document.body;
-    if (shopTheme === 'navy') {
-        body.style.background = '#1e3a8a'; // สีน้ำเงินเข้ม
-        body.style.color = '#ffffff';
-    } else if (shopTheme === 'dark') {
-        body.style.background = '#0f172a'; // สีดำ slate
-        body.style.color = '#e2e8f0';
-    } else {
-        body.style.background = '#f8fafc'; // สีสว่าง (Light)
-        body.style.color = '#1e293b';
+    // 4. 🔥 สั่งรันฟังก์ชันเปลี่ยนธีม และวาดหน้าจอใหม่ทันที
+    applyTheme(shopTheme); 
+    
+    if (typeof renderDay === "function") {
+        renderDay(); 
     }
 
     // 5. แจ้งเตือนและปิด Modal
@@ -571,7 +565,7 @@ function renderDay() {
     if($("dCash")) $("dCash").innerText   = cash.toLocaleString();
     if($("dBarber")) $("dBarber").innerText = Math.floor(bEarn).toLocaleString();
     if($("dShop")) $("dShop").innerText   = Math.floor(sEarn).toLocaleString();
-    if($("dCounts")) $("dCounts").innerText = isHoliday ? "🏪 วันหยุด" : `ลูกค้า: ${today.length} คน`;
+    if($("dCounts")) $("dCounts").innerText = isHoliday ? "🏖️ วันหยุด" : `ลูกค้า: ${today.length} คน`;
 
     // --- ส่วนสถิติ ---
     let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:10px;">`;
@@ -583,7 +577,7 @@ function renderDay() {
     // --- ส่วนคำนวณแถบสถานะและปุ่ม ---
     let txt = "", statusColor = "", icon = "";
     if (isHoliday) { 
-        txt = "พักผ่อนวันหยุด"; statusColor = "#1e40af"; icon = "🏖️"; 
+        txt = "วันหยุด"; statusColor = "#1e40af"; icon = "🏖️"; 
     } else if (tot === 0) { 
         txt = "ร้านจ่ายประกัน"; statusColor = "#0369a1"; icon = "🛡️"; 
     } else if (settle > 0) { 
@@ -616,10 +610,11 @@ if (actionBox) {
     const dList = document.getElementById("dailyList");
     if (dList) {
         dList.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
-                <b style="font-size:16px; color:#1e293b;">📋 รายงานวันนี้:</b>
-                <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()"></i>
-            </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
+        <b style="font-size:16px; color: var(--text);">📋 รายงานวันนี้:</b>
+        <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()"></i>
+    </div>
+
             ${isHoliday ? `<center style='padding:40px; color:#64748b;'>🏖️ วันหยุดร้าน</center>` : (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>")}
         `;
     }
