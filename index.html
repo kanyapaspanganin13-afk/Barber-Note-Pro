@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.40</title>
+    <title>Barber Note Pro v.4</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -188,42 +188,33 @@
     <span style="font-size: 32px; font-weight: 900; letter-spacing:1px;">บันทึกข้อมูล</span>
 </button>  
 </div>
-<div id="p2" class="page">
-    <div class="container" style="max-width:480px; margin:0 auto; padding-bottom: 40px;">
+<div id="p2" class="page" style="max-width:480px; margin:0 auto; padding: 15px; padding-bottom: 100px;">
+    
+    <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 12px; margin-bottom: 15px;">
+        <div style="background: var(--card); padding:20px 15px; border-radius:20px; text-align:center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 2px solid var(--primary);">
+            <small style="font-weight:800; color:#64748b; text-transform: uppercase;">ยอดรวมวันนี้</small>
+            <div id="dTotal" style="font-size:36px; font-weight:900; color:var(--primary); margin: 5px 0;">0</div>
+            <div id="dCounts" style="font-size:14px; font-weight:700; color:#fff; background:var(--primary); display:inline-block; padding:2px 12px; border-radius:20px;">ลูกค้า 0 คน</div>
+        </div>
+
+        <div style="background:white; padding:15px; border-radius:20px; box-shadow:0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; display:flex; flex-direction:column; justify-content:center; gap:8px;">
+            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:700;"><span style="color:#0ea5e9;">📱 โอน:</span> <span id="dTrans">0</span></div>
+            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:700;"><span style="color:#f59e0b;">💵 สด:</span> <span id="dCash">0</span></div>
+            <hr style="border:0; border-top:1px dashed #cbd5e1; margin: 2px 0;">
+            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:700;"><span style="color:#6366f1;">👨‍🎨 ช่าง:</span> <span id="dBarber">0</span></div>
+            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:700;"><span style="color:#64748b;">🏠 ร้าน:</span> <span id="dShop">0</span></div>
+        </div>
+    </div>
+
+    <div id="settleBarContainer" style="margin-bottom:18px; background:#e2e8f0; border-radius:10px; height:10px; overflow:hidden;">
+        <div id="settleBar" style="width: 0%; height:100%; background:var(--primary); transition: width 0.5s;"></div>
+    </div>
+
+    <div id="dServiceStats" style="margin-bottom:15px;"></div>
         
-        <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 12px; margin-bottom: 15px;">
-            
-            <div style="background: var(--card); padding:20px 15px; border-radius:25px; text-align:center; box-shadow:0 10px 20px rgba(0,0,0,0.05); border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center;">
-                <small style="font-weight:800; color:#64748b; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">ยอดรวมวันนี้</small>
-                <div id="dTotal" style="font-size:38px; font-weight:900; color:var(--primary); margin: 5px 0; letter-spacing: -1px;">0</div>
-                <div id="dCounts" style="font-size:14px; font-weight:700; color:var(--primary); background: rgba(99, 102, 241, 0.1); display:inline-block; padding:4px 12px; border-radius:12px; margin: 0 auto;">ลูกค้า 0 คน</div>
-            </div>
-
-            <div style="background: var(--card); padding:18px; border-radius:25px; box-shadow:0 10px 20px rgba(0,0,0,0.05); border: 1px solid var(--border); display:flex; flex-direction:column; justify-content:center; gap:10px;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="color:#0ea5e9; font-size:13px; font-weight:700;">📱 โอน</span>
-                    <b id="dTrans" style="font-size:16px; color:var(--text);">0</b>
-                </div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="color:#f59e0b; font-size:13px; font-weight:700;">💵 สด</span>
-                    <b id="dCash" style="font-size:16px; color:var(--text);">0</b>
-                </div>
-                <div style="border-top: 1px dashed var(--border); margin: 2px 0;"></div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="color:var(--primary); font-size:13px; font-weight:700;">👨‍🎨 ช่าง</span>
-                    <b id="dBarber" style="font-size:16px; color:var(--text);">0</b>
-                </div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="color:#64748b; font-size:13px; font-weight:800;">🏠 ร้าน</span>
-                    <b id="dShop" style="font-size:16px; color:var(--text);">0</b>
-                </div>
-            </div>
-        </div>
-
-        <div id="settleBarContainer" style="margin-bottom:20px; background: var(--border); border-radius: 10px; overflow: hidden; height: 8px;">
-            <div id="settleBar" style="height: 100%; background: var(--success); width: 0%; transition: 0.5s ease-out;"></div>
-        </div>
-
+        <div id="dailyList"></div> 
+    </div>
+</div>
         <div id="dServiceStats" style="margin-bottom: 20px;"></div>
 
         <div class="acc-main-card" style="padding: 20px; border-radius: 25px;">
