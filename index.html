@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.0</title>
+    <title>Barber Note Pro v.40</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -23,58 +23,93 @@
     </script>
 </head>
 <style>
+    /* 1. ตัวแปรหลัก */
     :root { 
-        --primary: #6366f1; --accent: #0ea5e9; --danger: #ef4444; --success: #22c55e; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --border: #e2e8f0;
+        --primary: #6366f1; --accent: #0ea5e9; --danger: #ef4444; --success: #22c55e; 
+        --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --border: #e2e8f0;
     }
-    * { box-sizing: border-box; font-family: 'Kanit', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 90px; overflow-x: hidden; }
-    .container { padding: 15px 15px 100px 15px !important; max-width: 500px; margin: auto; position: relative; z-index: 1; }
-    .nav-bar {
-        position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
-        height: 75px !important; background: white !important; display: flex !important; 
-        justify-content: space-around !important; align-items: center !important; 
-        z-index: 99999 !important; 
-        border-top: 1px solid #eee;
-        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-    }
-    .nav-item {
-        flex: 1 !important; display: flex !important; flex-direction: column !important;
-        align-items: center !important; justify-content: center !important; cursor: pointer !important;
-        pointer-events: auto !important;
-    }
-nav {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: #1a237e !important; 
-    display: flex; justify-content: space-around; padding: 12px 0;
-    box-shadow: 0 -10px 30px rgba(0,0,0,0.4); 
-    z-index: 9999; border-top: 1px solid rgba(255,255,255,0.1);
-}
-.nav-item { text-align: center; color: rgba(255,255,255,0.5); flex: 1; transition: 0.2s; }
-.nav-item.active { color: #ffffff !important; opacity: 1; } /* ตัวที่เลือกจะขาวสว่างจ้า */
-.nav-item i { font-size: 22px; display: block; margin-bottom: 2px; }
-.nav-item span { font-size: 11px; font-weight: 700; }
+
+    /* 2. ระบบธีม (ต้องอยู่บนสุดเพื่อเตรียมตัวแปร) */
     body.navy { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --accent: #38bdf8; }
-     body.dark { --bg: #121212; --card: #1a1a1a; --text: #fbbf24; --accent: #fbbf24; }
-     body { background-color: var(--bg); color: var(--text); transition: all 0.3s ease; }
-    .icon-card, input, select { background: var(--card); color: var(--text); border: 1px solid rgba(255,255,255,0.1); }
-    .grid-3 {display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 6px; margin-bottom: 8px;}
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
-    .icon-card { position: relative; border-radius: 15px; padding: 10px 2px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: none !important; background: #fff; height: 75px !important; font-size: 14px !important; }
-    input, select { width: 100%; height: 75px !important; border-radius: 20px !important; font-size: 20px !important; font-weight: 700; text-align: center; border: none !important; outline: none !important; background: #f1f5f9; appearance: none; -webkit-appearance: none; box-shadow: 0 4px 10px rgba(0,0,0,0.03); color: #1e293b; }
-    .btn { border: none; padding: 12px; border-radius: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; transition: 0.2s; }
-    .btn-pay { background: #e2e8f0; color: #64748b; border:2px solid transparent; height: 70px; font-size: 18px;}
-    .btn-pay.active-cash { background: #dcfce7; color: #15803d; border-color: #22c55e; }
-    .btn-pay.active-trans { background: #e0f2fe; color: #0369a1; border-color: #0ea5e9; }
-   
+    body.dark { --bg: #121212; --card: #1a1a1a; --text: #fbbf24; --accent: #fbbf24; }
+
+    /* 3. รีเซ็ตพื้นฐาน */
+    * { box-sizing: border-box; font-family: 'Kanit', sans-serif; -webkit-tap-highlight-color: transparent; }
+    
+    body { 
+        margin: 0; background: var(--bg); color: var(--text); 
+        padding-bottom: 90px; overflow-x: hidden; transition: all 0.3s ease; 
+    }
+
+    /* 4. ระบบเลย์เอาต์ (Layout & Page) */
+    .container { padding: 15px; max-width: 500px; margin: auto; position: relative; z-index: 1; }
     .page { display: none; } 
     .page.active { display: block; }
-    .modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); display: none; z-index: 100000; align-items: center; justify-content: center; }
-    .modal-content { background: #fff; width: 90%; max-width: 400px; border-radius: 25px; padding: 25px; max-height: 85vh; overflow-y: auto; }
-    .status-bar { padding: 12px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 14px; margin-bottom: 10px; box-shadow: inset 0 0 5px rgba(0,0,0,0.05); }
-    .acc-main-card { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #fffbeb; }
-    .btn-save { background: var(--success); color: white; border: none; width: 100%; padding: 15px; border-radius: 15px; font-weight: 700; font-size: 16px; cursor: pointer; }
-    #accHistory { font-size: 12px; max-height: 150px; overflow-y: auto; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px; }
 
+    /* 5. เมนูบาร์ (แก้ที่ซ้ำซ้อนเหลือชุดเดียว) */
+    nav {
+        position: fixed; bottom: 0; left: 0; right: 0;
+        background: #1a237e !important; /* สีกรมท่าพื้นหลัง */
+        display: flex; justify-content: space-around; 
+        height: 75px; align-items: center;
+        box-shadow: 0 -10px 30px rgba(0,0,0,0.4); 
+        z-index: 99999; border-top: 1px solid rgba(255,255,255,0.1);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .nav-item { 
+        flex: 1; text-align: center; color: rgba(255,255,255,0.5); 
+        cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center;
+    }
+
+    .nav-item.active { color: #ffffff !important; opacity: 1; }
+    
+    .nav-item i { font-size: 22px; display: block; margin-bottom: 2px; }
+    .nav-item span { font-size: 11px; font-weight: 700; }
+
+    /* 6. ฟอร์มและอินพุต */
+    .icon-card, input, select { background: var(--card); color: var(--text); }
+
+    .icon-card { 
+        border-radius: 15px; padding: 10px 2px; display: flex; flex-direction: column; 
+        align-items: center; justify-content: center; gap: 4px; cursor: pointer; 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05); height: 75px; font-size: 14px; transition: 0.2s;
+    }
+    .icon-card:active { transform: scale(0.95); }
+
+    input, select { 
+        width: 100%; height: 75px; border-radius: 20px; font-size: 20px; font-weight: 700; 
+        text-align: center; border: none; outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
+        appearance: none; -webkit-appearance: none;
+    }
+
+    /* 7. ปุ่มและการจัดการ */
+    .btn { 
+        border: none; padding: 12px; border-radius: 15px; cursor: pointer; 
+        display: flex; align-items: center; justify-content: center; font-weight: 700; transition: 0.2s; 
+    }
+    .btn-save { background: var(--success); color: white; width: 100%; font-size: 16px; margin-top: 10px; }
+    
+    .btn-pay { background: #e2e8f0; color: #64748b; border: 2px solid transparent; height: 70px; font-size: 18px; width: 100%; }
+    .btn-pay.active-cash { background: #dcfce7; color: #15803d; border-color: #22c55e; }
+    .btn-pay.active-trans { background: #e0f2fe; color: #0369a1; border-color: #0ea5e9; }
+
+    /* 8. โมดอลและรายงาน */
+    .modal { 
+        position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); 
+        display: none; z-index: 1000000; align-items: center; justify-content: center; 
+    }
+    .modal-content { 
+        background: var(--card); color: var(--text); width: 90%; max-width: 400px; 
+        border-radius: 25px; padding: 25px; max-height: 85vh; overflow-y: auto; 
+    }
+
+    .status-bar { padding: 12px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 14px; margin-bottom: 10px; }
+    .acc-main-card { background: var(--card); padding: 20px; border-radius: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); margin-bottom: 15px; }
+    #accHistory { font-size: 12px; max-height: 150px; overflow-y: auto; }
 </style>
 </head>
 <body>
@@ -153,25 +188,54 @@ nav {
     <span style="font-size: 32px; font-weight: 900; letter-spacing:1px;">บันทึกข้อมูล</span>
 </button>  
 </div>
- <div id="p2" class="page" style="max-width:480px; margin:0 auto; padding: 15px; padding-bottom: 100px;">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
-        <div style="background: white; padding:18px 15px; border-radius:20px; text-align:center; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
-            <small style="font-weight:800; color:#64748b; text-transform: uppercase;">ยอดรวมวันนี้</small>
-            <div id="dTotal" style="font-size:36px; font-weight:900; color:#4338ca; margin: 5px 0;">0</div>
-            <div id="dCounts" style="font-size:16px; font-weight:700; color:#1e293b; background:#e0e7ff; display:inline-block; padding:2px 10px; border-radius:10px;">ลูกค้า 0 คน</div>
+<div id="p2" class="page">
+    <div class="container" style="max-width:480px; margin:0 auto; padding-bottom: 40px;">
+        
+        <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 12px; margin-bottom: 15px;">
+            
+            <div style="background: var(--card); padding:20px 15px; border-radius:25px; text-align:center; box-shadow:0 10px 20px rgba(0,0,0,0.05); border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center;">
+                <small style="font-weight:800; color:#64748b; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">ยอดรวมวันนี้</small>
+                <div id="dTotal" style="font-size:38px; font-weight:900; color:var(--primary); margin: 5px 0; letter-spacing: -1px;">0</div>
+                <div id="dCounts" style="font-size:14px; font-weight:700; color:var(--primary); background: rgba(99, 102, 241, 0.1); display:inline-block; padding:4px 12px; border-radius:12px; margin: 0 auto;">ลูกค้า 0 คน</div>
+            </div>
+
+            <div style="background: var(--card); padding:18px; border-radius:25px; box-shadow:0 10px 20px rgba(0,0,0,0.05); border: 1px solid var(--border); display:flex; flex-direction:column; justify-content:center; gap:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="color:#0ea5e9; font-size:13px; font-weight:700;">📱 โอน</span>
+                    <b id="dTrans" style="font-size:16px; color:var(--text);">0</b>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="color:#f59e0b; font-size:13px; font-weight:700;">💵 สด</span>
+                    <b id="dCash" style="font-size:16px; color:var(--text);">0</b>
+                </div>
+                <div style="border-top: 1px dashed var(--border); margin: 2px 0;"></div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="color:var(--primary); font-size:13px; font-weight:700;">👨‍🎨 ช่าง</span>
+                    <b id="dBarber" style="font-size:16px; color:var(--text);">0</b>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="color:#64748b; font-size:13px; font-weight:800;">🏠 ร้าน</span>
+                    <b id="dShop" style="font-size:16px; color:var(--text);">0</b>
+                </div>
+            </div>
         </div>
 
-        <div style="background:white; padding:15px; border-radius:20px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; display:flex; flex-direction:column; justify-content:center; gap:8px;">
-            <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:700;"><span style="color:#0ea5e9;">📱 โอน:</span> <b id="dTrans">0</b></div>
-            <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:700;"><span style="color:#f59e0b;">💵 สด:</span> <b id="dCash">0</b></div>
-            <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:700;"><span style="color:#6366f1;">👨‍🎨 ช่าง:</span> <b id="dBarber">0</b></div>
-            <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:800;"><span style="color:#64748b;">🏠 ร้าน:</span> <b id="dShop">0</b></div>
+        <div id="settleBarContainer" style="margin-bottom:20px; background: var(--border); border-radius: 10px; overflow: hidden; height: 8px;">
+            <div id="settleBar" style="height: 100%; background: var(--success); width: 0%; transition: 0.5s ease-out;"></div>
         </div>
+
+        <div id="dServiceStats" style="margin-bottom: 20px;"></div>
+
+        <div class="acc-main-card" style="padding: 20px; border-radius: 25px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <span style="font-weight:800; font-size: 16px; color: var(--text);">รายการวันนี้</span>
+                <i class="fas fa-history" style="color: var(--primary); opacity: 0.5;"></i>
+            </div>
+            <div id="dailyList">
+                </div>
+        </div>
+
     </div>
-    <div id="settleBarContainer" style="margin-bottom:18px;"><div id="settleBar"></div> </div>
-    <div id="dServiceStats"></div>
-    <hr style="border:0; border-top:1px solid #e2e8f0; margin-top:15px;">
-    <div id="dailyList"></div>
 </div>
 <div id="p3" class="page" style="max-width:480px; margin:0 auto; padding: 12px; padding-bottom: 100px; background: #f8fafc;">
     <div class="card" style="background:#fff; border-radius:25px; padding:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border:1px solid #fff; margin-bottom: 15px;">
