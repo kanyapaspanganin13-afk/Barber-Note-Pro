@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro v.1</title>
+    <title>Barber Note Pro v.11</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -216,27 +216,19 @@ nav {
             </button>
         </div>
     </div>
-
-<div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-
-  <div onclick="openDaily()"
-    style="background:linear-gradient(135deg, #f59e0b, #d97706);
-           border-radius:25px; padding:20px 10px; text-align:center;
-           color:#fff; box-shadow:0 8px 15px rgba(245,158,11,0.2);">
-    <i class="fas fa-search-dollar" style="font-size:28px; display:block;"></i>
-    <b>เรียกดูรายวัน</b>
-  </div>
-
-  <div onclick="openMonth()"
-    style="background:linear-gradient(135deg, #6366f1, #4338ca);
-           border-radius:25px; padding:20px 10px; text-align:center;
-           color:#fff; box-shadow:0 8px 15px rgba(99,102,241,0.2);">
-    <i class="fas fa-calendar-check" style="font-size:28px; display:block;"></i>
-    <b>สรุปรายเดือน</b>
-  </div>
-
+ <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+        <div onclick="openDailyPicker()" style="background:linear-gradient(135deg, #f59e0b, #d97706); border-radius:25px; padding:20px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(245,158,11,0.2);">
+            <i class="fas fa-search-dollar" style="font-size:28px; margin-bottom:5px; display:block;"></i>
+            <b style="font-size:16px;">เรียกดูรายวัน</b>
+            <input type="date" id="histDate" onchange="loadHistDaily()" style="position:absolute; inset:0; opacity:0;">
+        </div>
+        <div onclick="openDailyPicker()" style="background:linear-gradient(135deg, #6366f1, #4338ca); border-radius:25px; padding:20px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(99,102,241,0.2);">
+            <i class="fas fa-calendar-check" style="font-size:28px; margin-bottom:5px; display:block;"></i>
+            <b style="font-size:16px;">สรุปรายเดือน</b>
+            <input type="month" id="histMonth" onchange="loadHistMonth()" style="position:absolute; inset:0; opacity:0;">
+        </div>
+    </div>
 </div>
-
 <div id="modalSet" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); z-index:9999; align-items:flex-end; justify-content:center;">
     
     <div style="background:#ffffff; width:92%; max-width:400px; border-radius:35px; margin-bottom:110px; box-shadow:0 20px 60px rgba(0,0,0,0.15); display:flex; flex-direction:column; overflow:hidden;">
