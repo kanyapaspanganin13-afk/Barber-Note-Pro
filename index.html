@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.0178 </title>
+    <title>Barber Note Pro V.0171 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -321,29 +321,40 @@
                     <option value="dark">🌑 ธีมดำ-ทอง</option>
                 </select>
             </div>
-
-           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;">
-    <div style="position: relative;">
-        <select id="setSound" style="width:100%; height:55px; border-radius:18px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:15px; font-weight:700; outline:none; appearance:none; -webkit-appearance:none;">
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;">
+    <div style="position: relative; display: flex; align-items: center;">
+        <select id="setSound" style="width:100%; height:55px; border-radius:18px; border:1px solid #cbd5e1; background:#f1f5f9; text-align:center; font-size:15px; font-weight:700; outline:none; appearance:none; -webkit-appearance:none; padding-left: 20px;">
             <option value="on">เปิดเสียง</option>
             <option value="off">ปิดเสียง</option>
         </select>
-        <i class="fas fa-volume-up" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #64748b; pointer-events: none;"></i>
+        <i class="fas fa-volume-up" style="position: absolute; left: 15px; color: #475569; pointer-events: none;"></i>
     </div>
 
-    <div style="position: relative;">
-        <select id="setVoice" style="width:100%; height:55px; border-radius:18px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:15px; font-weight:700; outline:none; appearance:none; -webkit-appearance:none;">
+    <div style="position: relative; display: flex; align-items: center;">
+        <select id="setVoice" style="width:100%; height:55px; border-radius:18px; border:1px solid #cbd5e1; background:#f1f5f9; text-align:center; font-size:15px; font-weight:700; outline:none; appearance:none; -webkit-appearance:none; padding-left: 20px;">
             <option value="female">เสียงหญิง</option>
             <option value="male">เสียงชาย</option>
         </select>
-        <i class="fas fa-user-friends" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #64748b; pointer-events: none;"></i>
+        <i class="fas fa-user-friends" style="position: absolute; left: 15px; color: #475569; pointer-events: none;"></i>
     </div>
+</div>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-bottom:25px;">
-                <button onclick="exportBackup()" style="height:45px; background:#fff; border:1px solid #cbd5e1; border-radius:12px; font-size:13px; font-weight:800; color:#475569;"><i class="fas fa-file-download"></i> สำรองข้อมูล</button>
-                <button onclick="importBackup()" style="height:45px; background:#fff; border:1px solid #cbd5e1; border-radius:12px; font-size:13px; font-weight:800; color:#475569;"><i class="fas fa-file-upload"></i> คืนค่า</button>
-                <button onclick="clearData()" style="height:45px; background:#fff1f2; border:1px solid #fecaca; border-radius:12px; font-size:13px; font-weight:800; color:#e11d48;"><i class="fas fa-trash-alt"></i> ลบข้อมูลทั้งหมด</button>
-            </div>
+<div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-bottom:25px;">
+    <button onclick="exportBackup()" style="height:50px; background:#ffffff; border:1px solid #cbd5e1; border-radius:12px; font-size:13px; font-weight:800; color:#1e293b; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
+        <i class="fas fa-file-download" style="font-size:14px;"></i> 
+        <span>สำรองข้อมูล</span>
+    </button>
+    
+    <button onclick="importBackup()" style="height:50px; background:#ffffff; border:1px solid #cbd5e1; border-radius:12px; font-size:13px; font-weight:800; color:#1e293b; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
+        <i class="fas fa-file-upload" style="font-size:14px;"></i> 
+        <span>คืนค่า</span>
+    </button>
+    
+    <button onclick="clearData()" style="height:50px; background:#fff1f2; border:1px solid #fecaca; border-radius:12px; font-size:13px; font-weight:800; color:#e11d48; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
+        <i class="fas fa-trash-alt" style="font-size:14px;"></i> 
+        <span>ลบทั้งหมด</span>
+    </button>
+</div>
 
             <div style="display:grid; grid-template-columns: 2fr 1.2fr; gap:12px;">
                 <button onclick="saveSettings()" style="background:#1e3a8a; color:#fff; height:65px; border-radius:22px; border:none; font-weight:800; font-size:20px; box-shadow: 0 10px 25px rgba(30,58,138,0.3);">บันทึกข้อมูล</button>
