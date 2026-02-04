@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.021 </title>
+    <title>Barber Note Pro V.020 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -199,22 +199,37 @@
             <div id="dCounts" style="font-size:16px; font-weight:700; color:#cbd5e1; background:rgba(255,255,255,0.15); display:inline-block; padding:2px 10px; border-radius:10px;">ลูกค้า 0 คน</div>
         </div>
 
-        <div style="background:#3f51b5; padding:15px; border-radius:20px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; justify-content:center; gap:8px;">
-            <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:700;">
-                <span style="color:#cbd5e1;">📱 โอน:</span> <b id="dTrans" style="color:#ffffff;">0</b>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:700;">
-                <span style="color:#cbd5e1;">💵 สด:</span> <b id="dCash" style="color:#ffffff;">0</b>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:700;">
-                <span style="color:#cbd5e1;">👨‍🎨 ช่าง:</span> <b id="dBarber" style="color:#ffffff;">0</b>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:800; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 5px; margin-top: 2px;">
-                <span style="color:#cbd5e1;">🏠 ร้าน:</span> <b id="dShop" style="color:#ffffff;">0</b>
-            </div>
-        </div>
+       <div style="background:#3f51b5; padding:15px; border-radius:20px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; justify-content:center; gap:8px;">
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; font-size:15px; font-weight:700;">
+        <span style="color:#cbd5e1; display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-mobile-alt" style="width:18px; color:#60a5fa;"></i> โอน:
+        </span> 
+        <b id="dTrans" style="color:#ffffff;">0</b>
     </div>
     
+    <div style="display:flex; justify-content:space-between; align-items:center; font-size:15px; font-weight:700;">
+        <span style="color:#cbd5e1; display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-money-bill-wave" style="width:18px; color:#4ade80;"></i> สด:
+        </span> 
+        <b id="dCash" style="color:#ffffff;">0</b>
+    </div>
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; font-size:15px; font-weight:700;">
+        <span style="color:#cbd5e1; display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-cut" style="width:18px; color:#fbbf24;"></i> ช่าง:
+        </span> 
+        <b id="dBarber" style="color:#ffffff;">0</b>
+    </div>
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; font-size:15px; font-weight:800; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 8px; margin-top: 2px;">
+        <span style="color:#cbd5e1; display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-store" style="width:18px; color:#f472b6;"></i> ร้าน:
+        </span> 
+        <b id="dShop" style="color:#ffffff;">0</b>
+    </div>
+
+</div>
     <div id="settleBarContainer" style="margin-bottom:18px;"><div id="settleBar"></div> </div>
     <div id="dServiceStats"></div>
     <hr style="border:0; border-top:1px solid #e2e8f0; margin-top:15px;">
