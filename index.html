@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.0112 </title>
+    <title>Barber Note Pro V.012 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -145,54 +145,6 @@ nav {
         from { transform: translateY(100%); opacity: 0; }
         to { transform: translateY(0); opacity: 1; }
     }
-
-    /* 9. ส่วนของการวิเคราะห์ข้อมูล (วางเพิ่มตรงนี้ครับ) */
-    .analytics-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-bottom: 15px;
-    }
-
-    .analysis-card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        padding: 15px;
-        border-radius: 20px;
-        text-align: center;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-    }
-
-    .analysis-card h4 {
-        margin: 0;
-        font-size: 12px;
-        color: var(--text);
-        opacity: 0.7;
-    }
-
-    .analysis-card p {
-        margin: 5px 0 0;
-        font-size: 20px;
-        font-weight: 800;
-        color: var(--accent);
-    }
-
-    .top-list {
-        background: var(--card);
-        border-radius: 20px;
-        padding: 15px;
-        margin-top: 10px;
-        border: 1px solid var(--border);
-    }
-
-    .top-item {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 0;
-        border-bottom: 1px dashed var(--border);
-    }
-
-    .top-item:last-child { border-bottom: none; }
 </style>
 </head>
 <body>
@@ -371,35 +323,14 @@ nav {
             <b style="font-size:16px;">เรียกดูรายวัน</b>
             <input type="date" id="histDate" onchange="loadHistDaily()" style="position:absolute; inset:0; opacity:0;">
         </div>
-      <div onclick="$('histMonth').showPicker()" style="background:linear-gradient(135deg, #6366f1, #4338ca); border-radius:25px; padding:20px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(99,102,241,0.2); margin-bottom: 20px;">
-    <i class="fas fa-calendar-check" style="font-size:28px; margin-bottom:5px; display:block;"></i>
-    <b style="font-size:16px;">สรุปรายเดือน</b>
-    <input type="month" id="histMonth" onchange="loadHistMonth()" style="position:absolute; inset:0; opacity:0;">
-</div>
-
-<div class="analytics-grid">
-    <div class="analysis-card">
-        <h4>เฉลี่ยลูกค้า/วัน</h4>
-        <p id="avgCustomers">0.0</p>
-    </div>
-    <div class="analysis-card">
-        <h4>เป้าหมายเดือนนี้</h4>
-        <p id="monthProgress">0%</p>
-    </div>
-</div> <div class="top-list">
-    <h4 style="margin-top:0; color: var(--text);"><i class="fa-solid fa-scissors"></i> วิเคราะห์ทรงผมยอดฮิต</h4>
-    <div id="topStylesList">
-        <div class="top-item"><span>รอข้อมูล...</span><span>0 ครั้ง</span></div>
+        <div onclick="$('histMonth').showPicker()" style="background:linear-gradient(135deg, #6366f1, #4338ca); border-radius:25px; padding:20px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(99,102,241,0.2);">
+            <i class="fas fa-calendar-check" style="font-size:28px; margin-bottom:5px; display:block;"></i>
+            <b style="font-size:16px;">สรุปรายเดือน</b>
+            <input type="month" id="histMonth" onchange="loadHistMonth()" style="position:absolute; inset:0; opacity:0;">
+        </div>
     </div>
 </div>
-</div>
-<div class="top-list" style="margin-top: 15px;">
-    <h4 style="margin-top:0; color: var(--text);"><i class="fa-solid fa-hand-sparkles"></i> วิเคราะห์บริการยอดนิยม</h4>
-    <div id="topServicesList">
-        <div class="top-item"><span>รอข้อมูล...</span><span>0 ครั้ง</span></div>
-    </div>
-</div>      
-     <div id="modalSet" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); z-index:9999; display:flex; align-items:center; justify-content:center; padding:15px;">
+<div id="modalSet" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); z-index:9999; display:flex; align-items:center; justify-content:center; padding:15px;">
     
     <div style="background:#ffffff; width:95%; max-width:420px; border-radius:35px; display:flex; flex-direction:column; overflow:hidden; animation: slideUp 0.3s ease-out; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
         
@@ -1073,14 +1004,10 @@ function loadHistMonth() {
     if (!m) return alert("กรุณาเลือกเดือนก่อน");
 
     const filtered = archives.filter(a => a.date && a.date.startsWith(m));
-    
-    // หากไม่พบข้อมูล ให้รีเซ็ตค่าหน้าหลักเป็น 0
     if (!filtered.length) {
-        document.getElementById('avgCustomers').innerText = "0.0";
-        document.getElementById('monthProgress').innerText = "0%";
         return openReportModal(
             "📊 สรุปรายเดือน",
-            `<div style='padding:80px 20px; text-align:center; color:#fff; background:#0f172a; height:100vh;'>
+            `<div style='padding:80px 20px; text-align:center; color:#0f172a; background:#94a3b8; height:100vh;'>
                 <i class='fas fa-folder-open' style='font-size:40px;margin-bottom:10px;opacity:0.3;'></i><br>ไม่พบข้อมูลของเดือนนี้
             </div>`
         );
@@ -1092,6 +1019,7 @@ function loadHistMonth() {
     let monthTotal = 0, monthBarber = 0, monthCount = 0;
     let hairStats = {}, serviceStats = {};
 
+    // --- ส่วนคำนวณ Logic เดิมของคุณ ---
     filtered.forEach(day => {
         monthTotal += Number(day.total) || 0;
         monthBarber += Number(day.barber) || 0;
@@ -1113,28 +1041,7 @@ function loadHistMonth() {
 
     const monthShop = monthTotal - monthBarber;
 
-    // --- ส่วนที่เพิ่ม: อัปเดตข้อมูลหน้าหลัก (Analytics Cards) ---
-    // 1. คำนวณเฉลี่ยลูกค้าต่อวัน (หารด้วยจำนวนวันที่บันทึกจริง)
-    const avg = (monthCount / filtered.length).toFixed(1);
-    document.getElementById('avgCustomers').innerText = avg;
-
-    // 2. คำนวณเป้าหมาย (สมมติเป้าหมายคือ 30,000 บาท)
-    const goal = 30000; 
-    const progress = Math.min((monthTotal / goal) * 100, 100).toFixed(0);
-    document.getElementById('monthProgress').innerText = progress + "%";
-
-    // 3. อัปเดตทรงผม/บริการ ยอดฮิตในหน้าหลัก (เอา Top 3)
-    const renderTopMain = (stats) => {
-        return Object.entries(stats)
-            .sort((a,b) => b[1] - a[1])
-            .slice(0, 3)
-            .map(([k, v]) => `<div class="top-item"><span>${k}</span><strong>${v} ครั้ง</strong></div>`)
-            .join("") || "ไม่มีข้อมูล";
-    };
-    document.getElementById('topStylesList').innerHTML = renderTopMain(hairStats);
-    document.getElementById('topServicesList').innerHTML = renderTopMain(serviceStats);
-
-    // --- ส่วนการแสดงผล Modal (คงเดิมตามที่คุณออกแบบไว้) ---
+    // --- ฟังก์ชัน Render List สถิติแบบใหม่ (ดีไซน์เดียวกับรายวัน) ---
     const renderStats = (obj, accentColor) => {
         const entries = Object.entries(obj).sort((a,b)=>b[1]-a[1]);
         if (!entries.length) return "<div style='color:rgba(255,255,255,0.2); padding:10px; font-size:13px;'>ไม่มีข้อมูล</div>";
@@ -1145,36 +1052,41 @@ function loadHistMonth() {
             </div>`
         ).join("");
     };
-
+    // --- ส่วนการแสดงผล UI ใหม่ทั้งหมด ---
     openReportModal(
-    `สรุปรายงานเดือน ${m}`,
-    `
-    <div style="background:#0f172a; padding:24px; font-family:'Inter', sans-serif; color:#f1f5f9; border-radius:16px; margin-bottom: 70px;">
-        
-        <div style="text-align:center; padding:10px 0 30px 0;">
-            <div style="font-size:18px; color:#94a3b8; font-weight:700; text-transform:uppercase; letter-spacing:2px; margin-bottom:5px;">✂️ ยอดรวมเดือนนี้</div>
-            <div style="font-size:48px; font-weight:900; color:#ffffff; letter-spacing:-1px;">฿${monthTotal.toLocaleString()}</div>
+        `สรุปรายงานเดือน ${m}`,
+        `
+        <div style="background:#0f172a; margin:-16px; padding:24px; font-family:'Inter', sans-serif; color:#f1f5f9; min-height:100vh;">
+            
+            <div style="text-align:center; padding:10px 0 30px 0;">
+                <div style="font-size:20px; color:#94a3b8; font-weight:700; text-transform:uppercase; letter-spacing:2px; margin-bottom:5px;">✂️ยอดตัดทั้งเดือน</div>
+                <div style="font-size:52px; font-weight:900; color:#ffffff; letter-spacing:-1px;">฿${monthTotal.toLocaleString()}</div>
+                
                 <div style="display:flex; justify-content:center; gap:8px; margin-top:15px;">
-                    <div style="background:rgba(255,255,255,0.08); padding:6px 14px; border-radius:12px; font-size:14px; font-weight:600; color:#38bdf8;">👤 ลูกค้า ${monthCount} คน</div>
-                    <div style="background:rgba(255,255,255,0.08); padding:6px 14px; border-radius:12px; font-size:14px; font-weight:600; color:#94a3b8;">📅 ทำงาน ${filtered.length} วัน</div>
+                    <div style="background:rgba(255,255,255,0.08); padding:6px 14px; border-radius:12px; font-size:16px; font-weight:600; color:#38bdf8;">
+                        👤 ลูกค้า ${monthCount} คน
+                    </div>
+                    <div style="background:rgba(255,255,255,0.08); padding:6px 14px; border-radius:12px; font-size:16px; font-weight:600; color:#94a3b8;">
+                        📅 ทำงาน ${filtered.length} วัน
+                    </div>
                 </div>
             </div>
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:30px;">
                 <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); padding:18px; border-radius:22px; text-align:center;">
-                    <div style="font-size:12px; color:#94a3b8; font-weight:700; text-transform:uppercase; margin-bottom:6px;">รายได้ช่าง</div>
-                    <div style="font-size:18px; font-weight:800; color:#f8fafc;">฿${Math.floor(monthBarber).toLocaleString()}</div>
+                    <div style="font-size:14px; color:#94a3b8; font-weight:700; text-transform:uppercase; margin-bottom:6px;">รายได้ช่าง</div>
+                    <div style="font-size:20px; font-weight:800; color:#f8fafc;">฿${Math.floor(monthBarber).toLocaleString()}</div>
                 </div>
                 <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); padding:18px; border-radius:22px; text-align:center;">
-                    <div style="font-size:12px; color:#94a3b8; font-weight:700; text-transform:uppercase; margin-bottom:6px;">รายได้ร้าน</div>
-                    <div style="font-size:18px; font-weight:800; color:#f8fafc;">฿${Math.floor(monthShop).toLocaleString()}</div>
+                    <div style="font-size:14px; color:#94a3b8; font-weight:700; text-transform:uppercase; margin-bottom:6px;">รายได้ร้าน</div>
+                    <div style="font-size:20px; font-weight:800; color:#f8fafc;">฿${Math.floor(monthShop).toLocaleString()}</div>
                 </div>
             </div>
 
             <div style="margin-bottom:25px;">
                 <div style="font-size:15px; font-weight:800; color:#bef264; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
                     <div style="width:4px; height:16px; background:#bef264; border-radius:2px;"></div>
-                    ทรงผมยอดฮิต
+                    ทรงผมยอดนิยม
                 </div>
                 ${renderStats(hairStats, "#bef264")}
             </div>
@@ -1182,10 +1094,11 @@ function loadHistMonth() {
             <div style="padding-bottom:40px;">
                 <div style="font-size:15px; font-weight:800; color:#38bdf8; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
                     <div style="width:4px; height:16px; background:#38bdf8; border-radius:2px;"></div>
-                    บริการยอดฮิต
+                    บริการยอดนิยม
                 </div>
                 ${renderStats(serviceStats, "#38bdf8")}
             </div>
+            
         </div>
         `
     );
