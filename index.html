@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.1823 </title>
+    <title>Barber Note Pro V.1123 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -1029,7 +1029,8 @@ function loadHistMonth() {
             </div>`
         );
     }
-    // --- ส่วนกำหนดค่า (ห้ามเปลี่ยน) ---
+
+    // --- 1. ส่วนกำหนดค่าและเตรียมตัวแปร ---
     const haircutList = ["แฟชั่น","สกินเฟด","เปิดข้าง","รองทรง","ตำรวจ/ทหาร","ทรงนักเรียน","แก้ผม","โกนผม","เด็ก"];
     const serviceList = ["โกนหนวด","กันหน้า","สระผม","ย้อมผม"];
     const daysOfWeek = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
@@ -1037,83 +1038,75 @@ function loadHistMonth() {
     let weeklyData = {};
     let monthTotal = 0, monthBarber = 0, monthCount = 0;
     let hairStats = {}, serviceStats = {};
+    let offDays = 0, workDays = 0, zeroCustomerDays = 0;
+    let barberOver = 0, barberUnder = 0, barberFromGuarantee = 0, guaranteeDays = 0;
 
-    // --- 1. เตรียมตัวแปร (วางไว้ก่อนเริ่ม Loop) ---
-let offDays = 0, workDays = 0, zeroCustomerDays = 0;
-let barberOver = 0, barberUnder = 0, barberFromGuarantee = 0, guaranteeDays = 0;
-let monthTotal = 0, monthBarber = 0, monthCount = 0; 
-let weeklyData = {};
+    // --- 2. เริ่มการคำนวณรายวัน ---
+    filtered.forEach(day => {
+        if (day.off) {
+            offDays++;
+            return; 
+        }
 
-// --- 2. เริ่มการคำนวณ (ใช้ Loop เดียวเพื่อความแม่นยำ) ---
-filtered.forEach(day => {
-    
-    // ก. ถ้าเป็นวันหยุดร้าน: นับวันหยุดแล้วข้ามไปวันถัดไปทันที
-    if (day.off) {
-        offDays++;
-        return; 
-    }
+        workDays++; 
+        const realBarberEarn = Number(day.barber) || 0;
+        const guaranteePrice = Number(conf.guar) || 0;
+        const hasCustomer = day.details && day.details.length > 0;
 
-    // ข. ถ้าเป็นวันทำงาน: เริ่มเก็บข้อมูล
-    workDays++; 
-    const realBarberEarn = Number(day.barber) || 0;
-    const guaranteePrice = Number(conf.guar) || 0;
-    const hasCustomer = day.details && day.details.length > 0;
+        if (!hasCustomer) zeroCustomerDays++;
 
-    if (!hasCustomer) zeroCustomerDays++;
+        // Logic วิเคราะห์เงินช่าง
+        if (day.useGuarantee === true) {
+            barberFromGuarantee += guaranteePrice;
+            guaranteeDays++;
+        } else if (realBarberEarn > guaranteePrice) {
+            barberOver += realBarberEarn;
+        } else if (realBarberEarn > 0) {
+            barberUnder += realBarberEarn;
+            guaranteeDays++; 
+        }
 
-    // ค. Logic วิเคราะห์เงินช่าง (ประกัน vs ตัดจริง)
-    if (day.useGuarantee === true) {
-        barberFromGuarantee += guaranteePrice;
-        guaranteeDays++;
-    } else if (realBarberEarn > guaranteePrice) {
-        barberOver += realBarberEarn;
-    } else if (realBarberEarn > 0) {
-        barberUnder += realBarberEarn;
-        guaranteeDays++; // กรณีตัดไม่ถึงประกัน
-    }
+        const dObj = new Date(day.date);
+        const weekNum = Math.ceil(dObj.getDate() / 7);
+        const weekKey = `สัปดาห์ที่ ${weekNum}`;
+        const dayName = daysOfWeek[dObj.getDay()];
 
-    // ง. Logic รายสัปดาห์และทรงผม (ของเดิมที่คุณทำไว้)
-    const dObj = new Date(day.date);
-    const weekNum = Math.ceil(dObj.getDate() / 7);
-    const weekKey = `สัปดาห์ที่ ${weekNum}`;
-    const dayName = daysOfWeek[dObj.getDay()];
+        if (!weeklyData[weekKey]) {
+            weeklyData[weekKey] = { days: 0, customers: 0, daily: {}, hair: {} };
+        }
 
-    if (!weeklyData[weekKey]) {
-        weeklyData[weekKey] = { days: 0, customers: 0, daily: {}, hair: {} };
-    }
+        monthTotal += Number(day.total) || 0;
+        monthBarber += realBarberEarn;
 
-    monthTotal += Number(day.total) || 0;
-    monthBarber += realBarberEarn;
-
-    let dayCustCount = 0;
-    (day.details || []).forEach(d => {
-        const svcs = Array.isArray(d.svcs) ? d.svcs : [];
-        let countedHair = false;
-        svcs.forEach(s => {
-            if (!s) return;
-            s = s.trim();
-            if (haircutList.includes(s)) {
-                hairStats[s] = (hairStats[s] || 0) + 1;
-                weeklyData[weekKey].hair[s] = (weeklyData[weekKey].hair[s] || 0) + 1;
-                if (!countedHair) { monthCount++; dayCustCount++; countedHair = true; }
-            } else if (serviceList.includes(s)) {
-                serviceStats[s] = (serviceStats[s] || 0) + 1;
-            }
+        let dayCustCount = 0;
+        (day.details || []).forEach(d => {
+            const svcs = Array.isArray(d.svcs) ? d.svcs : [];
+            let countedHair = false;
+            svcs.forEach(s => {
+                if (!s) return;
+                s = s.trim();
+                if (haircutList.includes(s)) {
+                    hairStats[s] = (hairStats[s] || 0) + 1;
+                    weeklyData[weekKey].hair[s] = (weeklyData[weekKey].hair[s] || 0) + 1;
+                    if (!countedHair) { monthCount++; dayCustCount++; countedHair = true; }
+                } else if (serviceList.includes(s)) {
+                    serviceStats[s] = (serviceStats[s] || 0) + 1;
+                }
+            });
         });
+
+        weeklyData[weekKey].days += 1;
+        weeklyData[weekKey].customers += dayCustCount;
+        weeklyData[weekKey].daily[dayName] = (weeklyData[weekKey].daily[dayName] || 0) + dayCustCount;
     });
 
-    // สรุปยอดรายวันเข้าสัปดาห์
-    weeklyData[weekKey].days += 1;
-    weeklyData[weekKey].customers += dayCustCount;
-    weeklyData[weekKey].daily[dayName] = (weeklyData[weekKey].daily[dayName] || 0) + dayCustCount;
-});
-    // 2. Logic การวิเคราะห์ (Insights) - ปรับปรุงใหม่ให้เล่าเรื่องครบ
+    // --- 3. Logic การวิเคราะห์ (Insights) ---
     let weeklySummaries = [];
     let monthlyInsights = [];
     let strongWeeks = 0, quietWeeks = 0, weekdayPattern = {};
 
     Object.entries(weeklyData).forEach(([week, data]) => {
-        const avg = data.customers / data.days;
+        const avg = data.customers / (data.days || 1);
         let level = avg >= 2 ? "แรง" : (avg >= 1 ? "ปกติ" : "เงียบ");
         if (level === "แรง") strongWeeks++;
         if (level === "เงียบ") quietWeeks++;
@@ -1126,151 +1119,103 @@ filtered.forEach(day => {
                 weekdayPattern[day] = (weekdayPattern[day] || 0) + 1;
             }
         });
-        // เพิ่มต่อจาก Insight เดิม
-if (barberFromGuarantee > barberOver) {
-    monthlyInsights.push("🤵 รายได้ช่างเดือนนี้พึ่งพายอดประกันเป็นหลักครับ");
-} else if (barberOver > barberFromGuarantee) {
-    monthlyInsights.push("🔥 ช่างทำผลงานได้ดี รายได้ส่วนใหญ่มาจากการตัดจริงเกินประกันครับ");
-}
 
-if (zeroCustomerDays > 0) {
-    monthlyInsights.push(`😴 มี ${zeroCustomerDays} วันที่เปิดร้านแต่ไม่มีลูกค้าเข้าใช้บริการ`);
-}
-
-if (offDays >= 6) {
-    monthlyInsights.push("📅 เดือนนี้มีการหยุดพักผ่อนค่อนข้างบ่อยครับ");
-}
-        // --- เพิ่มการหาทรงผมหลักของสัปดาห์ ---
         const topWHair = Object.entries(data.hair).sort((a,b)=>b[1]-a[1])[0];
+        weeklySummaries.push({ week, avg, level, busyDays, quietDays, topHair: topWHair ? topWHair[0] : "ทั่วไป" });
+    });
 
-        weeklySummaries.push({ 
-            week, avg, level, busyDays, quietDays, 
-            topHair: topWHair ? topWHair[0] : "ทั่วไป" 
-        });
-    });
-    // --- สรุปภาพรวมเดือน (ภาษาผู้ช่วยส่วนตัว) ---
-    if (strongWeeks >= 2) monthlyInsights.push("⭐ เดือนนี้มีช่วงลูกค้าหนาแน่นต่อเนื่องหลายสัปดาห์ ถือเป็นสัญญาณที่ดี");
-    if (quietWeeks >= 2) monthlyInsights.push("⚠️ ข้อสังเกต: มีช่วงที่ลูกค้าเบาบางหลายสัปดาห์ติดต่อกัน");
-    
+    // เพิ่ม Insight ภาพรวม
+    if (barberFromGuarantee > barberOver) monthlyInsights.push("🤵 รายได้ช่างเดือนนี้พึ่งพายอดประกันเป็นหลักครับ");
+    else if (barberOver > barberFromGuarantee) monthlyInsights.push("🔥 ช่างทำผลงานได้ดี รายได้ส่วนใหญ่เกินประกันครับ");
+    if (zeroCustomerDays > 0) monthlyInsights.push(`😴 มี ${zeroCustomerDays} วันที่เปิดร้านแต่ไม่มีลูกค้าเข้า`);
+    if (offDays >= 6) monthlyInsights.push("📅 เดือนนี้มีการหยุดพักผ่อนบ่อยครับ");
+    if (strongWeeks >= 2) monthlyInsights.push("⭐ เดือนนี้มีช่วงลูกค้าหนาแน่นต่อเนื่องหลายสัปดาห์");
+
     Object.entries(weekdayPattern).forEach(([day, count]) => {
-        if (count >= 2) monthlyInsights.push(`😴 สถิติระบุว่าวัน${day} ลูกค้าค่อนข้างน้อยบ่อยครั้งในเดือนนี้`);
+        if (count >= 2) monthlyInsights.push(`😴 วัน${day} ลูกค้าค่อนข้างน้อยบ่อยครั้งในเดือนนี้`);
     });
-    // วิเคราะห์ทรงผมเด่นจากข้อมูลจริง
+
     const topHairEntry = Object.entries(hairStats).sort((a,b)=>b[1]-a[1])[0];
-    if (topHairEntry) {
-        monthlyInsights.push(`✂️ ทรง${topHairEntry[0]} เป็นบริการหลักที่ได้รับความนิยมสูงสุดของเดือนนี้`);
-    }
-    // วิเคราะห์ความหลากหลายของบริการ
-    if (Object.keys(serviceStats).length >= 3) {
-        monthlyInsights.push("🧴 ลูกค้าให้ความสนใจบริการเสริมหลากหลาย ช่วยเพิ่มรายได้ต่อหัวได้ดี");
-    }
+    if (topHairEntry) monthlyInsights.push(`✂️ ทรง${topHairEntry[0]} เป็นบริการหลักที่ยอดนิยมที่สุด`);
 
     const monthShop = monthTotal - monthBarber;
-    const avgCustomerPerDay = filtered.length ? (monthCount / filtered.length) : 0;
-
     const renderStats = (obj, accentColor) => {
         const entries = Object.entries(obj).sort((a,b)=>b[1]-a[1]);
-        if (!entries.length) return "<div style='color:rgba(255,255,255,0.2); padding:10px; font-size:13px;'>ไม่มีข้อมูล</div>";
+        if (!entries.length) return "<div style='color:rgba(255,255,255,0.2); padding:10px;'>ไม่มีข้อมูล</div>";
         return entries.map(([k,v]) => `
             <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:16px; margin-bottom:8px;">
                 <div style="font-weight:600; color:#f1f5f9; font-size:14px;">${k}</div>
-                <div style="font-weight:800; color:${accentColor}; font-size:16px;">${v} <span style="font-size:11px; opacity:0.5; color:#fff; font-weight:400;">ครั้ง</span></div>
-            </div>`
-        ).join("");
+                <div style="font-weight:800; color:${accentColor}; font-size:16px;">${v} <span style="font-size:11px; opacity:0.5; color:#fff;">ครั้ง</span></div>
+            </div>`).join("");
     };
-    // 3. การแสดงผล UI (รวมส่วนที่ขาดหายไปแล้ว)
+
+    // --- 4. การแสดงผล UI ---
     openReportModal(
         `สรุปรายงานเดือน ${m}`,
-        `
-        <div style="background:#0f172a; padding:24px; font-family:'Inter', sans-serif; color:#f1f5f9; border-radius:20px; margin-bottom: 80px;">
-            
+        `<div style="background:#0f172a; padding:24px; font-family:'Inter', sans-serif; color:#f1f5f9; border-radius:20px; margin-bottom: 80px;">
             <div style="text-align:center; padding:10px 0 20px 0;">
-                <div style="font-size:18px; color:#94a3b8; font-weight:700; text-transform:uppercase; letter-spacing:2px; margin-bottom:5px;">✂️ ยอดตัดทั้งเดือน</div>
-                <div style="font-size:52px; font-weight:900; color:#ffffff; letter-spacing:-1px;">฿${monthTotal.toLocaleString()}</div>
+                <div style="font-size:18px; color:#94a3b8; font-weight:700; text-transform:uppercase; margin-bottom:5px;">✂️ ยอดตัดทั้งเดือน</div>
+                <div style="font-size:52px; font-weight:900; color:#ffffff;">฿${monthTotal.toLocaleString()}</div>
             </div>
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:25px;">
                 <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); padding:18px; border-radius:22px; text-align:center;">
-                    <div style="font-size:12px; color:#94a3b8; font-weight:700; text-transform:uppercase; margin-bottom:6px;">รายได้ช่าง</div>
-                    <div style="font-size:22px; font-weight:800; color:#f8fafc;">฿${Math.floor(monthBarber).toLocaleString()}</div>
+                    <div style="font-size:12px; color:#94a3b8; font-weight:700;">รายได้ช่าง</div>
+                    <div style="font-size:22px; font-weight:800;">฿${Math.floor(monthBarber).toLocaleString()}</div>
                 </div>
                 <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); padding:18px; border-radius:22px; text-align:center;">
-                    <div style="font-size:12px; color:#94a3b8; font-weight:700; text-transform:uppercase; margin-bottom:6px;">รายได้ร้าน</div>
-                    <div style="font-size:22px; font-weight:800; color:#f8fafc;">฿${Math.floor(monthShop).toLocaleString()}</div>
+                    <div style="font-size:12px; color:#94a3b8; font-weight:700;">รายได้ร้าน</div>
+                    <div style="font-size:22px; font-weight:800;">฿${Math.floor(monthShop).toLocaleString()}</div>
                 </div>
             </div>
-<div style="background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); padding:18px; border-radius:20px; margin-bottom:25px;">
-    <div style="font-size:14px; font-weight:800; color:#38bdf8; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
-        <i class="fas fa-user-tie"></i> วิเคราะห์รายได้ช่าง
-    </div>
-    <div style="font-size:13px; line-height:1.8; color:#f1f5f9;">
-        <div style="display:flex; justify-content:space-between;"><span>• ตัดจริงเกินประกัน:</span> <b>฿${barberOver.toLocaleString()}</b></div>
-        <div style="display:flex; justify-content:space-between;"><span>• ตัดจริงไม่ถึงประกัน:</span> <b>฿${barberUnder.toLocaleString()}</b></div>
-        <div style="display:flex; justify-content:space-between;"><span>• รายได้จากประกัน:</span> <b>฿${barberFromGuarantee.toLocaleString()}</b></div>
-        <div style="display:flex; justify-content:space-between; margin-top:5px; padding-top:5px; border-top:1px dashed rgba(255,255,255,0.1);">
-            <span>• รวมใช้ประกันทั้งหมด:</span> <b style="color:#facc15;">${guaranteeDays} วัน</b>
-        </div>
-    </div>
-</div>
-           <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:25px;">
-    <div style="background:rgba(255,255,255,0.08); padding:6px 14px; border-radius:12px; font-size:14px; font-weight:600; color:#38bdf8;">
-        👤 ลูกค้า ${monthCount} คน
-    </div>
 
-    <div style="background:rgba(255,255,255,0.08); padding:6px 14px; border-radius:12px; font-size:14px; font-weight:600; color:#94a3b8;">
-        📅 เปิดร้าน ${workDays} วัน
-    </div>
+            <div style="background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); padding:18px; border-radius:20px; margin-bottom:25px;">
+                <div style="font-size:14px; font-weight:800; color:#38bdf8; margin-bottom:10px;"><i class="fas fa-user-tie"></i> วิเคราะห์รายได้ช่าง</div>
+                <div style="font-size:13px; line-height:1.8; color:#f1f5f9;">
+                    <div style="display:flex; justify-content:space-between;"><span>• ตัดจริงเกินประกัน:</span> <b>฿${barberOver.toLocaleString()}</b></div>
+                    <div style="display:flex; justify-content:space-between;"><span>• ตัดจริงไม่ถึงประกัน:</span> <b>฿${barberUnder.toLocaleString()}</b></div>
+                    <div style="display:flex; justify-content:space-between;"><span>• รายได้จากประกัน:</span> <b>฿${barberFromGuarantee.toLocaleString()}</b></div>
+                    <div style="display:flex; justify-content:space-between; margin-top:5px; padding-top:5px; border-top:1px dashed rgba(255,255,255,0.1);">
+                        <span>• รวมใช้ประกันทั้งหมด:</span> <b style="color:#facc15;">${guaranteeDays} วัน</b>
+                    </div>
+                </div>
+            </div>
 
-    <div style="background:rgba(244,63,94,0.15); border:1px solid rgba(244,63,94,0.2); padding:6px 14px; border-radius:12px; font-size:14px; font-weight:600; color:#fb7185;">
-        🛑 หยุด ${offDays} วัน
-    </div>
+            <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:25px;">
+                <span style="background:rgba(255,255,255,0.08); padding:6px 14px; border-radius:12px; font-size:14px;">👤 ลูกค้า ${monthCount} คน</span>
+                <span style="background:rgba(255,255,255,0.08); padding:6px 14px; border-radius:12px; font-size:14px;">📅 เปิด ${workDays} วัน</span>
+                <span style="background:rgba(244,63,94,0.15); padding:6px 14px; border-radius:12px; font-size:14px; color:#fb7185;">🛑 หยุด ${offDays} วัน</span>
+            </div>
 
-    <div style="background:rgba(255,255,255,0.08); padding:6px 14px; border-radius:12px; font-size:14px; font-weight:600; color:#facc15;">
-        📊 เฉลี่ย ${(monthCount / (workDays || 1)).toFixed(2)} คน/วัน
-    </div>
-</div>
             <div style="margin-bottom:25px;">
-                <div style="font-size:15px; font-weight:800; color:#38bdf8; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-                    <div style="width:4px; height:16px; background:#38bdf8; border-radius:2px;"></div> จังหวะรายสัปดาห์
-                </div>
-              // เปลี่ยนในส่วน render weeklySummaries
-            ${weeklySummaries.map(w => `
-            <div style="background:rgba(255,255,255,0.03); padding:12px 15px; border-radius:18px; margin-bottom:8px; border-left:4px solid ${w.level==='แรง'?'#bef264':'#38bdf8'};">
-            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
-            <span style="font-weight:700;">${w.week}</span>
-            <span style="color:${w.level==='แรง'?'#bef264':'#94a3b8'};">เฉลี่ย ${w.avg.toFixed(1)} คน/วัน</span>
-            </div>
-            <div style="font-size:11px; color:#94a3b8; margin-bottom:4px;">
-            🔥 ยุ่ง: ${w.busyDays.length ? w.busyDays.join(",") : "-"} | 😴 เงียบ: ${w.quietDays.length ? w.quietDays.join(",") : "-"}
-        </div>
-        <div style="font-size:11px; color:#bef264; font-weight:600;">
-            ✂️ ทรงผมหลัก: ${w.topHair}
-        </div>
-        </div>
-    `).join("")}
+                <div style="font-size:15px; font-weight:800; color:#38bdf8; margin-bottom:12px;">📈 จังหวะรายสัปดาห์</div>
+                ${weeklySummaries.map(w => `
+                    <div style="background:rgba(255,255,255,0.03); padding:12px 15px; border-radius:18px; margin-bottom:8px; border-left:4px solid ${w.level==='แรง'?'#bef264':'#38bdf8'};">
+                        <div style="display:flex; justify-content:space-between; font-size:13px;">
+                            <span style="font-weight:700;">${w.week}</span>
+                            <span style="color:${w.level==='แรง'?'#bef264':'#94a3b8'};">เฉลี่ย ${w.avg.toFixed(1)} คน/วัน</span>
+                        </div>
+                        <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
+                            ✂️ ทรงผมหลัก: ${w.topHair}
+                        </div>
+                    </div>`).join("")}
             </div>
 
             <div style="background:rgba(250,204,21,0.08); border:1px solid rgba(250,204,21,0.25); padding:18px; border-radius:20px; margin-bottom:30px;">
                 <div style="font-size:14px; font-weight:800; color:#facc15; margin-bottom:10px;">💡 วิเคราะห์เจ้าของร้าน</div>
-                ${monthlyInsights.map(i => `<div style="font-size:13px; color:#f8fafc; margin-bottom:6px; line-height:1.5;">• ${i}</div>`).join("")}
+                ${monthlyInsights.map(i => `<div style="font-size:13px; margin-bottom:6px;">• ${i}</div>`).join("")}
             </div>
 
             <div style="margin-bottom:25px;">
-                <div style="font-size:15px; font-weight:800; color:#bef264; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
-                    <div style="width:4px; height:16px; background:#bef264; border-radius:2px;"></div> ทรงผมยอดนิยม
-                </div>
+                <div style="font-size:15px; font-weight:800; color:#bef264; margin-bottom:15px;">✂️ ทรงผมยอดนิยม</div>
                 ${renderStats(hairStats, "#bef264")}
             </div>
 
             <div style="padding-bottom:20px;">
-                <div style="font-size:15px; font-weight:800; color:#38bdf8; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
-                    <div style="width:4px; height:16px; background:#38bdf8; border-radius:2px;"></div> บริการยอดนิยม
-                </div>
+                <div style="font-size:15px; font-weight:800; color:#38bdf8; margin-bottom:15px;">🧴 บริการยอดนิยม</div>
                 ${renderStats(serviceStats, "#38bdf8")}
             </div>
-            
-        </div>
-        `
+        </div>`
     );
 }
  function buildAIVisualizer(data) {
