@@ -345,10 +345,12 @@
         <span>สำรองข้อมูล</span>
     </button>
     
-    <button onclick="importBackup()" style="height:50px; background:#ffffff; border:1px solid #cbd5e1; border-radius:12px; font-size:13px; font-weight:800; color:#1e293b; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
-        <i class="fas fa-file-upload" style="font-size:14px;"></i> 
-        <span>คืนค่า</span>
-    </button>
+    <input type="file" id="fileInput" style="display:none;" onchange="importBackup(this)">
+
+<button onclick="document.getElementById('fileInput').click()" style="height:50px; background:#ffffff; border:1px solid #cbd5e1; border-radius:12px; font-size:13px; font-weight:800; color:#1e293b; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
+    <i class="fas fa-file-upload" style="font-size:14px;"></i> 
+    <span>คืนค่า</span>
+</button>
     
     <button onclick="clearData()" style="height:50px; background:#fff1f2; border:1px solid #fecaca; border-radius:12px; font-size:13px; font-weight:800; color:#e11d48; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
         <i class="fas fa-trash-alt" style="font-size:14px;"></i> 
@@ -1154,25 +1156,31 @@ function go(p) {
             a.click();
         }
         // 2. ฟังก์ชันนำเข้าข้อมูล
-        function importBackup(input) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if(confirm("⚠️ ข้อมูลเดิมจะถูกเขียนทับ ต้องการดำเนินการต่อใช่ไหม?")) {
-                        localStorage.setItem("barber_db", JSON.stringify(data.db || []));
-                        localStorage.setItem("barber_archives", JSON.stringify(data.archives || []));
-                        alert("✅ นำเข้าข้อมูลสำเร็จ!");
-                        location.reload();
-                    }
-                } catch(err) {
-                    alert("❌ ไฟล์ไม่ถูกต้อง");
-                }
-            };
-            if (input.files[0]) {
-                reader.readAsText(input.files[0]);
+       function importBackup(input) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            // ปรับข้อความยืนยันให้สุภาพ
+            const confirmImport = confirm("⚠️ ข้อมูลปัจจุบันจะถูกแทนที่ด้วยข้อมูลจากไฟล์สำรอง คุณต้องการดำเนินการต่อใช่หรือไม่?");
+            
+            if(confirmImport) {
+                localStorage.setItem("barber_db", JSON.stringify(data.db || []));
+                localStorage.setItem("barber_archives", JSON.stringify(data.archives || []));
+                alert("✅ นำเข้าข้อมูลเรียบร้อยแล้ว");
+                location.reload();
             }
+        } catch(err) {
+            alert("❌ รูปแบบไฟล์ไม่ถูกต้อง กรุณาใช้ไฟล์สำรองที่ถูกต้อง");
         }
+        // ล้างค่า input เพื่อให้เลือกไฟล์เดิมซ้ำได้ถ้าจำเป็น
+        input.value = '';
+    };
+
+    if (input.files && input.files[0]) {
+        reader.readAsText(input.files[0]);
+    }
+}
         // 3. ตัวลงทะเบียน Service Worker (เพื่อให้ใช้งานออฟไลน์ได้)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
