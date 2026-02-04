@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.035 </title>
+    <title>Barber Note Pro V.059 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -262,12 +262,12 @@
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <button onclick="clearAccount()" style="background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; border-radius:18px; padding:15px 5px; font-size:14px; font-weight:800;">
-                <i class="fas fa-check-double"></i> ยืนยันเคลียร์เงิน
+                <i class="fas fa-check-double"></i> เคลียร์เงิน
             </button>
-            <button onclick="openHistoryModal()" style="background:#fff; color:#3b82f6; border:2px solid #3b82f6; border-radius:18px; padding:15px 5px; font-size:14px; font-weight:800;">
-                <i class="fas fa-history"></i> ประวัติการเคลียร์เงิน
+           <button onclick="openHistoryModal()" style="background:#fff; color:#3b82f6; border:2px solid #3b82f6; border-radius:18px; padding:15px 5px; font-size:14px; font-weight:800;">
+                <i class="fas fa-history"></i> ประวัติเคลียร์เงิน
             </button>
-        </div>
+        </div> 
     </div>
  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
         <div onclick="$('histDate').showPicker()" style="background:linear-gradient(135deg, #f59e0b, #d97706); border-radius:25px; padding:20px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(245,158,11,0.2);">
@@ -413,13 +413,46 @@ function openReportModal(title, htmlContent) {
 function closeReportModal() {
     $("reportModal").style.display = "none";
 }
-  function openHistoryModal() { 
-    $("historyModal").style.display = "flex"; 
-    if (typeof renderHistoryList === "function") {
-        renderHistoryList(); 
+  function openHistoryModal() {
+    const history = JSON.parse(localStorage.getItem("barber_archives") || "[]");
+    
+    // สร้างโครงสร้างหน้าต่างประวัติ (Modal Content)
+    let contentHtml = `
+        <div style="background:#1e293b; padding:20px; border-radius:20px; color:#ffffff; max-height:80vh; overflow-y:auto;">
+            <h2 style="text-align:center; color:#60a5fa; margin-bottom:20px;">📜 ประวัติการเคลียร์เงิน</h2>
+    `;
+
+    if (history.length === 0) {
+        contentHtml += `<p style="text-align:center; color:#94a3b8;">ไม่มีข้อมูลประวัติในขณะนี้</p>`;
     } else {
-        console.error("หาฟังก์ชัน renderHistoryList ไม่เจอโว้ย!");
+        // วนลูปสร้างรายการประวัติแต่ละช่องให้ใหญ่ขึ้น
+        history.reverse().forEach((item, index) => {
+            // คำนวณ Index จริง (เนื่องจากเราใช้ reverse เพื่อให้รายการล่าสุดอยู่บน)
+            const actualIndex = history.length - 1 - index;
+            
+            contentHtml += `
+                <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:15px; padding:15px; margin-bottom:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <small style="color:#94a3b8; display:block;">${item.date}</small>
+                            <span style="font-size:18px; font-weight:700; color:#f8fafc;">${item.note || 'สรุปยอด'}</span>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:20px; font-weight:900; color:#4ade80;">฿${Number(item.total).toLocaleString()}</div>
+                            <button onclick="editArchiveItem(${actualIndex})" style="background:#fbbf24; border:none; border-radius:8px; padding:5px 12px; color:#000; font-weight:800; margin-top:8px; font-size:12px; cursor:pointer;">
+                                <i class="fas fa-edit"></i> แก้ไข
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
     }
+
+    contentHtml += `</div>`;
+    
+    // นำ contentHtml ไปแสดงผลใน Modal ของคุณ (สมมติว่าใช้ ID 'modalOverlay' หรือแสดงผลผ่าน Swal)
+    showCustomModal(contentHtml); 
 }
 
 function closeHistoryModal() { 
@@ -584,7 +617,7 @@ function renderDay() {
                         <span style="font-size:14px;">${payIcon}</span> ฿${p}${t ? ` <span style="color:#be185d;">(+${t})</span>` : ''}
                     </b>
                     <span style="font-size:11px; font-weight:700; color:#ef4444; cursor:pointer;" onclick="delRec(${r.id})">
-                        ลบรายการ <i class="fas fa-trash-alt"></i>
+                        ลบ <i class="fas fa-trash-alt"></i>
                     </span>
                 </div>
             </div>
@@ -650,21 +683,18 @@ if (dList) {
             <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()"></i>
         </div>
 
-            ${isHoliday ? `<center style='padding:40px; color:#64748b;'>🏖️ วันหยุดร้าน</center>` : (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>")}
+            ${isHoliday ? `<center style='padding:40px; color:#64748b;'>🏖️ วันหยุด</center>` : (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>")}
         `;
     }
-} function clearDailyData() {
-    // ปรับข้อความยืนยันให้ดูเป็นทางการ
+} 
+     function clearDailyData() {
     const confirmDelete = confirm("⚠️ คุณต้องการลบข้อมูลรายงานของวันนี้ทั้งหมดใช่หรือไม่? (ข้อมูลที่ลบแล้วจะไม่สามารถเรียกคืนได้)");
     
     if (confirmDelete) {
-        // ตรวจสอบชื่อ Key ให้ตรงกับที่ใช้งานจริง (เช่น 'barber_db')
         localStorage.removeItem("barber_db"); 
-        
-        // ข้อความแจ้งผลการทำงานที่สุภาพ
+    
         alert("✅ ดำเนินการลบข้อมูลเรียบร้อยแล้วครับ");
-        
-        // รีโหลดหน้าจอเพื่ออัปเดตการแสดงผล
+    
         location.reload();
     }
 }
@@ -754,17 +784,58 @@ function clearAccount() {
     loadAccountStatus();  
 }
 function renderHistoryList() {
-    let h = account.logs.map(l => `
-        <div style="padding:12px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;">
-            <div>
-                <b style="font-size:14px; color:#1e293b;">${l.date}</b><br>
-                <small style="color:#64748b;">${l.note}</small>
+    // ปรับดีไซน์ช่องประวัติให้ใหญ่และชัดเจนสำหรับมือถือ
+    let h = account.logs.map((l, index) => `
+        <div style="padding:18px 15px; border-bottom:1px solid #e2e8f0; background:#ffffff; display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; border-radius:10px;">
+            <div style="flex: 1;">
+                <b style="font-size:16px; color:#0f172a; display:block; margin-bottom:4px;">${l.date}</b>
+                <span style="color:#475569; font-size:14px; font-weight:500;">${l.note || 'เคลียร์ยอดค้าง'}</span>
             </div>
-            <b style="color:#16a34a;">฿${Math.abs(l.amount).toLocaleString()}</b>
+            <div style="text-align:right; min-width:115px;">
+                <b style="color:${l.amount >= 0 ? '#16a34a' : '#dc2626'}; font-size:18px; display:block; margin-bottom:8px;">
+                    ฿${Math.abs(l.amount).toLocaleString()}
+                </b>
+                
+                <button onclick="editAccountLog(${index})" style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; border-radius:8px; padding:8px 15px; font-size:12px; font-weight:800; cursor:pointer;">
+                    <i class="fas fa-edit"></i> แก้ไข
+                </button>
+            </div>
         </div>
-    `).join('');
+    `).reverse().join(''); 
     
-    $("accHistory").innerHTML = h || '<center style="padding:40px; color:#94a3b8;">ไม่มีประวัติการเคลียร์</center>';
+    $("accHistory").innerHTML = h || '<center style="padding:50px; color:#94a3b8; font-size:15px;">ไม่มีประวัติการเคลียร์ครับ</center>';
+}
+
+// ฟังก์ชันสำหรับแก้ไขประวัติการเคลียร์เงิน
+function editAccountLog(index) {
+    // เนื่องจากเราใช้ .reverse() ในตอนวาด ต้องอ้างอิงลำดับจากตัวแปร logs โดยตรง
+    let l = account.logs[index];
+    
+    const newNote = prompt("📝 แก้ไขหมายเหตุ:", l.note);
+    const newAmount = prompt("💰 แก้ไขจำนวนเงิน:", Math.abs(l.amount));
+
+    if (newNote !== null && newAmount !== null) {
+        // รักษาเครื่องหมายบวก/ลบเดิมไว้ (คืนเงินร้าน หรือ ร้านจ่ายช่าง)
+        const isNegative = l.amount < 0;
+        const val = parseFloat(newAmount.replace(/,/g, '')) || 0;
+        
+        // อัปเดตข้อมูลในตัวแปรหลัก
+        account.logs[index].note = newNote;
+        account.logs[index].amount = isNegative ? -val : val;
+
+        // เรียกใช้ฟังก์ชัน save() ของเดิมที่มีอยู่ในระบบเพื่อลงบันทึกใน localStorage
+        if (typeof save === "function") {
+            save();
+        }
+
+        alert("✅ แก้ไขข้อมูลและบันทึกเรียบร้อย");
+        
+        // อัปเดตการแสดงผลหน้าจอ
+        renderHistoryList();
+        if (typeof loadAccountStatus === "function") {
+            loadAccountStatus();
+        }
+    }
 }
 function loadHistDaily() {
     const d = $("histDate").value;
@@ -952,7 +1023,7 @@ function loadHistMonth() {
                         👤 ลูกค้า ${monthCount} คน
                     </div>
                     <div style="background:rgba(255,255,255,0.08); padding:6px 14px; border-radius:12px; font-size:16px; font-weight:600; color:#94a3b8;">
-                        📅 วันทำงาน ${filtered.length} วัน
+                        📅 ทำงาน ${filtered.length} วัน
                     </div>
                 </div>
             </div>
@@ -1101,14 +1172,15 @@ function go(p) {
             });
         }
 
-     function clearData() {
-    if (confirm("⚠️ ต้องการลบข้อมูลทั้งหมด? ข้อมูลจะถูกลบจากระบบ!")) {
+    function clearData() {
+    const confirmDelete = confirm("⚠️ คุณต้องการลบข้อมูลทั้งหมดในระบบใช่หรือไม่? ข้อมูลบัญชีและรายงานจะถูกล้างใหม่ทั้งหมด");
     
-        localStorage.removeItem("barber_db");
-        localStorage.removeItem("barber_archives");
+    if (confirmDelete) {
+        // ล้างข้อมูลทุกอย่างที่แอปเก็บไว้
+        localStorage.clear(); 
         
-        alert("✅ ลบข้อมูลสำเร็จ!");
-        location.reload();
+        alert("✅ ล้างข้อมูลระบบและบัญชีเรียบร้อยแล้วครับ");
+        location.reload(); // เพื่อให้หน้าจอกลับไปเป็น 0
     }
 }
 </script>
