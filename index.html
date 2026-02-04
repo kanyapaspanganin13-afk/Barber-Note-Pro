@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.01332 </title>
+    <title>Barber Note Pro V.01222 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -34,12 +34,10 @@
 
     /* 3. รีเซ็ตพื้นฐาน */
     * { box-sizing: border-box; font-family: 'Kanit', sans-serif; -webkit-tap-highlight-color: transparent; }
-    
     body { 
         margin: 0; background: var(--bg); color: var(--text); 
         padding-bottom: 90px; overflow-x: hidden; transition: all 0.3s ease; 
     }
-
     /* 4. ระบบเลย์เอาต์ (Layout & Page) */
     .container { padding: 15px; max-width: 500px; margin: auto; position: relative; z-index: 1; }
     .page { display: none; } 
@@ -47,26 +45,32 @@
     
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
     .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px; }
-
-    /* 5. เมนูบาร์ (แก้ที่ซ้ำซ้อนเหลือชุดเดียว) */
+/* 5. เมนูบาร์ (ปรับให้รองรับระบบธีม) */
 nav {
     position: fixed; bottom: 0; left: 0; right: 0;
-    background: #ffffff !important; 
+    /* เปลี่ยนจาก #ffffff !important เป็น var(--card) เพื่อให้เปลี่ยนตามธีมที่เลือก */
+    background: var(--card) !important; 
     display: flex; justify-content: space-around; 
     height: 75px; align-items: center;
-    box-shadow: 0 -5px 20px rgba(0,0,0,0.05); 
+    /* ปรับเงาให้ดูเข้ากับทั้งธีมสว่างและมืด */
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.15); 
     z-index: 99999; 
-    border-top: 1px solid #e2e8f0; 
+    /* ใช้สีเส้นขอบจากตัวแปรระบบธีม */
+    border-top: 1px solid var(--border); 
     padding-bottom: env(safe-area-inset-bottom);
+    transition: background 0.3s ease; /* ทำให้ตอนเปลี่ยนธีมสีจะค่อยๆ เปลี่ยน ดูนุ่มนวลครับ */
 }
 .nav-item { 
     flex: 1; text-align: center; 
-    color: #64748b; 
+    /* ใช้สีตัวหนังสือจากธีม แต่ทำให้จางลงเล็กน้อยสำหรับปุ่มที่ไม่ได้เลือก */
+    color: var(--text);
+    opacity: 0.6; 
     cursor: pointer; transition: 0.2s; 
     display: flex; flex-direction: column; align-items: center;
 }
 .nav-item.active { 
-    color: #3b82f6 !important; 
+    /* สีไอคอนเมื่อถูกเลือก จะใช้สี Accent ของธีมนั้นๆ (เช่น สีฟ้า หรือ สีเหลือง) */
+    color: var(--accent) !important; 
     opacity: 1; 
 }
 .nav-item i { font-size: 22px; display: block; margin-bottom: 2px; }
