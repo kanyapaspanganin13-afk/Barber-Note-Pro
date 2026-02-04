@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.0202 </title>
+    <title>Barber Note Pro V.0203 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -317,18 +317,33 @@ nav {
             </button>
         </div> 
     </div>
- <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-        <div onclick="$('histDate').showPicker()" style="background:linear-gradient(135deg, #f59e0b, #d97706); border-radius:25px; padding:20px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(245,158,11,0.2);">
-            <i class="fas fa-search-dollar" style="font-size:28px; margin-bottom:5px; display:block;"></i>
-            <b style="font-size:16px;">เรียกดูรายวัน</b>
-            <input type="date" id="histDate" onchange="loadHistDaily()" style="position:absolute; inset:0; opacity:0;">
-        </div>
-        <div onclick="$('histMonth').showPicker()" style="background:linear-gradient(135deg, #6366f1, #4338ca); border-radius:25px; padding:20px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(99,102,241,0.2);">
-            <i class="fas fa-calendar-check" style="font-size:28px; margin-bottom:5px; display:block;"></i>
-            <b style="font-size:16px;">สรุปรายเดือน</b>
-            <input type="month" id="histMonth" onchange="loadHistMonth()" style="position:absolute; inset:0; opacity:0;">
-        </div>
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+    <div onclick="$('histDate').showPicker()" style="background:linear-gradient(135deg, #f59e0b, #d97706); border-radius:25px; padding:20px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(245,158,11,0.2);">
+        <i class="fas fa-search-dollar" style="font-size:28px; margin-bottom:5px; display:block;"></i>
+        <b style="font-size:16px;">เรียกดูรายวัน</b>
+        <input type="date" id="histDate" onchange="loadHistDaily()" style="position:absolute; inset:0; opacity:0;">
     </div>
+
+    <div onclick="$('histMonth').showPicker()" style="background:linear-gradient(135deg, #6366f1, #4338ca); border-radius:25px; padding:20px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(99,102,241,0.2);">
+        <i class="fas fa-calendar-check" style="font-size:28px; margin-bottom:5px; display:block;"></i>
+        <b style="font-size:16px;">สรุปรายเดือน</b>
+        <input type="month" id="histMonth" onchange="loadHistMonth()" style="position:absolute; inset:0; opacity:0;">
+    </div>
+</div> <div onclick="confirmShareLine()" 
+     style="margin-top: 15px; 
+            background: linear-gradient(135deg, #25d366, #075e54); 
+            border-radius: 25px; 
+            padding: 15px; 
+            text-align: center; 
+            color: #fff; 
+            cursor: pointer; 
+            box-shadow: 0 8px 15px rgba(37,211,102,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;">
+    <i class="fab fa-line" style="font-size: 24px;"></i>
+    <b style="font-size: 16px;">ส่งรายงานปิดยอดเข้า LINE</b>
 </div>
 <div id="modalSet" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); z-index:9999; display:flex; align-items:center; justify-content:center; padding:15px;">
     
@@ -1174,7 +1189,77 @@ function loadHistMonth() {
         `
     );
 }
-  function shareLine() {
+ function buildAIVisualizer(data) {
+    const { total, barberEarn, shopEarn, clientCount, workDays, weekly, monthHair, monthSvc } = data;
+    const avgPerDay = clientCount / workDays;
+    let selectedComments = [];
+
+    // --- หมวด A: ภาพรวมลูกค้า (วิเคราะห์จาก avgPerDay และการกระจายตัว) ---
+    if (avgPerDay >= 2 && avgPerDay <= 4) {
+        selectedComments.push("🟦 " + "จำนวนลูกค้าในเดือนนี้อยู่ในระดับใกล้เคียงค่าเฉลี่ย");
+    }
+    const daysWithZero = workDays - Object.values(weekly).reduce((acc, w) => acc + w.days.size, 0);
+    if (daysWithZero === 0) {
+        selectedComments.push("🟦 " + "เดือนนี้ไม่มีวันที่ลูกค้าเป็นศูนย์");
+    } else {
+        selectedComments.push("🟦 " + "เดือนนี้มีหลายวันที่ไม่มีลูกค้าเข้าร้าน");
+    }
+
+    // --- หมวด B: ความสม่ำเสมอรายสัปดาห์ (วิเคราะห์จาก Weekly Object) ---
+    const weekAvgs = Object.values(weekly).map(w => w.customers / w.days.size);
+    const maxW = Math.max(...weekAvgs);
+    const minW = Math.min(...weekAvgs);
+    
+    if ((maxW - minW) > 1.5) {
+        selectedComments.push("🟩 " + "ความแตกต่างของลูกค้าแต่ละสัปดาห์ค่อนข้างสูง");
+    }
+    if (weekAvgs.filter(a => a > avgPerDay * 1.2).length >= 2) {
+        selectedComments.push("🟩 " + "มีสัปดาห์ที่ลูกค้าแรงมากกว่าหนึ่งสัปดาห์");
+    }
+
+    // --- หมวด C: วันในสัปดาห์ (วิเคราะห์จากสถิติรายวันรวมทั้งเดือน) ---
+    const dayTotals = { "จันทร์": 0, "อังคาร": 0, "พุธ": 0, "พฤหัส": 0, "ศุกร์": 0, "เสาร์": 0, "อาทิตย์": 0 };
+    Object.values(weekly).forEach(w => {
+        Object.entries(w.daily).forEach(([day, count]) => dayTotals[day] += count);
+    });
+    
+    const sortedDays = Object.entries(dayTotals).sort((a,b) => b[1] - a[1]);
+    const bestDay = sortedDays[0][0];
+    const worstDay = sortedDays[sortedDays.length - 1][0];
+
+    if (bestDay === "ศุกร์") selectedComments.push("🟨 " + "วันศุกร์เป็นวันที่ลูกค้าเยอะกว่าวันอื่น");
+    if (worstDay === "จันทร์") selectedComments.push("🟨 " + "วันจันทร์เป็นวันที่ลูกค้าน้อยกว่าวันอื่น");
+
+    // --- หมวด D: ทรงผม / บริการ (วิเคราะห์จาก topN) ---
+    const topHair = topN(monthHair, 1)[0];
+    if (topHair && topHair[0] === "แฟชั่น") {
+        selectedComments.push("🟧 " + "ทรงแฟชั่นเป็นทรงที่ถูกเลือกมากที่สุด");
+    }
+    if (Object.keys(monthSvc).length < 3) {
+        selectedComments.push("🟧 " + "ลูกค้าเลือกบริการเสริมไม่มาก");
+    }
+
+    // --- หมวด E: รายได้ (วิเคราะห์จากสัดส่วนราคา) ---
+    if (total > 0) {
+        const ratio = (shopEarn / total) * 100;
+        if (ratio >= 45 && ratio <= 55) {
+            selectedComments.push("🟥 " + "รายได้ร้านและช่างมีสัดส่วนคงที่");
+        }
+    }
+    if (avgPerDay < 1.5) {
+        selectedComments.push("🟥 " + "รายได้เฉลี่ยต่อวันยังไม่สูง");
+    }
+
+    return selectedComments;
+}
+     function topN(obj, n = 5) {
+  if (!obj || Object.keys(obj).length === 0) return [];
+  return Object.entries(obj)
+    .filter(([_, count]) => count > 0)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, n);
+}
+     function shareLine() {
     const dInp = $("dateInp").value, today = db.filter(r => r.date === dInp); if (!today.length) return;
     const dp = dInp.split('-'), fDate = `${dp[2]}/${dp[1]}/${dp[0]}`;
     let tot=0, cash=0, trans=0, tips=0, stats={};
@@ -1193,7 +1278,110 @@ function loadHistMonth() {
     let msg = `💈 รายงานร้าน: Barber Shop\n📅 วันที่: ${fDate}\n-------------------------\n📝 ลูกค้า (${today.length} คน):\n${clientList}\n-------------------------\n📊 สรุปงาน:\n${statText}\n-------------------------\n💰 ยอด: ${tot} | 🧧 ทิป: ${tips}\n📱 โอน: ${trans} | 💵 สด: ${cash}\n🤵 ช่างได้: ${Math.floor(bEarn)}\n🏠 ร้านได้: ${Math.floor(tot-(bEarn-tips))}\n-------------------------\n${settleMsg}`;
     window.open(`https://line.me/R/msg/text/?${encodeURIComponent(msg)}`);
 }
-function go(p) {
+function shareLineMonth() {
+  const m = $("histMonth").value;
+  if (!m) return alert("กรุณาเลือกเดือน");
+
+  const records = archives.filter(r => r.date && r.date.startsWith(m));
+  if (!records.length) return alert("ไม่พบข้อมูลเดือนนี้");
+
+  const shopName = conf.shopName || "Barber Shop";
+
+  // ---------- 1. เตรียมตัวแปร (รวม Logic รายวัน/รายคน) ----------
+  let total = 0, barberEarn = 0, clientCount = 0;
+  let weekly = {};
+  let monthHair = {}, monthSvc = {};
+  const workDaysCount = records.length; // จำนวนวันทำงานจริง
+
+  const weekOfMonth = d => Math.ceil((new Date(d).getDate()) / 7);
+  const weekdayTH = d => ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์"][new Date(d).getDay()];
+
+  records.forEach(r => {
+    const w = weekOfMonth(r.date);
+    const day = weekdayTH(r.date);
+    total += Number(r.total) || 0;
+    barberEarn += Number(r.barber) || 0;
+
+    // นับจำนวนลูกค้า (อ้างอิงจาก Logic ที่คุณใช้ใน UI)
+    if (r.details && r.details.length > 0) {
+      clientCount += r.details.length;
+    } else {
+      clientCount++; // Fallback กรณีไม่มี details
+    }
+
+    if (!weekly[w]) {
+      weekly[w] = { customers: 0, days: new Set(), daily: {}, hair: {}, service: {} };
+    }
+
+    let dayCust = r.details ? r.details.length : 1;
+    weekly[w].customers += dayCust;
+    weekly[w].days.add(r.date);
+    weekly[w].daily[day] = (weekly[w].daily[day] || 0) + dayCust;
+
+    // เก็บสถิติทรงผม/บริการ
+    (r.details || []).forEach(d => {
+      (d.svcs || []).forEach(s => {
+        if(!s) return;
+        const haircutList = ["แฟชั่น","สกินเฟด","เปิดข้าง","รองทรง","ตำรวจ/ทหาร","ทรงนักเรียน","แก้ผม","โกนผม","เด็ก"];
+        if(haircutList.includes(s.trim())) {
+          monthHair[s] = (monthHair[s]||0)+1;
+          weekly[w].hair[s] = (weekly[w].hair[s]||0)+1;
+        } else {
+          monthSvc[s] = (monthSvc[s]||0)+1;
+          weekly[w].service[s] = (weekly[w].service[s]||0)+1;
+        }
+      });
+    });
+  });
+
+  const shopEarn = total - barberEarn;
+  const avgPerDay = workDaysCount > 0 ? (clientCount / workDaysCount) : 0;
+
+  // ---------- 2. สรุปผลรายสัปดาห์ ----------
+  let weekLines = Object.entries(weekly).map(([w, data]) => {
+    const avgW = data.customers / data.days.size;
+    let busy = Object.entries(data.daily).filter(([d, c]) => c >= avgW * 1.3).map(x => x[0]);
+    return `📍 สัปดาห์ ${w}: เฉลี่ย ${avgW.toFixed(1)} คน/วัน\n   (เยอะ: ${busy.join(",") || "-"})`;
+  }).join("\n");
+
+  // ---------- 3. ประกอบข้อความ LINE (เลียนแบบ UI) ----------
+  const msg = `
+💈 รายงาน: ${shopName}
+📅 ประจำเดือน: ${m}
+
+✂️ ยอดตัดทั้งเดือน: ฿${total.toLocaleString()}
+────────────────────
+🤵 รายได้ช่าง: ฿${Math.floor(barberEarn).toLocaleString()}
+🏠 รายได้ร้าน: ฿${Math.floor(shopEarn).toLocaleString()}
+
+📊 สถิติภาพรวม:
+👤 ลูกค้าทั้งหมด: ${clientCount} คน
+📅 ทำงาน: ${workDaysCount} วัน
+📈 เฉลี่ย: ${avgPerDay.toFixed(2)} คน/วัน
+
+📅 จังหวะรายสัปดาห์:
+${weekLines}
+
+🏆 บริการยอดนิยม:
+${Object.entries(monthSvc).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`• ${k} (${v} ครั้ง)`).join("\n") || "-"}
+
+💡 หมายเหตุ: ข้อมูลนี้สรุปจากระบบบันทึกรายวัน
+`.trim();
+
+  window.open(`https://line.me/R/msg/text/?${encodeURIComponent(msg)}`);
+}
+    function confirmShareLine() {
+    const m = document.getElementById("histMonth").value;
+    if (!m) {
+        alert("กรุณาเลือกเดือนในปุ่ม 'สรุปรายเดือน' ก่อนนะครับ");
+        return;
+    }
+    
+    if (confirm(`คุณต้องการแชร์รายงานสรุปของเดือน ${m} เข้าสู่ LINE ใช่ไหมครับ?`)) {
+        shareLineMonth();
+    }
+}
+    function go(p) {
     document.querySelectorAll('.page').forEach(pg => {
         pg.classList.remove('active');
         pg.style.display = 'none'; 
