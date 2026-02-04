@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.01372 </title>
+    <title>Barber Note Pro V.012 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -46,6 +46,7 @@
     position: relative; 
     z-index: 1; 
 }
+/* 4. ระบบเลย์เอาต์ (เวอร์ชันแก้ไขให้ไอคอนไม่หาย) */
 .page { 
     display: none; 
     background: var(--card);
@@ -58,14 +59,13 @@
     margin-bottom: 20px;
     border: 1px solid var(--border);
 
-    /* --- ส่วนที่เพิ่มเพื่อปรับขนาดให้เท่ากัน --- */
-    min-height: 70vh;    /* กำหนดความสูงขั้นต่ำเป็น 70% ของความสูงหน้าจอ */
-    display: none;       /* ยังคงซ่อนไว้ก่อน */
-    flex-direction: column; 
+    /* กำหนดความสูงให้เท่ากัน */
+    min-height: 75vh;    
 }
 
 .page.active { 
-    display: flex;       /* เมื่อ Active ให้ใช้ flex เพื่อจัดระเบียบเนื้อหาภายใน */
+    /* เปลี่ยนกลับเป็น block เพื่อให้เนื้อหาข้างใน (ไอคอน/ปุ่ม) เรียงลงมาเหมือนเดิม */
+    display: block; 
     animation: slideUp 0.4s ease-out;
 }
     
