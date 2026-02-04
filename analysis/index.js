@@ -1,17 +1,14 @@
-// analysis/index.js
 import { analyzeMonthly } from './monthlyAnalyzer.js';
 import { getMonthlyInsights } from './monthlyInsight.js';
 
-/**
- * ฟังก์ชันหลักที่รวบรวมการคำนวณและการวิเคราะห์เข้าด้วยกัน
- */
+// ฟังก์ชันนี้จะเป็นตัวกลางที่ปลอดภัย 100% ไม่ใช้ eval
 export function getFullMonthlyReport(filtered, conf) {
-    // 1. ส่งข้อมูลไปคำนวณตัวเลขดิบ
-    const stats = analyzeMonthly(filtered, conf);
-    
-    // 2. นำตัวเลขที่ได้มาวิเคราะห์หา Insight (คำแนะนำ)
-    const insights = getMonthlyInsights(stats);
-    
-    // 3. ส่งข้อมูลทั้งหมดกลับไปให้หน้าจอ UI
-    return { ...stats, insights };
+    try {
+        const stats = analyzeMonthly(filtered, conf);
+        const insights = getMonthlyInsights(stats);
+        return { ...stats, insights };
+    } catch (error) {
+        console.error("การวิเคราะห์ผิดพลาด:", error);
+        return null;
+    }
 }
