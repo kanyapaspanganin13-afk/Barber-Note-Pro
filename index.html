@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.04465 </title>
+    <title>Barber Note Pro V.05 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -438,16 +438,17 @@ nav {
     <div onclick="go(2)" class="nav-item"><i class="fas fa-history"></i><span>รายงาน</span></div>
     <div onclick="go(3)" class="nav-item"><i class="fas fa-wallet"></i><span>บัญชี</span></div>
 </nav>
- <script type="module">
+<script type="module">
+// 1. นำเข้าฟังก์ชันจากไฟล์สมองกลที่พี่สร้างไว้
 import { getFullMonthlyReport } from './analysis/index.js';
-    // 1. ดึงตัวแปรเดิมที่เคยมีอยู่ข้างนอก (Global) เข้ามาให้ Module รู้จัก
-const conf = window.conf || {}; 
-const $ = (id) => document.getElementById(id);
 
-// 2. ฟังก์ชันเปิดตั้งค่าแบบใหม่ (ที่มั่นใจว่าจะหาทุกอย่างเจอ)
+// 2. ตั้งค่าตัวช่วยดึง ID และข้อมูลตั้งค่า (ต้องมีเพื่อให้ฟังก์ชันข้างล่างรู้จัก)
+const $ = (id) => document.getElementById(id);
+const conf = window.conf || {}; 
+
+// 3. เชื่อมต่อฟังก์ชันเปิดตั้งค่าเข้ากับ Window (เพื่อให้ปุ่ม onclick เรียกใช้ได้)
 window.openSettings = function() {
-    console.log("กำลังเปิดตั้งค่า..."); // เช็คใน Console ว่าทำงานไหม
-    
+    console.log("กำลังเปิดตั้งค่า..."); 
     try {
         if ($("setShop"))  $("setShop").value  = conf.shop  || "";
         if ($("setTheme")) $("setTheme").value = conf.theme || "light";
@@ -459,10 +460,27 @@ window.openSettings = function() {
         if ($("modalSet")) {
             $("modalSet").style.display = "flex";
         } else {
-            console.error("หา modalSet ไม่เจอครับพี่");
+            console.error("หา modalSet ไม่เจอครับพี่ ลองเช็ค ID ใน HTML ดูอีกทีครับ");
         }
     } catch (err) {
-        console.error("เกิดข้อผิดพลาด:", err);
+        console.error("เกิดข้อผิดพลาดในการเปิดตั้งค่า:", err);
+    }
+};
+
+// 4. เชื่อมต่อฟังก์ชันโหลดรายงาน (สำหรับปุ่มสรุปรายงาน)
+window.loadHistMonth = function() {
+    const m = $("histMonth").value;
+    if (!m) return alert("เลือกเดือนก่อนครับพี่");
+
+    const filtered = (window.archives || []).filter(a => a.date && a.date.startsWith(m));
+    if (filtered.length === 0) return alert("ไม่มีข้อมูลเดือนนี้ครับ");
+
+    // ใช้สมองกลคำนวณ
+    const report = getFullMonthlyReport(filtered, conf);
+    
+    // แสดงผล UI (ต้องมั่นใจว่ามีฟังก์ชัน renderReportUI และ openReportModal อยู่ในไฟล์นี้ด้วย)
+    if (report && typeof window.renderReportUI === "function") {
+        window.openReportModal(`สรุปรายงานเดือน ${m}`, window.renderReportUI(report));
     }
 };
      // ฟังก์ชันวาดแถบสถิติ (ทรงผม/บริการ)
