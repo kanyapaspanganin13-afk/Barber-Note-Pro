@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.069 </title>
+    <title>Barber Note Pro V.06 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -413,20 +413,15 @@ function openReportModal(title, htmlContent) {
 function closeReportModal() {
     $("reportModal").style.display = "none";
 }
-  function openHistoryModal() {
-    // 1. สร้างโครงสร้าง Modal เปล่าๆ ไว้ก่อน
-    let contentHtml = `
-        <div style="background:#1e293b; padding:20px; border-radius:20px; color:#ffffff; min-height:300px;">
-            <h2 style="text-align:center; color:#60a5fa; margin-bottom:20px;">📜 ประวัติการเคลียร์เงิน</h2>
-            <div id="accHistory"></div> </div>
-    `;
-
-    // 2. แสดง Modal
-    showCustomModal(contentHtml); 
-    
-    // 3. สั่งวาดรายการจาก account.logs ทันที
-    renderHistoryList(); 
+  function openHistoryModal() { 
+    $("historyModal").style.display = "flex"; 
+    if (typeof renderHistoryList === "function") {
+        renderHistoryList(); 
+    } else {
+        console.error("หาฟังก์ชัน renderHistoryList ไม่เจอโว้ย!");
+    }
 }
+
 function closeHistoryModal() { 
     $("historyModal").style.display = "none"; 
 }
