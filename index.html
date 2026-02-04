@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.07 </title>
+    <title>Barber Note Pro V.0 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -27,9 +27,6 @@
     :root { 
         --primary: #6366f1; --accent: #0ea5e9; --danger: #ef4444; --success: #22c55e; 
         --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --border: #e2e8f0;
-    }
-    .private-info {
-        display: none !important;
     }
     /* 2. ระบบธีม (ต้องอยู่บนสุดเพื่อเตรียมตัวแปร) */
     body.navy { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --accent: #38bdf8; }
@@ -217,10 +214,17 @@
             </div>
         </div>
     </div>
+    
     <div id="settleBarContainer" style="margin-bottom:18px;"><div id="settleBar"></div> </div>
     <div id="dServiceStats"></div>
     <hr style="border:0; border-top:1px solid #e2e8f0; margin-top:15px;">
     <div id="dailyList"></div>
+
+    <div style="margin-top: 25px; padding: 0 10px;">
+        <button onclick="clearDailyData()" style="width:100%; height:50px; background:#fff1f2; border:1px solid #fecaca; border-radius:15px; font-size:15px; font-weight:800; color:#e11d48; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+            <i class="fas fa-trash-alt"></i> ลบข้อมูลรายงานวันนี้ทั้งหมด
+        </button>
+    </div>
 </div>
 <div id="p3" class="page" style="max-width:480px; margin:0 auto; padding: 12px; padding-bottom: 100px; background: #f8fafc;">
     <div class="card" style="background:#fff; border-radius:25px; padding:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border:1px solid #fff; margin-bottom: 15px;">
@@ -303,13 +307,13 @@
             </div>
 
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;">
+                 <select id="setSound" style="width:100%; height:55px; border-radius:18px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:15px; font-weight:700; outline:none;">
+                    <option value="on">🔔 เปิดเสียง</option>
+                    <option value="off">🔕 ปิดเสียง</option>
+                </select>
                 <select id="setVoice" style="width:100%; height:55px; border-radius:18px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:15px; font-weight:700; outline:none;">
                     <option value="female">👸 เสียงหญิง</option>
                     <option value="male">🤵 เสียงชาย</option>
-                </select>
-                <select id="setSound" style="width:100%; height:55px; border-radius:18px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:15px; font-weight:700; outline:none;">
-                    <option value="on">🔔 เปิดเสียง</option>
-                    <option value="off">🔕 ปิดเสียง</option>
                 </select>
             </div>
 
@@ -637,20 +641,39 @@ if (actionBox) {
         </button>
     `;
 }
-
     // --- ส่วนแสดงรายการด้านล่าง (สำคัญ!) ---
-    const dList = document.getElementById("dailyList");
-    if (dList) {
-        dList.innerHTML = `
-   <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
-        <b style="font-size:16px; color: var(--text);">📋 รายงานวันนี้:</b>
-        <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()"></i>
-    </div>
+   const dList = document.getElementById("dailyList");
+if (dList) {
+    dList.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
+            <b style="font-size:16px; color: var(--text);">📋 รายงานวันนี้:</b>
+            <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()"></i>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button onclick="clearDailyData()" style="width:100%; height:45px; background:#fff1f2; border:1px solid #fecaca; border-radius:12px; font-size:14px; font-weight:800; color:#e11d48; cursor:pointer;">
+                <i class="fas fa-trash-alt"></i> ลบข้อมูลวันนี้ทั้งหมด
+            </button>
+        </div>
 
             ${isHoliday ? `<center style='padding:40px; color:#64748b;'>🏖️ วันหยุดร้าน</center>` : (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>")}
         `;
     }
-} 
+} function clearDailyData() {
+    // ปรับข้อความยืนยันให้ดูเป็นทางการ
+    const confirmDelete = confirm("⚠️ คุณต้องการลบข้อมูลรายงานของวันนี้ทั้งหมดใช่หรือไม่? (ข้อมูลที่ลบแล้วจะไม่สามารถเรียกคืนได้)");
+    
+    if (confirmDelete) {
+        // ตรวจสอบชื่อ Key ให้ตรงกับที่ใช้งานจริง (เช่น 'barber_db')
+        localStorage.removeItem("barber_db"); 
+        
+        // ข้อความแจ้งผลการทำงานที่สุภาพ
+        alert("✅ ดำเนินการลบข้อมูลเรียบร้อยแล้วครับ");
+        
+        // รีโหลดหน้าจอเพื่ออัปเดตการแสดงผล
+        location.reload();
+    }
+}
 function saveAndGo(date, total) {
     const todayData = db.filter(r => r.date === date && r.type === 'SERVICE');
     const isHoliday = db.some(r => r.date === date && r.type === 'HOLIDAY');
@@ -920,7 +943,6 @@ function loadHistMonth() {
             </div>`
         ).join("");
     };
-
     // --- ส่วนการแสดงผล UI ใหม่ทั้งหมด ---
     openReportModal(
         `สรุปรายงานเดือน ${m}`,
@@ -933,10 +955,10 @@ function loadHistMonth() {
                 
                 <div style="display:flex; justify-content:center; gap:8px; margin-top:15px;">
                     <div style="background:rgba(255,255,255,0.08); padding:6px 14px; border-radius:12px; font-size:16px; font-weight:600; color:#38bdf8;">
-                        👤 รวมลูกค้า ${monthCount} คน
+                        👤 ลูกค้า ${monthCount} คน
                     </div>
                     <div style="background:rgba(255,255,255,0.08); padding:6px 14px; border-radius:12px; font-size:16px; font-weight:600; color:#94a3b8;">
-                        📅 รวมวันทำงาน ${filtered.length} วัน
+                        📅 วันทำงาน ${filtered.length} วัน
                     </div>
                 </div>
             </div>
@@ -963,7 +985,7 @@ function loadHistMonth() {
             <div style="padding-bottom:40px;">
                 <div style="font-size:15px; font-weight:800; color:#38bdf8; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
                     <div style="width:4px; height:16px; background:#38bdf8; border-radius:2px;"></div>
-                    บริการเสริมยอดนิยม
+                    บริการยอดนิยม
                 </div>
                 ${renderStats(serviceStats, "#38bdf8")}
             </div>
@@ -1056,7 +1078,6 @@ function go(p) {
             a.download = `backup-barber-${new Date().toLocaleDateString()}.json`;
             a.click();
         }
-
         // 2. ฟังก์ชันนำเข้าข้อมูล
         function importBackup(input) {
             const reader = new FileReader();
@@ -1077,7 +1098,6 @@ function go(p) {
                 reader.readAsText(input.files[0]);
             }
         }
-
         // 3. ตัวลงทะเบียน Service Worker (เพื่อให้ใช้งานออฟไลน์ได้)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -1086,7 +1106,17 @@ function go(p) {
                     .catch(err => console.log('จดทะเบียนไม่สำเร็จ:', err));
             });
         }
-     
+
+     function clearData() {
+    if (confirm("⚠️ ต้องการลบข้อมูลทั้งหมด? ข้อมูลจะถูกลบจากระบบ!")) {
+    
+        localStorage.removeItem("barber_db");
+        localStorage.removeItem("barber_archives");
+        
+        alert("✅ ลบข้อมูลสำเร็จ!");
+        location.reload();
+    }
+}
 </script>
 </body>
 </html>
