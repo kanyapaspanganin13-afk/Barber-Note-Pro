@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.059 </title>
+    <title>Barber Note Pro V.069 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -414,47 +414,19 @@ function closeReportModal() {
     $("reportModal").style.display = "none";
 }
   function openHistoryModal() {
-    const history = JSON.parse(localStorage.getItem("barber_archives") || "[]");
-    
-    // สร้างโครงสร้างหน้าต่างประวัติ (Modal Content)
+    // 1. สร้างโครงสร้าง Modal เปล่าๆ ไว้ก่อน
     let contentHtml = `
-        <div style="background:#1e293b; padding:20px; border-radius:20px; color:#ffffff; max-height:80vh; overflow-y:auto;">
+        <div style="background:#1e293b; padding:20px; border-radius:20px; color:#ffffff; min-height:300px;">
             <h2 style="text-align:center; color:#60a5fa; margin-bottom:20px;">📜 ประวัติการเคลียร์เงิน</h2>
+            <div id="accHistory"></div> </div>
     `;
 
-    if (history.length === 0) {
-        contentHtml += `<p style="text-align:center; color:#94a3b8;">ไม่มีข้อมูลประวัติในขณะนี้</p>`;
-    } else {
-        // วนลูปสร้างรายการประวัติแต่ละช่องให้ใหญ่ขึ้น
-        history.reverse().forEach((item, index) => {
-            // คำนวณ Index จริง (เนื่องจากเราใช้ reverse เพื่อให้รายการล่าสุดอยู่บน)
-            const actualIndex = history.length - 1 - index;
-            
-            contentHtml += `
-                <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:15px; padding:15px; margin-bottom:12px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <small style="color:#94a3b8; display:block;">${item.date}</small>
-                            <span style="font-size:18px; font-weight:700; color:#f8fafc;">${item.note || 'สรุปยอด'}</span>
-                        </div>
-                        <div style="text-align:right;">
-                            <div style="font-size:20px; font-weight:900; color:#4ade80;">฿${Number(item.total).toLocaleString()}</div>
-                            <button onclick="editArchiveItem(${actualIndex})" style="background:#fbbf24; border:none; border-radius:8px; padding:5px 12px; color:#000; font-weight:800; margin-top:8px; font-size:12px; cursor:pointer;">
-                                <i class="fas fa-edit"></i> แก้ไข
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-    }
-
-    contentHtml += `</div>`;
-    
-    // นำ contentHtml ไปแสดงผลใน Modal ของคุณ (สมมติว่าใช้ ID 'modalOverlay' หรือแสดงผลผ่าน Swal)
+    // 2. แสดง Modal
     showCustomModal(contentHtml); 
+    
+    // 3. สั่งวาดรายการจาก account.logs ทันที
+    renderHistoryList(); 
 }
-
 function closeHistoryModal() { 
     $("historyModal").style.display = "none"; 
 }
@@ -784,26 +756,36 @@ function clearAccount() {
     loadAccountStatus();  
 }
 function renderHistoryList() {
-    // ปรับดีไซน์ช่องประวัติให้ใหญ่และชัดเจนสำหรับมือถือ
-    let h = account.logs.map((l, index) => `
-        <div style="padding:18px 15px; border-bottom:1px solid #e2e8f0; background:#ffffff; display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; border-radius:10px;">
-            <div style="flex: 1;">
-                <b style="font-size:16px; color:#0f172a; display:block; margin-bottom:4px;">${l.date}</b>
-                <span style="color:#475569; font-size:14px; font-weight:500;">${l.note || 'เคลียร์ยอดค้าง'}</span>
+    // 1. ตรวจสอบว่ามีข้อมูลหรือไม่
+    if (!account.logs || account.logs.length === 0) {
+        $("accHistory").innerHTML = '<center style="padding:50px; color:#94a3b8; font-size:15px;">ไม่มีประวัติการเคลียร์ครับ</center>';
+        return;
+    }
+
+    // 2. สร้างรายการโดยเรียงจากใหม่ไปเก่า (ใช้ loop ถอยหลังแทน reverse เพื่อป้องกัน index เพี้ยน)
+    let h = "";
+    for (let i = account.logs.length - 1; i >= 0; i--) {
+        let l = account.logs[i];
+        h += `
+            <div style="padding:20px 15px; border-bottom:1px solid #e2e8f0; background:#ffffff; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-radius:15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                <div style="flex: 1;">
+                    <b style="font-size:17px; color:#0f172a; display:block; margin-bottom:5px;">📅 ${l.date}</b>
+                    <span style="color:#475569; font-size:15px; font-weight:500;">📌 ${l.note || 'เคลียร์ยอดค้าง'}</span>
+                </div>
+                <div style="text-align:right; min-width:120px;">
+                    <b style="color:${l.amount >= 0 ? '#16a34a' : '#dc2626'}; font-size:20px; display:block; margin-bottom:10px;">
+                        ฿${Math.abs(l.amount).toLocaleString()}
+                    </b>
+                    
+                    <button onclick="editAccountLog(${i})" style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; border-radius:10px; padding:10px 20px; font-size:14px; font-weight:800; cursor:pointer; width:100%;">
+                        <i class="fas fa-edit"></i> แก้ไข
+                    </button>
+                </div>
             </div>
-            <div style="text-align:right; min-width:115px;">
-                <b style="color:${l.amount >= 0 ? '#16a34a' : '#dc2626'}; font-size:18px; display:block; margin-bottom:8px;">
-                    ฿${Math.abs(l.amount).toLocaleString()}
-                </b>
-                
-                <button onclick="editAccountLog(${index})" style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; border-radius:8px; padding:8px 15px; font-size:12px; font-weight:800; cursor:pointer;">
-                    <i class="fas fa-edit"></i> แก้ไข
-                </button>
-            </div>
-        </div>
-    `).reverse().join(''); 
+        `;
+    }
     
-    $("accHistory").innerHTML = h || '<center style="padding:50px; color:#94a3b8; font-size:15px;">ไม่มีประวัติการเคลียร์ครับ</center>';
+    $("accHistory").innerHTML = h;
 }
 
 // ฟังก์ชันสำหรับแก้ไขประวัติการเคลียร์เงิน
