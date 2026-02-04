@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.031 </title>
+    <title>Barber Note Pro V.035 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -191,11 +191,11 @@
     <span style="font-size: 32px; font-weight: 900; letter-spacing:1px;">บันทึกข้อมูล</span>
 </button>  
 </div>
- <div id="p2" class="page" style="max-width:480px; margin:0 auto; padding: 15px; padding-bottom: 100px;">
+<div id="p2" class="page" style="max-width:480px; margin:0 auto; padding: 15px; padding-bottom: 100px;">
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
         <div style="background: #102d8d; padding:18px 15px; border-radius:20px; text-align:center; box-shadow:0 10px 15px -3px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);">
             <small style="font-weight:800; color:#cbd5e1; text-transform: uppercase; letter-spacing: 0.5px;">ยอดรวมวันนี้</small>
-            <div id="dTotal" style="font-size:36px; font-weight:900; color:#ffffff; margin: 5px 0;">0</div>
+            <div id="dTotal" style="font-size:36px; font-weight:900; color:#cbd5e1; margin: 5px 0;">0</div>
             <div id="dCounts" style="font-size:16px; font-weight:700; color:#cbd5e1; background:rgba(255,255,255,0.15); display:inline-block; padding:2px 10px; border-radius:10px;">ลูกค้า 0 คน</div>
         </div>
 
@@ -214,10 +214,17 @@
             </div>
         </div>
     </div>
+    
     <div id="settleBarContainer" style="margin-bottom:18px;"><div id="settleBar"></div> </div>
     <div id="dServiceStats"></div>
     <hr style="border:0; border-top:1px solid #e2e8f0; margin-top:15px;">
     <div id="dailyList"></div>
+
+    <div style="margin-top: 25px; padding: 0 10px;">
+        <button onclick="clearDailyData()" style="width:100%; height:50px; background:#fff1f2; border:1px solid #fecaca; border-radius:15px; font-size:15px; font-weight:800; color:#e11d48; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+            <i class="fas fa-trash-alt"></i> ล้างข้อมูลรายงานวันนี้ทั้งหมด
+        </button>
+    </div>
 </div>
     <div id="p3" class="page" style="max-width:480px; margin:0 auto; padding: 12px; padding-bottom: 100px; background: #f8fafc;">
     <div class="card" style="background:#fff; border-radius:25px; padding:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border:1px solid #fff; margin-bottom: 15px;">
@@ -641,12 +648,6 @@ if (dList) {
         <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
             <b style="font-size:16px; color: var(--text);">📋 รายงานวันนี้:</b>
             <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()"></i>
-        </div>
-        
-        <div style="margin-top: 20px;">
-            <button onclick="clearDailyData()" style="width:100%; height:45px; background:#fff1f2; border:1px solid #fecaca; border-radius:12px; font-size:14px; font-weight:800; color:#e11d48; cursor:pointer;">
-                <i class="fas fa-trash-alt"></i> ลบข้อมูลวันนี้ทั้งหมด
-            </button>
         </div>
 
             ${isHoliday ? `<center style='padding:40px; color:#64748b;'>🏖️ วันหยุดร้าน</center>` : (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>")}
