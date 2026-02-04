@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.010 </title>
+    <title>Barber Note Pro V.0178 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -322,16 +322,22 @@
                 </select>
             </div>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;">
-                 <select id="setSound" style="width:100%; height:55px; border-radius:18px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:15px; font-weight:700; outline:none;">
-                    <option value="on">🔔 เปิดเสียง</option>
-                    <option value="off">🔕 ปิดเสียง</option>
-                </select>
-                <select id="setVoice" style="width:100%; height:55px; border-radius:18px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:15px; font-weight:700; outline:none;">
-                    <option value="female">👸 เสียงหญิง</option>
-                    <option value="male">🤵 เสียงชาย</option>
-                </select>
-            </div>
+           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;">
+    <div style="position: relative;">
+        <select id="setSound" style="width:100%; height:55px; border-radius:18px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:15px; font-weight:700; outline:none; appearance:none; -webkit-appearance:none;">
+            <option value="on">เปิดเสียง</option>
+            <option value="off">ปิดเสียง</option>
+        </select>
+        <i class="fas fa-volume-up" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #64748b; pointer-events: none;"></i>
+    </div>
+
+    <div style="position: relative;">
+        <select id="setVoice" style="width:100%; height:55px; border-radius:18px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:15px; font-weight:700; outline:none; appearance:none; -webkit-appearance:none;">
+            <option value="female">เสียงหญิง</option>
+            <option value="male">เสียงชาย</option>
+        </select>
+        <i class="fas fa-user-friends" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #64748b; pointer-events: none;"></i>
+    </div>
 
             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-bottom:25px;">
                 <button onclick="exportBackup()" style="height:45px; background:#fff; border:1px solid #cbd5e1; border-radius:12px; font-size:13px; font-weight:800; color:#475569;"><i class="fas fa-file-download"></i> สำรองข้อมูล</button>
