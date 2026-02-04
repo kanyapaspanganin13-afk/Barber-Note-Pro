@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.0251 </title>
+    <title>Barber Note Pro V.09791 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -1017,8 +1017,9 @@ function loadHistDaily() {
     `);
 }
 function loadHistMonth() {
+    const $ = (id) => document.getElementById(id);
     const m = $("histMonth").value;
-    if (!m) return alert("กรุณาเลือกเดือนก่อน");
+    if (!m) return alert("กรุณาเลือกเดือนก่อนครับ");
 
     const filtered = archives.filter(a => a.date && a.date.startsWith(m));
     if (!filtered.length) {
@@ -1032,66 +1033,66 @@ function loadHistMonth() {
 
     const haircutList = ["แฟชั่น","สกินเฟด","เปิดข้าง","รองทรง","ตำรวจ/ทหาร","ทรงนักเรียน","แก้ผม","โกนผม","เด็ก"];
     const serviceList = ["โกนหนวด","กันหน้า","สระผม","ย้อมผม"];
+    const conf = window.conf || { guar: 0 };
 
-    // --- 🟢 A. ตัวแปรสำหรับ Logic ใหม่ ---
+    // --- 🟢 1. ตัวแปรคำนวณ ---
     let monthTotal = 0, monthBarber = 0, monthCount = 0;
     let hairStats = {}, serviceStats = {};
-    
     let offDays = 0, workDays = 0, zeroCustomerDays = 0;
     let barberOver = 0, barberUnder = 0, barberFromGuarantee = 0, guaranteeDays = 0;
+    let weeklyData = {}; // <--- เพิ่มตัวแปรรายสัปดาห์
 
-    // --- 🟢 B. Loop คำนวณ (รวม Logic ประกันและวันหยุด) ---
+    // --- 🟢 2. Loop คำนวณข้อมูล ---
     filtered.forEach(day => {
-        // 1. แยกวันหยุด
-        if (day.off) {
-            offDays++;
-            return;
-        }
+        if (day.off) { offDays++; return; }
 
-        workDays++; // นับเป็นวันเปิดร้านจริง
+        workDays++;
         const real = Number(day.barber) || 0;
         const guar = conf.guar || 0;
-        const hasCustomer = day.details && day.details.length > 0;
 
-        if (!hasCustomer) {
-            zeroCustomerDays++;
-        }
+        // จัดกลุ่มรายสัปดาห์
+        const dObj = new Date(day.date);
+        let wIdx = Math.ceil(dObj.getDate() / 7);
+        if (wIdx > 4) wIdx = 4;
+        const wKey = `สัปดาห์ที่ ${wIdx}`;
+        if (!weeklyData[wKey]) weeklyData[wKey] = { customers: 0, days: 0 };
+        weeklyData[wKey].days++;
 
-        // 2. วิเคราะห์รายได้ช่าง (Logic ประกัน)
         if (day.useGuarantee === true) {
-            barberFromGuarantee += (guar || real); // ถ้าติ๊กประกัน ใช้ยอดประกันเป็นหลัก
+            barberFromGuarantee += (guar || real);
             guaranteeDays++;
         } else if (real > guar) {
             barberOver += real;
         } else if (real > 0) {
             barberUnder += real;
-            guaranteeDays++; // ร้านต้องเติมให้ถึงประกัน
+            guaranteeDays++;
         }
 
-        // 3. Logic เดิม: นับยอดเงินและสถิติทรงผม
         monthTotal += Number(day.total) || 0;
         monthBarber += real;
 
+        let hasHair = false;
         (day.details || []).forEach(d => {
             const svcs = Array.isArray(d.svcs) ? d.svcs : [];
-            let countedHair = false;
+            let dailyHasHair = false;
             svcs.forEach(s => {
                 if (!s) return;
                 s = s.trim();
                 if (haircutList.includes(s)) {
                     hairStats[s] = (hairStats[s] || 0) + 1;
-                    if (!countedHair) { monthCount++; countedHair = true; }
+                    dailyHasHair = true;
                 } else if (serviceList.includes(s)) {
                     serviceStats[s] = (serviceStats[s] || 0) + 1;
                 }
             });
+            if (dailyHasHair) { monthCount++; hasHair = true; weeklyData[wKey].customers++; }
         });
+        if (!hasHair) zeroCustomerDays++;
     });
 
     const monthShop = monthTotal - monthBarber;
     const avgCustomerPerDay = workDays > 0 ? (monthCount / workDays) : 0;
 
-    // --- 🟢 C. สร้างข้อความ Insight (ภาษาคน) ---
     let insights = [];
     if (barberFromGuarantee > barberOver) insights.push("📉 รายได้ช่างเดือนนี้ยังพึ่งประกันค่อนข้างเยอะ");
     if (barberOver > barberFromGuarantee) insights.push("🔥 รายได้ช่างส่วนใหญ่มาจากการตัดจริง");
@@ -1106,11 +1107,19 @@ function loadHistMonth() {
             <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:16px; margin-bottom:8px;">
                 <div style="font-weight:600; color:#f1f5f9; font-size:14px;">${k}</div>
                 <div style="font-weight:800; color:${accentColor}; font-size:16px;">${v} <span style="font-size:11px; opacity:0.5; color:#fff; font-weight:400;">ครั้ง</span></div>
-            </div>`
-        ).join("");
+            </div>`).join("");
     };
 
-    // --- 🟢 D. ส่วนการแสดงผล UI ---
+    // --- สร้าง UI รายสัปดาห์เพิ่ม ---
+    const weeklyHtml = Object.entries(weeklyData).map(([wk, data]) => {
+        const avg = data.days > 0 ? (data.customers / data.days).toFixed(1) : 0;
+        return `<div style="display:flex; justify-content:space-between; padding:10px 15px; background:rgba(255,255,255,0.04); border-radius:12px; margin-bottom:6px; font-size:13px;">
+            <span style="color:#94a3b8;">${wk}</span>
+            <span>เฉลี่ย <b style="color:#facc15;">${avg}</b> คน/วัน</span>
+        </div>`;
+    }).join("");
+
+    // --- 🟢 3. ส่วนการแสดงผล UI (คงความสวยแบบเดิมของพี่ไว้) ---
     openReportModal(
         `สรุปรายงานเดือน ${m}`,
         `
@@ -1147,6 +1156,11 @@ function loadHistMonth() {
                 <div style="background:rgba(255,255,255,0.08); padding:6px 14px; border-radius:12px; font-size:13px; font-weight:600; color:#f8fafc;">📅 เปิดร้าน ${workDays} วัน</div>
                 <div style="background:rgba(244,63,94,0.15); padding:6px 14px; border-radius:12px; font-size:13px; font-weight:600; color:#fb7185;">🛑 หยุด ${offDays} วัน</div>
                 <div style="background:rgba(250,204,21,0.15); padding:6px 14px; border-radius:12px; font-size:13px; font-weight:600; color:#facc15;">📊 เฉลี่ย ${avgCustomerPerDay.toFixed(2)} คน/วัน</div>
+            </div>
+
+            <div style="margin-bottom:25px;">
+                <div style="font-size:14px; font-weight:800; color:#facc15; margin-bottom:12px;">📅 วิเคราะห์รายสัปดาห์</div>
+                ${weeklyHtml}
             </div>
 
             <div style="background:rgba(250,204,21,0.08); border:1px solid rgba(250,204,21,0.25); padding:18px; border-radius:20px; margin-bottom:30px;">
