@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.01212 </title>
+    <title>Barber Note Pro V.0112 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -1147,12 +1147,13 @@ function loadHistMonth() {
     };
 
     openReportModal(
-        `สรุปรายงานเดือน ${m}`,
-        `
-        <div style="background:#0f172a; margin:-16px; padding:24px; font-family:'Inter', sans-serif; color:#f1f5f9; min-height:100vh;">
-            <div style="text-align:center; padding:10px 0 30px 0;">
-                <div style="font-size:18px; color:#94a3b8; font-weight:700; text-transform:uppercase; letter-spacing:2px; margin-bottom:5px;">✂️ ยอดรวมเดือนนี้</div>
-                <div style="font-size:48px; font-weight:900; color:#ffffff; letter-spacing:-1px;">฿${monthTotal.toLocaleString()}</div>
+    `สรุปรายงานเดือน ${m}`,
+    `
+    <div style="background:#0f172a; padding:24px; font-family:'Inter', sans-serif; color:#f1f5f9; border-radius:16px; margin-bottom: 70px;">
+        
+        <div style="text-align:center; padding:10px 0 30px 0;">
+            <div style="font-size:18px; color:#94a3b8; font-weight:700; text-transform:uppercase; letter-spacing:2px; margin-bottom:5px;">✂️ ยอดรวมเดือนนี้</div>
+            <div style="font-size:48px; font-weight:900; color:#ffffff; letter-spacing:-1px;">฿${monthTotal.toLocaleString()}</div>
                 <div style="display:flex; justify-content:center; gap:8px; margin-top:15px;">
                     <div style="background:rgba(255,255,255,0.08); padding:6px 14px; border-radius:12px; font-size:14px; font-weight:600; color:#38bdf8;">👤 ลูกค้า ${monthCount} คน</div>
                     <div style="background:rgba(255,255,255,0.08); padding:6px 14px; border-radius:12px; font-size:14px; font-weight:600; color:#94a3b8;">📅 ทำงาน ${filtered.length} วัน</div>
