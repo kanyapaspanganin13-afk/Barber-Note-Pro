@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.01222 </title>
+    <title>Barber Note Pro V.01272 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -38,10 +38,32 @@
         margin: 0; background: var(--bg); color: var(--text); 
         padding-bottom: 90px; overflow-x: hidden; transition: all 0.3s ease; 
     }
-    /* 4. ระบบเลย์เอาต์ (Layout & Page) */
-    .container { padding: 15px; max-width: 500px; margin: auto; position: relative; z-index: 1; }
-    .page { display: none; } 
-    .page.active { display: block; }
+   /* 4. ระบบเลย์เอาต์ (ปรับให้โปร่งแสง) */
+.container { 
+    padding: 15px; 
+    max-width: 500px; 
+    margin: auto; 
+    position: relative; 
+    z-index: 1; 
+}
+.page { 
+    display: none; 
+    /* ใช้สีพื้นหลังจากการ์ดของธีม แต่ทำให้โปร่งแสง 85% */
+    background: var(--card);
+    opacity: 0.95; 
+    /* เพิ่มลูกเล่นกระจกฝ้า (Glassmorphism) จะสวยมากครับ */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 25px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border); /* เพิ่มเส้นขอบบางๆ ให้ดูมีมิติ */
+} 
+
+.page.active { 
+    display: block; 
+    animation: slideUp 0.4s ease-out; /* ใส่ Effect ตอนเปิดหน้าใหม่ให้ดูนุ่มนวล */
+}
     
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
     .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px; }
