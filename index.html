@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.0232 </title>
+    <title>Barber Note Pro V.0202 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -1013,16 +1013,30 @@ function loadHistMonth() {
         );
     }
 
+    // --- ส่วนกำหนดค่า (ห้ามเปลี่ยน) ---
     const haircutList = ["แฟชั่น","สกินเฟด","เปิดข้าง","รองทรง","ตำรวจ/ทหาร","ทรงนักเรียน","แก้ผม","โกนผม","เด็ก"];
     const serviceList = ["โกนหนวด","กันหน้า","สระผม","ย้อมผม"];
+    const daysOfWeek = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
 
+    let weeklyData = {};
     let monthTotal = 0, monthBarber = 0, monthCount = 0;
     let hairStats = {}, serviceStats = {};
 
-    // --- ส่วนคำนวณ Logic เดิมของคุณ ---
+    // 1. Logic การรวบรวมข้อมูล (รายสัปดาห์ & รายเดือน)
     filtered.forEach(day => {
+        const dObj = new Date(day.date);
+        const weekNum = Math.ceil(dObj.getDate() / 7);
+        const weekKey = `สัปดาห์ที่ ${weekNum}`;
+        const dayName = daysOfWeek[dObj.getDay()];
+
+        if (!weeklyData[weekKey]) {
+            weeklyData[weekKey] = { days: 0, customers: 0, daily: {}, hair: {} };
+        }
+
         monthTotal += Number(day.total) || 0;
         monthBarber += Number(day.barber) || 0;
+
+        let dayCustCount = 0;
         (day.details || []).forEach(d => {
             const svcs = Array.isArray(d.svcs) ? d.svcs : [];
             let countedHair = false;
@@ -1031,39 +1045,50 @@ function loadHistMonth() {
                 s = s.trim();
                 if (haircutList.includes(s)) {
                     hairStats[s] = (hairStats[s] || 0) + 1;
-                    if (!countedHair) { monthCount++; countedHair = true; }
+                    weeklyData[weekKey].hair[s] = (weeklyData[weekKey].hair[s] || 0) + 1;
+                    if (!countedHair) { monthCount++; dayCustCount++; countedHair = true; }
                 } else if (serviceList.includes(s)) {
                     serviceStats[s] = (serviceStats[s] || 0) + 1;
                 }
             });
         });
+
+        weeklyData[weekKey].days += 1;
+        weeklyData[weekKey].customers += dayCustCount;
+        weeklyData[weekKey].daily[dayName] = (weeklyData[weekKey].daily[dayName] || 0) + dayCustCount;
+    });
+
+    // 2. Logic การวิเคราะห์ (Insights)
+    let weeklySummaries = [];
+    let monthlyInsights = [];
+    let strongWeeks = 0, quietWeeks = 0, weekdayPattern = {};
+
+    Object.entries(weeklyData).forEach(([week, data]) => {
+        const avg = data.customers / data.days;
+        let level = avg >= 2 ? "แรง" : (avg >= 1 ? "ปกติ" : "เงียบ");
+        if (level === "แรง") strongWeeks++;
+        if (level === "เงียบ") quietWeeks++;
+
+        let busyDays = [], quietDays = [];
+        Object.entries(data.daily).forEach(([day, count]) => {
+            if (count >= avg * 1.3 && count > 0) busyDays.push(day);
+            if (count <= avg * 0.7) {
+                quietDays.push(day);
+                weekdayPattern[day] = (weekdayPattern[day] || 0) + 1;
+            }
+        });
+        weeklySummaries.push({ week, avg, level, busyDays, quietDays });
+    });
+
+    if (strongWeeks >= 2) monthlyInsights.push("⭐ ร้านมีแรงส่งที่ดีจากฐานลูกค้าที่แน่นหลายสัปดาห์");
+    if (quietWeeks >= 2) monthlyInsights.push("⚠️ ระวัง: ลูกค้าไม่สม่ำเสมอ มีช่วงเงียบหลายสัปดาห์");
+    Object.entries(weekdayPattern).forEach(([day, count]) => {
+        if (count >= 2) monthlyInsights.push(`😴 วัน${day} ลูกค้าน้อยบ่อย แนะนำจัดโปรโมชั่นกระตุ้นครับ`);
     });
 
     const monthShop = monthTotal - monthBarber;
+    const avgCustomerPerDay = filtered.length ? (monthCount / filtered.length) : 0;
 
-    // --- 1. คำนวณ Logic เพิ่มเติม (เสียบตรงนี้) ---
-    const openDays = filtered.length;
-    const avgCustomerPerDay = openDays ? (monthCount / openDays) : 0;
-
-    const totalHair = Object.values(hairStats).reduce((a,b)=>a+b,0);
-    const sortedHair = Object.entries(hairStats).sort((a,b)=>b[1]-a[1]);
-    const topHair = sortedHair[0] || ["ไม่มีข้อมูล", 0];
-    const topHairPercent = totalHair ? ((topHair[1] / totalHair) * 100).toFixed(0) : 0;
-
-    const sortedService = Object.entries(serviceStats).sort((a,b)=>b[1]-a[1]);
-    const topService = sortedService[0] || ["ไม่มีข้อมูล"];
-
-    // --- 2. สร้างข้อความ Insight อัตโนมัติ ---
-    let insights = [];
-    if (avgCustomerPerDay < 1) insights.push("📉 ลูกค้าเฉลี่ยต่อวันยังค่อนข้างต่ำ");
-    else insights.push("📈 ลูกค้าเฉลี่ยต่อวันอยู่ในระดับดี");
-
-    if (topHairPercent >= 50) insights.push(`✂️ ลูกค้านิยมทรง "${topHair[0]}" เป็นหลัก (${topHairPercent}%)`);
-    else if (topHair[0] !== "ไม่มีข้อมูล") insights.push("🎨 ลูกค้ามีความหลากหลายในการเลือกทรงผม");
-
-    if (topService[0] !== "ไม่มีข้อมูล") insights.push(`🧴 บริการยอดนิยมคือ "${topService[0]}"`);
-
-    // --- ฟังก์ชัน Render List (เดิมของคุณ) ---
     const renderStats = (obj, accentColor) => {
         const entries = Object.entries(obj).sort((a,b)=>b[1]-a[1]);
         if (!entries.length) return "<div style='color:rgba(255,255,255,0.2); padding:10px; font-size:13px;'>ไม่มีข้อมูล</div>";
@@ -1075,8 +1100,8 @@ function loadHistMonth() {
         ).join("");
     };
 
-    // --- 3. ส่วนการแสดงผล UI ใหม่ (แก้ปัญหาเมนูหายด้วย) ---
-openReportModal(
+    // 3. การแสดงผล UI (รวมส่วนที่ขาดหายไปแล้ว)
+    openReportModal(
         `สรุปรายงานเดือน ${m}`,
         `
         <div style="background:#0f172a; padding:24px; font-family:'Inter', sans-serif; color:#f1f5f9; border-radius:20px; margin-bottom: 80px;">
@@ -1109,11 +1134,26 @@ openReportModal(
                 </div>
             </div>
 
-            <div style="background:rgba(250,204,21,0.08); border:1px solid rgba(250,204,21,0.25); padding:18px; border-radius:20px; margin-bottom:30px;">
-                <div style="font-size:14px; font-weight:800; color:#facc15; margin-bottom:10px; display:flex; align-items:center; gap:5px;">
-                    💡 วิเคราะห์ภาพรวม
+            <div style="margin-bottom:25px;">
+                <div style="font-size:15px; font-weight:800; color:#38bdf8; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                    <div style="width:4px; height:16px; background:#38bdf8; border-radius:2px;"></div> จังหวะรายสัปดาห์
                 </div>
-                ${insights.map(i => `<div style="font-size:13px; color:#f8fafc; margin-bottom:6px;">${i}</div>`).join("")}
+                ${weeklySummaries.map(w => `
+                    <div style="background:rgba(255,255,255,0.03); padding:12px 15px; border-radius:18px; margin-bottom:8px; border-left:4px solid ${w.level==='แรง'?'#bef264':'#38bdf8'};">
+                        <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
+                            <span style="font-weight:700;">${w.week}</span>
+                            <span style="color:${w.level==='แรง'?'#bef264':'#94a3b8'};">เฉลี่ย ${w.avg.toFixed(1)} คน/วัน</span>
+                        </div>
+                        <div style="font-size:11px; color:#94a3b8;">
+                            🔥 วันคนเยอะ: ${w.busyDays.length ? w.busyDays.join(",") : "-"} | 😴 เงียบ: ${w.quietDays.length ? w.quietDays.join(",") : "-"}
+                        </div>
+                    </div>
+                `).join("")}
+            </div>
+
+            <div style="background:rgba(250,204,21,0.08); border:1px solid rgba(250,204,21,0.25); padding:18px; border-radius:20px; margin-bottom:30px;">
+                <div style="font-size:14px; font-weight:800; color:#facc15; margin-bottom:10px;">💡 วิเคราะห์เจ้าของร้าน</div>
+                ${monthlyInsights.map(i => `<div style="font-size:13px; color:#f8fafc; margin-bottom:6px; line-height:1.5;">• ${i}</div>`).join("")}
             </div>
 
             <div style="margin-bottom:25px;">
