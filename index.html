@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.21 </title>
+    <title>Barber Note Pro V.09791 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -343,7 +343,7 @@ nav {
             justify-content: center;
             gap: 10px;">
     <i class="fab fa-line" style="font-size: 24px;"></i>
-    <b style="font-size: 16px;">รายงานสรุปรายเดือน</b>
+    <b style="font-size: 16px;">ส่งรายงานปิดยอดเข้า LINE</b>
 </div>
 </div>
 </div>    
@@ -708,8 +708,8 @@ function renderDay() {
         txt = "ยอดพอดี"; statusColor = "#15803d"; icon = "✅"; 
     }
 
-   const silverBG = "#f1f5f9"; 
-const btnBlue  = "#2563eb"; 
+   const silverBG = "#f1f5f9"; // สีเทาเงินสว่าง
+const btnBlue  = "#2563eb"; // สีน้ำเงิน Royal Blue ที่มึงชอบ
 
 const actionBox = document.getElementById("settleBarContainer");
 if (actionBox) {
@@ -1021,131 +1021,109 @@ function loadHistMonth() {
     const m = $("histMonth").value;
     if (!m) return alert("กรุณาเลือกเดือนก่อนครับ");
 
-  const filtered = db.filter(a => a.date && a.date.startsWith(m));
+    const filtered = archives.filter(a => a.date && a.date.startsWith(m));
     if (!filtered.length) {
-        return openReportModal("📊 สรุปรายเดือน", `<div style='padding:80px 20px; text-align:center; color:#0f172a; background:#94a3b8; height:100vh;'>ไม่พบข้อมูลของเดือนนี้</div>`);
+        return openReportModal(
+            "📊 สรุปรายเดือน",
+            `<div style='padding:80px 20px; text-align:center; color:#0f172a; background:#94a3b8; height:100vh;'>
+                <i class='fas fa-folder-open' style='font-size:40px;margin-bottom:10px;opacity:0.3;'></i><br>ไม่พบข้อมูลของเดือนนี้
+            </div>`
+        );
     }
 
-    // --- ส่วนตั้งค่าและตัวแปรคำนวณ ---
     const haircutList = ["แฟชั่น","สกินเฟด","เปิดข้าง","รองทรง","ตำรวจ/ทหาร","ทรงนักเรียน","แก้ผม","โกนผม","เด็ก"];
     const serviceList = ["โกนหนวด","กันหน้า","สระผม","ย้อมผม"];
     const conf = window.conf || { guar: 0 };
 
+    // --- 🟢 1. ตัวแปรคำนวณ ---
     let monthTotal = 0, monthBarber = 0, monthCount = 0;
     let hairStats = {}, serviceStats = {};
-    let offDays = 0, workDays = 0;
+    let offDays = 0, workDays = 0, zeroCustomerDays = 0;
     let barberOver = 0, barberUnder = 0, barberFromGuarantee = 0, guaranteeDays = 0;
-    let weeklyData = {}; 
+    let weeklyData = {}; // <--- เพิ่มตัวแปรรายสัปดาห์
 
-    // Helper: สำหรับวาดกราฟใน UI ใหม่
-    const renderStats = (statsObj, color) => {
-        const entries = Object.entries(statsObj).sort((a, b) => b[1] - a[1]).slice(0, 5);
-        if (entries.length === 0) return `<div style="color:#64748b; font-size:12px;">ไม่มีข้อมูล</div>`;
-        const max = entries[0][1];
-        return entries.map(([name, count]) => {
-            const width = (count / max) * 100;
-            return `
-                <div style="margin-bottom:12px;">
-                    <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
-                        <span>${name}</span>
-                        <b style="color:${color}">${count} ครั้ง</b>
-                    </div>
-                    <div style="height:6px; background:rgba(255,255,255,0.05); border-radius:10px; overflow:hidden;">
-                        <div style="width:${width}%; height:100%; background:${color}; border-radius:10px;"></div>
-                    </div>
-                </div>`;
-        }).join("");
-    };
-// --- เริ่มประมวลผลข้อมูล ---
-filtered.forEach(day => {
-    // 1. เช็ควันหยุดก่อน (ถ้าใช่ ให้บวกตัวเลขแล้วข้ามไปตัวถัดไป)
-    if (day.type === "HOLIDAY" || day.off === true) {
-        offDays++;
-        return; // ออกจาก loop รอบนี้เพื่อไปดู record ถัดไป
-    }
-    // 2. หากไม่ใช่การลาหยุด ให้นับเป็นวันทำงาน
-    workDays++;
-    // 3. คำนวณรายได้และสถิติ (Logic เดิมของคุณ)
-    monthTotal += Number(day.price) || 0;
-    // ... (โค้ดคำนวณส่วนที่เหลือของคุณ) ...
-});
+    // --- 🟢 2. Loop คำนวณข้อมูล ---
+    filtered.forEach(day => {
+        if (day.off) { offDays++; return; }
 
+        workDays++;
+        const real = Number(day.barber) || 0;
+        const guar = conf.guar || 0;
+
+        // จัดกลุ่มรายสัปดาห์
         const dObj = new Date(day.date);
-        const dayName = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"][dObj.getDay()];
         let wIdx = Math.ceil(dObj.getDate() / 7);
         if (wIdx > 4) wIdx = 4;
         const wKey = `สัปดาห์ที่ ${wIdx}`;
+        if (!weeklyData[wKey]) weeklyData[wKey] = { customers: 0, days: 0 };
+        weeklyData[wKey].days++;
 
-        if (!weeklyData[wKey]) {
-            weeklyData[wKey] = { customers: 0, days: 0, hair: {}, svcs: {}, dailyCounts: [] };
+        if (day.useGuarantee === true) {
+            barberFromGuarantee += (guar || real);
+            guaranteeDays++;
+        } else if (real > guar) {
+            barberOver += real;
+        } else if (real > 0) {
+            barberUnder += real;
+            guaranteeDays++;
         }
-        
-        let dailyCustCount = 0;
+
+        monthTotal += Number(day.total) || 0;
+        monthBarber += real;
+
+        let hasHair = false;
         (day.details || []).forEach(d => {
             const svcs = Array.isArray(d.svcs) ? d.svcs : [];
-            let isHaircut = false;
+            let dailyHasHair = false;
             svcs.forEach(s => {
                 if (!s) return;
                 s = s.trim();
                 if (haircutList.includes(s)) {
                     hairStats[s] = (hairStats[s] || 0) + 1;
-                    weeklyData[wKey].hair[s] = (weeklyData[wKey].hair[s] || 0) + 1;
-                    isHaircut = true;
+                    dailyHasHair = true;
                 } else if (serviceList.includes(s)) {
                     serviceStats[s] = (serviceStats[s] || 0) + 1;
-                    weeklyData[wKey].svcs[s] = (weeklyData[wKey].svcs[s] || 0) + 1;
                 }
             });
-            if (isHaircut) { dailyCustCount++; monthCount++; }
+            if (dailyHasHair) { monthCount++; hasHair = true; weeklyData[wKey].customers++; }
         });
-
-        weeklyData[wKey].customers += dailyCustCount;
-        weeklyData[wKey].days++;
-        weeklyData[wKey].dailyCounts.push({ name: dayName, count: dailyCustCount });
-
-        // คำนวณเงินและประกัน
-        const real = Number(day.barber) || 0;
-        const guar = conf.guar || 0;
-        if (day.useGuarantee === true || (real <= guar && real > 0)) {
-            barberFromGuarantee += (guar || real);
-            barberUnder += real; // ยอดจริงที่ทำได้แต่ไม่ถึงประกัน
-            if(guar > 0) guaranteeDays++;
-        } else if (real > guar) {
-            barberOver += real;
-        }
-        monthTotal += Number(day.total) || 0;
-        monthBarber += (day.useGuarantee || (real <= guar && real > 0)) ? (guar || real) : real;
+        if (!hasHair) zeroCustomerDays++;
     });
 
     const monthShop = monthTotal - monthBarber;
     const avgCustomerPerDay = workDays > 0 ? (monthCount / workDays) : 0;
 
-    // วิเคราะห์รายสัปดาห์
+    let insights = [];
+    if (barberFromGuarantee > barberOver) insights.push("📉 รายได้ช่างเดือนนี้ยังพึ่งประกันค่อนข้างเยอะ");
+    if (barberOver > barberFromGuarantee) insights.push("🔥 รายได้ช่างส่วนใหญ่มาจากการตัดจริง");
+    if (zeroCustomerDays > 0) insights.push(`😴 มี ${zeroCustomerDays} วันที่เปิดร้านแต่ไม่มีลูกค้าเลย`);
+    if (offDays >= 6) insights.push("📅 เดือนนี้มีวันหยุดค่อนข้างเยอะ");
+    if (avgCustomerPerDay >= 3) insights.push("🚀 ความหนาแน่นลูกค้าอยู่ในเกณฑ์ดีมาก");
+
+    const renderStats = (obj, accentColor) => {
+        const entries = Object.entries(obj).sort((a,b)=>b[1]-a[1]);
+        if (!entries.length) return "<div style='color:rgba(255,255,255,0.2); padding:10px; font-size:13px;'>ไม่มีข้อมูล</div>";
+        return entries.map(([k,v]) => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:16px; margin-bottom:8px;">
+                <div style="font-weight:600; color:#f1f5f9; font-size:14px;">${k}</div>
+                <div style="font-weight:800; color:${accentColor}; font-size:16px;">${v} <span style="font-size:11px; opacity:0.5; color:#fff; font-weight:400;">ครั้ง</span></div>
+            </div>`).join("");
+    };
+
+    // --- สร้าง UI รายสัปดาห์เพิ่ม ---
     const weeklyHtml = Object.entries(weeklyData).map(([wk, data]) => {
-        const avg = (data.customers / data.days);
-        const topHair = Object.entries(data.hair).sort((a,b)=>b[1]-a[1])[0];
-        return `
-        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:15px; padding:15px; margin-bottom:10px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                <b style="color:#facc15;">${wk}</b>
-                <span style="color:#94a3b8; font-size:12px;">${data.customers} คน</span>
-            </div>
-            <div style="font-size:12px; color:#cbd5e1;">ทรงยอดนิยม: ${topHair ? topHair[0] : '-'}</div>
+        const avg = data.days > 0 ? (data.customers / data.days).toFixed(1) : 0;
+        return `<div style="display:flex; justify-content:space-between; padding:10px 15px; background:rgba(255,255,255,0.04); border-radius:12px; margin-bottom:6px; font-size:13px;">
+            <span style="color:#94a3b8;">${wk}</span>
+            <span>เฉลี่ย <b style="color:#facc15;">${avg}</b> คน/วัน</span>
         </div>`;
     }).join("");
 
-    // สรุป Insights ภาพรวม
-    const insights = [
-        `เดือนนี้เปิดร้านทั้งหมด ${workDays} วัน`,
-        `เฉลี่ยมีลูกค้าเข้าร้านวันละ ${avgCustomerPerDay.toFixed(1)} คน`,
-        monthCount > 100 ? "เดือนนี้ลูกค้าเยอะเป็นพิเศษ เยี่ยมมากครับ!" : "สถานการณ์ลูกค้าอยู่ในเกณฑ์ปกติครับ"
-    ];
-
-    // --- 🟢 วาง UI ที่พี่ส่งมาตรงนี้ ---
+    // --- 🟢 3. ส่วนการแสดงผล UI (คงความสวยแบบเดิมของพี่ไว้) ---
     openReportModal(
         `สรุปรายงานเดือน ${m}`,
         `
-        <div style="background:#0f172a; padding:24px; font-family:sans-serif; color:#f1f5f9; border-radius:20px; margin-bottom: 80px;">
+        <div style="background:#0f172a; padding:24px; font-family:'Inter', sans-serif; color:#f1f5f9; border-radius:20px; margin-bottom: 80px;">
             
             <div style="text-align:center; padding:10px 0 20px 0;">
                 <div style="font-size:18px; color:#94a3b8; font-weight:700; text-transform:uppercase; letter-spacing:2px; margin-bottom:5px;">✂️ ยอดตัดทั้งเดือน</div>
@@ -1217,125 +1195,92 @@ filtered.forEach(day => {
      function confirmShareLine() {
     const m = $("histMonth").value;
     if (!m) return alert("กรุณาเลือกเดือนก่อนนะครับ");
-    if (confirm(`คุณต้องการแชร์รายงานประจำเดือน ${m} เข้าสู่ LINE ใช่ไหม?`)) {
+    if (confirm(`คุณต้องการแชร์รายงานประจำเดือน ${m} เข้าสู่ LINE ใช่ไหมครับ?`)) {
         shareLineMonth();
     }
 }
-function shareLineMonth() {
-  const m = $("histMonth").value;
-  if (!m) return alert("กรุณาเลือกเดือน");
+    function shareLineMonth() {
+  const m = $("histMonth").value;
+  if (!m) return alert("กรุณาเลือกเดือน");
 
-  const records = archives.filter(r => r.date && r.date.startsWith(m));
-  if (!records.length) return alert("ไม่พบข้อมูลเดือนนี้");
+  const records = archives.filter(r => r.date && r.date.startsWith(m));
+  if (!records.length) return alert("ไม่พบข้อมูลเดือนนี้");
 
-  const shopName = conf.shopName || "Barber Shop";
+  const shopName = conf.shopName || "Barber Shop";
 
-  // ---------- 1. เตรียมตัวแปร ----------
-  let total = 0, barberEarn = 0, clientCount = 0;
-  let weekly = {};
-  let monthHair = {}, monthSvc = {};
+  // ---------- 1. เตรียมตัวแปร (รวม Logic รายวัน/รายคน) ----------
+  let total = 0, barberEarn = 0, clientCount = 0;
+  let weekly = {};
+  let monthHair = {}, monthSvc = {};
+  const workDaysCount = records.length; // จำนวนวันทำงานจริง
 
-  let workDaysCount = 0;
-  let holidayCount = 0;
+  const weekOfMonth = d => Math.ceil((new Date(d).getDate()) / 7);
+  const weekdayTH = d => ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์"][new Date(d).getDay()];
 
-  const weekOfMonth = d => Math.ceil(new Date(d).getDate() / 7);
-  const weekdayTH = d =>
-    ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์"]
-      [new Date(d).getDay()];
+  records.forEach(r => {
+    const w = weekOfMonth(r.date);
+    const day = weekdayTH(r.date);
+    total += Number(r.total) || 0;
+    barberEarn += Number(r.barber) || 0;
 
-records.forEach(r => {
-    // แก้ไขเงื่อนไขให้ตรงกับที่บันทึกใน handleHoliday
-    if (r.type === "HOLIDAY" || r.holiday === true || r.off === true) {
-      holidayCount++;
-      return; // ข้ามไป record ถัดไป ไม่นำมานับเป็นวันทำงาน
-    }
+    // นับจำนวนลูกค้า (อ้างอิงจาก Logic ที่คุณใช้ใน UI)
+    if (r.details && r.details.length > 0) {
+      clientCount += r.details.length;
+    } else {
+      clientCount++; // Fallback กรณีไม่มี details
+    }
 
-    workDaysCount++;
-   
-});
+    if (!weekly[w]) {
+      weekly[w] = { customers: 0, days: new Set(), daily: {}, hair: {}, service: {} };
+    }
 
-    workDaysCount++;
+    let dayCust = r.details ? r.details.length : 1;
+    weekly[w].customers += dayCust;
+    weekly[w].days.add(r.date);
+    weekly[w].daily[day] = (weekly[w].daily[day] || 0) + dayCust;
 
-    const w = weekOfMonth(r.date);
-    const day = weekdayTH(r.date);
+    // เก็บสถิติทรงผม/บริการ
+    (r.details || []).forEach(d => {
+      (d.svcs || []).forEach(s => {
+        if(!s) return;
+        const haircutList = ["แฟชั่น","สกินเฟด","เปิดข้าง","รองทรง","ตำรวจ/ทหาร","ทรงนักเรียน","แก้ผม","โกนผม","เด็ก"];
+        if(haircutList.includes(s.trim())) {
+          monthHair[s] = (monthHair[s]||0)+1;
+          weekly[w].hair[s] = (weekly[w].hair[s]||0)+1;
+        } else {
+          monthSvc[s] = (monthSvc[s]||0)+1;
+          weekly[w].service[s] = (weekly[w].service[s]||0)+1;
+        }
+      });
+    });
+  });
 
-    total += Number(r.total) || 0;
-    barberEarn += Number(r.barber) || 0;
+  const shopEarn = total - barberEarn;
+  const avgPerDay = workDaysCount > 0 ? (clientCount / workDaysCount) : 0;
 
-    // นับลูกค้า
-    if (r.details && r.details.length > 0) {
-      clientCount += r.details.length;
-    } else {
-      clientCount++;
-    }
+  // ---------- 2. สรุปผลรายสัปดาห์ ----------
+  let weekLines = Object.entries(weekly).map(([w, data]) => {
+    const avgW = data.customers / data.days.size;
+    let busy = Object.entries(data.daily).filter(([d, c]) => c >= avgW * 1.3).map(x => x[0]);
+    return `📍 สัปดาห์ ${w}: เฉลี่ย ${avgW.toFixed(1)} คน/วัน\n   (เยอะ: ${busy.join(",") || "-"})`;
+  }).join("\n");
 
-    if (!weekly[w]) {
-      weekly[w] = {
-        customers: 0,
-        days: new Set(),
-        daily: {},
-        hair: {},
-        service: {}
-      };
-    }
-
-    const dayCust = r.details ? r.details.length : 1;
-    weekly[w].customers += dayCust;
-    weekly[w].days.add(r.date);
-    weekly[w].daily[day] = (weekly[w].daily[day] || 0) + dayCust;
-
-    // สถิติบริการ
-    (r.details || []).forEach(d => {
-      (d.svcs || []).forEach(s => {
-        if (!s) return;
-        const haircutList = [
-          "แฟชั่น","สกินเฟด","เปิดข้าง","รองทรง",
-          "ตำรวจ/ทหาร","ทรงนักเรียน","แก้ผม","โกนผม","เด็ก"
-        ];
-        if (haircutList.includes(s.trim())) {
-          monthHair[s] = (monthHair[s] || 0) + 1;
-          weekly[w].hair[s] = (weekly[w].hair[s] || 0) + 1;
-        } else {
-          monthSvc[s] = (monthSvc[s] || 0) + 1;
-          weekly[w].service[s] = (weekly[w].service[s] || 0) + 1;
-        }
-      });
-    });
+  // ---------- 3. ประกอบข้อความ LINE (เลียนแบบ UI) ----------
+const aiComments = buildMonthlyComments({ 
+      weekly, 
+      monthHair, 
+      monthSvc, 
+      avgPerDay, 
+      total, 
+      shopEarn,
+      workDays: workDaysCount 
   });
-
-  const shopEarn = total - barberEarn;
-  const avgPerDay = workDaysCount > 0
-    ? clientCount / workDaysCount
-    : 0;
-
-  // ---------- 2. สรุปรายสัปดาห์ ----------
-  const weekLines = Object.entries(weekly).map(([w, data]) => {
-    const avgW = data.customers / data.days.size;
-    const busy = Object.entries(data.daily)
-      .filter(([, c]) => c >= avgW * 1.3)
-      .map(([d]) => d);
-
-    return `📍 สัปดาห์ ${w}: เฉลี่ย ${avgW.toFixed(1)} คน/วัน
-   (เยอะ: ${busy.join(",") || "-"})`;
-  }).join("\n");
-
-  // ---------- 3. AI ----------
-  const aiComments = buildMonthlyComments({
-    weekly,
-    monthHair,
-    monthSvc,
-    avgPerDay,
-    total,
-    shopEarn,
-    workDays: workDaysCount,
-    holidays: holidayCount
-  });
-
-  const aiSection = aiComments.length
+  
+  const aiSection = aiComments.length > 0 
     ? `📝 วิเคราะห์ภาพรวมเดือนนี้:\n${aiComments.map(c => `• ${c}`).join("\n")}`
     : "📝 ภาพรวม: ข้อมูลอยู่ในเกณฑ์ปกติครับ";
 
-  // ---------- 4. ข้อความ LINE ----------
+  // ---------- 3. ประกอบข้อความ LINE (เพิ่มส่วน AI เข้าไป) ----------
   const msg = `
 💈 รายงาน: ${shopName}
 📅 ประจำเดือน: ${m}
@@ -1347,29 +1292,21 @@ records.forEach(r => {
 📊 สถิติภาพรวม:
 👤 ลูกค้าทั้งหมด: ${clientCount} คน
 📅 ทำงาน: ${workDaysCount} วัน
-🛑 วันหยุด: ${holidayCount} วัน
 📈 เฉลี่ย: ${avgPerDay.toFixed(2)} คน/วัน
 
-${aiSection}
+${aiSection} 
 
 📅 จังหวะรายสัปดาห์:
 ${weekLines}
 
 🏆 บริการยอดนิยม:
-${Object.entries(monthSvc)
-  .sort((a,b)=>b[1]-a[1])
-  .slice(0,3)
-  .map(([k,v])=>`• ${k} (${v} ครั้ง)`)
-  .join("\n") || "-"}
+${Object.entries(monthSvc).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`• ${k} (${v} ครั้ง)`).join("\n") || "-"}
 
 💡 หมายเหตุ: ข้อมูลนี้สรุปจากระบบบันทึกรายวัน
 `.trim();
 
-  window.open(
-    `https://line.me/R/msg/text/?${encodeURIComponent(msg)}`
-  );
+  window.open(`https://line.me/R/msg/text/?${encodeURIComponent(msg)}`);
 }
-
     function shareLine() {
     const dInp = $("dateInp").value, today = db.filter(r => r.date === dInp); if (!today.length) return;
     const dp = dInp.split('-'), fDate = `${dp[2]}/${dp[1]}/${dp[0]}`;
