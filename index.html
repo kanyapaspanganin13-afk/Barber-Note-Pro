@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.1 </title>
+    <title>Barber Note Pro V.21 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -1056,17 +1056,20 @@ function loadHistMonth() {
                 </div>`;
         }).join("");
     };
-
-    // --- เริ่มประมวลผลข้อมูล ---
-  filtered.forEach(day => {
-    if (day.off === true || day.type === "HOLIDAY") {
+// --- เริ่มประมวลผลข้อมูล ---
+filtered.forEach(day => {
+    // 1. เช็ควันหยุดก่อน (ถ้าใช่ ให้บวกตัวเลขแล้วข้ามไปตัวถัดไป)
+    if (day.type === "HOLIDAY" || day.off === true) {
         offDays++;
-        return;
+        return; // ออกจาก loop รอบนี้เพื่อไปดู record ถัดไป
     }
-
+    // 2. หากไม่ใช่การลาหยุด ให้นับเป็นวันทำงาน
     workDays++;
-    ...
+    // 3. คำนวณรายได้และสถิติ (Logic เดิมของคุณ)
+    monthTotal += Number(day.price) || 0;
+    // ... (โค้ดคำนวณส่วนที่เหลือของคุณ) ...
 });
+
         const dObj = new Date(day.date);
         const dayName = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"][dObj.getDay()];
         let wIdx = Math.ceil(dObj.getDate() / 7);
@@ -1240,12 +1243,16 @@ function shareLineMonth() {
     ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์"]
       [new Date(d).getDay()];
 
-  records.forEach(r => {
-    // ---------- วันหยุด ----------
-    if (r.holiday === true) {
+records.forEach(r => {
+    // แก้ไขเงื่อนไขให้ตรงกับที่บันทึกใน handleHoliday
+    if (r.type === "HOLIDAY" || r.holiday === true || r.off === true) {
       holidayCount++;
-      return;
+      return; // ข้ามไป record ถัดไป ไม่นำมานับเป็นวันทำงาน
     }
+
+    workDaysCount++;
+   
+});
 
     workDaysCount++;
 
