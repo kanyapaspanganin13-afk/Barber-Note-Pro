@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V. </title>
+    <title>Barber Note Pro V.1 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -1021,7 +1021,7 @@ function loadHistMonth() {
     const m = $("histMonth").value;
     if (!m) return alert("กรุณาเลือกเดือนก่อนครับ");
 
-    const filtered = archives.filter(a => a.date && a.date.startsWith(m));
+  const filtered = db.filter(a => a.date && a.date.startsWith(m));
     if (!filtered.length) {
         return openReportModal("📊 สรุปรายเดือน", `<div style='padding:80px 20px; text-align:center; color:#0f172a; background:#94a3b8; height:100vh;'>ไม่พบข้อมูลของเดือนนี้</div>`);
     }
@@ -1058,12 +1058,15 @@ function loadHistMonth() {
     };
 
     // --- เริ่มประมวลผลข้อมูล ---
-    filtered.forEach(day => {
-       if (day.type === "HOLIDAY") {
-    offDays++;
-    return;
-}
+  filtered.forEach(day => {
+    if (day.off === true || day.type === "HOLIDAY") {
+        offDays++;
+        return;
+    }
 
+    workDays++;
+    ...
+});
         const dObj = new Date(day.date);
         const dayName = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"][dObj.getDay()];
         let wIdx = Math.ceil(dObj.getDate() / 7);
