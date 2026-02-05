@@ -343,7 +343,7 @@ nav {
             justify-content: center;
             gap: 10px;">
     <i class="fab fa-line" style="font-size: 24px;"></i>
-    <b style="font-size: 16px;">ส่งรายงานปิดยอดเข้า LINE</b>
+    <b style="font-size: 16px;">รายงานสรุปรายเดือน</b>
 </div>
 </div>
 </div>    
@@ -1209,7 +1209,7 @@ function loadHistMonth() {
      function confirmShareLine() {
     const m = $("histMonth").value;
     if (!m) return alert("กรุณาเลือกเดือนก่อนนะครับ");
-    if (confirm(`คุณต้องการแชร์รายงานประจำเดือน ${m} เข้าสู่ LINE ใช่ไหมครับ?`)) {
+    if (confirm(`คุณต้องการแชร์รายงานประจำเดือน ${m} เข้าสู่ LINE ใช่ไหม?`)) {
         shareLineMonth();
     }
 }
