@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.02772 </title>
+    <title>Barber Note Pro V.02 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -620,7 +620,7 @@ function renderDay() {
     const dInp = $("dateInp").value;
     const allRec = db.filter(r => r.date === dInp);
     const today = allRec.filter(r => r.type !== 'HOLIDAY');
-    const isHoliday = allRec.some(r => r.type === 'HOLIDAY');
+    isHoliday = allRec.some(r => r.type === 'HOLIDAY'); // ✅ เปลี่ยน const เป็น assignment
     const stats = {};
     const extraSvcs = ["โกนหนวด", "กันหน้า", "สระผม"];
     let tot = 0, trans = 0, cash = 0, tips = 0;
@@ -730,23 +730,25 @@ if (actionBox) {
     // --- ส่วนแสดงรายการด้านล่าง (สำคัญ!) ---
 
 const dList = document.getElementById("dailyList");
-    if (dList) {
-        dList.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
-                <b style="font-size:16px; color: var(--text);">📋 รายงานวันนี้:</b>
-                <i class="fab fa-line"
-                   style="color:#22c55e; font-size:32px; cursor:pointer"
-                   onclick="shareLine()"></i>
-            </div>
+if (dList) {
+    console.log("🔍 DEBUG - isHoliday:", isHoliday, "listHtml:", !!listHtml);
 
-            ${isHoliday
-              ? `<center style="padding:40px; color:#64748b; font-size:18px;">
-                    🏖️ วันนี้เป็นวันหยุด
-                 </center>`
-              : (listHtml || `<center style="padding:40px; opacity:0.3;">ไม่มีข้อมูล</center>`)
-            }
-        `;
-    }
+    dList.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
+            <b style="font-size:16px; color: var(--text);">📋 รายงานวันนี้:</b>
+            <i class="fab fa-line"
+               style="color:#22c55e; font-size:32px; cursor:pointer"
+               onclick="shareLine()"></i>
+        </div>
+
+        ${isHoliday
+          ? `<center style="padding:40px; color:#64748b; font-size:18px;">
+               🏖️ วันนี้เป็นวันหยุด
+             </center>`
+          : (listHtml || `<center style="padding:40px; opacity:0.3;">ไม่มีข้อมูล</center>`)
+        }
+    `;
+}
 }
     function clearDailyData() {
     const confirmDelete = confirm("⚠️ คุณต้องการลบข้อมูลรายงานของวันนี้ทั้งหมดใช่หรือไม่? (ข้อมูลที่ลบแล้วจะไม่สามารถเรียกคืนได้)");
