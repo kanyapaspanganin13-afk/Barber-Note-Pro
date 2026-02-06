@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.09837 </title>
+    <title>Barber Note Pro V.09223 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -630,7 +630,6 @@ function renderDay() {
     .slice()
     .sort((a,b) => a.time.localeCompare(b.time))
     .forEach((r, i) => {
-        // ... (Logic คำนวณเดิมของท่านทั้งหมด) ...
         const p = Number(r.price) || 0;
         const t = Number(r.tip) || 0;
         tot += p;
@@ -687,7 +686,8 @@ function renderDay() {
     if($("dCash")) $("dCash").innerText   = cash.toLocaleString();
     if($("dBarber")) $("dBarber").innerText = Math.floor(bEarn).toLocaleString();
     if($("dShop")) $("dShop").innerText   = Math.floor(sEarn).toLocaleString();
-    if($("dCounts")) {$("dCounts").innerText = isHoliday ? "🏖️ วันหยุด" : `ลูกค้า: ${today.filter(r => r.price > 0).length} คน`;
+    if($("dCounts")) $("dCounts").innerText = isHoliday ? "🏖️ วันหยุด" : `ลูกค้า: ${today.filter(r => r.price > 0).length} คน`;
+    
     // --- ส่วนสถิติ ---
     let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:10px;">`;
     const priority = ["ตัดผม", "เด็ก"];
@@ -709,37 +709,31 @@ function renderDay() {
         txt = "ยอดพอดี"; statusColor = "#15803d"; icon = "✅"; 
     }
 
-   const silverBG = "#f1f5f9";
-const btnBlue  = "#2563eb"; 
+    const silverBG = "#f1f5f9";
+    const btnBlue  = "#2563eb"; 
 
-const actionBox = document.getElementById("settleBarContainer");
-if (actionBox) {
-    actionBox.style.display = "flex";
-    actionBox.style.gap = "10px";
-    actionBox.innerHTML = `
-        <div id="settleBar" style="flex:8; height:55px; background:${silverBG}; display:flex; align-items:center; justify-content:center; border-radius:18px; font-weight:800; font-size:14px; color:${statusColor}; border:1px solid #e2e8f0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
-            <span style="margin-right:8px; font-size:18px;">${icon}</span> ${txt}
-        </div>
-        
-        <button onclick="saveAndGo('${dInp}', ${tot})" style="flex:2.2; height:55px; background:${btnBlue}; color:#fff; border-radius:18px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 15px rgba(37, 99, 235, 0.3);">
-            <i class="fas fa-paper-plane"></i>
-        </button>
-    `;
-}
-    // --- ส่วนแสดงรายการด้านล่าง (สำคัญ!) ---
-
-// ... ต่อจาก Loop forEach เดิมของคุณ ...
+    const actionBox = document.getElementById("settleBarContainer");
+    if (actionBox) {
+        actionBox.style.display = "flex";
+        actionBox.style.gap = "10px";
+        actionBox.innerHTML = `
+            <div id="settleBar" style="flex:8; height:55px; background:${silverBG}; display:flex; align-items:center; justify-content:center; border-radius:18px; font-weight:800; font-size:14px; color:${statusColor}; border:1px solid #e2e8f0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+                <span style="margin-right:8px; font-size:18px;">${icon}</span> ${txt}
+            </div>
+            
+            <button onclick="saveAndGo('${dInp}', ${tot})" ${isHoliday ? 'disabled' : ''} style="flex:2.2; height:55px; background:${isHoliday ? '#cbd5e1' : btnBlue}; color:#fff; border-radius:18px; border:none; font-size:22px; cursor:${isHoliday ? 'not-allowed' : 'pointer'}; display:flex; align-items:center; justify-content:center; box-shadow:${isHoliday ? 'none' : '0 6px 15px rgba(37, 99, 235, 0.3)'}; opacity:${isHoliday ? '0.6' : '1'};">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        `;
+    }
     
-    // --- 📍 วางส่วนนี้เพื่ออัปเดตหน้าจอ ---
+    // --- ส่วนแสดงรายการด้านล่าง ---
     const dList = document.getElementById("dailyList");
     if (dList) {
         dList.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
                 <b style="font-size:16px; color: var(--text);">📋 รายละเอียดงาน:</b>
-
-                <i class="fab fa-line"
-                   style="color:#22c55e; font-size:32px; cursor:pointer"
-                   onclick="shareLine()"></i>
+                <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()"></i>
             </div>
 
             ${isHoliday
@@ -751,7 +745,7 @@ if (actionBox) {
             }
         `;
     }
-} 
+}
     function clearDailyData() {
     const confirmDelete = confirm("⚠️ คุณต้องการลบข้อมูลรายงานของวันนี้ทั้งหมดใช่หรือไม่? (ข้อมูลที่ลบแล้วจะไม่สามารถเรียกคืนได้)");
     
