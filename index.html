@@ -708,8 +708,8 @@ function renderDay() {
         txt = "ยอดพอดี"; statusColor = "#15803d"; icon = "✅"; 
     }
 
-   const silverBG = "#f1f5f9"; // สีเทาเงินสว่าง
-const btnBlue  = "#2563eb"; // สีน้ำเงิน Royal Blue ที่มึงชอบ
+   const silverBG = "#f1f5f9";
+const btnBlue  = "#2563eb"; 
 
 const actionBox = document.getElementById("settleBarContainer");
 if (actionBox) {
@@ -726,19 +726,33 @@ if (actionBox) {
     `;
 }
     // --- ส่วนแสดงรายการด้านล่าง (สำคัญ!) ---
-   const dList = document.getElementById("dailyList");
+ // --- ส่วนการเตรียมข้อมูลก่อน Render ---
+
+// 1. เช็คว่าในรายการของวันนี้ มีการบันทึก "วันหยุด" ไว้หรือไม่
+const todayRecords = db.filter(r => r.date === $("dateInp").value);
+const isHoliday = todayRecords.some(r => r.type === "HOLIDAY");
+
+// 2. นำค่า isHoliday ที่ได้ไปใช้ในเงื่อนไขการแสดงผลที่คุณเขียนไว้
+const dList = document.getElementById("dailyList");
 if (dList) {
     dList.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
             <b style="font-size:16px; color: var(--text);">📋 รายงานวันนี้:</b>
-            <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()"></i>
+
+            <i class="fab fa-line" 
+               style="color:#22c55e; font-size:32px; cursor:pointer" 
+               onclick="shareLine()"></i>
         </div>
 
-            ${isHoliday ? `<center style='padding:40px; color:#64748b;'>🏖️ วันหยุด</center>` : (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>")}
-        `;
-    }
-} 
-     function clearDailyData() {
+        ${isHoliday 
+          ? `<center style="padding:40px; color:#64748b; font-size:18px;">
+                🏖️ วันนี้เป็นวันหยุด
+             </center>`
+          : (listHtml || `<center style="padding:40px; opacity:0.3;">ไม่มีข้อมูล</center>`)
+        }
+    `;
+}     
+    function clearDailyData() {
     const confirmDelete = confirm("⚠️ คุณต้องการลบข้อมูลรายงานของวันนี้ทั้งหมดใช่หรือไม่? (ข้อมูลที่ลบแล้วจะไม่สามารถเรียกคืนได้)");
     
     if (confirmDelete) {
