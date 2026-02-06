@@ -1200,14 +1200,14 @@ function loadHistMonth() {
   }
 }
 
-    function shareLineMonth() {
+function shareLineMonth() {
   const m = $("histMonth").value;
   if (!m) return alert("กรุณาเลือกเดือน");
 
   const records = archives.filter(r => r.date && r.date.startsWith(m));
   if (!records.length) return alert("ไม่พบข้อมูลเดือนนี้");
 
-  const shopName = conf.shopName || "Barber Shop";
+  const shopName = $("setShop").value || "Barber Shop";
 
   // ---------- 1. เตรียมตัวแปร (รวม Logic รายวัน/รายคน) ----------
   let total = 0, barberEarn = 0, clientCount = 0;
@@ -1283,7 +1283,7 @@ const aiComments = buildMonthlyComments({
 
   // ---------- 3. ประกอบข้อความ LINE (เพิ่มส่วน AI เข้าไป) ----------
   const msg = `
-💈 รายงาน: $("setShop").value || "Barber Shop";
+💈 รายงาน: ${shopName}
 📅 ประจำเดือน: ${m}
 
 ✂️ ยอดตัดทั้งเดือน: ฿${total.toLocaleString()}
