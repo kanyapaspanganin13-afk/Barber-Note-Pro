@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.23 </title>
+    <title>Barber Note Pro V.0222222 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -440,7 +440,6 @@ nav {
 </nav>
  <script>
 const $ = (id) => document.getElementById(id);
-let isHoliday = false;
 let db = JSON.parse(localStorage.getItem("barber_db")) || [];
 let archives = JSON.parse(localStorage.getItem("barber_archives")) || [];
 let account = JSON.parse(localStorage.getItem("barber_account")) || { balance: 0, logs: [] };
@@ -739,8 +738,7 @@ if (dList) {
         `;
     }
 } 
-  
-    function clearDailyData() {
+     function clearDailyData() {
     const confirmDelete = confirm("⚠️ คุณต้องการลบข้อมูลรายงานของวันนี้ทั้งหมดใช่หรือไม่? (ข้อมูลที่ลบแล้วจะไม่สามารถเรียกคืนได้)");
     
     if (confirmDelete) {
@@ -842,6 +840,7 @@ function renderHistoryList() {
         $("accHistory").innerHTML = '<center style="padding:50px; color:#94a3b8; font-size:15px;">ไม่มีประวัติการเคลียร์ครับ</center>';
         return;
     }
+
     // 2. สร้างรายการโดยเรียงจากใหม่ไปเก่า (ใช้ loop ถอยหลังแทน reverse เพื่อป้องกัน index เพี้ยน)
     let h = "";
     for (let i = account.logs.length - 1; i >= 0; i--) {
@@ -1030,6 +1029,7 @@ function loadHistMonth() {
             </div>`
         );
     }
+
     const haircutList = ["แฟชั่น","สกินเฟด","เปิดข้าง","รองทรง","ตำรวจ/ทหาร","ทรงนักเรียน","แก้ผม","โกนผม","เด็ก"];
     const serviceList = ["โกนหนวด","กันหน้า","สระผม","ย้อมผม"];
     const conf = window.conf || { guar: 0 };
@@ -1043,13 +1043,12 @@ function loadHistMonth() {
 
     // --- 🟢 2. Loop คำนวณข้อมูล ---
     filtered.forEach(day => {
-        if (day.type === "HOLIDAY") {
-    offDays++;
-    return;
-}
+        if (day.off) { offDays++; return; }
+
         workDays++;
-    const real = Number(day.barber) || 0;
-    const guar = conf.guar || 0;
+        const real = Number(day.barber) || 0;
+        const guar = conf.guar || 0;
+
         // จัดกลุ่มรายสัปดาห์
         const dObj = new Date(day.date);
         let wIdx = Math.ceil(dObj.getDate() / 7);
@@ -1322,19 +1321,11 @@ function buildMonthlyComments(data) {
   if (!comments.length) comments.push("ภาพรวมเดือนนี้อยู่ในระดับปกติครับ");
   return comments;
 }
-   function shareLine() {
-    const dInp = $("dateInp").value, allRec = db.filter(r => r.date === dInp); 
-    if (!allRec.length) return;
-
-    // 1. แยกประเภท: หาว่าเป็นวันหยุดไหม และกรองเฉพาะลูกค้าที่มีการตัดผมจริง (ราคา > 0)
-    const isHoliday = allRec.some(r => r.type === 'HOLIDAY');
-    const realCustomers = allRec.filter(r => r.type !== 'HOLIDAY' && (Number(r.price) > 0 || (r.svcs && r.svcs.length > 0)));
-    
+    function shareLine() {
+    const dInp = $("dateInp").value, today = db.filter(r => r.date === dInp); if (!today.length) return;
     const dp = dInp.split('-'), fDate = `${dp[2]}/${dp[1]}/${dp[0]}`;
     let tot=0, cash=0, trans=0, tips=0, stats={};
-
-    // 2. สร้างรายการลูกค้า (ใช้ realCustomers แทน today เพื่อไม่ให้นับวันหยุด/ประกันลงในลิสต์)
-    let clientList = realCustomers.sort((a,b)=>a.time.localeCompare(b.time)).map((r,i)=>{
+    let clientList = today.sort((a,b)=>a.time.localeCompare(b.time)).map((r,i)=>{
         const p = Number(r.price)||0, t = Number(r.tip)||0; tot+=p; tips+=t;
         r.pay==='Trans' ? trans+=p : cash+=p;
         if(r.hair&&r.hair.includes("เด็ก")) stats["เด็ก"]=(stats["เด็ก"]||0)+1;
@@ -1342,31 +1333,12 @@ function buildMonthlyComments(data) {
         const tShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
         return `${i+1}. [${tShow}] ${(r.svcs||[]).join('+')} = ${p}${t?` (+ทิป ${t})`:''} ${r.pay==='Trans'?'📱':'💵'}`;
     }).join('\n');
-
-    // --- ส่วนคำนวณอื่นๆ เหมือนเดิมของท่าน ---
     const allowed = ["เด็ก","สระผม","โกนหนวด","ย้อมผม","ย้อมสี"], icons = {"เด็ก":"🧒","สระ":"🧼","โกน":"🪒","ย้อม":"🎨"};
     let statText = Object.entries(stats).filter(([k])=>allowed.some(a=>k.includes(a))).map(([k,v])=>`${icons[Object.keys(icons).find(i=>k.includes(i))]||'🔹'} ${k}: ${v}`).join('\n');
-    
-    let bEarn = isHoliday ? 0 : Math.max(tot*(conf.perc/100), conf.guar) + tips;
-    let settle = isHoliday ? 0 : cash - bEarn;
-    
-    // 3. ปรับข้อความหัวข้อลูกค้า (ถ้าเป็นวันหยุดให้โชว์ว่าวันหยุด ถ้าไม่มีลูกค้าให้โชว์ 0 คน)
-    let customerHeader = "";
-    if (isHoliday) {
-        customerHeader = "📝 วันนี้ร้านหยุดพักผ่อน 🏖️";
-        clientList = "ไม่มีรายการงาน";
-    } else {
-        customerHeader = `📝 ลูกค้า (${realCustomers.length} คน):`; // ✅ จะนับแค่คนที่มีราคา > 0
-        if (realCustomers.length === 0) clientList = "ไม่มีรายการลูกค้า (ประกันรายวัน)";
-    }
-
-    let settleMsg = settle > 0 ? `⚠️ ช่างคืนร้าน ${Math.floor(Math.abs(settle))}` : `🟦 ร้านคืนช่าง ${Math.floor(Math.abs(settle))}`;
-    if (isHoliday) settleMsg = "🏖️ พักผ่อน";
-
-    let msg = `💈 รายงานร้าน: Barber Shop\n📅 วันที่: ${fDate}\n-------------------------\n${customerHeader}\n${clientList}\n-------------------------\n📊 สรุปงาน:\n${statText}\n-------------------------\n💰 ยอด: ${tot} | 🧧 ทิป: ${tips}\n📱 โอน: ${trans} | 💵 สด: ${cash}\n🤵 ช่างได้: ${Math.floor(bEarn)}\n🏠 ร้านได้: ${Math.floor(tot-(bEarn-tips))}\n-------------------------\n${settleMsg}`;
-    
+    let bEarn = Math.max(tot*(conf.perc/100), conf.guar) + tips; // ช่างได้ = ส่วนแบ่ง + ทิปทั้งหมด
+    let settle = cash - bEarn, settleMsg = settle > 0 ? `⚠️ ช่างคืนร้าน ${Math.floor(Math.abs(settle))}` : `🟦 ร้านคืนช่าง ${Math.floor(Math.abs(settle))}`;
+    let msg = `💈 รายงานร้าน: Barber Shop\n📅 วันที่: ${fDate}\n-------------------------\n📝 ลูกค้า (${today.length} คน):\n${clientList}\n-------------------------\n📊 สรุปงาน:\n${statText}\n-------------------------\n💰 ยอด: ${tot} | 🧧 ทิป: ${tips}\n📱 โอน: ${trans} | 💵 สด: ${cash}\n🤵 ช่างได้: ${Math.floor(bEarn)}\n🏠 ร้านได้: ${Math.floor(tot-(bEarn-tips))}\n-------------------------\n${settleMsg}`;
     window.open(`https://line.me/R/msg/text/?${encodeURIComponent(msg)}`);
-}
 }
 function go(p) {
     document.querySelectorAll('.page').forEach(pg => {
