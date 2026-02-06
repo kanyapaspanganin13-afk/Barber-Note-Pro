@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.09223 </title>
+    <title>Barber Note Pro V.9223 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -721,11 +721,14 @@ function renderDay() {
                 <span style="margin-right:8px; font-size:18px;">${icon}</span> ${txt}
             </div>
             
-            <button onclick="saveAndGo('${dInp}', ${tot})" ${isHoliday ? 'disabled' : ''} style="flex:2.2; height:55px; background:${isHoliday ? '#cbd5e1' : btnBlue}; color:#fff; border-radius:18px; border:none; font-size:22px; cursor:${isHoliday ? 'not-allowed' : 'pointer'}; display:flex; align-items:center; justify-content:center; box-shadow:${isHoliday ? 'none' : '0 6px 15px rgba(37, 99, 235, 0.3)'}; opacity:${isHoliday ? '0.6' : '1'};">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-        `;
-    }
+           // --- แก้ไขเฉพาะส่วน button ใน actionBox.innerHTML ---
+
+<button onclick="saveAndGo('${dInp}', ${tot})" 
+    style="flex:2.2; height:55px; background:${btnBlue}; color:#fff; border-radius:18px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 15px rgba(37, 99, 235, 0.3);">
+    <i class="fas fa-paper-plane"></i>
+</button>
+  `;
+}
     
     // --- ส่วนแสดงรายการด้านล่าง ---
     const dList = document.getElementById("dailyList");
