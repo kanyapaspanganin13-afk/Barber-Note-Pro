@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.02122 </title>
+    <title>Barber Note Pro V.02772 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -440,6 +440,7 @@ nav {
 </nav>
  <script>
 const $ = (id) => document.getElementById(id);
+let isHoliday = false;
 let db = JSON.parse(localStorage.getItem("barber_db")) || [];
 let archives = JSON.parse(localStorage.getItem("barber_archives")) || [];
 let account = JSON.parse(localStorage.getItem("barber_account")) || { balance: 0, logs: [] };
@@ -629,6 +630,7 @@ function renderDay() {
     .slice()
     .sort((a,b) => a.time.localeCompare(b.time))
     .forEach((r, i) => {
+        // ... (Logic คำนวณเดิมของท่านทั้งหมด) ...
         const p = Number(r.price) || 0;
         const t = Number(r.tip) || 0;
         tot += p;
@@ -727,32 +729,24 @@ if (actionBox) {
 }
     // --- ส่วนแสดงรายการด้านล่าง (สำคัญ!) ---
 
-// --- ส่วนการเตรียมข้อมูลก่อน Render ---
-
-// 1. เช็คว่าในรายการของวันนี้ มีการบันทึก "วันหยุด" ไว้หรือไม่
-const todayRecords = db.filter(r => r.date === $("dateInp").value);
-const isHoliday = todayRecords.some(r => r.type === "HOLIDAY");
-
-// 2. นำค่า isHoliday ที่ได้ไปใช้ในเงื่อนไขการแสดงผลที่คุณเขียนไว้
 const dList = document.getElementById("dailyList");
-if (dList) {
-    dList.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
-            <b style="font-size:16px; color: var(--text);">📋 รายงานวันนี้:</b>
+    if (dList) {
+        dList.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
+                <b style="font-size:16px; color: var(--text);">📋 รายงานวันนี้:</b>
+                <i class="fab fa-line"
+                   style="color:#22c55e; font-size:32px; cursor:pointer"
+                   onclick="shareLine()"></i>
+            </div>
 
-            <i class="fab fa-line" 
-               style="color:#22c55e; font-size:32px; cursor:pointer" 
-               onclick="shareLine()"></i>
-        </div>
-
-        ${isHoliday 
-          ? `<center style="padding:40px; color:#64748b; font-size:18px;">
-                🏖️ วันนี้เป็นวันหยุด
-             </center>`
-          : (listHtml || `<center style="padding:40px; opacity:0.3;">ไม่มีข้อมูล</center>`)
-        }
-    `;
-}
+            ${isHoliday
+              ? `<center style="padding:40px; color:#64748b; font-size:18px;">
+                    🏖️ วันนี้เป็นวันหยุด
+                 </center>`
+              : (listHtml || `<center style="padding:40px; opacity:0.3;">ไม่มีข้อมูล</center>`)
+            }
+        `;
+    }
 }
     function clearDailyData() {
     const confirmDelete = confirm("⚠️ คุณต้องการลบข้อมูลรายงานของวันนี้ทั้งหมดใช่หรือไม่? (ข้อมูลที่ลบแล้วจะไม่สามารถเรียกคืนได้)");
