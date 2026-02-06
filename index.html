@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.0979 </title>
+    <title>Barber Note Pro V.097 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -1306,11 +1306,8 @@ ${Object.entries(monthSvc).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`• $
 `.trim();
 
  const lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(msg)}`;
-    
-    // ตรวจสอบความยาวเบื้องต้น
-    if (lineUrl.length > 2000) {
-        alert("ขออภัยครับ ข้อความยาวเกินไป (เกิน 2,000 ตัวอักษร) กรุณาลดรายละเอียดบางส่วนลงครับ");
-        return;
+location.href = lineUrl;
+
     }
 
     function shareLine() {
