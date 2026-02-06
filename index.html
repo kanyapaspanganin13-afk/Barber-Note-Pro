@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.0222222 </title>
+    <title>Barber Note Pro V.02662 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -840,7 +840,6 @@ function renderHistoryList() {
         $("accHistory").innerHTML = '<center style="padding:50px; color:#94a3b8; font-size:15px;">ไม่มีประวัติการเคลียร์ครับ</center>';
         return;
     }
-
     // 2. สร้างรายการโดยเรียงจากใหม่ไปเก่า (ใช้ loop ถอยหลังแทน reverse เพื่อป้องกัน index เพี้ยน)
     let h = "";
     for (let i = account.logs.length - 1; i >= 0; i--) {
@@ -1029,7 +1028,6 @@ function loadHistMonth() {
             </div>`
         );
     }
-
     const haircutList = ["แฟชั่น","สกินเฟด","เปิดข้าง","รองทรง","ตำรวจ/ทหาร","ทรงนักเรียน","แก้ผม","โกนผม","เด็ก"];
     const serviceList = ["โกนหนวด","กันหน้า","สระผม","ย้อมผม"];
     const conf = window.conf || { guar: 0 };
@@ -1043,12 +1041,13 @@ function loadHistMonth() {
 
     // --- 🟢 2. Loop คำนวณข้อมูล ---
     filtered.forEach(day => {
-        if (day.off) { offDays++; return; }
-
+        if (day.type === "HOLIDAY") {
+    offDays++;
+    return;
+}
         workDays++;
-        const real = Number(day.barber) || 0;
-        const guar = conf.guar || 0;
-
+    const real = Number(day.barber) || 0;
+    const guar = conf.guar || 0;
         // จัดกลุ่มรายสัปดาห์
         const dObj = new Date(day.date);
         let wIdx = Math.ceil(dObj.getDate() / 7);
