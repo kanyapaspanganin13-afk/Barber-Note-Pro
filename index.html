@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.923 </title>
+    <title>Barber Note Pro V.23 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -620,7 +620,7 @@ function renderDay() {
     const dInp = $("dateInp").value;
     const allRec = db.filter(r => r.date === dInp);
     const today = allRec.filter(r => r.type !== 'HOLIDAY');
-    isHoliday = allRec.some(r => r.type === 'HOLIDAY' || (r.svcs && r.svcs.includes("🏖️ วันหยุด")));
+    const isHoliday = allRec.some(r => r.type === 'HOLIDAY');
     const stats = {};
     const extraSvcs = ["โกนหนวด", "กันหน้า", "สระผม"];
     let tot = 0, trans = 0, cash = 0, tips = 0;
@@ -686,8 +686,8 @@ function renderDay() {
     if($("dCash")) $("dCash").innerText   = cash.toLocaleString();
     if($("dBarber")) $("dBarber").innerText = Math.floor(bEarn).toLocaleString();
     if($("dShop")) $("dShop").innerText   = Math.floor(sEarn).toLocaleString();
-    if($("dCounts")) $("dCounts").innerText = isHoliday ? "🏖️ วันหยุด" : `ลูกค้า: ${today.filter(r => r.price > 0).length} คน`;
-    
+    if($("dCounts")) $("dCounts").innerText = isHoliday ? "🏖️ วันหยุด" : `ลูกค้า: ${today.length} คน`;
+
     // --- ส่วนสถิติ ---
     let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:10px;">`;
     const priority = ["ตัดผม", "เด็ก"];
@@ -709,44 +709,37 @@ function renderDay() {
         txt = "ยอดพอดี"; statusColor = "#15803d"; icon = "✅"; 
     }
 
-    const silverBG = "#f1f5f9";
-    const btnBlue  = "#2563eb"; 
+   const silverBG = "#f1f5f9"; // สีเทาเงินสว่าง
+const btnBlue  = "#2563eb"; // สีน้ำเงิน Royal Blue ที่มึงชอบ
 
-   const actionBox = document.getElementById("settleBarContainer");
-    if (actionBox) {
-        actionBox.style.display = "flex";
-        actionBox.style.gap = "10px";
-        actionBox.innerHTML = `
-            <div id="settleBar" style="flex:8; height:55px; background:${silverBG}; display:flex; align-items:center; justify-content:center; border-radius:18px; font-weight:800; font-size:14px; color:${statusColor}; border:1px solid #e2e8f0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
-                <span style="margin-right:8px; font-size:18px;">${icon}</span> ${txt}
-            </div>
-            
-            <button onclick="saveAndGo('${dInp}', ${tot})" 
-                style="flex:2.2; height:55px; background:${btnBlue}; color:#fff; border-radius:18px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 15px rgba(37, 99, 235, 0.3);">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-        `;
-    }
-    
-    // --- ส่วนแสดงรายการด้านล่าง ---
-    const dList = document.getElementById("dailyList");
-    if (dList) {
-        dList.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
-                <b style="font-size:16px; color: var(--text);">📋 รายละเอียดงาน:</b>
-                <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()"></i>
-            </div>
-
-            ${isHoliday
-              ? `<center style="padding:60px 20px; color:#94a3b8; font-size:18px;">
-                    <div style="font-size:40px; margin-bottom:10px;">🏖️</div>
-                    วันนี้เป็นวันหยุดพักผ่อน
-                 </center>`
-              : (listHtml || `<center style="padding:40px; opacity:0.3;">ไม่มีข้อมูลการตัดผม</center>`)
-            }
-        `;
-    }
+const actionBox = document.getElementById("settleBarContainer");
+if (actionBox) {
+    actionBox.style.display = "flex";
+    actionBox.style.gap = "10px";
+    actionBox.innerHTML = `
+        <div id="settleBar" style="flex:8; height:55px; background:${silverBG}; display:flex; align-items:center; justify-content:center; border-radius:18px; font-weight:800; font-size:14px; color:${statusColor}; border:1px solid #e2e8f0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+            <span style="margin-right:8px; font-size:18px;">${icon}</span> ${txt}
+        </div>
+        
+        <button onclick="saveAndGo('${dInp}', ${tot})" style="flex:2.2; height:55px; background:${btnBlue}; color:#fff; border-radius:18px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 15px rgba(37, 99, 235, 0.3);">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    `;
 }
+    // --- ส่วนแสดงรายการด้านล่าง (สำคัญ!) ---
+   const dList = document.getElementById("dailyList");
+if (dList) {
+    dList.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
+            <b style="font-size:16px; color: var(--text);">📋 รายงานวันนี้:</b>
+            <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()"></i>
+        </div>
+
+            ${isHoliday ? `<center style='padding:40px; color:#64748b;'>🏖️ วันหยุด</center>` : (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>")}
+        `;
+    }
+} 
+  
     function clearDailyData() {
     const confirmDelete = confirm("⚠️ คุณต้องการลบข้อมูลรายงานของวันนี้ทั้งหมดใช่หรือไม่? (ข้อมูลที่ลบแล้วจะไม่สามารถเรียกคืนได้)");
     
