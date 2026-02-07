@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.19243 </title>
+    <title>Barber Note Pro V.188243 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -646,9 +646,8 @@ function renderDay() {
    const dInp = $("dateInp").value;
     const allRec = db.filter(r => r.date === dInp);
     const isHoliday = allRec.some(r => r.type === 'HOLIDAY');
-    const today = allRec.filter(r => 
-        r.type !== 'HOLIDAY' && 
-        (Number(r.price) > 0 || (r.svcs && r.svcs.length > 0))
+  const today = allRec.filter(r => r.type !== 'HOLIDAY' && r.type !== 'holiday');
+        r.type !== 'GUARANTEE' // 👈 เพิ่มตรงนี้เพื่อไม่ให้นับหัว
     );
     const stats = {};
     const extraSvcs = ["โกนหนวด", "กันหน้า", "สระผม"];
@@ -665,12 +664,11 @@ function renderDay() {
         tips += t;
         (r.pay === 'Trans') ? trans += (p + t) : cash += p;
         const currentSvcs = Array.isArray(r.svcs) ? r.svcs : [];
-        const hasRealHaircut = currentSvcs.some(s => s && !extraSvcs.includes(s));
+        const hasRealHaircut = currentSvcs.some(s => s && !extraSvcs.includes(s)) && r.type !== 'GUARANTEE'; 
         currentSvcs.forEach(s => {
-            if (!s) return;
+            if (!s || r.type === 'GUARANTEE') return; // 👈 ถ้าเป็นประกัน ไม่ต้องเก็บสถิติบริการ
             stats[s] = (stats[s] || 0) + 1;
         });
-
         if (hasRealHaircut) {
             stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
         }
