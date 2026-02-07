@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.011232 </title>
+    <title>Barber Note Pro V.07232 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -752,16 +752,23 @@ if (actionBox) {
         </button>
     `;
 }
-    // --- ส่วนแสดงรายการด้านล่าง (สำคัญ!) ---
-   const dList = document.getElementById("dailyList");
-if (dList) {
-    dList.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
-            <b style="font-size:16px; color: var(--text);">📋 รายงานวันนี้:</b>
-            <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()"></i>
-        </div>
+// --- ส่วนแสดงรายการด้านล่าง (แก้ไขเพื่อลบคำว่าเงินสดในวันหยุด) ---
+    const dList = document.getElementById("dailyList");
+    if (dList) {
+        dList.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
+                <b style="font-size:16px; color: var(--text);">📋 รายงานวันนี้:</b>
+                <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()"></i>
+            </div>
 
-            ${isHoliday ? `<center style='padding:40px; color:#64748b;'>🏖️ วันหยุด</center>` : (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>")}
+            ${isHoliday 
+                ? `<div style='padding:60px 20px; text-align:center; background:#f8fafc; border-radius:20px; border:2px dashed #cbd5e1; margin-top:10px;'>
+                     <div style='font-size:40px; margin-bottom:10px;'>🏖️</div>
+                     <div style='font-weight:800; color:#64748b; font-size:18px;'>วันนี้เป็นวันหยุด</div>
+                     <div style='font-size:13px; color:#94a3b8;'>ไม่มีการบันทึกรายการรายรับ</div>
+                   </div>` 
+                : (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>")
+            }
         `;
     }
 } 
