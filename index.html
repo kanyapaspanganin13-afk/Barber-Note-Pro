@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.0222222 </title>
+    <title>Barber Note Pro V.0212344 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -531,7 +531,7 @@ function handleInsurance() {
         saveDB(); speak(`เปิดระบบประกัน ${g} บาท เรียบร้อย`); alert("✅ เปิดระบบประกันเรียบร้อย"); renderDay();
     }
 }
- function handleHoliday(){const d=$("dateInp").value;if(!d)return alert("เลือกวันที่ก่อน");if(confirm(`ยืนยันบันทึกวันที่ ${d} เป็น "วันหยุด"?`)){db.push({id:Date.now(),date:d,time:"00:00",svcs:["🏖️ วันหยุด"],price:0,pay:"N/A",type:"HOLIDAY"});saveDB();const m=new SpeechSynthesisUtterance("บันทึกวันหยุดเรียบร้อย");m.lang='th-TH';if(conf.voice==='male'){const v=window.speechSynthesis.getVoices().find(x=>x.name.includes('Male')||x.name.includes('Google'));if(v)m.voice=v}window.speechSynthesis.speak(m);alert("🏖️ บันทึกวันหยุดเรียบร้อย");renderDay()}}   
+function handleHoliday(){const d=$("dateInp").value;if(!d)return alert("เลือกวันที่ก่อน");if(confirm(`ยืนยันบันทึกวันที่ ${d} เป็น "วันหยุด"?`)){db.push({id:Date.now(),date:d,time:"00:00",svcs:["🏖️ วันหยุด"],price:0,pay:"N/A",type:"HOLIDAY"});saveDB();const m=new SpeechSynthesisUtterance("บันทึกวันหยุดเรียบร้อย");m.lang='th-TH';if(conf.voice==='male'){const v=window.speechSynthesis.getVoices().find(x=>x.name.includes('Male')||x.name.includes('Google'));if(v)m.voice=v}window.speechSynthesis.speak(m);alert("🏖️ บันทึกวันหยุดเรียบร้อย");renderDay()}}   
 function openSettings() {
     if ($("setShop"))  $("setShop").value  = conf.shop  || "";
     if ($("setTheme")) $("setTheme").value = conf.theme || "light";
@@ -685,7 +685,8 @@ function renderDay() {
     if($("dCash")) $("dCash").innerText   = cash.toLocaleString();
     if($("dBarber")) $("dBarber").innerText = Math.floor(bEarn).toLocaleString();
     if($("dShop")) $("dShop").innerText   = Math.floor(sEarn).toLocaleString();
-    if($("dCounts")) $("dCounts").innerText = isHoliday ? "🏖️ วันหยุด" : `ลูกค้า: ${today.length} คน`;
+    if($("dCounts"))$("dCounts").innerText = isHoliday  ? "🏖️ วันนี้ร้านหยุด"  : `ลูกค้า: ${today.length} คน`;
+
 
     // --- ส่วนสถิติ ---
     let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:10px;">`;
@@ -1043,13 +1044,20 @@ function loadHistMonth() {
 
     // --- 🟢 2. Loop คำนวณข้อมูล ---
     filtered.forEach(day => {
-        if (day.off) { offDays++; return; }
 
-        workDays++;
-        const real = Number(day.barber) || 0;
-        const guar = conf.guar || 0;
+    const isHoliday = day.recs?.some(r => r.type === "HOLIDAY");
 
-        // จัดกลุ่มรายสัปดาห์
+    if (isHoliday) {
+        offDays++;
+        return; // ⛔ สำคัญ: ข้ามวันนั้นทันที
+    }
+
+    workDays++;
+
+    const real = Number(day.barber) || 0;
+    const guar = conf.guar || 0;
+});
+     // จัดกลุ่มรายสัปดาห์
         const dObj = new Date(day.date);
         let wIdx = Math.ceil(dObj.getDate() / 7);
         if (wIdx > 4) wIdx = 4;
