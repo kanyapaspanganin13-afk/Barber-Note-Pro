@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.1843 </title>
+    <title>Barber Note Pro V.11843 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -645,44 +645,42 @@ function saveSettings() {
 function renderDay() {
     const dInp = $("dateInp").value;
     const allRec = db.filter(r => r.date === dInp);
-    
-    // 1. เช็คสถานะวันหยุด (ใช้สำหรับแสดงผลแถบสถานะ)
-    const isHoliday = allRec.some(r => r.type === 'HOLIDAY');
-
-    // 2. กรองลูกค้า: "ต้องไม่ใช่" วันหยุด และ "ต้องไม่ใช่" รายการประกันรายวัน
-    // เพื่อให้จำนวนลูกค้า (today.length) เป็น 0 ในวันหยุดหรือวันประกัน
-    const today = allRec.filter(r => 
-        r.type !== 'HOLIDAY' && 
-        r.type !== 'GUARANTEE'
-    );
+    const isHoliday = allRec.some(r => r.type && r.type.toUpperCase() === 'HOLIDAY');
 
     const stats = {};
     const extraSvcs = ["โกนหนวด", "กันหน้า", "สระผม"];
     let tot = 0, trans = 0, cash = 0, tips = 0;
     let listHtml = "";
 
-    // 3. วนลูปคำนวณ: ใช้ข้อมูลทั้งหมด (allRec) เพื่อให้ยอดเงินยังขึ้น แต่สถิติไม่ขึ้น
+    // ✅ 1. เพิ่มตัวแปรนับลูกค้าจริง (ตามที่คุณแนะนำ)
+    let realCustomerCount = 0;
+
     allRec
     .slice()
     .sort((a,b) => a.time.localeCompare(b.time))
     .forEach((r, i) => {
         const p = Number(r.price) || 0;
         const t = Number(r.tip) || 0;
+        const rType = r.type ? r.type.toUpperCase() : '';
+
         tot += p;
         tips += t;
         (r.pay === 'Trans') ? trans += (p + t) : cash += p;
         
         const currentSvcs = Array.isArray(r.svcs) ? r.svcs : [];
 
-        // --- จุดสำคัญ: ถ้านับเป็นประกัน หรือ วันหยุด "ห้าม" เก็บสถิติและห้ามนับหัวตัด ---
-        if (r.type !== 'GUARANTEE' && r.type !== 'HOLIDAY') { 
+        // ✅ 2. ตรรกะการนับสถิติและการนับคน (ตัดประกันและวันหยุดออกอย่างเด็ดขาด)
+        if (rType !== 'GUARANTEE' && rType !== 'HOLIDAY') { 
             const hasRealHaircut = currentSvcs.some(s => s && !extraSvcs.includes(s));
+            
+            if (hasRealHaircut) {
+                realCustomerCount++; // 👈 นับจำนวนคนตรงนี้แทน today.length
+                stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
+            }
+
             currentSvcs.forEach(s => {
                 if (s) stats[s] = (stats[s] || 0) + 1;
             });
-            if (hasRealHaircut) {
-                stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
-            }
         }
 
         const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
@@ -714,21 +712,22 @@ function renderDay() {
         </div>`;
     });
 
-    // 4. คำนวณรายได้ช่าง/ร้าน
+    // ✅ 3. คำนวณรายได้ (คงเดิม)
     const bEarn = isHoliday ? 0 : Math.max(tot * (conf.perc / 100), conf.guar) + tips;
     const sEarn = isHoliday ? 0 : tot - (bEarn - tips);
     const settle = isHoliday ? 0 : cash - bEarn;
 
-    // 5. อัปเดตการแสดงผล (แก้เรื่องเลข 1)
+    // ✅ 4. อัปเดตการแสดงผล (ใช้ realCustomerCount)
     if($("dTotal")) $("dTotal").innerText = tot.toLocaleString();
     if($("dTrans")) $("dTrans").innerText = trans.toLocaleString();
     if($("dCash")) $("dCash").innerText = cash.toLocaleString();
     if($("dBarber")) $("dBarber").innerText = Math.floor(bEarn).toLocaleString();
     if($("dShop")) $("dShop").innerText = Math.floor(sEarn).toLocaleString();
     
-    // ตรงนี้จะขึ้น 0 คนแน่นอน ถ้าเป็นวันหยุดหรือวันประกัน
-    if($("dCounts")) $("dCounts").innerText = isHoliday ? "🏖️ วันหยุด" : `ลูกค้า: ${today.length} คน`;
-
+    // แสดงผล "ลูกค้าจริง" ไม่นับรายการขยะหรือรายการเสริม
+    if($("dCounts")) {
+        $("dCounts").innerText = isHoliday ? "🏖️ วันหยุด" : `ลูกค้า: ${realCustomerCount} คน`;
+    }
     // 6. แสดงสถิติ (ตัดผมจะขึ้น 0 ถ้าเป็นประกัน)
     let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:10px;">`;
     const priority = ["ตัดผม", "เด็ก"];
