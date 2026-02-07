@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.11843 </title>
+    <title>Barber Note Pro V.11943 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -722,12 +722,16 @@ function renderDay() {
     if($("dTrans")) $("dTrans").innerText = trans.toLocaleString();
     if($("dCash")) $("dCash").innerText = cash.toLocaleString();
     if($("dBarber")) $("dBarber").innerText = Math.floor(bEarn).toLocaleString();
-    if($("dShop")) $("dShop").innerText = Math.floor(sEarn).toLocaleString();
-    
-    // แสดงผล "ลูกค้าจริง" ไม่นับรายการขยะหรือรายการเสริม
-    if($("dCounts")) {
-        $("dCounts").innerText = isHoliday ? "🏖️ วันหยุด" : `ลูกค้า: ${realCustomerCount} คน`;
+    if($("dShop")) $("dShop").innerText = Math.floor(sEarn).toLocaleString(); 
+   
+   if($("dCounts")) {
+    if (isHoliday) {
+        $("dCounts").innerText = "🏖️ วันหยุด";
+    } else {
+        // ใช้ตัวแปร realCustomerCount ที่เรานับเฉพาะ "คนตัดผมจริง" เท่านั้น
+        $("dCounts").innerText = `ลูกค้า: ${realCustomerCount} คน`;
     }
+}
     // 6. แสดงสถิติ (ตัดผมจะขึ้น 0 ถ้าเป็นประกัน)
     let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:10px;">`;
     const priority = ["ตัดผม", "เด็ก"];
@@ -785,9 +789,11 @@ function renderDay() {
     }
 }
 function saveAndGo(date, total) {
-    // 1. ดึงข้อมูลทั้งหมดของวันนี้ (รวมทั้ง SERVICE และ HOLIDAY)
     const allToday = db.filter(r => r.date === date);
-    const todayData = allToday.filter(r => r.type === 'SERVICE');
+
+    // --- แก้จุดนี้ครับ: ให้ดึงทั้ง SERVICE และ GUARANTEE มาคำนวณเงิน ---
+    const todayData = allToday.filter(r => r.type === 'SERVICE' || r.type === 'GUARANTEE');
+    
     const isHoliday = allToday.some(r => r.type === 'HOLIDAY');
 
     let cash = 0, trans = 0, tips = 0, count = 0, stats = {};
@@ -798,9 +804,15 @@ function saveAndGo(date, total) {
         tips += t;
         r.pay === "Cash" ? cash += p : trans += (p + t);
         const svcs = Array.isArray(r.svcs) ? r.svcs : [r.svcs];
-        const isRealCut = svcs.some(s => s && !extraSvcs.includes(s));
-        if (isRealCut) count++;
-        svcs.forEach(s => { if(s) stats[s] = (stats[s] || 0) + 1; });
+        // --- จุดสำคัญ: ถ้าเป็น GUARANTEE (ประกัน) ห้ามนับจำนวนลูกค้า และ ห้ามนับสถิติ ---
+        if (r.type !== 'GUARANTEE') {
+            const isRealCut = svcs.some(s => s && !extraSvcs.includes(s));
+            if (isRealCut) count++;
+            
+            svcs.forEach(s => { 
+                if(s) stats[s] = (stats[s] || 0) + 1; 
+            });
+        }
     });
 
     // 2. คำนวณรายได้ (ถ้าเป็นวันหยุดให้เป็น 0 ทั้งหมด)
