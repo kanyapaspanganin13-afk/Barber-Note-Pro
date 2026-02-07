@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.0223 </title>
+    <title>Barber Note Pro V.0222222 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -531,35 +531,8 @@ function handleInsurance() {
         saveDB(); speak(`เปิดระบบประกัน ${g} บาท เรียบร้อย`); alert("✅ เปิดระบบประกันเรียบร้อย"); renderDay();
     }
 }
-function handleHoliday() {
-    const d = $("dateInp").value;
-    if (!d) return alert("เลือกวันที่ก่อน");
-
-    // เช็คว่าวันนี้เป็นวันหยุดไปแล้วหรือยัง
-    const isAlreadyOff = db.some(r => r.date === d && r.type === "HOLIDAY");
-    if (isAlreadyOff) return alert("วันนี้ถูกบันทึกเป็นวันหยุดอยู่แล้วครับ");
-
-    if (confirm(`บันทึกวันที่ ${d} เป็นวันหยุด?`)) {
-        db.push({
-            id: Date.now(),
-            date: d,
-            time: "00:00",
-            svcs: ["🏖️ วันหยุด"],
-            price: 0,
-            pay: "N/A",
-            type: "HOLIDAY"
-        });
-        saveDB();
-        
-        // เสียงแจ้งเตือน
-        const m = new SpeechSynthesisUtterance("บันทึกวันหยุดเรียบร้อย");
-        m.lang = 'th-TH';
-        window.speechSynthesis.speak(m);
-
-        renderDay(); // อัปเดตหน้าจอทันที
-    }
-}
-     function openSettings() {
+ function handleHoliday(){const d=$("dateInp").value;if(!d)return alert("เลือกวันที่ก่อน");if(confirm(`ยืนยันบันทึกวันที่ ${d} เป็น "วันหยุด"?`)){db.push({id:Date.now(),date:d,time:"00:00",svcs:["🏖️ วันหยุด"],price:0,pay:"N/A",type:"HOLIDAY"});saveDB();const m=new SpeechSynthesisUtterance("บันทึกวันหยุดเรียบร้อย");m.lang='th-TH';if(conf.voice==='male'){const v=window.speechSynthesis.getVoices().find(x=>x.name.includes('Male')||x.name.includes('Google'));if(v)m.voice=v}window.speechSynthesis.speak(m);alert("🏖️ บันทึกวันหยุดเรียบร้อย");renderDay()}}   
+function openSettings() {
     if ($("setShop"))  $("setShop").value  = conf.shop  || "";
     if ($("setTheme")) $("setTheme").value = conf.theme || "light";
     if ($("setVoice")) $("setVoice").value = conf.voice || "female";
@@ -1211,47 +1184,7 @@ function loadHistMonth() {
         `
     );
 }
-function renderMonthlyReport(targetMonth) { // targetMonth เช่น "2026-02"
-   // 1. กรองข้อมูลเดือนที่ต้องการ (สมมติว่าชื่อ monthRec)
-const monthRec = db.filter(r => r.date.startsWith(targetMonth));
-
-// 2. เริ่มต้นคำนวณวันทำงานและวันหยุด
-const days = {};
-monthRec.forEach(r => {
-    if (!days[r.date]) days[r.date] = [];
-    days[r.date].push(r);
-});
-
-let workDays = 0;
-let offDays = 0;
-let monthCount = 0;
-
-Object.values(days).forEach(dayRecs => {
-    // เช็คว่าวันนั้นมีสถานะ HOLIDAY หรือไม่
-    const isHoliday = dayRecs.some(r => r.type === "HOLIDAY");
-
-    if (isHoliday) {
-        offDays++; // 🛑 นับวันหยุด (สะท้อนไปที่ปุ่มสีชมพูในรูป)
-    } else {
-        workDays++; // ✅ นับวันเปิดร้าน (สะท้อนไปที่ปุ่มสีขาวในรูป)
-        // นับจำนวนลูกค้าเฉพาะรายการที่เปิดร้านจริง
-        monthCount += dayRecs.filter(r => r.price > 0 || r.type !== "HOLIDAY").length;
-    }
-});
-
-// 3. นำค่าที่คำนวณได้ไปใส่ใน HTML ของ Modal
-const htmlContent = `
-    <div style="display:flex; gap:8px; justify-content:center;">
-        <div class="stat-box">👤 ลูกค้า ${monthCount} คน</div>
-        <div class="stat-box">📅 เปิดร้าน ${workDays} วัน</div>
-        <div class="stat-box" style="background:#5c2d45;">🛑 หยุด ${offDays} วัน</div>
-        <div class="stat-box">📊 เฉลี่ย ${(workDays > 0 ? monthCount/workDays : 0).toFixed(2)} คน/วัน</div>
-    </div>
-    `;
-
-// 4. เรียกใช้ Modal
-openReportModal(`สรุปรายงานเดือน ${targetMonth}`, htmlContent);
-function topN(obj, n = 5) {
+ function topN(obj, n = 5) {
   if (!obj || Object.keys(obj).length === 0) return [];
   return Object.entries(obj)
     .filter(([_, count]) => count > 0)
