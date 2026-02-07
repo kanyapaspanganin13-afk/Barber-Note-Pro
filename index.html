@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.02232 </title>
+    <title>Barber Note Pro V.0232 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -1103,17 +1103,37 @@ function loadHistMonth() {
     let weeklyData = {}; // <--- เพิ่มตัวแปรรายสัปดาห์
 
     // --- 🟢 2. Loop คำนวณข้อมูล ---
-    filtered.forEach(day => {
-        // แบบใหม่: เช็คทั้ง property .off และเช็คจากรายการข้างใน (details) ว่ามีคำว่า "วันหยุด" ไหม
-        const isDayOff = day.off === true || 
-                 day.type === "HOLIDAY" || 
-                 (day.details && day.details.some(r => r.type === "HOLIDAY"));
+// --- 🟢 เริ่มต้น Loop คำนวณใน loadHistMonth ---
+filtered.forEach(day => {
+    // เช็คสถานะวันหยุด (ให้ครอบคลุมทั้งข้อมูลเก่าและใหม่)
+    const isDayOff = day.off === true || 
+                     day.type === "HOLIDAY" || 
+                     (day.details && day.details.some(d => d.type === "HOLIDAY"));
 
+    if (isDayOff) { 
+        offDays++; // 🛑 เพิ่มยอดในช่อง 'หยุด X วัน'
+        return;    // จบการทำงานของวันนี้ (ไม่นับเป็นวันทำงาน)
+    }
 
-        workDays++;
-        const real = Number(day.barber) || 0;
-        const guar = conf.guar || 0;
+    // --- ถ้าไม่ใช่หยุด จึงเริ่มนับเป็นวันทำงาน ---
+    workDays++; // 📅 เพิ่มยอดในช่อง 'เปิดร้าน X วัน'
+    
+    // (ส่วนคำนวณเงินอื่นๆ ของคุณ...)
+    monthTotal += Number(day.total) || 0;
+    monthBarber += Number(day.barber) || 0;
 
+    // นับจำนวนลูกค้า (monthCount)
+    if (day.details) {
+        day.details.forEach(d => {
+            // เช็คว่าเป็นรายการตัดผมจริงหรือไม่ (ไม่ใช่รายการเสริมหรือวันหยุด)
+            if (d.type === 'SERVICE') {
+                const svcs = Array.isArray(d.svcs) ? d.svcs : [d.svcs];
+                const isRealCut = svcs.some(s => s && !serviceList.includes(s.trim()));
+                if (isRealCut) monthCount++; 
+            }
+        });
+    }
+});
         // จัดกลุ่มรายสัปดาห์
         const dObj = new Date(day.date);
         let wIdx = Math.ceil(dObj.getDate() / 7);
