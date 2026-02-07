@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.022 </title>
+    <title>Barber Note Pro V.0222222 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -726,10 +726,7 @@ if (actionBox) {
     `;
 }
     // --- ส่วนแสดงรายการด้านล่าง (สำคัญ!) ---
-// 1. เช็คก่อนว่าในข้อมูลวันนี้ (currentData) มีรายการประเภท HOLIDAY ไหม
-const isHoliday = db.some(r => r.date === $("dateInp").value && r.type === "HOLIDAY");
-
-const dList = document.getElementById("dailyList");
+   const dList = document.getElementById("dailyList");
 if (dList) {
     dList.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
@@ -737,16 +734,11 @@ if (dList) {
             <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()"></i>
         </div>
 
-        ${isHoliday 
-            ? `<div style="padding:40px; text-align:center; color:#64748b; background:rgba(100,116,139,0.05); border-radius:18px; margin-top:10px;">
-                <div style="font-size:40px; margin-bottom:10px;">🏖️</div>
-                <div style="font-weight:700;">วันนี้เป็นวันหยุด</div>
-               </div>` 
-            : (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>")
-        }
-    `;
-}     
-    function clearDailyData() {
+            ${isHoliday ? `<center style='padding:40px; color:#64748b;'>🏖️ วันหยุด</center>` : (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>")}
+        `;
+    }
+} 
+     function clearDailyData() {
     const confirmDelete = confirm("⚠️ คุณต้องการลบข้อมูลรายงานของวันนี้ทั้งหมดใช่หรือไม่? (ข้อมูลที่ลบแล้วจะไม่สามารถเรียกคืนได้)");
     
     if (confirmDelete) {
@@ -909,33 +901,9 @@ function loadHistDaily() {
     const d = $("histDate").value;
     if (!d) return;
 
-    // 1. ค้นหาข้อมูลจากทั้ง db (ปัจจุบัน) และ archives (ประวัติ)
-    const currentData = db.filter(r => r.date === d);
-    const archivedData = archives.find(a => a.date === d);
-
-    // 2. เช็คว่าข้อมูลที่มีอยู่เป็น "วันหยุด" หรือไม่
-    const isHoliday = currentData.some(r => r.type === "HOLIDAY") || 
-                     (archivedData && archivedData.type === "HOLIDAY") ||
-                     (archivedData && archivedData.details && archivedData.details.some(r => r.type === "HOLIDAY"));
-
-    if (isHoliday) {
-        return openReportModal(`รายงาน ${d}`, `
-            <div style="font-family:'Inter', system-ui, sans-serif; background:#0f172a; margin:-16px; padding:60px 24px; color:#f1f5f9; min-height:60vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
-                <div style="font-size:80px; margin-bottom:20px; filter: drop-shadow(0 0 20px rgba(255,255,255,0.1));">🏖️</div>
-                <div style="font-size:28px; font-weight:900; color:#ffffff; margin-bottom:10px;">วันนี้เป็น "วันหยุด"</div>
-                <p style="font-size:16px; color:#94a3b8; font-weight:500; max-width:250px; line-height:1.6;">
-                    ระบบบันทึกว่าเป็นวันพักผ่อน<br>ไม่มีรายการรับงานในวันนี้
-                </p>
-                <div style="margin-top:30px; padding:12px 25px; background:rgba(255,255,255,0.05); border-radius:100px; border:1px solid rgba(255,255,255,0.1); color:#cbd5e1; font-size:14px; font-weight:600;">
-                    📅 วันที่ ${d}
-                </div>
-            </div>
-        `);
-    }
-
-    // --- ส่วนดึงข้อมูลเดิมสำหรับวันทำงานปกติ ---
-    const f = archivedData; 
+    const f = archives.find(a => a.date === d);
     if (!f) return alert("ไม่พบข้อมูลของวันนี้");
+
     let cashTotal = f.cash || 0;
     let transTotal = f.trans || 0;
     let totalRevenue = cashTotal + transTotal;
