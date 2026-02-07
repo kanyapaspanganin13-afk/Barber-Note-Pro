@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.11043 </title>
+    <title>Barber Note Pro V.9043 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -669,19 +669,28 @@ function renderDay() {
         
         const currentSvcs = Array.isArray(r.svcs) ? r.svcs : [];
 
-        // ✅ 2. ตรรกะการนับสถิติและการนับคน (ตัดประกันและวันหยุดออกอย่างเด็ดขาด)
-        if (rType !== 'GUARANTEE' && rType !== 'HOLIDAY') { 
-            const hasRealHaircut = currentSvcs.some(s => s && !extraSvcs.includes(s));
-            
-            if (hasRealHaircut) {
-                realCustomerCount++; // 👈 นับจำนวนคนตรงนี้แทน today.length
-                stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
-            }
+        // ✅ 2. ตรรกะการนับสถิติและการนับคน (ล้างค่าว่างและตัวพิมพ์เล็กเพื่อความแม่นยำ)
+if (rType !== 'GUARANTEE' && rType !== 'HOLIDAY') { 
+    
+    // บังคับให้ extraSvcs เป็นตัวพิมพ์เล็กและไม่มีช่องว่าง
+    const cleanExtras = extraSvcs.map(s => s.trim().toLowerCase());
 
-            currentSvcs.forEach(s => {
-                if (s) stats[s] = (stats[s] || 0) + 1;
-            });
-        }
+    const hasRealHaircut = currentSvcs.some(s => {
+        if (!s) return false;
+        const cleanS = s.trim().toLowerCase();
+        // ถ้าบริการนั้น "ไม่มี" อยู่ในรายการบริการเสริม ให้ถือว่าเป็นงานตัดผมจริง
+        return !cleanExtras.includes(cleanS);
+    });
+    
+    if (hasRealHaircut) {
+        realCustomerCount++; 
+        stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
+    }
+
+    currentSvcs.forEach(s => {
+        if (s) stats[s] = (stats[s] || 0) + 1;
+    });
+}
 
         const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
         const payIcon = r.pay === 'Trans' ? '📱' : '💵';
@@ -723,12 +732,17 @@ function renderDay() {
     if($("dCash")) $("dCash").innerText = cash.toLocaleString();
     if($("dBarber")) $("dBarber").innerText = Math.floor(bEarn).toLocaleString();
     if($("dShop")) $("dShop").innerText = Math.floor(sEarn).toLocaleString(); 
-   
-   if($("dCounts")) {
+    if($("dCounts")) {
+    // 1. ถ้าเป็นวันหยุด ให้แสดง "วันหยุด" และ "ไม่นับคน" แน่นอน
     if (isHoliday) {
         $("dCounts").innerText = "🏖️ วันหยุด";
-    } else {
-        // ใช้ตัวแปร realCustomerCount ที่เรานับเฉพาะ "คนตัดผมจริง" เท่านั้น
+    } 
+    // 2. ถ้ามีรายการ แต่ยอดเงินรวมเป็น 0 (กรณีบันทึกประกัน)
+    else if (tot === 0 && allRec.length > 0) {
+        $("dCounts").innerText = "🛡️ รายการประกัน (ไม่นับคน)";
+    }
+    // 3. กรณีวันทำงานปกติ
+    else {
         $("dCounts").innerText = `ลูกค้า: ${realCustomerCount} คน`;
     }
 }
