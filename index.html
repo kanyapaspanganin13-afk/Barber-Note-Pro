@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.18843 </title>
+    <title>Barber Note Pro V.1843 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -646,13 +646,13 @@ function renderDay() {
     const dInp = $("dateInp").value;
     const allRec = db.filter(r => r.date === dInp);
     
-    // 1. เช็คสถานะวันหยุด
+    // 1. เช็คสถานะวันหยุด (ใช้สำหรับแสดงผลแถบสถานะ)
     const isHoliday = allRec.some(r => r.type === 'HOLIDAY');
-    
-    // 2. กรองลูกค้า: ไม่เอาวันหยุด และไม่เอาประกันรายวันมานับจำนวนคน
+
+    // 2. กรองลูกค้า: "ต้องไม่ใช่" วันหยุด และ "ต้องไม่ใช่" รายการประกันรายวัน
+    // เพื่อให้จำนวนลูกค้า (today.length) เป็น 0 ในวันหยุดหรือวันประกัน
     const today = allRec.filter(r => 
         r.type !== 'HOLIDAY' && 
-        r.type !== 'holiday' && 
         r.type !== 'GUARANTEE'
     );
 
@@ -661,8 +661,8 @@ function renderDay() {
     let tot = 0, trans = 0, cash = 0, tips = 0;
     let listHtml = "";
 
-    // 3. วนลูปคำนวณรายวัน
-    today
+    // 3. วนลูปคำนวณ: ใช้ข้อมูลทั้งหมด (allRec) เพื่อให้ยอดเงินยังขึ้น แต่สถิติไม่ขึ้น
+    allRec
     .slice()
     .sort((a,b) => a.time.localeCompare(b.time))
     .forEach((r, i) => {
@@ -673,16 +673,16 @@ function renderDay() {
         (r.pay === 'Trans') ? trans += (p + t) : cash += p;
         
         const currentSvcs = Array.isArray(r.svcs) ? r.svcs : [];
-        
-        // สถิติ: ไม่นับรายการที่เป็นประกัน
-        const hasRealHaircut = currentSvcs.some(s => s && !extraSvcs.includes(s)) && r.type !== 'GUARANTEE'; 
-        
-        currentSvcs.forEach(s => {
-            if (!s || r.type === 'GUARANTEE') return; 
-            stats[s] = (stats[s] || 0) + 1;
-        });
-        if (hasRealHaircut) {
-            stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
+
+        // --- จุดสำคัญ: ถ้านับเป็นประกัน หรือ วันหยุด "ห้าม" เก็บสถิติและห้ามนับหัวตัด ---
+        if (r.type !== 'GUARANTEE' && r.type !== 'HOLIDAY') { 
+            const hasRealHaircut = currentSvcs.some(s => s && !extraSvcs.includes(s));
+            currentSvcs.forEach(s => {
+                if (s) stats[s] = (stats[s] || 0) + 1;
+            });
+            if (hasRealHaircut) {
+                stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
+            }
         }
 
         const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
@@ -708,39 +708,39 @@ function renderDay() {
                     <b style="font-size:16px; display:block; color:#1e293b;">
                         <span style="font-size:14px;">${payIcon}</span> ฿${p}${t ? ` <span style="color:#be185d;">(+${t})</span>` : ''}
                     </b>
-                    <span style="font-size:11px; font-weight:700; color:#ef4444; cursor:pointer;" onclick="delRec(${r.id})">
-                        ลบ <i class="fas fa-trash-alt"></i>
-                    </span>
+                    <span style="font-size:11px; font-weight:700; color:#ef4444; cursor:pointer;" onclick="delRec(${r.id})">ลบ</span>
                 </div>
             </div>
         </div>`;
     });
 
-    // 4. คำนวณส่วนแบ่ง
+    // 4. คำนวณรายได้ช่าง/ร้าน
     const bEarn = isHoliday ? 0 : Math.max(tot * (conf.perc / 100), conf.guar) + tips;
     const sEarn = isHoliday ? 0 : tot - (bEarn - tips);
     const settle = isHoliday ? 0 : cash - bEarn;
 
-    // 5. อัปเดตการแสดงผล Card
+    // 5. อัปเดตการแสดงผล (แก้เรื่องเลข 1)
     if($("dTotal")) $("dTotal").innerText = tot.toLocaleString();
     if($("dTrans")) $("dTrans").innerText = trans.toLocaleString();
     if($("dCash")) $("dCash").innerText = cash.toLocaleString();
     if($("dBarber")) $("dBarber").innerText = Math.floor(bEarn).toLocaleString();
     if($("dShop")) $("dShop").innerText = Math.floor(sEarn).toLocaleString();
+    
+    // ตรงนี้จะขึ้น 0 คนแน่นอน ถ้าเป็นวันหยุดหรือวันประกัน
     if($("dCounts")) $("dCounts").innerText = isHoliday ? "🏖️ วันหยุด" : `ลูกค้า: ${today.length} คน`;
 
-    // 6. สถิติบริการ
+    // 6. แสดงสถิติ (ตัดผมจะขึ้น 0 ถ้าเป็นประกัน)
     let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:10px;">`;
     const priority = ["ตัดผม", "เด็ก"];
     priority.forEach(k => { if (stats[k]) sH += `<span style="background:#4338ca;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${k}: ${stats[k]}</span>`; });
     for (let s in stats) { if (!priority.includes(s)) sH += `<span style="background:#64748b;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${s}: ${stats[s]}</span>`; }
     if($("dServiceStats")) $("dServiceStats").innerHTML = sH + `</div>`;
 
-    // 7. แถบสถานะและปุ่มส่งข้อมูล
+    // 7. แถบสถานะจ่ายเงิน
     let txt = "", statusColor = "", icon = "";
     if (isHoliday) { 
         txt = "วันหยุด"; statusColor = "#1e40af"; icon = "🏖️"; 
-    } else if (tot === 0) { 
+    } else if (tot === 0 || today.length === 0) { // เพิ่มเงื่อนไขเช็คประกัน
         txt = "ร้านจ่ายประกัน"; statusColor = "#0369a1"; icon = "🛡️"; 
     } else if (settle > 0) { 
         txt = `ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`; statusColor = "#b91c1c"; icon = "👨‍🎨"; 
@@ -755,15 +755,14 @@ function renderDay() {
         actionBox.style.display = "flex";
         actionBox.style.gap = "10px";
         actionBox.innerHTML = `
-            <div id="settleBar" style="flex:8; height:55px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; border-radius:18px; font-weight:800; font-size:14px; color:${statusColor}; border:1px solid #e2e8f0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+            <div id="settleBar" style="flex:8; height:55px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; border-radius:18px; font-weight:800; font-size:14px; color:${statusColor}; border:1px solid #e2e8f0;">
                 <span style="margin-right:8px; font-size:18px;">${icon}</span> ${txt}
             </div>
-            <button onclick="saveAndGo('${dInp}', ${tot})" style="flex:2.2; height:55px; background:#2563eb; color:#fff; border-radius:18px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 15px rgba(37, 99, 235, 0.3);">
+            <button onclick="saveAndGo('${dInp}', ${tot})" style="flex:2.2; height:55px; background:#2563eb; color:#fff; border-radius:18px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
                 <i class="fas fa-paper-plane"></i>
             </button>`;
     }
 
-    // 8. รายการด้านล่าง
     const dList = document.getElementById("dailyList");
     if (dList) {
         dList.innerHTML = `
