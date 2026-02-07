@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.0222222 </title>
+    <title>Barber Note Pro V.02232 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -531,8 +531,35 @@ function handleInsurance() {
         saveDB(); speak(`เปิดระบบประกัน ${g} บาท เรียบร้อย`); alert("✅ เปิดระบบประกันเรียบร้อย"); renderDay();
     }
 }
- function handleHoliday(){const d=$("dateInp").value;if(!d)return alert("เลือกวันที่ก่อน");if(confirm(`ยืนยันบันทึกวันที่ ${d} เป็น "วันหยุด"?`)){db.push({id:Date.now(),date:d,time:"00:00",svcs:["🏖️ วันหยุด"],price:0,pay:"N/A",type:"HOLIDAY"});saveDB();const m=new SpeechSynthesisUtterance("บันทึกวันหยุดเรียบร้อย");m.lang='th-TH';if(conf.voice==='male'){const v=window.speechSynthesis.getVoices().find(x=>x.name.includes('Male')||x.name.includes('Google'));if(v)m.voice=v}window.speechSynthesis.speak(m);alert("🏖️ บันทึกวันหยุดเรียบร้อย");renderDay()}}   
-function openSettings() {
+function handleHoliday(){
+    const d=$("dateInp").value;
+    if(!d) return alert("เลือกวันที่ก่อน");
+    
+    if(confirm(`ยืนยันบันทึกวันที่ ${d} เป็น "วันหยุด"?`)){
+        // เพิ่ม property off: true เข้าไปด้วยเพื่อให้ฟังก์ชันรายงานอื่นๆ ตรวจสอบได้ง่ายขึ้น
+        db.push({
+            id: Date.now(),
+            date: d,
+            time: "00:00",
+            svcs: ["🏖️ วันหยุด"],
+            price: 0,
+            pay: "N/A",
+            type: "HOLIDAY",
+            off: true  // <--- เพิ่มบรรทัดนี้
+        });
+        
+        saveDB();
+        
+        // ส่วนของเสียงพูด (คงเดิมไว้)
+        const m = new SpeechSynthesisUtterance("บันทึกวันหยุดเรียบร้อย");
+        m.lang = 'th-TH';
+        window.speechSynthesis.speak(m);
+        
+        alert("🏖️ บันทึกวันหยุดเรียบร้อย");
+        renderDay();
+    }
+}
+     function openSettings() {
     if ($("setShop"))  $("setShop").value  = conf.shop  || "";
     if ($("setTheme")) $("setTheme").value = conf.theme || "light";
     if ($("setVoice")) $("setVoice").value = conf.voice || "female";
@@ -750,10 +777,14 @@ if (dList) {
     }
 }
 function saveAndGo(date, total) {
-    const todayData = db.filter(r => r.date === date && r.type === 'SERVICE');
-    const isHoliday = db.some(r => r.date === date && r.type === 'HOLIDAY');
+    // 1. ดึงข้อมูลทั้งหมดของวันนี้ (รวมทั้ง SERVICE และ HOLIDAY)
+    const allToday = db.filter(r => r.date === date);
+    const todayData = allToday.filter(r => r.type === 'SERVICE');
+    const isHoliday = allToday.some(r => r.type === 'HOLIDAY');
+
     let cash = 0, trans = 0, tips = 0, count = 0, stats = {};
     const extraSvcs = ["โกนหนวด", "กันหน้า", "สระผม"];
+
     todayData.forEach(r => {
         const p = Number(r.price) || 0, t = Number(r.tip) || 0;
         tips += t;
@@ -763,14 +794,44 @@ function saveAndGo(date, total) {
         if (isRealCut) count++;
         svcs.forEach(s => { if(s) stats[s] = (stats[s] || 0) + 1; });
     });
+
+    // 2. คำนวณรายได้ (ถ้าเป็นวันหยุดให้เป็น 0 ทั้งหมด)
     const bEarn = isHoliday ? 0 : Math.max(total * (conf.perc / 100), conf.guar) + tips;
     const settle = isHoliday ? 0 : cash - bEarn;
-    const idx = archives.findIndex(a => a.date === date);
-    const data = {date,total: Number(total),cash,trans,tips,barber: Math.floor(bEarn),shop: total - (bEarn - tips),settle,count,stats,details: todayData };    
-    if (idx > -1) {account.balance = (Number(account.balance) || 0) + (settle - (archives[idx].settle || 0));archives[idx] = data;
-    } else {account.balance = (Number(account.balance) || 0) + settle;archives.push(data);}
-    db = db.filter(r => r.date !== date);save();alert("✅ บันทึกยอดเรียบร้อย!");go(3);}
 
+    const idx = archives.findIndex(a => a.date === date);
+
+    // 3. เก็บข้อมูล data โดยเพิ่ม flag 'off' หรือ 'type' เพื่อให้รายงานดึงไปใช้ได้
+    const data = {
+        date,
+        total: Number(total),
+        cash,
+        trans,
+        tips,
+        barber: Math.floor(bEarn),
+        shop: isHoliday ? 0 : total - (bEarn - tips),
+        settle,
+        count,
+        stats,
+        details: allToday, // เก็บข้อมูลทั้งหมด (รวมรายการวันหยุดด้วย)
+        off: isHoliday,     // ส่งค่าไปให้รายงานรายเดือนนับวันหยุด
+        type: isHoliday ? "HOLIDAY" : "WORK"
+    };    
+
+    if (idx > -1) {
+        account.balance = (Number(account.balance) || 0) + (settle - (archives[idx].settle || 0));
+        archives[idx] = data;
+    } else {
+        account.balance = (Number(account.balance) || 0) + settle;
+        archives.push(data);
+    }
+
+    // ล้างข้อมูลใน db เฉพาะของวันที่ปิดยอด
+    db = db.filter(r => r.date !== date);
+    save(); 
+    alert("✅ บันทึกยอดเรียบร้อย!");
+    go(3);
+}
     function toggleAccHistory() {const w = $("accHistoryWrapper"); w.style.display = w.style.display === "none" ? "block" : "none";$("accHistory").innerHTML = account.logs.map(l => `<div style="padding:5px; border-bottom:1px solid #eee;">${l.date}: ฿${l.amount} (${l.note})</div>`).join('') || "ไม่มีประวัติ";}    
     function loadAccountHistory() {let h = account.logs.map(l => `<div style="padding:15px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;"><div><b style="font-size:14px; color:#1e293b;">${l.date}</b><br><small style="color:#64748b;">${l.note}</small></div><b style="color:${l.amount >= 0 ? '#16a34a' : '#dc2626'};">${l.amount >= 0 ? '+' : ''}฿${Math.abs(l.amount).toLocaleString()}</b></div> `).join('');if($("accHistory")) {$("accHistory").innerHTML = h || '<center style="padding:40px; color:#94a3b8;">ไม่มีประวัติการเคลียร์</center>';}}     
     function loadAccountStatus() {
@@ -1043,7 +1104,11 @@ function loadHistMonth() {
 
     // --- 🟢 2. Loop คำนวณข้อมูล ---
     filtered.forEach(day => {
-        if (day.off) { offDays++; return; }
+        // แบบใหม่: เช็คทั้ง property .off และเช็คจากรายการข้างใน (details) ว่ามีคำว่า "วันหยุด" ไหม
+        const isDayOff = day.off === true || 
+                 day.type === "HOLIDAY" || 
+                 (day.details && day.details.some(r => r.type === "HOLIDAY"));
+
 
         workDays++;
         const real = Number(day.barber) || 0;
