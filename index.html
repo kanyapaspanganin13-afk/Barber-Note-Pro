@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.188243 </title>
+    <title>Barber Note Pro V.18843 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -643,17 +643,25 @@ function saveSettings() {
  function updateDateDisplay(v){if(!v)return;const d=new Date(v);const el=$("dateDisplay");if(el)el.innerText=d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});if(typeof renderDay==="function")renderDay()}window.addEventListener('DOMContentLoaded',()=>{const i=$("dateInp"),t=new Date().toISOString().split('T')[0];if(i){i.value=t;updateDateDisplay(t)}});
  function selectPay(m) {payMethod = m; $("btnCash").className = `btn btn-pay ${m === 'Cash' ? 'active-cash' : ''}`;$("btnTrans").className = `btn btn-pay ${m === 'Trans' ? 'active-trans' : ''}`;}
 function renderDay() {
-   const dInp = $("dateInp").value;
+    const dInp = $("dateInp").value;
     const allRec = db.filter(r => r.date === dInp);
+    
+    // 1. เช็คสถานะวันหยุด
     const isHoliday = allRec.some(r => r.type === 'HOLIDAY');
-  const today = allRec.filter(r => r.type !== 'HOLIDAY' && r.type !== 'holiday');
-        r.type !== 'GUARANTEE' // 👈 เพิ่มตรงนี้เพื่อไม่ให้นับหัว
+    
+    // 2. กรองลูกค้า: ไม่เอาวันหยุด และไม่เอาประกันรายวันมานับจำนวนคน
+    const today = allRec.filter(r => 
+        r.type !== 'HOLIDAY' && 
+        r.type !== 'holiday' && 
+        r.type !== 'GUARANTEE'
     );
+
     const stats = {};
     const extraSvcs = ["โกนหนวด", "กันหน้า", "สระผม"];
     let tot = 0, trans = 0, cash = 0, tips = 0;
     let listHtml = "";
 
+    // 3. วนลูปคำนวณรายวัน
     today
     .slice()
     .sort((a,b) => a.time.localeCompare(b.time))
@@ -663,15 +671,20 @@ function renderDay() {
         tot += p;
         tips += t;
         (r.pay === 'Trans') ? trans += (p + t) : cash += p;
+        
         const currentSvcs = Array.isArray(r.svcs) ? r.svcs : [];
+        
+        // สถิติ: ไม่นับรายการที่เป็นประกัน
         const hasRealHaircut = currentSvcs.some(s => s && !extraSvcs.includes(s)) && r.type !== 'GUARANTEE'; 
+        
         currentSvcs.forEach(s => {
-            if (!s || r.type === 'GUARANTEE') return; // 👈 ถ้าเป็นประกัน ไม่ต้องเก็บสถิติบริการ
+            if (!s || r.type === 'GUARANTEE') return; 
             stats[s] = (stats[s] || 0) + 1;
         });
         if (hasRealHaircut) {
             stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
         }
+
         const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
         const payIcon = r.pay === 'Trans' ? '📱' : '💵';
 
@@ -703,26 +716,27 @@ function renderDay() {
         </div>`;
     });
 
+    // 4. คำนวณส่วนแบ่ง
     const bEarn = isHoliday ? 0 : Math.max(tot * (conf.perc / 100), conf.guar) + tips;
     const sEarn = isHoliday ? 0 : tot - (bEarn - tips);
     const settle = isHoliday ? 0 : cash - bEarn;
 
-    // --- ส่วนอัปเดต Card บน ---
-    if($("dTotal")) $("dTotal").innerText  = tot.toLocaleString();
-    if($("dTrans")) $("dTrans").innerText  = trans.toLocaleString();
-    if($("dCash")) $("dCash").innerText   = cash.toLocaleString();
+    // 5. อัปเดตการแสดงผล Card
+    if($("dTotal")) $("dTotal").innerText = tot.toLocaleString();
+    if($("dTrans")) $("dTrans").innerText = trans.toLocaleString();
+    if($("dCash")) $("dCash").innerText = cash.toLocaleString();
     if($("dBarber")) $("dBarber").innerText = Math.floor(bEarn).toLocaleString();
-    if($("dShop")) $("dShop").innerText   = Math.floor(sEarn).toLocaleString();
+    if($("dShop")) $("dShop").innerText = Math.floor(sEarn).toLocaleString();
     if($("dCounts")) $("dCounts").innerText = isHoliday ? "🏖️ วันหยุด" : `ลูกค้า: ${today.length} คน`;
 
-    // --- ส่วนสถิติ ---
+    // 6. สถิติบริการ
     let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:10px;">`;
     const priority = ["ตัดผม", "เด็ก"];
     priority.forEach(k => { if (stats[k]) sH += `<span style="background:#4338ca;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${k}: ${stats[k]}</span>`; });
     for (let s in stats) { if (!priority.includes(s)) sH += `<span style="background:#64748b;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${s}: ${stats[s]}</span>`; }
     if($("dServiceStats")) $("dServiceStats").innerHTML = sH + `</div>`;
 
-    // --- ส่วนคำนวณแถบสถานะและปุ่ม ---
+    // 7. แถบสถานะและปุ่มส่งข้อมูล
     let txt = "", statusColor = "", icon = "";
     if (isHoliday) { 
         txt = "วันหยุด"; statusColor = "#1e40af"; icon = "🏖️"; 
@@ -736,36 +750,31 @@ function renderDay() {
         txt = "ยอดพอดี"; statusColor = "#15803d"; icon = "✅"; 
     }
 
-   const silverBG = "#f1f5f9"; // สีเทาเงินสว่าง
-const btnBlue  = "#2563eb"; // สีน้ำเงิน Royal Blue ที่มึงชอบ
+    const actionBox = document.getElementById("settleBarContainer");
+    if (actionBox) {
+        actionBox.style.display = "flex";
+        actionBox.style.gap = "10px";
+        actionBox.innerHTML = `
+            <div id="settleBar" style="flex:8; height:55px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; border-radius:18px; font-weight:800; font-size:14px; color:${statusColor}; border:1px solid #e2e8f0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+                <span style="margin-right:8px; font-size:18px;">${icon}</span> ${txt}
+            </div>
+            <button onclick="saveAndGo('${dInp}', ${tot})" style="flex:2.2; height:55px; background:#2563eb; color:#fff; border-radius:18px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 15px rgba(37, 99, 235, 0.3);">
+                <i class="fas fa-paper-plane"></i>
+            </button>`;
+    }
 
-const actionBox = document.getElementById("settleBarContainer");
-if (actionBox) {
-    actionBox.style.display = "flex";
-    actionBox.style.gap = "10px";
-    actionBox.innerHTML = `
-        <div id="settleBar" style="flex:8; height:55px; background:${silverBG}; display:flex; align-items:center; justify-content:center; border-radius:18px; font-weight:800; font-size:14px; color:${statusColor}; border:1px solid #e2e8f0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
-            <span style="margin-right:8px; font-size:18px;">${icon}</span> ${txt}
-        </div>
-        
-        <button onclick="saveAndGo('${dInp}', ${tot})" style="flex:2.2; height:55px; background:${btnBlue}; color:#fff; border-radius:18px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 15px rgba(37, 99, 235, 0.3);">
-            <i class="fas fa-paper-plane"></i>
-        </button>
-    `;
-}
-    // --- ส่วนแสดงรายการด้านล่าง (สำคัญ!) ---
-   const dList = document.getElementById("dailyList");
-if (dList) {
-    dList.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
-            <b style="font-size:16px; color: var(--text);">📋 รายงานวันนี้:</b>
-            <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()"></i>
-        </div>
-
+    // 8. รายการด้านล่าง
+    const dList = document.getElementById("dailyList");
+    if (dList) {
+        dList.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
+                <b style="font-size:16px;">📋 รายงานวันนี้:</b>
+                <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()"></i>
+            </div>
             ${isHoliday ? `<center style='padding:40px; color:#64748b;'>🏖️ วันหยุด</center>` : (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>")}
         `;
     }
-}  
+}
     function clearDailyData() {
     const confirmDelete = confirm("⚠️ คุณต้องการลบข้อมูลรายงานของวันนี้ทั้งหมดใช่หรือไม่? (ข้อมูลที่ลบแล้วจะไม่สามารถเรียกคืนได้)");
     
