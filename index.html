@@ -1238,9 +1238,18 @@ function loadHistMonth() {
                 </div>
                 ${renderStats(hairStats, "#bef264")}
             </div>
-        </div>`
+
+            <div style="padding-bottom:20px;">
+                <div style="font-size:15px; font-weight:800; color:#38bdf8; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+                    <div style="width:4px; height:16px; background:#38bdf8; border-radius:2px;"></div> บริการยอดนิยม
+                </div>
+                ${renderStats(serviceStats, "#38bdf8")}
+            </div>
+        </div>
+        `
     );
 }
+
  function topN(obj, n = 5) {
   if (!obj || Object.keys(obj).length === 0) return [];
   return Object.entries(obj)
