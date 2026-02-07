@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.11943 </title>
+    <title>Barber Note Pro V.11043 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -740,10 +740,13 @@ function renderDay() {
     if($("dServiceStats")) $("dServiceStats").innerHTML = sH + `</div>`;
 
     // 7. แถบสถานะจ่ายเงิน
+    // 7. แถบสถานะจ่ายเงิน
     let txt = "", statusColor = "", icon = "";
     if (isHoliday) { 
         txt = "วันหยุด"; statusColor = "#1e40af"; icon = "🏖️"; 
-    } else if (tot === 0 || today.length === 0) { // เพิ่มเงื่อนไขเช็คประกัน
+    } else if (allRec.length === 0) { // แก้ตรงนี้: เช็คว่าไม่มีรายการเลยจริง ๆ
+        txt = "รอข้อมูล..."; statusColor = "#64748b"; icon = "📝";
+    } else if (tot === 0) { 
         txt = "ร้านจ่ายประกัน"; statusColor = "#0369a1"; icon = "🛡️"; 
     } else if (settle > 0) { 
         txt = `ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`; statusColor = "#b91c1c"; icon = "👨‍🎨"; 
@@ -752,7 +755,6 @@ function renderDay() {
     } else { 
         txt = "ยอดพอดี"; statusColor = "#15803d"; icon = "✅"; 
     }
-
     const actionBox = document.getElementById("settleBarContainer");
     if (actionBox) {
         actionBox.style.display = "flex";
