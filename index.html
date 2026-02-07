@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.42543 </title>
+    <title>Barber Note Pro V.72543 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -649,7 +649,7 @@ function renderDay() {
     // 1. เช็ควันหยุดก่อน (ประกาศครั้งเดียวพอครับ)
     const isHoliday = allRec.some(r => r.type === 'HOLIDAY');
 
-    // 2. ถ้าเป็นวันหยุด สั่งจบงานทันที เลข 1 จะไม่โผล่แน่นอน
+   // 2. ถ้าเป็นวันหยุด ให้แสดงผลและปุ่มส่งข้อมูลด้วย
     if (isHoliday) {
         if($("dCounts")) $("dCounts").innerText = "🏖️ วันหยุด";
         if($("dTotal")) $("dTotal").innerText = "0";
@@ -659,22 +659,24 @@ function renderDay() {
         if($("dShop")) $("dShop").innerText = "0";
         if($("dServiceStats")) $("dServiceStats").innerHTML = "";
         
+        // --- คืนค่าปุ่มส่งข้อมูลกลับมา ---
+        const actionBox = document.getElementById("settleBarContainer");
+        if (actionBox) {
+            actionBox.innerHTML = `
+                <div style="flex:8; height:55px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; border-radius:18px; font-weight:800; color:#1e40af; border:1px solid #e2e8f0;">
+                    🏖️ วันหยุด (บันทึกปิดวันได้ปกติ)
+                </div>
+                <button onclick="saveAndGo('${dInp}', 0)" style="flex:2.2; height:55px; background:#2563eb; color:#fff; border-radius:18px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 15px rgba(37, 99, 235, 0.3);">
+                    <i class="fas fa-paper-plane"></i>
+                </button>`;
+        }
+
         const dList = document.getElementById("dailyList");
         if (dList) {
             dList.innerHTML = `<div style="text-align:center; padding:40px; color:#64748b; background:#f1f5f9; border-radius:15px; margin-top:10px;">🏖️ วันนี้เป็นวันหยุด</div>`;
         }
-        
-        // แสดงแถบวันหยุดด้านล่าง
-        const actionBox = document.getElementById("settleBarContainer");
-        if (actionBox) {
-            actionBox.innerHTML = `
-                <div style="flex:1; height:55px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; border-radius:18px; font-weight:800; color:#1e40af; border:1px solid #e2e8f0;">
-                    🏖️ วันหยุด
-                </div>`;
-        }
-        return; // จบการทำงานตรงนี้เลยครับ
+        return; // จบการทำงานหลังจากสร้างปุ่มเสร็จ
     }
-
     // 3. ถ้าไม่ใช่วันหยุด (ส่วนนี้จะเริ่มทำงาน)
     const today = allRec.filter(r => r.type !== 'HOLIDAY' && (Number(r.price) > 0 || (r.svcs && r.svcs.length > 0)));
     
