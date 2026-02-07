@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.2543 </title>
+    <title>Barber Note Pro V.25243 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -645,46 +645,17 @@ function saveSettings() {
 function renderDay() {
     const dInp = $("dateInp").value;
     const allRec = db.filter(r => r.date === dInp);
-    
-    // 1. เช็ควันหยุดก่อน (ประกาศครั้งเดียวพอครับ)
+    const today = allRec.filter(r => r.type !== 'HOLIDAY');
     const isHoliday = allRec.some(r => r.type === 'HOLIDAY');
-
-   // 2. ถ้าเป็นวันหยุด ให้แสดงผลและปุ่มส่งข้อมูลด้วย
-   if (isHoliday) {
-        if($("dCounts")) $("dCounts").innerText = "🏖️ วันหยุด";
-        if($("dTotal")) $("dTotal").innerText = "0";
-        if($("dTrans")) $("dTrans").innerText = "0";
-        if($("dCash")) $("dCash").innerText = "0";
-        if($("dBarber")) $("dBarber").innerText = "0";
-        if($("dShop")) $("dShop").innerText = "0";
-        if($("dServiceStats")) $("dServiceStats").innerHTML = "";
-        // --- คืนค่าปุ่มส่งข้อมูลกลับมา ---
-        const actionBox = document.getElementById("settleBarContainer");
-        if (actionBox) {
-            actionBox.innerHTML = `
-                <div style="flex:8; height:55px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; border-radius:18px; font-weight:800; color:#1e40af; border:1px solid #e2e8f0;">
-                    🏖️ วันหยุด (บันทึกปิดวันได้ปกติ)
-                </div>
-                <button onclick="saveAndGo('${dInp}', 0)" style="flex:2.2; height:55px; background:#2563eb; color:#fff; border-radius:18px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 15px rgba(37, 99, 235, 0.3);">
-                    <i class="fas fa-paper-plane"></i>
-                </button>`;
-        }
-
-        const dList = document.getElementById("dailyList");
-        if (dList) {
-            dList.innerHTML = `<div style="text-align:center; padding:40px; color:#64748b; background:#f1f5f9; border-radius:15px; margin-top:10px;">🏖️ วันนี้เป็นวันหยุด</div>`;
-        }
-        return; // จบการทำงานหลังจากสร้างปุ่มเสร็จ
-    }
-    // 3. ถ้าไม่ใช่วันหยุด (ส่วนนี้จะเริ่มทำงาน)
-    const today = allRec.filter(r => r.type !== 'HOLIDAY' && (Number(r.price) > 0 || (r.svcs && r.svcs.length > 0)));
-    
     const stats = {};
     const extraSvcs = ["โกนหนวด", "กันหน้า", "สระผม"];
     let tot = 0, trans = 0, cash = 0, tips = 0;
     let listHtml = "";
 
-    today.slice().sort((a,b) => a.time.localeCompare(b.time)).forEach((r, i) => {
+    today
+    .slice()
+    .sort((a,b) => a.time.localeCompare(b.time))
+    .forEach((r, i) => {
         const p = Number(r.price) || 0;
         const t = Number(r.tip) || 0;
         tot += p;
@@ -696,15 +667,20 @@ function renderDay() {
             if (!s) return;
             stats[s] = (stats[s] || 0) + 1;
         });
-        if (hasRealHaircut) stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
 
+        if (hasRealHaircut) {
+            stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
+        }
         const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
         const payIcon = r.pay === 'Trans' ? '📱' : '💵';
 
-        listHtml += `<div class="history-row" style="padding:15px; border-bottom:1px solid #f1f5f9; background:#fff;">
+        listHtml += `
+        <div class="history-row" style="padding:15px; border-bottom:1px solid #f1f5f9; background:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div style="display:flex; align-items:center; gap:12px;">
-                    <div style="width:28px; height:28px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#64748b; flex-shrink:0;">${i+1}</div>
+                    <div style="width:28px; height:28px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#64748b; flex-shrink:0;">
+                        ${i+1}
+                    </div>
                     <div style="display:flex; flex-direction:column;">
                         <div style="font-weight:800; font-size:14px; color:#1e293b; margin-bottom:2px;">
                             <span style="color:#64748b; font-weight:500;">[${timeShow}]</span> ${currentSvcs.join(' + ')}
@@ -718,65 +694,77 @@ function renderDay() {
                     <b style="font-size:16px; display:block; color:#1e293b;">
                         <span style="font-size:14px;">${payIcon}</span> ฿${p}${t ? ` <span style="color:#be185d;">(+${t})</span>` : ''}
                     </b>
-                    <span style="font-size:11px; font-weight:700; color:#ef4444; cursor:pointer;" onclick="delRec(${r.id})">ลบ <i class="fas fa-trash-alt"></i></span>
+                    <span style="font-size:11px; font-weight:700; color:#ef4444; cursor:pointer;" onclick="delRec(${r.id})">
+                        ลบ <i class="fas fa-trash-alt"></i>
+                    </span>
                 </div>
             </div>
         </div>`;
     });
 
-    // คำนวณรายได้ (ไม่ต้องเช็ค isHoliday แล้ว เพราะเรากรองออกข้างบนแล้ว)
-    const bEarn = Math.max(tot * (conf.perc / 100), conf.guar) + tips;
-    const sEarn = tot - (bEarn - tips);
-    const settle = cash - bEarn;
+    const bEarn = isHoliday ? 0 : Math.max(tot * (conf.perc / 100), conf.guar) + tips;
+    const sEarn = isHoliday ? 0 : tot - (bEarn - tips);
+    const settle = isHoliday ? 0 : cash - bEarn;
 
-    // แสดงสถิติ
+    // --- ส่วนอัปเดต Card บน ---
+    if($("dTotal")) $("dTotal").innerText  = tot.toLocaleString();
+    if($("dTrans")) $("dTrans").innerText  = trans.toLocaleString();
+    if($("dCash")) $("dCash").innerText   = cash.toLocaleString();
+    if($("dBarber")) $("dBarber").innerText = Math.floor(bEarn).toLocaleString();
+    if($("dShop")) $("dShop").innerText   = Math.floor(sEarn).toLocaleString();
+    if($("dCounts")) $("dCounts").innerText = isHoliday ? "🏖️ วันหยุด" : `ลูกค้า: ${today.length} คน`;
+
+    // --- ส่วนสถิติ ---
     let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:10px;">`;
     const priority = ["ตัดผม", "เด็ก"];
     priority.forEach(k => { if (stats[k]) sH += `<span style="background:#4338ca;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${k}: ${stats[k]}</span>`; });
     for (let s in stats) { if (!priority.includes(s)) sH += `<span style="background:#64748b;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${s}: ${stats[s]}</span>`; }
     if($("dServiceStats")) $("dServiceStats").innerHTML = sH + `</div>`;
 
-    // อัปเดต Card
-    if($("dTotal"))  $("dTotal").innerText  = tot.toLocaleString();
-    if($("dTrans"))  $("dTrans").innerText  = trans.toLocaleString();
-    if($("dCash"))   $("dCash").innerText   = cash.toLocaleString();
-    if($("dBarber")) $("dBarber").innerText = Math.floor(bEarn).toLocaleString();
-    if($("dShop"))   $("dShop").innerText   = Math.floor(sEarn).toLocaleString();
-    if($("dCounts")) $("dCounts").innerText = `ลูกค้า: ${today.length} คน`;
-
-    // แถบสถานะด้านล่าง
+    // --- ส่วนคำนวณแถบสถานะและปุ่ม ---
     let txt = "", statusColor = "", icon = "";
-    if (tot === 0) { txt = "ร้านจ่ายประกัน"; statusColor = "#0369a1"; icon = "🛡️"; }
-    else if (settle > 0) { txt = `ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`; statusColor = "#b91c1c"; icon = "👨‍🎨"; }
-    else if (settle < 0) { txt = `ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; statusColor = "#4338ca"; icon = "🏠"; }
-    else { txt = "ยอดพอดี"; statusColor = "#15803d"; icon = "✅"; }
+    if (isHoliday) { 
+        txt = "วันหยุด"; statusColor = "#1e40af"; icon = "🏖️"; 
+    } else if (tot === 0) { 
+        txt = "ร้านจ่ายประกัน"; statusColor = "#0369a1"; icon = "🛡️"; 
+    } else if (settle > 0) { 
+        txt = `ช่างคืนร้าน ฿${Math.floor(settle).toLocaleString()}`; statusColor = "#b91c1c"; icon = "👨‍🎨"; 
+    } else if (settle < 0) { 
+        txt = `ร้านคืนช่าง ฿${Math.floor(Math.abs(settle)).toLocaleString()}`; statusColor = "#4338ca"; icon = "🏠"; 
+    } else { 
+        txt = "ยอดพอดี"; statusColor = "#15803d"; icon = "✅"; 
+    }
 
-    const actionBox = document.getElementById("settleBarContainer");
-        if (actionBox) {
-            actionBox.style.display = "flex"; // กำหนดให้เรียงแนวนอน
-            actionBox.style.gap = "10px";      // เว้นระยะห่างระหว่างแถบกับปุ่ม
-            actionBox.innerHTML = `
-                <div style="flex:8; height:55px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; border-radius:18px; font-weight:800; font-size:14px; color:#1e40af; border:1px solid #e2e8f0;">
-                    <span style="margin-right:8px; font-size:18px;">🏖️</span> วันหยุด (บันทึกปิดวันได้ปกติ)
-                </div>
-                
-                <button onclick="saveAndGo('${dInp}', 0)" style="flex:2.2; height:55px; background:#2563eb; color:#fff; border-radius:18px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 15px rgba(37, 99, 235, 0.3);">
-                    <i class="fas fa-paper-plane"></i>
-                </button>`;
-        }
+   const silverBG = "#f1f5f9"; // สีเทาเงินสว่าง
+const btnBlue  = "#2563eb"; // สีน้ำเงิน Royal Blue ที่มึงชอบ
+
+const actionBox = document.getElementById("settleBarContainer");
+if (actionBox) {
+    actionBox.style.display = "flex";
+    actionBox.style.gap = "10px";
+    actionBox.innerHTML = `
+        <div id="settleBar" style="flex:8; height:55px; background:${silverBG}; display:flex; align-items:center; justify-content:center; border-radius:18px; font-weight:800; font-size:14px; color:${statusColor}; border:1px solid #e2e8f0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+            <span style="margin-right:8px; font-size:18px;">${icon}</span> ${txt}
+        </div>
+        
+        <button onclick="saveAndGo('${dInp}', ${tot})" style="flex:2.2; height:55px; background:${btnBlue}; color:#fff; border-radius:18px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 15px rgba(37, 99, 235, 0.3);">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    `;
+}
+    // --- ส่วนแสดงรายการด้านล่าง (สำคัญ!) ---
    const dList = document.getElementById("dailyList");
-        if (dList) {
-            dList.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
-                    <b style="font-size:16px;">📋 รายงานวันนี้:</b>
-                    <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()"></i>
-                </div>
-                <div style="text-align:center; padding:40px; color:#64748b; background:#f1f5f9; border-radius:15px; margin-top:10px;">
-                    <span style="font-size:30px;">🏖️</span><br><b>วันนี้เป็นวันหยุด</b>
-                </div>`;
-        }
-        return; 
-    }  
+if (dList) {
+    dList.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
+            <b style="font-size:16px; color: var(--text);">📋 รายงานวันนี้:</b>
+            <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()"></i>
+        </div>
+
+            ${isHoliday ? `<center style='padding:40px; color:#64748b;'>🏖️ วันหยุด</center>` : (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>")}
+        `;
+    }
+}  
     function clearDailyData() {
     const confirmDelete = confirm("⚠️ คุณต้องการลบข้อมูลรายงานของวันนี้ทั้งหมดใช่หรือไม่? (ข้อมูลที่ลบแล้วจะไม่สามารถเรียกคืนได้)");
     
