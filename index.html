@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.2229 </title>
+    <title>Barber Note Pro V.22329 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -704,8 +704,8 @@ allRec
         if (isHoliday) {
             $("dCounts").innerText = "🏖️ วันหยุด";
         } else if (realCustomerCount === 0 && allRec.length > 0) {
-            $("dCounts").innerText = "🛡️ งานประกัน/แก้ไข (ไม่นับคน)";
-        } else if (allRec.length === 0) {
+            $("dCounts").innerText = "🛡️ ประกันรายได้";
+        } else if (allRec.length === 0 && allRec.length > 0) {
             $("dCounts").innerText = "ไม่มีข้อมูล";
         } else {
             $("dCounts").innerText = `ลูกค้า: ${realCustomerCount} คน`;
