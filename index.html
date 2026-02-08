@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.01 </title>
+    <title>Barber Note Pro V.02 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -200,18 +200,35 @@ nav {
                     style="width: 100%; height: 85px !important; background: #ccfbf1 !important; border-radius: 20px !important; font-size: 32px !important; font-weight: 900 !important; color: #0f766e !important; border: none !important;">
             </div>
             
-            <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;">
-                <button id="btnCash" onclick="selectPay('Cash')" style="height:75px; border-radius:22px; border:none; background:linear-gradient(135deg, #10b981, #059669); color:#fff; font-weight:900; font-size:22px; box-shadow:0 8px 20px rgba(16,185,129,0.3); display:flex; align-items:center; justify-content:center; gap:10px;">
-                    <i class="fas fa-money-bill-wave"></i> เงินสด
-                </button>
-                <button id="btnTrans" onclick="selectPay('Trans')" style="height:75px; border-radius:22px; border:none; background:linear-gradient(135deg, #6366f1, #4338ca); color:#fff; font-weight:900; font-size:22px; box-shadow:0 8px 20px rgba(99,102,241,0.3); display:flex; align-items:center; justify-content:center; gap:10px;">
-                    <i class="fas fa-qrcode"></i> สแกนจ่าย
-                </button>
-            </div>
-            <button class="btn-main" onclick="handleSave(event)" style="width:100%; height:90px; border-radius:28px; background:linear-gradient(135deg, #4338ca, #3730a3); color:#fff; border:none; box-shadow:0 15px 35px rgba(67,56,202,0.4); display:flex; align-items:center; justify-content:center; gap:15px;">
-                <i class="fas fa-save" style="font-size: 38px;"></i>
-                <span style="font-size: 32px; font-weight: 900; letter-spacing:1px;">บันทึกข้อมูล</span>
-            </button>  
+           <div class="grid-3" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-bottom:15px;">
+    <button id="btnCash" onclick="setPaymentType('Cash')" style="height:70px; border-radius:18px; border:none; background:linear-gradient(135deg, #10b981, #059669); color:#fff; font-weight:700; font-size:18px; box-shadow:0 4px 10px rgba(16,185,129,0.2);">
+        <i class="fas fa-money-bill-wave"></i><br>เงินสด
+    </button>
+    <button id="btnTrans" onclick="setPaymentType('Trans')" style="height:70px; border-radius:18px; border:none; background:linear-gradient(135deg, #6366f1, #4338ca); color:#fff; font-weight:700; font-size:18px; box-shadow:0 4px 10px rgba(99,102,241,0.2);">
+        <i class="fas fa-qrcode"></i><br>สแกนจ่าย
+    </button>
+    <button id="btnMix" onclick="setPaymentType('Mix')" style="height:70px; border-radius:18px; border:none; background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; font-weight:700; font-size:18px; box-shadow:0 4px 10px rgba(245,158,11,0.2);">
+        <i class="fas fa-wallet"></i><br>จ่ายผสม
+    </button>
+</div>
+
+<div id="mixPanel" style="display:none; background:#f8fafc; padding:15px; border-radius:20px; border:2px dashed #cbd5e1; margin-bottom:20px;">
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <div>
+            <label style="font-size:14px; color:#64748b;">ระบุเงินสด:</label>
+            <input type="number" id="mixCash" style="width:100%; height:45px; border-radius:12px; border:1px solid #ddd; text-align:center; font-size:18px;" placeholder="0">
+        </div>
+        <div>
+            <label style="font-size:14px; color:#64748b;">ระบุเงินโอน:</label>
+            <input type="number" id="mixTrans" style="width:100%; height:45px; border-radius:12px; border:1px solid #ddd; text-align:center; font-size:18px;" placeholder="0">
+        </div>
+    </div>
+</div>
+
+<button class="btn-main" onclick="handleSave(event)" style="width:100%; height:90px; border-radius:28px; background:linear-gradient(135deg, #4338ca, #3730a3); color:#fff; border:none; box-shadow:0 15px 35px rgba(67,56,202,0.4); display:flex; align-items:center; justify-content:center; gap:15px;">
+    <i class="fas fa-save" style="font-size: 38px;"></i>
+    <span style="font-size: 32px; font-weight: 900; letter-spacing:1px;">บันทึกข้อมูล</span>
+</button>
             </div>
             <div id="p2" class="page" style="max-width:480px; margin:0 auto; padding: 15px; padding-bottom: 100px;">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
@@ -498,18 +515,62 @@ nav {
             function closeHistoryModal() { 
                 $("historyModal").style.display = "none"; 
             }
-              function handleSave() {
-                const p = parseInt($("priceInp").value), t = parseInt($("tipInp").value) || 0;
-                if (!p || !payMethod) return alert("ใส่ราคาและเลือกวิธีจ่ายก่อน!");
-                const start = $("tStart").value || new Date().toTimeString().slice(0, 5);
-                const rec = {
-                    id: Date.now(), date: $("dateInp").value, time: start, endTime: $("tEnd").value || addMinutes(start, 30),
-                    svcs: [$("hairStyle").value, $("extra1").value, $("extra2").value].filter(Boolean),
-                    hair: $("hairStyle").value, price: p, tip: t, pay: payMethod, type: "SERVICE"
-                };
-                db.push(rec); saveDB(); renderDay(); 
-                ["priceInp", "tipInp", "tStart", "tEnd"].forEach(id => $(id).value = ""); 
-            }
+             function handleSave() {
+    const p = parseInt($("priceInp").value), t = parseInt($("tipInp").value) || 0;
+    if (!p || !payMethod) return alert("กรุณาใส่ราคาและเลือกวิธีจ่ายเงินก่อนครับ!");
+
+    const start = $("tStart").value || new Date().toTimeString().slice(0, 5);
+    
+    // เตรียมตัวแปรสำหรับแยกยอดเงิน
+    let cashAmt = 0;
+    let transAmt = 0;
+
+    if (payMethod === 'Mix') {
+        // กรณีจ่ายผสม: ดึงค่าจากช่อง Input ที่เราสร้างขึ้นใหม่
+        cashAmt = parseInt($("mixCash").value) || 0;
+        transAmt = parseInt($("mixTrans").value) || 0;
+
+        // ตรวจสอบเบื้องต้นว่ายอดที่กรอก รวมกันได้เท่ากับราคาค่าบริการหรือไม่
+        if (cashAmt + transAmt !== p + t) {
+            const confirmMsg = `ยอดเงินที่ระบุ (สด ${cashAmt} + โอน ${transAmt} = ${cashAmt + transAmt}) \nไม่ตรงกับยอดรวมบิล (${p + t}) \nคุณยังต้องการบันทึกข้อมูลนี้ใช่ไหมครับ?`;
+            if (!confirm(confirmMsg)) return;
+        }
+    } else if (payMethod === 'Cash') {
+        cashAmt = p + t; // จ่ายสดทั้งหมด
+    } else {
+        transAmt = p + t; // โอนทั้งหมด
+    }
+
+    const rec = {
+        id: Date.now(), 
+        date: $("dateInp").value, 
+        time: start, 
+        endTime: $("tEnd").value || addMinutes(start, 30),
+        svcs: [$("hairStyle").value, $("extra1").value, $("extra2").value].filter(Boolean),
+        hair: $("hairStyle").value, 
+        price: p, 
+        tip: t, 
+        pay: payMethod, 
+        payCash: cashAmt,   // บันทึกแยกเงินสด
+        payTrans: transAmt, // บันทึกแยกเงินโอน
+        type: "SERVICE"
+    };
+
+    // บันทึกข้อมูล
+    db.push(rec); 
+    saveDB(); 
+    renderDay(); 
+
+    // ล้างค่าในหน้าจอ (เพิ่มการล้างค่าในช่อง Mix ด้วย)
+    ["priceInp", "tipInp", "tStart", "tEnd", "mixCash", "mixTrans"].forEach(id => {
+        if($(id)) $(id).value = "";
+    });
+    
+    // ซ่อนแผง Mix หลังบันทึกสำเร็จ
+    if($("mixPanel")) $("mixPanel").style.display = 'none';
+    
+    alert("บันทึกข้อมูลเรียบร้อยแล้วครับ");
+}
             function handleInsurance() {
                 const d = $("dateInp").value || new Date().toISOString().split('T')[0], g = parseInt(conf.guar) || 0;
                 const speak = (t) => { const m = new SpeechSynthesisUtterance(t); m.lang = 'th-TH'; window.speechSynthesis.speak(m); };
@@ -580,7 +641,8 @@ nav {
                     document.head.appendChild(st);
                 }
             }
-            function saveSettings() {
+            
+     function saveSettings() {
     const shopName = $("setShop").value;
     const shopPerc = $("setPerc").value;
     const shopGuar = $("setGuar").value;
@@ -630,8 +692,32 @@ nav {
              function speak(txt) {if ('speechSynthesis' in window) {const msg = new SpeechSynthesisUtterance(txt); msg.lang = 'th-TH'; window.speechSynthesis.speak(msg);}}       
              function clearAllData(){if(confirm("ลบข้อมูลทั้งหมด?")){localStorage.clear();location.reload()}}
              function updateDateDisplay(v){if(!v)return;const d=new Date(v);const el=$("dateDisplay");if(el)el.innerText=d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});if(typeof renderDay==="function")renderDay()}window.addEventListener('DOMContentLoaded',()=>{const i=$("dateInp"),t=new Date().toISOString().split('T')[0];if(i){i.value=t;updateDateDisplay(t)}});
-             function selectPay(m) {payMethod = m; $("btnCash").className = `btn btn-pay ${m === 'Cash' ? 'active-cash' : ''}`;$("btnTrans").className = `btn btn-pay ${m === 'Trans' ? 'active-trans' : ''}`;}
-function renderDay() {
+            function selectPay(m) {
+    payMethod = m; // เก็บค่าประเภทการจ่ายเงิน
+
+    // จัดการ CSS Class ของปุ่ม (Cash / Trans / Mix)
+    $("btnCash").className = `btn btn-pay ${m === 'Cash' ? 'active-cash' : ''}`;
+    $("btnTrans").className = `btn btn-pay ${m === 'Trans' ? 'active-trans' : ''}`;
+    
+    // ตรวจสอบว่ามีปุ่ม Mix หรือไม่ (ถ้าคุณเพิ่มปุ่มที่ 3 ใน HTML)
+    if($("btnMix")) {
+        $("btnMix").className = `btn btn-pay ${m === 'Mix' ? 'active-mix' : ''}`;
+    }
+
+    // แสดงหรือซ่อนแผงกรอกยอดเงินแยก (กรณีจ่ายผสม)
+    const mixPanel = $("mixPanel");
+    if (mixPanel) {
+        if (m === 'Mix') {
+            mixPanel.style.display = 'block';
+            // ดึงยอดรวมปัจจุบันมาใส่ในช่องเงินโอนเป็นค่าเริ่มต้น เพื่อความรวดเร็วครับ
+            $("mixTrans").value = $("totalPrice") ? $("totalPrice").innerText : 0;
+            $("mixCash").value = 0;
+        } else {
+            mixPanel.style.display = 'none';
+        }
+    }
+}
+    function renderDay() {
     const dInp = $("dateInp").value;
     let allRec = db.filter(r => r.date === dInp);
     
@@ -650,27 +736,36 @@ function renderDay() {
     let realCustomerCount = 0;
 
     // --- ส่วนการประมวลผลข้อมูล ---
-allRec
+    allRec
     .slice()
     .sort((a,b) => a.time.localeCompare(b.time))
     .forEach((r, i) => {
-        // 1. เตรียมค่าพื้นฐาน
         const p = parseFloat(r.price) || 0; 
         const t = parseFloat(r.tip) || 0;
         const rType = r.type ? String(r.type).toUpperCase().trim() : '';
         const currentSvcs = Array.isArray(r.svcs) ? r.svcs : [];
 
-        // 2. คำนวณเงิน (ทำทุกรายการ ไม่ว่าจะเป็นประกันหรือไม่)
+        // 1. คำนวณยอดรวมพื้นฐาน
         tot += p;
         tips += t;
-        (r.pay === 'Trans') ? trans += (p + t) : cash += p;
 
-        // 🚨 3. เงื่อนไขการนับลูกค้า (หัวใจสำคัญอยู่ตรงนี้ครับ)
-        // ถ้าเป็น HOLIDAY หรือ GUARANTEE หรือ ราคาเป็น 0 ให้ "ข้ามการนับ" ทันที
-        if (rType === 'HOLIDAY' || rType === 'GUARANTEE' || p === 0) {
-             // ไม่ทำอะไรต่อ ข้ามไปสร้าง listHtml เลย
+        // ✅ แก้ไขส่วนนี้: คำนวณแยก Cash / Trans / Mix ให้ถูกต้อง
+        if (r.pay === 'Mix') {
+            const pCash = parseFloat(r.payCash) || 0;
+            const pTrans = parseFloat(r.payTrans) || 0;
+            trans += pTrans;
+            // ยอดเงินสดสำหรับคำนวณ settle (ไม่รวมทิป)
+            cash += (pCash - t); 
+        } else if (r.pay === 'Trans') {
+            trans += (p + t);
         } else {
-            // นี่คือรายการลูกค้าตัวจริง (ไม่ใช่ประกัน และ มียอดเงิน > 0)
+            cash += p;
+        }
+
+        // 🚨 2. เงื่อนไขการนับลูกค้า
+        if (rType === 'HOLIDAY' || rType === 'GUARANTEE' || p === 0) {
+             // ข้ามการนับ
+        } else {
             const cleanExtras = extraSvcs.map(s => s.trim().toLowerCase());
             const hasRealHaircut = currentSvcs.some(s => {
                 if (!s) return false;
@@ -683,15 +778,20 @@ allRec
                 stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
             }
 
-            // นับสถิติบริการอื่นๆ
             currentSvcs.forEach(s => {
                 if (s) stats[s] = (stats[s] || 0) + 1;
             });
         }
 
-        // 4. ส่วนสร้าง HTML (ต้องอยู่นอกเงื่อนไข if/else ของการนับ เพื่อให้แสดงรายการในลิสต์)
+        // ✅ 3. ส่วนสร้าง HTML (ปรับให้โชว์ไอคอน Mix)
         const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
-        const payIcon = r.pay === 'Trans' ? '📱' : '💵';
+        
+        let payIcon = r.pay === 'Trans' ? '📱' : '💵';
+        let mixText = "";
+        if (r.pay === 'Mix') {
+            payIcon = '🌓'; // ไอคอนสำหรับจ่ายผสม
+            mixText = `<br><small style="color:#64748b; font-size:10px; font-weight:normal;">(สด:${r.payCash}/โอน:${r.payTrans})</small>`;
+        }
         
         listHtml += `
         <div class="history-row" style="padding:15px; border-bottom:1px solid #f1f5f9; background:#fff;">
@@ -710,8 +810,9 @@ allRec
                     </div>
                 </div>
                 <div style="text-align:right;">
-                    <b style="font-size:16px; display:block; color:#1e293b;">
+                    <b style="font-size:16px; display:block; color:#1e293b; line-height:1.2;">
                         <span style="font-size:14px;">${payIcon}</span> ฿${p}${t ? ` <span style="color:#be185d;">(+${t})</span>` : ''}
+                        ${mixText}
                     </b>
                     <span style="font-size:11px; font-weight:700; color:#ef4444; cursor:pointer;" onclick="delRec(${r.id})">ลบ</span>
                 </div>
@@ -719,7 +820,6 @@ allRec
         </div>`;
     });
 
-    // --- ส่วนคำนวณรายได้และแสดงผล (นอกลูป) ---
     const bEarn = isHoliday ? 0 : Math.max(tot * (conf.perc / 100), conf.guar) + tips;
     const sEarn = isHoliday ? 0 : tot - (bEarn - tips);
     const settle = isHoliday ? 0 : cash - bEarn;
@@ -742,14 +842,12 @@ allRec
         }
     }
 
-    // ส่วนสถิติ
     let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:10px;">`;
     const priority = ["ตัดผม", "เด็ก"];
     priority.forEach(k => { if (stats[k]) sH += `<span style="background:#4338ca;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${k}: ${stats[k]}</span>`; });
     for (let s in stats) { if (!priority.includes(s)) sH += `<span style="background:#64748b;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${s}: ${stats[s]}</span>`; }
     if ($("dServiceStats")) $("dServiceStats").innerHTML = sH + `</div>`;
 
-    // แถบสถานะ
     let txt = "", statusColor = "", icon = "";
     if (isHoliday) {
         txt = "วันหยุด"; statusColor = "#1e40af"; icon = "🏖️";
