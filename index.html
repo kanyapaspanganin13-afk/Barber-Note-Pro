@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.229 </title>
+    <title>Barber Note Pro V.2229 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -623,38 +623,41 @@ function renderDay() {
     let realCustomerCount = 0;
 
     // --- ส่วนการประมวลผลข้อมูล ---
-    allRec
-        .slice()
-        .sort((a, b) => a.time.localeCompare(b.time))
-        .forEach((r, i) => {
-            const p = Number(r.price) || 0;
-            const t = Number(r.tip) || 0;
-            const rType = r.type ? r.type.toUpperCase().trim() : '';
+allRec
+    .slice()
+    .sort((a,b) => a.time.localeCompare(b.time))
+    .forEach((r, i) => {
+        // 1. เตรียมค่าราคาและประเภทให้สะอาดที่สุด
+        const p = parseFloat(r.price) || 0; 
+        const t = parseFloat(r.tip) || 0;
+        const rType = r.type ? String(r.type).toUpperCase().trim() : '';
 
-            tot += p;
-            tips += t;
-            (r.pay === 'Trans') ? trans += (p + t) : cash += p;
+        tot += p;
+        tips += t;
+        (r.pay === 'Trans') ? trans += (p + t) : cash += p;
 
-            const currentSvcs = Array.isArray(r.svcs) ? r.svcs : [];
+        const currentSvcs = Array.isArray(r.svcs) ? r.svcs : [];
 
-            // นับจำนวนลูกค้า (ไม่นับประกัน/วันหยุด/ยอด 0)
-            if (rType !== 'GUARANTEE' && rType !== 'HOLIDAY' && p > 0) {
-                const cleanExtras = extraSvcs.map(s => s.trim().toLowerCase());
-                const hasRealHaircut = currentSvcs.some(s => {
-                    if (!s) return false;
-                    const cleanS = s.trim().toLowerCase();
-                    return !cleanExtras.includes(cleanS);
-                });
+        // 🚨 2. เงื่อนไขการนับลูกค้า (ปรับใหม่ให้ข้ามรายการที่ราคาเป็น 0 ทันที)
+        // ถ้าเป็น HOLIDAY หรือ GUARANTEE หรือ ราคาเป็น 0 => จะไม่เข้ามาทำงานใน IF นี้เลย
+        if (rType !== 'HOLIDAY' && rType !== 'GUARANTEE' && p > 0) { 
+            const cleanExtras = extraSvcs.map(s => s.trim().toLowerCase());
+            const hasRealHaircut = currentSvcs.some(s => {
+                if (!s) return false;
+                const cleanS = s.trim().toLowerCase();
+                return !cleanExtras.includes(cleanS);
+            });
 
-                if (hasRealHaircut) {
-                    realCustomerCount++;
-                    stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
-                }
-
-                currentSvcs.forEach(s => {
-                    if (s) stats[s] = (stats[s] || 0) + 1;
-                });
+            if (hasRealHaircut) {
+                realCustomerCount++; 
+                stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
             }
+
+            // นับสถิติบริการอื่นๆ เฉพาะรายการที่ "ไม่ใช่ประกัน"
+            currentSvcs.forEach(s => {
+                if (s) stats[s] = (stats[s] || 0) + 1;
+            });
+        }
 
             // --- ส่วนสร้าง HTML (ต้องอยู่ภายใน forEach เพื่อดึงค่า r และ i มาใช้ได้) ---
             const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
