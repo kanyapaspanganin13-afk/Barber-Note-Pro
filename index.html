@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.22329 </title>
+    <title>Barber Note Pro V.21329 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -627,20 +627,23 @@ allRec
     .slice()
     .sort((a,b) => a.time.localeCompare(b.time))
     .forEach((r, i) => {
-        // 1. เตรียมค่าราคาและประเภทให้สะอาดที่สุด
+        // 1. เตรียมค่าพื้นฐาน
         const p = parseFloat(r.price) || 0; 
         const t = parseFloat(r.tip) || 0;
         const rType = r.type ? String(r.type).toUpperCase().trim() : '';
+        const currentSvcs = Array.isArray(r.svcs) ? r.svcs : [];
 
+        // 2. คำนวณเงิน (ทำทุกรายการ ไม่ว่าจะเป็นประกันหรือไม่)
         tot += p;
         tips += t;
         (r.pay === 'Trans') ? trans += (p + t) : cash += p;
 
-        const currentSvcs = Array.isArray(r.svcs) ? r.svcs : [];
-
-        // 🚨 2. เงื่อนไขการนับลูกค้า (ปรับใหม่ให้ข้ามรายการที่ราคาเป็น 0 ทันที)
-        // ถ้าเป็น HOLIDAY หรือ GUARANTEE หรือ ราคาเป็น 0 => จะไม่เข้ามาทำงานใน IF นี้เลย
-        if (rType !== 'HOLIDAY' && rType !== 'GUARANTEE' && p > 0) { 
+        // 🚨 3. เงื่อนไขการนับลูกค้า (หัวใจสำคัญอยู่ตรงนี้ครับ)
+        // ถ้าเป็น HOLIDAY หรือ GUARANTEE หรือ ราคาเป็น 0 ให้ "ข้ามการนับ" ทันที
+        if (rType === 'HOLIDAY' || rType === 'GUARANTEE' || p === 0) {
+             // ไม่ทำอะไรต่อ ข้ามไปสร้าง listHtml เลย
+        } else {
+            // นี่คือรายการลูกค้าตัวจริง (ไม่ใช่ประกัน และ มียอดเงิน > 0)
             const cleanExtras = extraSvcs.map(s => s.trim().toLowerCase());
             const hasRealHaircut = currentSvcs.some(s => {
                 if (!s) return false;
@@ -653,41 +656,41 @@ allRec
                 stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
             }
 
-            // นับสถิติบริการอื่นๆ เฉพาะรายการที่ "ไม่ใช่ประกัน"
+            // นับสถิติบริการอื่นๆ
             currentSvcs.forEach(s => {
                 if (s) stats[s] = (stats[s] || 0) + 1;
             });
         }
 
-            // --- ส่วนสร้าง HTML (ต้องอยู่ภายใน forEach เพื่อดึงค่า r และ i มาใช้ได้) ---
-            const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
-            const payIcon = r.pay === 'Trans' ? '📱' : '💵';
-
-            listHtml += `
-            <div class="history-row" style="padding:15px; border-bottom:1px solid #f1f5f9; background:#fff;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <div style="width:28px; height:28px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#64748b; flex-shrink:0;">
-                            ${i + 1}
-                        </div>
-                        <div style="display:flex; flex-direction:column;">
-                            <div style="font-weight:800; font-size:14px; color:#1e293b; margin-bottom:2px;">
-                                <span style="color:#64748b; font-weight:500;">[${timeShow}]</span> ${currentSvcs.join(' + ')}
-                            </div>
-                            <div style="display:flex; gap:8px; align-items:center;">
-                                ${t ? `<small style="color:#be185d; font-weight:700; font-size:11px;">🔹 ทิป: ฿${t}</small>` : '<small style="color:#94a3b8; font-size:11px;">(ไม่มีทิป)</small>'}
-                            </div>
-                        </div>
+        // 4. ส่วนสร้าง HTML (ต้องอยู่นอกเงื่อนไข if/else ของการนับ เพื่อให้แสดงรายการในลิสต์)
+        const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
+        const payIcon = r.pay === 'Trans' ? '📱' : '💵';
+        
+        listHtml += `
+        <div class="history-row" style="padding:15px; border-bottom:1px solid #f1f5f9; background:#fff;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="width:28px; height:28px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#64748b; flex-shrink:0;">
+                        ${i+1}
                     </div>
-                    <div style="text-align:right;">
-                        <b style="font-size:16px; display:block; color:#1e293b;">
-                            <span style="font-size:14px;">${payIcon}</span> ฿${p}${t ? ` <span style="color:#be185d;">(+${t})</span>` : ''}
-                        </b>
-                        <span style="font-size:11px; font-weight:700; color:#ef4444; cursor:pointer;" onclick="delRec(${r.id})">ลบ</span>
+                    <div style="display:flex; flex-direction:column;">
+                        <div style="font-weight:800; font-size:14px; color:#1e293b; margin-bottom:2px;">
+                            <span style="color:#64748b; font-weight:500;">[${timeShow}]</span> ${currentSvcs.join(' + ')}
+                        </div>
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            ${t ? `<small style="color:#be185d; font-weight:700; font-size:11px;">🔹 ทิป: ฿${t}</small>` : '<small style="color:#94a3b8; font-size:11px;">(ไม่มีทิป)</small>'}
+                        </div>
                     </div>
                 </div>
-            </div>`;
-        });
+                <div style="text-align:right;">
+                    <b style="font-size:16px; display:block; color:#1e293b;">
+                        <span style="font-size:14px;">${payIcon}</span> ฿${p}${t ? ` <span style="color:#be185d;">(+${t})</span>` : ''}
+                    </b>
+                    <span style="font-size:11px; font-weight:700; color:#ef4444; cursor:pointer;" onclick="delRec(${r.id})">ลบ</span>
+                </div>
+            </div>
+        </div>`;
+    });
 
     // --- ส่วนคำนวณรายได้และแสดงผล (นอกลูป) ---
     const bEarn = isHoliday ? 0 : Math.max(tot * (conf.perc / 100), conf.guar) + tips;
