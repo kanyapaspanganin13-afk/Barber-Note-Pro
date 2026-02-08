@@ -343,11 +343,7 @@ nav {
         </div>
     </div>
 </div>    
-<div onclick="deleteSelectedDay()" 
-     style="margin-top: 15px; background: linear-gradient(135deg, #ef4444, #991b1b); border-radius: 25px; padding: 15px; text-align: center; color: #fff; cursor: pointer; box-shadow: 0 8px 15px rgba(239,68,68,0.2); display: flex; align-items: center; justify-content: center; gap: 10px;">       
-    <i class="fas fa-trash-alt" style="font-size: 20px;"></i>
-    <b style="font-size: 16px;">ลบข้อมูลทั้งหมดของวันที่เลือก</b>
-</div>
+
     <div id="modalSet" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); z-index:9999; display:flex; align-items:center; justify-content:center; padding:15px;">
     
     <div style="background:#ffffff; width:95%; max-width:420px; border-radius:35px; display:flex; flex-direction:column; overflow:hidden; animation: slideUp 0.3s ease-out; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
@@ -424,7 +420,6 @@ nav {
         <div id="reportContent" style="max-height:400px; overflow-y:auto;"></div>
     </div>
 </div>
-
 <div id="historyModal" class="modal">
     <div class="modal-content">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -512,15 +507,58 @@ nav {
                 $("historyModal").style.display = "flex"; 
                 if (typeof renderHistoryList === "function") {
                     renderHistoryList(); 
-                } else {
-                    console.error("หาฟังก์ชัน renderHistoryList ไม่เจอโว้ย!");
+                } else { 
+                    console.error("ไม่พบฟังก์ชัน renderHistoryList ในระบบ");
                 }
             }
             
             function closeHistoryModal() { 
                 $("historyModal").style.display = "none"; 
             }
-function handleSave() {
+function showDailyDetail(dateStr) {
+    // 1. ค้นหาข้อมูลของวันที่เลือก (เพื่อให้มีตัวเลขไปโชว์ในรายงาน)
+    const record = archives.find(r => r.date === dateStr);
+    
+    // 2. สร้างเนื้อหารายงาน (ใส่ข้อมูลรายได้ของคุณลงไปตรงนี้)
+    let htmlContent = `
+        <div style="font-size: 16px; line-height: 1.6; color: #334155;">
+            <p><b>📅 วันที่:</b> ${dateStr}</p>
+            <p><b>💰 รายได้รวม:</b> ฿${record ? record.total.toLocaleString() : 0}</p>
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 15px 0;">
+        </div>
+    `;
+
+    // 3. ใส่ปุ่มลบต่อท้าย (โค้ดที่คุณเขียนมา)
+    htmlContent += `
+        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed #cbd5e1;">
+            <button onclick="confirmDeleteDaily('${dateStr}')" 
+                    style="width: 100%; padding: 12px; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 10px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                🗑️ ลบข้อมูลทั้งหมดของวันที่ ${dateStr}
+            </button>
+            <p style="text-align: center; color: #64748b; font-size: 12px; margin-top: 8px;">
+                *ข้อมูลจะถูกลบออกจากระบบอย่างถาวร
+            </p>
+        </div>
+    `;
+
+    // 4. เรียกใช้ openReportModal ตัวเดิมที่คุณมีอยู่แล้วเพื่อให้ Modal จัดตำแหน่งสวยงาม
+    openReportModal(`📊 รายงานรายวัน`, htmlContent);
+}
+
+function confirmDeleteDaily(dateStr) {
+    const isConfirm = confirm(`ขออนุญาตยืนยันการลบข้อมูลครับ\n\nคุณต้องการลบข้อมูลทั้งหมดของวันที่ ${dateStr} ใช่หรือไม่?\n(ข้อมูลที่ลบแล้วจะไม่สามารถกู้คืนได้ครับ)`);
+    
+    if (isConfirm) {
+        // กรองข้อมูลออก
+        archives = archives.filter(r => r.date !== dateStr);
+        saveData(); // บันทึกลงเครื่อง
+        
+        alert(`ดำเนินการลบข้อมูลวันที่ ${dateStr} เรียบร้อยแล้วครับ`);
+        closeReportModal(); // ปิดหน้าต่าง
+        if (typeof renderHistory === "function") renderHistory(); // อัปเดตหน้าหลัก
+    }
+}
+     function handleSave() {
     const p = parseInt($("priceInp").value), t = parseInt($("tipInp").value) || 0;
     
     // ตรวจสอบความครบถ้วนของข้อมูล
