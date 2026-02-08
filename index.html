@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.9043 </title>
+    <title>Barber Note Pro V.9143 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -644,9 +644,14 @@ function saveSettings() {
  function selectPay(m) {payMethod = m; $("btnCash").className = `btn btn-pay ${m === 'Cash' ? 'active-cash' : ''}`;$("btnTrans").className = `btn btn-pay ${m === 'Trans' ? 'active-trans' : ''}`;}
 function renderDay() {
     const dInp = $("dateInp").value;
-    const allRec = db.filter(r => r.date === dInp);
+    let allRec = db.filter(r => r.date === dInp);
+    if (allRec.length === 0 && typeof archives !== 'undefined') {
+        const archivedDay = archives.find(a => a.date === dInp);
+        if (archivedDay && archivedDay.details) {
+            allRec = archivedDay.details; // ดึงข้อมูลจาก details มาแสดง
+        }
+    }
     const isHoliday = allRec.some(r => r.type && r.type.toUpperCase() === 'HOLIDAY');
-
     const stats = {};
     const extraSvcs = ["โกนหนวด", "กันหน้า", "สระผม"];
     let tot = 0, trans = 0, cash = 0, tips = 0;
@@ -1496,36 +1501,45 @@ function go(p) {
 });
      // 1. ฟังก์ชันส่งออกข้อมูล
         function exportBackup() {
-            const data = {
-                db: JSON.parse(localStorage.getItem("barber_db") || "[]"),
-                archives: JSON.parse(localStorage.getItem("barber_archives") || "[]")
-            };
-            const blob = new Blob([JSON.stringify(data)], {type: "application/json"});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `backup-barber-${new Date().toLocaleDateString()}.json`;
-            a.click();
-        }
+    // ดึงข้อมูลโดยเช็คหลาย Key เผื่อกรณีชื่อไม่ตรงกัน
+    const currentDb = localStorage.getItem("barber_db") || localStorage.getItem("db") || "[]";
+    const currentArchives = localStorage.getItem("barber_archives") || localStorage.getItem("archives") || "[]";
+
+    const data = {
+        db: JSON.parse(currentDb),
+        archives: JSON.parse(currentArchives)
+    };
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `backup-barber-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url); // ล้างหน่วยความจำ
+}
         // 2. ฟังก์ชันนำเข้าข้อมูล
-       function importBackup(input) {
+   function importBackup(input) {
     const reader = new FileReader();
     reader.onload = function(e) {
         try {
             const data = JSON.parse(e.target.result);
-            // ปรับข้อความยืนยันให้สุภาพ
             const confirmImport = confirm("⚠️ ข้อมูลปัจจุบันจะถูกแทนที่ด้วยข้อมูลจากไฟล์สำรอง คุณต้องการดำเนินการต่อใช่หรือไม่?");
-            
             if(confirmImport) {
-                localStorage.setItem("barber_db", JSON.stringify(data.db || []));
-                localStorage.setItem("barber_archives", JSON.stringify(data.archives || []));
-                alert("✅ นำเข้าข้อมูลเรียบร้อยแล้ว");
+                // บันทึกลงทั้งสองชื่อเพื่อความปลอดภัย (ทั้งแบบมี barber_ นำหน้าและไม่มี)
+                const dbStr = JSON.stringify(data.db || []);
+                const arcStr = JSON.stringify(data.archives || []);
+                localStorage.setItem("barber_db", dbStr);
+                localStorage.setItem("barber_archives", arcStr);
+                // แถม: ถ้าโค้ดเก่าคุณใช้ชื่อสั้นๆ ก็บันทึกเผื่อไว้ด้วยครับ
+                localStorage.setItem("db", dbStr);
+                localStorage.setItem("archives", arcStr);
+                alert("✅ นำเข้าข้อมูลเรียบร้อยแล้ว ระบบจะเริ่มทำงานใหม่");
                 location.reload();
             }
         } catch(err) {
             alert("❌ รูปแบบไฟล์ไม่ถูกต้อง กรุณาใช้ไฟล์สำรองที่ถูกต้อง");
         }
-        // ล้างค่า input เพื่อให้เลือกไฟล์เดิมซ้ำได้ถ้าจำเป็น
         input.value = '';
     };
 
@@ -1544,7 +1558,6 @@ function go(p) {
 
     function clearData() {
     const confirmDelete = confirm("⚠️ คุณต้องการลบข้อมูลทั้งหมดในระบบใช่หรือไม่? ข้อมูลบัญชีและรายงานจะถูกล้างใหม่ทั้งหมด");
-    
     if (confirmDelete) {
         // ล้างข้อมูลทุกอย่างที่แอปเก็บไว้
         localStorage.clear(); 
