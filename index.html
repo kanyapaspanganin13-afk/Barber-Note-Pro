@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.218227 </title>
+    <title>Barber Note Pro V.21227 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -1230,10 +1230,10 @@ function generateMonthlyReport(m, monthTotal, monthBarber, monthCount, workDays,
 
     // วิเคราะห์พฤติกรรม
     const maxDailyCount = dailyTimeline.length > 0 ? Math.max(...dailyTimeline.map(d => d.count)) : 0;
-    const behavior = (maxDailyCount > avgCustomerPerDay * 1.5) 
-        ? 'มีลักษณะ <b>"เข้าร้านเป็นช่วง"</b> (มีวันโดดเด่น)' 
-        : 'มีลักษณะ <b>"กระจายตัวสม่ำเสมอ"</b>';
-
+   const behavior = (maxDailyCount > avgCustomerPerDay * 1.5)
+    ? 'สัปดาห์นี้ มีช่วงที่ลูกค้าเข้ามามากกว่าปกติในบางวัน'
+    : 'สัปดาห์นี้ ลูกค้าเข้าร้านในระดับใกล้เคียงกันตลอดสัปดาห์';
+   
     const topHair = Object.entries(hairStats).sort((a,b) => b[1] - a[1])[0];
     const topService = Object.entries(serviceStats).sort((a,b) => b[1] - a[1])[0];
 
