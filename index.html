@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.21127 </title>
+    <title>Barber Note Pro V.21827 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -1192,44 +1192,82 @@ function loadHistMonth() {
 }
 
 function generateMonthlyReport(m, monthTotal, monthBarber, monthCount, workDays, offDays, avgCustomerPerDay, weeklyData, hairStats, serviceStats) {
-    const totalZeroDays = Object.values(weeklyData).reduce((sum, w) => sum + w.zeroDays, 0);
+    // --- 1. เตรียมข้อมูลสำหรับวิเคราะห์ (Logic) ---
+    const weekEntries = Object.entries(weeklyData);
+    
+    // หาสัปดาห์ที่รายได้สูงสุด
+    const topIncomeWeek = weekEntries.length > 0 
+        ? weekEntries.reduce((prev, curr) => (curr[1].income > prev[1].income ? curr : prev))
+        : null;
+
+    // หาสัปดาห์ที่ลูกค้าเยอะที่สุด
+    const topCustomerWeek = weekEntries.length > 0 
+        ? weekEntries.reduce((prev, curr) => (curr[1].customers > prev[1].customers ? curr : prev))
+        : null;
+
+    // คำนวณหาค่าเฉลี่ยตามชื่อวัน (จันทร์-อาทิตย์)
+    const dayStats = {};
+    let dailyTimeline = [];
+    
+    weekEntries.forEach(([wk, data]) => {
+        data.dailyCounts.forEach(d => {
+            dailyTimeline.push(d);
+            const dayName = d.dayName.split(' ')[0]; // ดึงคำว่า "เสาร์", "อาทิตย์"
+            if (!dayStats[dayName]) dayStats[dayName] = { total: 0, count: 0 };
+            if (d.count > 0) {
+                dayStats[dayName].total += d.count;
+                dayStats[dayName].count += 1;
+            }
+        });
+    });
+
+    const dayAverages = Object.entries(dayStats)
+        .filter(([name, data]) => data.count > 0)
+        .map(([name, data]) => ({ name, avg: data.total / data.count }));
+
+    const busiestDay = dayAverages.sort((a, b) => b.avg - a.avg)[0];
+    const quietestDay = dayAverages.sort((a, b) => a.avg - b.avg)[0];
+
+    // วิเคราะห์พฤติกรรม (เข้าเป็นช่วง vs กระจายตัว)
+    const maxDailyCount = Math.max(...dailyTimeline.map(d => d.count));
+    const behavior = (maxDailyCount > avgCustomerPerDay * 1.5) 
+        ? 'มีลักษณะ <b>"เข้าร้านเป็นช่วง"</b> (มีวันโดดเด่น)' 
+        : 'มีลักษณะ <b>"กระจายตัวสม่ำเสมอ"</b>';
+
+    const topHair = Object.entries(hairStats).sort((a,b) => b[1] - a[1])[0];
+    const topService = Object.entries(serviceStats).sort((a,b) => b[1] - a[1])[0];
+
+    // --- 2. สร้าง Array ข้อความสรุป Insights ---
     const insights = [
-        `ลูกค้าเฉลี่ยต่อวันอยู่ที่ ${avgCustomerPerDay.toFixed(1)} คน`,
-        `วันที่เปิดร้านแต่ไม่มีลูกค้าทั้งหมด ${totalZeroDays} วัน`,
-        `รวมวันหยุดทั้งหมด ${offDays} วันในเดือนนี้`
+        `เดือนนี้เปิดให้บริการทั้งหมด <b>${workDays} วัน</b> (หยุด ${offDays} วัน)`,
+        `วิเคราะห์พฤติกรรมลูกค้า: ${behavior}`,
+        topIncomeWeek ? `สัปดาห์ที่ทำรายได้สูงสุดคือ <b>${topIncomeWeek[0]}</b>` : `ยังไม่มีข้อมูลรายได้`,
+        topCustomerWeek ? `สัปดาห์ที่มีลูกค้าเยอะที่สุดคือ <b>${topCustomerWeek[0]}</b>` : `ยังไม่มีข้อมูลลูกค้า`,
+        `สถิติรายวัน: ลูกค้ามักเข้าเยอะใน <b>วัน${busiestDay?.name || '-'}</b> และน้อยใน <b>วัน${quietestDay?.name || '-'}</b>`,
+        `อันดับ 1 ของเดือน: <b>${topHair ? topHair[0] : '-'}</b> (บริการยอดนิยม: ${topService ? topService[0] : '-'})`
     ];
 
-    const weeklyHtml = Object.entries(weeklyData).map(([wk, data]) => {
+    const insightHtml = insights.map(text => `
+        <div style="font-size:13px; color:#f8fafc; margin-bottom:10px; display:flex; align-items:flex-start; gap:10px;">
+            <span style="color:#facc15; font-size:16px;">•</span>
+            <span style="line-height:1.5;">${text}</span>
+        </div>
+    `).join("");
+
+    // --- 3. ส่วนการสร้าง HTML ของแต่ละสัปดาห์ (Weekly Cards) ---
+    const weeklyHtml = weekEntries.map(([wk, data]) => {
         const avg = data.workDays > 0 ? (data.customers / data.workDays).toFixed(1) : 0;
-        // แก้ไข: ดึงรายได้โดยตรงจาก data.income ที่บวกไว้แล้ว
         const weeklyTotalIncome = data.income || 0;
         
         const sortedDays = [...data.dailyCounts].sort((a,b) => b.count - a.count);
         const bestDay = sortedDays.length > 0 && sortedDays[0].count > 0 
             ? `${sortedDays[0].dayName} (${sortedDays[0].count})` : "-";
-        const worstDay = sortedDays.length > 0 
-            ? `${sortedDays[sortedDays.length-1].dayName} (${sortedDays[sortedDays.length-1].count})` : "-";
-
-        const allHairTypes = Object.keys(hairStats); 
-        const allServiceTypes = Object.keys(serviceStats);
-
-        const unusedHair = allHairTypes.filter(h => !data.popularHair[h]);
-        const unusedService = allServiceTypes.filter(s => !data.popularService[s]);
 
         const popHair = Object.entries(data.popularHair).length > 0 
             ? Object.entries(data.popularHair).sort((a,b) => b[1] - a[1]).slice(0, 2).map(([name, count]) => `
                 <span style="background:rgba(190,242,100,0.1); color:#bef264; padding:2px 8px; border-radius:8px; font-size:11px; font-weight:600; border:1px solid rgba(190,242,100,0.2);">
                     ✂️ ${name} (${count})
-                </span>`).join("")
-            : "";
-
-        const popService = Object.entries(data.popularService).length > 0 
-            ? Object.entries(data.popularService).sort((a,b) => b[1] - a[1]).slice(0, 2).map(([name, count]) => `
-                <span style="background:rgba(56,189,248,0.1); color:#38bdf8; padding:2px 8px; border-radius:8px; font-size:11px; font-weight:600; border:1px solid rgba(56,189,248,0.2);">
-                    🧴 ${name} (${count})
-                </span>`).join("")
-            : "";
-
+                </span>`).join("") : "";
         return `
         <div style="background:#020617; border:1px solid rgba(255,255,255,0.08); padding:16px; border-radius:22px; margin-bottom:12px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
