@@ -1618,46 +1618,47 @@ function sendToLineFinal() {
                 }
             });
                  // 1. ฟังก์ชันส่งออกข้อมูล
-        function exportBackup() {try {
-        // 1. ดึงข้อมูล Database (รายชื่อทรงผม/การตั้งค่า)
-        // ตรวจสอบทั้ง key 'barber_db' และ 'db' เพื่อความครอบคลุม
-        const rawDb = localStorage.getItem("barber_db") || localStorage.getItem("db") || "[]";
-        
-        // 2. ดึงข้อมูล Archives (ประวัติการตัดผม/บัญชีรายได้ทั้งหมด)
-        // ตรวจสอบทั้ง key 'barber_archives' และ 'archives'
-        const rawArchives = localStorage.getItem("barber_archives") || localStorage.getItem("archives") || "[]";
-
-        // 3. รวมข้อมูลทุกอย่างเข้าด้วยกัน
+       function exportBackup() {
+    try {
         const data = {
-            db: JSON.parse(rawDb),
-            archives: JSON.parse(rawArchives),
-            exportDate: new Date().toISOString(), // เพิ่มวันเวลาที่สำรองข้อมูล
-            version: "1.0"
+    
+            db: JSON.parse(localStorage.getItem("barber_db") || localStorage.getItem("db") || "[]"),
+            archives: JSON.parse(localStorage.getItem("barber_archives") || localStorage.getItem("archives") || "[]"),
+            clearHistory: JSON.parse(localStorage.getItem("clear_history") || localStorage.getItem("account_history") || "[]"),
+            dailySummary: JSON.parse(localStorage.getItem("daily_summary") || "[]"),
+            
+            // ข้อมูลการตั้งค่าอื่นๆ
+            settings: JSON.parse(localStorage.getItem("barber_settings") || "{}"),
+            exportDate: new Date().toISOString()
         };
 
-        // 4. สร้างไฟล์ JSON สำหรับดาวน์โหลด
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        // ตรวจสอบข้อมูลใน localStorage ทั้งหมดเพื่อกันเหนียว (กรณีมี Key ชื่อแปลกๆ)
+        Object.keys(localStorage).forEach(key => {
+            if (!data[key]) {
+                try {
+                    data[key] = JSON.parse(localStorage.getItem(key));
+                } catch (e) {
+                    data[key] = localStorage.getItem(key);
+                }
+            }
+        });
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         
-        // ตั้งชื่อไฟล์ให้ชัดเจนว่าเป็นการสำรองข้อมูลทั้งหมด (Full Backup)
-        const fileName = `FULL-BACKUP-BARBER-${new Date().toLocaleDateString('th-TH').replace(/\//g, '-')}.json`;
-        
         a.href = url;
-        a.download = fileName;
+        a.download = `full-backup-barber-${new Date().toISOString().split('T')[0]}.json`;
         
-        // เพิ่มเข้า DOM ชั่วคราวเพื่อให้ทำงานได้ทุกเบราว์เซอร์
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         
-        // ล้างหน่วยความจำ
         URL.revokeObjectURL(url);
-        
-        console.log("สำรองข้อมูลเรียบร้อยแล้วครับ");
+        alert("สำรองข้อมูลสำเร็จ! ข้อมูลบัญชีและประวัติการเคลียร์เงินถูกบันทึกเรียบร้อยครับ");
     } catch (error) {
-        console.error("Export Error:", error);
-        alert("ขออภัยครับ ไม่สามารถดึงข้อมูลออกมาได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง");
+        console.error("Backup error:", error);
+        alert("ขออภัยครับ ไม่สามารถดึงข้อมูลได้ครบถ้วน กรุณาลองใหม่อีกครั้ง");
     }
 }
                     // 2. ฟังก์ชันนำเข้าข้อมูล
