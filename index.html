@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.9 </title>
+    <title>Barber Note Pro V.29 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -620,37 +620,39 @@ nav {
                 let listHtml = "";
                 let realCustomerCount = 0;
             
-                allRec
-                .slice()
-                .sort((a,b) => a.time.localeCompare(b.time))
-                .forEach((r, i) => {
-                    const p = Number(r.price) || 0;
-                    const t = Number(r.tip) || 0;
-                    const rType = r.type ? r.type.toUpperCase() : '';
-            
-                    tot += p;
-                    tips += t;
-                    (r.pay === 'Trans') ? trans += (p + t) : cash += p;
-                    
-                    const currentSvcs = Array.isArray(r.svcs) ? r.svcs : [];
-                    if (rType !== 'GUARANTEE' && rType !== 'HOLIDAY') { 
-                    const cleanExtras = extraSvcs.map(s => s.trim().toLowerCase());
-            
-                    const hasRealHaircut = currentSvcs.some(s => {
-                    if (!s) return false;
-                    const cleanS = s.trim().toLowerCase();
-                    // ถ้าบริการนั้น "ไม่มี" อยู่ในรายการบริการเสริม ให้ถือว่าเป็นงานตัดผมจริง
-                    return !cleanExtras.includes(cleanS);
-                });
-                
-                if (hasRealHaircut) {
-                    realCustomerCount++; 
-                    stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
-                }
-                currentSvcs.forEach(s => {
-                    if (s) stats[s] = (stats[s] || 0) + 1;
-                });
+               allRec
+    .slice()
+    .sort((a,b) => a.time.localeCompare(b.time))
+    .forEach((r, i) => {
+        const p = Number(r.price) || 0;
+        const t = Number(r.tip) || 0;
+        const rType = r.type ? r.type.toUpperCase().trim() : ''; // เพิ่ม trim() เพื่อตัดช่องว่าง
+
+        tot += p;
+        tips += t;
+        (r.pay === 'Trans') ? trans += (p + t) : cash += p;
+
+        const currentSvcs = Array.isArray(r.svcs) ? r.svcs : [];
+
+        // ✅ เพิ่ม p > 0 เข้าไป เพื่อให้งานประกันที่ราคาเป็น 0 ไม่ถูกนับเป็นลูกค้าครับ
+        if (rType !== 'GUARANTEE' && rType !== 'HOLIDAY' && p > 0) { 
+            const cleanExtras = extraSvcs.map(s => s.trim().toLowerCase());
+            const hasRealHaircut = currentSvcs.some(s => {
+                if (!s) return false;
+                const cleanS = s.trim().toLowerCase();
+                return !cleanExtras.includes(cleanS);
+            });
+
+            if (hasRealHaircut) {
+                realCustomerCount++; 
+                stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
             }
+
+            currentSvcs.forEach(s => {
+                if (s) stats[s] = (stats[s] || 0) + 1;
+            });
+        }
+    });
                     const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
                     const payIcon = r.pay === 'Trans' ? '📱' : '💵';
             
@@ -695,15 +697,12 @@ nav {
                 if (isHoliday) {
                     $("dCounts").innerText = "🏖️ วันหยุด";
                 } 
-                // ✅ ปรับตรงนี้: ถ้าจำนวนลูกค้าจริงเป็น 0 แต่มีรายการบันทึกไว้ (เช่น ประกัน)
                 else if (realCustomerCount === 0 && allRec.length > 0) {
                     $("dCounts").innerText = "🛡️ งานประกัน/แก้ไข (ไม่นับคน)";
                 }
-                // กรณีไม่มีข้อมูลเลย
                 else if (allRec.length === 0) {
                      $("dCounts").innerText = "ไม่มีข้อมูล";
                 }
-                // 3. กรณีวันทำงานปกติที่มีลูกค้า
                 else {
                     $("dCounts").innerText = `ลูกค้า: ${realCustomerCount} คน`;
                 }
@@ -766,12 +765,8 @@ nav {
             }
             function saveAndGo(date, total) {
                 const allToday = db.filter(r => r.date === date);
-            
-                // --- แก้จุดนี้ครับ: ให้ดึงทั้ง SERVICE และ GUARANTEE มาคำนวณเงิน ---
                 const todayData = allToday.filter(r => r.type === 'SERVICE' || r.type === 'GUARANTEE');
-                
                 const isHoliday = allToday.some(r => r.type === 'HOLIDAY');
-            
                 let cash = 0, trans = 0, tips = 0, count = 0, stats = {};
                 const extraSvcs = ["โกนหนวด", "กันหน้า", "สระผม"];
             
@@ -790,13 +785,10 @@ nav {
                         });
                     }
                 });
-            
                 // 2. คำนวณรายได้ (ถ้าเป็นวันหยุดให้เป็น 0 ทั้งหมด)
                 const bEarn = isHoliday ? 0 : Math.max(total * (conf.perc / 100), conf.guar) + tips;
                 const settle = isHoliday ? 0 : cash - bEarn;
-            
                 const idx = archives.findIndex(a => a.date === date);
-            
                 // 3. เก็บข้อมูล data โดยเพิ่ม flag 'off' หรือ 'type' เพื่อให้รายงานดึงไปใช้ได้
                 const data = {
                     date,
@@ -821,7 +813,6 @@ nav {
                     account.balance = (Number(account.balance) || 0) + settle;
                     archives.push(data);
                 }
-            
                 // ล้างข้อมูลใน db เฉพาะของวันที่ปิดยอด
                 db = db.filter(r => r.date !== date);
                 save(); 
@@ -871,11 +862,9 @@ nav {
                     alert("💎 ยอดเป็นศูนย์ ไม่ต้องเคลียร์");
                     return;
                 }
-            
                 const confirmMsg = net > 0 
                     ? `ยืนยันว่าช่าง "คืนเงิน" ให้ร้าน ฿${net.toLocaleString()} ใช่ไหม?`
                     : `ยืนยันว่าร้าน "จ่ายเงิน" ให้ช่าง ฿${Math.abs(net).toLocaleString()} ใช่ไหม?`;
-            
                 if (!confirm(confirmMsg)) return;
                 if (!account.logs) account.logs = [];
                 account.logs.unshift({
@@ -897,8 +886,6 @@ nav {
                     $("accHistory").innerHTML = '<center style="padding:50px; color:#94a3b8; font-size:15px;">ไม่มีประวัติการเคลียร์ครับ</center>';
                     return;
                 }
-            
-                // 2. สร้างรายการโดยเรียงจากใหม่ไปเก่า (ใช้ loop ถอยหลังแทน reverse เพื่อป้องกัน index เพี้ยน)
                 let h = "";
                 for (let i = account.logs.length - 1; i >= 0; i--) {
                     let l = account.logs[i];
@@ -944,9 +931,7 @@ nav {
                     if (typeof save === "function") {
                         save();
                     }
-            
                     alert("✅ แก้ไขข้อมูลและบันทึกเรียบร้อย");
-                    
                     // อัปเดตการแสดงผลหน้าจอ
                     renderHistoryList();
                     if (typeof loadAccountStatus === "function") {
@@ -1100,12 +1085,10 @@ nav {
                 filtered.forEach(day => {
                     // 1. เช็คสถานะวันหยุด
                     const isDayOff = day.off === true || day.type === "HOLIDAY" || (day.details && day.details.some(d => d.type === "HOLIDAY"));
-            
                     if (isDayOff) {
                         offDays++;
                         return; // ข้ามไปวันถัดไปทันที
                     }
-            
                     // 2. ถ้าเป็นวันทำงาน
                     workDays++;
                     const dailyTotal = Number(day.total) || 0;
@@ -1135,7 +1118,6 @@ nav {
                     const wKey = `สัปดาห์ที่ ${wIdx}`;
                     if (!weeklyData[wKey]) weeklyData[wKey] = { customers: 0, days: 0 };
                     weeklyData[wKey].days++;
-            
                     // 4. นับจำนวนลูกค้าและสถิติทรงผม
                     let hasCustomerThisDay = false;
                     (day.details || []).forEach(d => {
