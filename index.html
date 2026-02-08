@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.01 </title>
+    <title>Barber Note Pro V.010 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -343,7 +343,12 @@ nav {
         </div>
     </div>
 </div>    
-<div id="modalSet" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); z-index:9999; display:flex; align-items:center; justify-content:center; padding:15px;">
+<div onclick="deleteSelectedDay()" 
+     style="margin-top: 15px; background: linear-gradient(135deg, #ef4444, #991b1b); border-radius: 25px; padding: 15px; text-align: center; color: #fff; cursor: pointer; box-shadow: 0 8px 15px rgba(239,68,68,0.2); display: flex; align-items: center; justify-content: center; gap: 10px;">       
+    <i class="fas fa-trash-alt" style="font-size: 20px;"></i>
+    <b style="font-size: 16px;">ลบข้อมูลทั้งหมดของวันที่เลือก</b>
+</div>
+    <div id="modalSet" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); z-index:9999; display:flex; align-items:center; justify-content:center; padding:15px;">
     
     <div style="background:#ffffff; width:95%; max-width:420px; border-radius:35px; display:flex; flex-direction:column; overflow:hidden; animation: slideUp 0.3s ease-out; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
         
@@ -515,44 +520,44 @@ nav {
             function closeHistoryModal() { 
                 $("historyModal").style.display = "none"; 
             }
-             function handleSave() {
+function handleSave() {
     const p = parseInt($("priceInp").value), t = parseInt($("tipInp").value) || 0;
-    if (!p || !payMethod) return alert("กรุณาใส่ราคาและเลือกวิธีจ่ายเงินก่อนครับ!");
+    
+    // ตรวจสอบความครบถ้วนของข้อมูล
+    if (!p || !payMethod) {
+        return alert("กรุณาใส่ราคาและเลือกวิธีจ่ายเงินก่อนครับ!");
+    }
 
     const start = $("tStart").value || new Date().toTimeString().slice(0, 5);
     
-    // เตรียมตัวแปรสำหรับแยกยอดเงิน
     let cashAmt = 0;
     let transAmt = 0;
 
     if (payMethod === 'Mix') {
-        // กรณีจ่ายผสม: ดึงค่าจากช่อง Input ที่เราสร้างขึ้นใหม่
         cashAmt = parseInt($("mixCash").value) || 0;
         transAmt = parseInt($("mixTrans").value) || 0;
 
-        // ตรวจสอบเบื้องต้นว่ายอดที่กรอก รวมกันได้เท่ากับราคาค่าบริการหรือไม่
         if (cashAmt + transAmt !== p + t) {
-            const confirmMsg = `ยอดเงินที่ระบุ (สด ${cashAmt} + โอน ${transAmt} = ${cashAmt + transAmt}) \nไม่ตรงกับยอดรวมบิล (${p + t}) \nคุณยังต้องการบันทึกข้อมูลนี้ใช่ไหมครับ?`;
+            const confirmMsg = `ยอดเงินไม่ตรงบิล (สด ${cashAmt} + โอน ${transAmt} = ${cashAmt + transAmt}) \nยอดรวมบิลคือ ${p + t} \nคุณยังต้องการบันทึกข้อมูลนี้ใช่ไหมครับ?`;
             if (!confirm(confirmMsg)) return;
         }
     } else if (payMethod === 'Cash') {
-        cashAmt = p + t; // จ่ายสดทั้งหมด
+        cashAmt = p + t;
     } else {
-        transAmt = p + t; // โอนทั้งหมด
+        transAmt = p + t;
     }
 
     const rec = {
         id: Date.now(), 
         date: $("dateInp").value, 
         time: start, 
-        endTime: $("tEnd").value || addMinutes(start, 30),
-        svcs: [$("hairStyle").value, $("extra1").value, $("extra2").value].filter(Boolean),
-        hair: $("hairStyle").value, 
+        endTime: $("tEnd").value || (typeof addMinutes === 'function' ? addMinutes(start, 30) : start),
+        svcs: [$("hairStyle")?.value, $("extra1")?.value, $("extra2")?.value].filter(Boolean),
         price: p, 
         tip: t, 
         pay: payMethod, 
-        payCash: cashAmt,   // บันทึกแยกเงินสด
-        payTrans: transAmt, // บันทึกแยกเงินโอน
+        payCash: cashAmt,   
+        payTrans: transAmt, 
         type: "SERVICE"
     };
 
@@ -561,12 +566,16 @@ nav {
     saveDB(); 
     renderDay(); 
 
-    // ล้างค่าในหน้าจอ (เพิ่มการล้างค่าในช่อง Mix ด้วย)
-    ["priceInp", "tipInp", "tStart", "tEnd", "mixCash", "mixTrans"].forEach(id => {
+    // ✅ ล้างค่าในหน้าจอหลังบันทึกสำเร็จ
+    ["priceInp", "tipInp", "mixCash", "mixTrans"].forEach(id => {
         if($(id)) $(id).value = "";
     });
     
-    // ซ่อนแผง Mix หลังบันทึกสำเร็จ
+    // ✅ รีเซ็ตสถานะปุ่มและตัวแปรวิธีจ่ายเงิน
+    payMethod = ""; 
+    const buttons = ["btnCash", "btnTrans", "btnMix"];
+    buttons.forEach(id => { if($(id)) $(id).className = "btn btn-pay"; });
+
     if($("mixPanel")) $("mixPanel").style.display = 'none';
     
     alert("บันทึกข้อมูลเรียบร้อยแล้วครับ");
@@ -1284,6 +1293,24 @@ $("mixCash").addEventListener("input", function() {
                         </div>
                     </div>
                 `);
+}
+     function deleteSelectedDay() {
+    const targetDate = $("dateInp").value; 
+    
+    if (!targetDate) return alert("กรุณาเลือกวันที่ต้องการลบก่อนครับ");
+
+    // ใช้คำถามที่สุภาพเพื่อยืนยันการลบ
+    const confirmMsg = `คุณต้องการลบข้อมูลทั้งหมดของวันที่ ${targetDate} ใช่หรือไม่ครับ?\n(ข้อมูลเฉพาะวันนี้จะหายไปทั้งหมด)`;
+    
+    if (confirm(confirmMsg)) {
+        // กรองเอาเฉพาะข้อมูลวันอื่นไว้
+        db = db.filter(item => item.date !== targetDate);
+        
+        saveDB();    // บันทึกลง LocalStorage
+        renderDay(); // อัปเดตการแสดงผลหน้าจอ
+        
+        alert(`ลบข้อมูลของวันที่ ${targetDate} เรียบร้อยแล้วครับ`);
+    }
 }
      function renderStats(obj, accentColor) {
     const entries = Object.entries(obj).sort((a, b) => b[1] - a[1]);
