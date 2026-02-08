@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.018 </title>
+    <title>Barber Note Pro V.01 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -692,32 +692,33 @@ nav {
              function speak(txt) {if ('speechSynthesis' in window) {const msg = new SpeechSynthesisUtterance(txt); msg.lang = 'th-TH'; window.speechSynthesis.speak(msg);}}       
              function clearAllData(){if(confirm("ลบข้อมูลทั้งหมด?")){localStorage.clear();location.reload()}}
              function updateDateDisplay(v){if(!v)return;const d=new Date(v);const el=$("dateDisplay");if(el)el.innerText=d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});if(typeof renderDay==="function")renderDay()}window.addEventListener('DOMContentLoaded',()=>{const i=$("dateInp"),t=new Date().toISOString().split('T')[0];if(i){i.value=t;updateDateDisplay(t)}});
-            function selectPay(m) {
+ function setPaymentType(m) {
     payMethod = m; // เก็บค่าประเภทการจ่ายเงิน
 
-    // จัดการ CSS Class ของปุ่ม (Cash / Trans / Mix)
-    $("btnCash").className = `btn btn-pay ${m === 'Cash' ? 'active-cash' : ''}`;
-    $("btnTrans").className = `btn btn-pay ${m === 'Trans' ? 'active-trans' : ''}`;
-    
-    // ตรวจสอบว่ามีปุ่ม Mix หรือไม่ (ถ้าคุณเพิ่มปุ่มที่ 3 ใน HTML)
-    if($("btnMix")) {
-        $("btnMix").className = `btn btn-pay ${m === 'Mix' ? 'active-mix' : ''}`;
-    }
+    // 1. จัดการ CSS Class (เพื่อให้ปุ่มที่ถูกเลือกดูเด่นขึ้น)
+    if($("btnCash")) $("btnCash").className = `btn btn-pay ${m === 'Cash' ? 'active-cash' : ''}`;
+    if($("btnTrans")) $("btnTrans").className = `btn btn-pay ${m === 'Trans' ? 'active-trans' : ''}`;
+    if($("btnMix")) $("btnMix").className = `btn btn-pay ${m === 'Mix' ? 'active-mix' : ''}`;
 
-    // แสดงหรือซ่อนแผงกรอกยอดเงินแยก (กรณีจ่ายผสม)
+    // 2. แสดงหรือซ่อนแผงจ่ายผสม (mixPanel)
     const mixPanel = $("mixPanel");
     if (mixPanel) {
         if (m === 'Mix') {
             mixPanel.style.display = 'block';
-            // ดึงยอดรวมปัจจุบันมาใส่ในช่องเงินโอนเป็นค่าเริ่มต้น เพื่อความรวดเร็วครับ
-            $("mixTrans").value = $("totalPrice") ? $("totalPrice").innerText : 0;
-            $("mixCash").value = 0;
+            
+            // คำนวณยอดรวม (ราคา + ทิป) เพื่อนำไปโชว์ในช่องเงินโอนอัตโนมัติ
+            const price = parseFloat($("priceInp").value) || 0;
+            const tip = parseFloat($("tipInp").value) || 0;
+            const total = price + tip;
+
+            $("mixCash").value = ""; // ล้างค่าเงินสดให้ว่างไว้รอคนกรอก
+            $("mixTrans").value = total; // ใส่ยอดที่เหลือเป็นยอดโอน
         } else {
             mixPanel.style.display = 'none';
         }
     }
 }
-     // ฟังก์ชันสำหรับอัปเดตยอดเงินในช่อง Mix แบบอัตโนมัติ
+     
 function updateMixValues() {
     const price = parseFloat($("priceInp").value) || 0;
     const tip = parseFloat($("tipInp").value) || 0;
