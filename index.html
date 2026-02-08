@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.21329 </title>
+    <title>Barber Note Pro V.27329 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -412,7 +412,17 @@ nav {
         <div id="accHistory" style="max-height:400px; overflow-y:auto;"></div>
     </div>
 </div>
- <nav>
+<div id="linePreview" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center; padding:20px;">
+    <div style="background:#fff; width:100%; max-width:450px; padding:20px; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+        <h3 style="margin:0 0 15px 0; color:#1e293b; font-size:18px; display:flex; align-items:center; gap:8px;">📝 ตรวจสอบรายงาน</h3>
+        <textarea id="msgEdit" style="width:100%; height:300px; padding:12px; border:1px solid #cbd5e1; border-radius:10px; font-family:sans-serif; font-size:14px; line-height:1.5; outline:none; resize:none;"></textarea>
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <button onclick="document.getElementById('linePreview').style.display='none'" style="flex:1; padding:12px; background:#f1f5f9; color:#475569; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">ยกเลิก</button>
+            <button onclick="sendToLineFinal()" style="flex:1; padding:12px; background:#22c55e; color:#fff; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">ส่งเข้า LINE ✅</button>
+        </div>
+    </div>
+</div>
+    <nav>
     <div onclick="go(1)" class="nav-item active"><i class="fas fa-edit"></i><span>บันทึก</span></div>
     <div onclick="go(2)" class="nav-item"><i class="fas fa-history"></i><span>รายงาน</span></div>
     <div onclick="go(3)" class="nav-item"><i class="fas fa-wallet"></i><span>บัญชี</span></div>
@@ -1375,25 +1385,64 @@ allRec
               if (!comments.length) comments.push("ภาพรวมเดือนนี้อยู่ในระดับปกติครับ");
               return comments;
             }
-                function shareLine() {
-                const dInp = $("dateInp").value, today = db.filter(r => r.date === dInp); if (!today.length) return;
-                const dp = dInp.split('-'), fDate = `${dp[2]}/${dp[1]}/${dp[0]}`;
-                let tot=0, cash=0, trans=0, tips=0, stats={};
-                let clientList = today.sort((a,b)=>a.time.localeCompare(b.time)).map((r,i)=>{
-                    const p = Number(r.price)||0, t = Number(r.tip)||0; tot+=p; tips+=t;
-                    r.pay==='Trans' ? trans+=p : cash+=p;
-                    if(r.hair&&r.hair.includes("เด็ก")) stats["เด็ก"]=(stats["เด็ก"]||0)+1;
-                    (r.svcs||[]).forEach(s=>{ if(s) stats[s]=(stats[s]||0)+1; });
-                    const tShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
-                    return `${i+1}. [${tShow}] ${(r.svcs||[]).join('+')} = ${p}${t?` (+ทิป ${t})`:''} ${r.pay==='Trans'?'📱':'💵'}`;
-                }).join('\n');
-                const allowed = ["เด็ก","สระผม","โกนหนวด","ย้อมผม","ย้อมสี"], icons = {"เด็ก":"🧒","สระ":"🧼","โกน":"🪒","ย้อม":"🎨"};
-                let statText = Object.entries(stats).filter(([k])=>allowed.some(a=>k.includes(a))).map(([k,v])=>`${icons[Object.keys(icons).find(i=>k.includes(i))]||'🔹'} ${k}: ${v}`).join('\n');
-                let bEarn = Math.max(tot*(conf.perc/100), conf.guar) + tips; // ช่างได้ = ส่วนแบ่ง + ทิปทั้งหมด
-                let settle = cash - bEarn, settleMsg = settle > 0 ? `⚠️ ช่างคืนร้าน ${Math.floor(Math.abs(settle))}` : `🟦 ร้านคืนช่าง ${Math.floor(Math.abs(settle))}`;
-                let msg = `💈 รายงานร้าน: Barber Shop\n📅 วันที่: ${fDate}\n-------------------------\n📝 ลูกค้า (${today.length} คน):\n${clientList}\n-------------------------\n📊 สรุปงาน:\n${statText}\n-------------------------\n💰 ยอด: ${tot} | 🧧 ทิป: ${tips}\n📱 โอน: ${trans} | 💵 สด: ${cash}\n🤵 ช่างได้: ${Math.floor(bEarn)}\n🏠 ร้านได้: ${Math.floor(tot-(bEarn-tips))}\n-------------------------\n${settleMsg}`;
-                window.open(`https://line.me/R/msg/text/?${encodeURIComponent(msg)}`);
-            }
+function shareLine() {
+    const dInp = $("dateInp").value, today = db.filter(r => r.date === dInp); 
+    if (!today.length) return;
+
+    const dp = dInp.split('-'), fDate = `${dp[2]}/${dp[1]}/${dp[0]}`;
+    let tot=0, cash=0, trans=0, tips=0, stats={}, realCustomerCount=0;
+
+    let clientList = today.sort((a,b)=>a.time.localeCompare(b.time)).map((r,i)=>{
+        const p = Number(r.price)||0, t = Number(r.tip)||0; 
+        const rType = r.type ? String(r.type).toUpperCase().trim() : '';
+        
+        tot += p; 
+        tips += t;
+        r.pay === 'Trans' ? trans += (p + t) : cash += p; // แก้ให้โอนรวมทิปตามตรรกะร้าน
+
+        // 🚨 เช็คว่าใช่งานจริงหรือไม่ (ไม่นับประกัน/วันหยุด/ยอด0)
+        if (rType !== 'GUARANTEE' && rType !== 'HOLIDAY' && p > 0) {
+            realCustomerCount++;
+            if(r.hair && r.hair.includes("เด็ก")) stats["เด็ก"] = (stats["เด็ก"]||0) + 1;
+            (r.svcs||[]).forEach(s => { if(s) stats[s] = (stats[s]||0) + 1; });
+        }
+
+        const tShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
+        const icon = rType === 'GUARANTEE' ? '🛡️' : (rType === 'HOLIDAY' ? '🏖️' : '');
+        return `${i+1}. [${tShow}] ${icon} ${(r.svcs||[]).join('+')} = ${p}${t?` (+ทิป ${t})`:''} ${r.pay==='Trans'?'📱':'💵'}`;
+    }).join('\n');
+
+    const allowed = ["เด็ก","สระผม","โกนหนวด","ย้อมผม","ย้อมสี"], icons = {"เด็ก":"🧒","สระ":"🧼","โกน":"🪒","ย้อม":"🎨"};
+    let statText = Object.entries(stats).filter(([k])=>allowed.some(a=>k.includes(a))).map(([k,v])=>`${icons[Object.keys(icons).find(i=>k.includes(i))]||'🔹'} ${k}: ${v}`).join('\n');
+    
+    let bEarn = Math.max(tot*(conf.perc/100), conf.guar) + tips;
+    let settle = cash - bEarn, settleMsg = settle > 0 ? `⚠️ ช่างคืนร้าน ${Math.floor(Math.abs(settle))}` : `🟦 ร้านคืนช่าง ${Math.floor(Math.abs(settle))}`;
+
+    // สร้างข้อความ
+    let msg = `💈 รายงานร้าน: Barber Shop\n`;
+    msg += `📅 วันที่: ${fDate}\n`;
+    msg += `-------------------------\n`;
+    msg += `📝 ลูกค้า (${realCustomerCount} คน):\n${clientList}\n`; // ใช้จำนวนที่นับจริง
+    msg += `-------------------------\n`;
+    msg += `📊 สรุปงาน:\n${statText || '(ไม่มีรายการเสริม)'}\n`;
+    msg += `-------------------------\n`;
+    msg += `💰 ยอด: ${tot} | 🧧 ทิป: ${tips}\n`;
+    msg += `📱 โอน: ${trans} | 💵 สด: ${cash}\n`;
+    msg += `🤵 ช่างได้: ${Math.floor(bEarn)}\n`;
+    msg += `🏠 ร้านได้: ${Math.floor(tot-(bEarn-tips))}\n`;
+    msg += `-------------------------\n`;
+    msg += `${settleMsg}`;
+
+    // แทนที่จะเปิด LINE ทันที ให้เปิดกล่อง Preview แทน
+    document.getElementById("msgEdit").value = msg;
+    document.getElementById("linePreview").style.display = "flex";
+}
+// ฟังก์ชันสำหรับส่งจริงหลังจากตรวจทานแล้ว
+function sendToLineFinal() {
+    const finalMsg = document.getElementById("msgEdit").value;
+    window.open(`https://line.me/R/msg/text/?${encodeURIComponent(finalMsg)}`);
+    document.getElementById("linePreview").style.display = "none";
+}
             function go(p) {
                 document.querySelectorAll('.page').forEach(pg => {
                     pg.classList.remove('active');
@@ -1511,6 +1560,7 @@ allRec
                     location.reload(); // เพื่อให้หน้าจอกลับไปเป็น 0
                 }
             }
-            </script>
+        
+ </script>
             </body>
             </html>
