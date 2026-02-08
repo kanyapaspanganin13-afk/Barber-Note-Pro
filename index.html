@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.2517 </title>
+    <title>Barber Note Pro V.25107 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -1093,44 +1093,84 @@ allRec
                         </div>
                     </div>
                 `);
-            }
-                                function loadHistMonth() {
-                        const $ = (id) => document.getElementById(id);
-                        const m = $("histMonth").value;
-                        if (!m) return alert("กรุณาเลือกเดือนก่อนครับ");
-                    
-                        const filtered = archives.filter(a => a.date && a.date.startsWith(m));
-                        if (!filtered.length) {
-                            return openReportModal("📊 สรุปรายเดือน", "<div>ไม่พบข้อมูล</div>");
+}
+                function loadHistMonth() {
+    const $ = (id) => document.getElementById(id);
+    const m = $("histMonth").value;
+    if (!m) return alert("กรุณาเลือกเดือนก่อนครับ");
+
+    const filtered = archives.filter(a => a.date && a.date.startsWith(m));
+    if (!filtered.length) {
+        return openReportModal("📊 สรุปรายเดือน", "<div style='text-align:center;padding:50px;color:#94a3b8;'>ไม่พบข้อมูลของเดือนนี้</div>");
+    }
+
+    let monthTotal = 0, monthBarber = 0, monthCount = 0;
+    let hairStats = {}, serviceStats = {};
+    let offDays = 0, workDays = 0;
+    let weeklyData = {};
+    let insights = [];
+
+    const haircutList = ["แฟชั่น","สกินเฟด","เปิดข้าง","รองทรง","ตำรวจ/ทหาร","ทรงนักเรียน","แก้ผม","โกนผม","เด็ก"];
+    const serviceList = ["โกนหนวด","กันหน้า","สระผม","ย้อมผม"];
+
+    filtered.forEach(day => {
+        if (day.off === true || day.type === "HOLIDAY") {
+            offDays++;
+            return;
+        }
+
+        workDays++;
+        monthTotal += Number(day.total) || 0;
+        monthBarber += Number(day.barber) || 0;
+
+        const dObj = new Date(day.date);
+        let wIdx = Math.ceil(dObj.getDate() / 7);
+        if (wIdx > 4) wIdx = 4;
+        const wKey = `สัปดาห์ที่ ${wIdx}`;
+        if (!weeklyData[wKey]) weeklyData[wKey] = { customers: 0, days: 0 };
+        weeklyData[wKey].days++;
+
+        if (day.details && Array.isArray(day.details)) {
+            day.details.forEach(d => {
+                if (d.type === "SERVICE") {
+                    const svcs = Array.isArray(d.svcs) ? d.svcs : [d.svcs];
+                    let isHaircut = false;
+                    svcs.forEach(s => {
+                        if (!s) return;
+                        const cleanS = s.trim();
+                        if (haircutList.includes(cleanS)) {
+                            hairStats[cleanS] = (hairStats[cleanS] || 0) + 1;
+                            isHaircut = true;
+                        } else if (serviceList.includes(cleanS)) {
+                            serviceStats[cleanS] = (serviceStats[cleanS] || 0) + 1;
                         }
-                        // --- ส่วน Logic คำนวณ (เก็บไว้ที่นี่) ---
-                        let monthTotal = 0, monthBarber = 0, monthCount = 0;
-                        let hairStats = {}, serviceStats = {};
-                        let offDays = 0, workDays = 0, zeroCustomerDays = 0;
-                        let weeklyData = {};
-                        let insights = [];
-                        
-                        // ... (โค้ดวนลูป filtered.forEach เพื่อหาค่าต่างๆ ที่คุณเขียนไว้) ...
-                    
-                        // คำนวณค่าเฉลี่ย
-                        const avgCustomerPerDay = workDays > 0 ? (monthCount / workDays) : 0;
-                    
-                        // เตรียม HTML ของ Weekly (แยกมาเตรียมไว้ก่อน)
-                        const weeklyHtml = Object.entries(weeklyData).map(([wk, data]) => {
-                            const avg = data.days > 0 ? (data.customers / data.days).toFixed(1) : 0;
-                            return `<div>...โครงสร้างรายสัปดาห์...</div>`;
-                        }).join("");
-                    
-                        // --- ส่วนการเรียกใช้งาน (เรียกตัวแสดงผล) ---
-                        // ส่งค่าที่คำนวณได้ทั้งหมดไปที่ฟังก์ชันข้างล่าง
-                        generateMonthlyReport(
-                            m, monthTotal, monthBarber, monthCount, 
-                            workDays, offDays, avgCustomerPerDay, 
-                            weeklyHtml, insights, hairStats, serviceStats
-                        );
+                    });
+                    if (isHaircut) {
+                        monthCount++;
+                        weeklyData[wKey].customers++;
                     }
-       function generateMonthlyReport(m, monthTotal, monthBarber, monthCount, workDays, offDays, avgCustomerPerDay, weeklyHtml, insights, hairStats, serviceStats) { 
-    // ฟังก์ชันช่วยวาดรายการสถิติ (ใช้ซ้ำได้ทั้งทรงผมและบริการ)
+                }
+            });
+        }
+    });
+
+    const avgCustomerPerDay = workDays > 0 ? (monthCount / workDays) : 0;
+    if (monthCount > 0) insights.push(`เฉลี่ยลูกค้า ${avgCustomerPerDay.toFixed(1)} คนต่อวัน`);
+    if (offDays > 0) insights.push(`มีวันหยุดทั้งหมด ${offDays} วันในเดือนนี้`);
+
+    const weeklyHtml = Object.entries(weeklyData).map(([wk, data]) => {
+        const avg = data.days > 0 ? (data.customers / data.days).toFixed(1) : 0;
+        return `
+            <div style="display:flex; justify-content:space-between; padding:10px 14px; background:rgba(255,255,255,0.05); border-radius:12px; margin-bottom:6px; font-size:13px;">
+                <span style="color:#94a3b8;">${wk}</span>
+                <span>เฉลี่ย <b style="color:#facc15;">${avg}</b> คน/วัน</span>
+            </div>`;
+    }).join("");
+
+    // ส่งค่าไปที่ฟังก์ชัน UI ด้านล่าง
+    generateMonthlyReport(m, monthTotal, monthBarber, monthCount, workDays, offDays, avgCustomerPerDay, weeklyHtml, insights, hairStats, serviceStats);
+}
+function generateMonthlyReport(m, monthTotal, monthBarber, monthCount, workDays, offDays, avgCustomerPerDay, weeklyHtml, insights, hairStats, serviceStats) {
     const renderStats = (obj, accentColor) => {
         const entries = Object.entries(obj).sort((a,b)=>b[1]-a[1]);
         if (!entries.length) return "<div style='color:rgba(255,255,255,0.2); padding:10px; font-size:13px;'>ไม่มีข้อมูล</div>";
@@ -1141,17 +1181,40 @@ allRec
             </div>`).join("");
     };
 
-    // รวมร่าง HTML ทั้งหมด
-    const finalHTML = `
-        <div style="background:#0f172a; padding:24px; color:#f1f5f9; border-radius:20px; margin-bottom: 80px;">
+    openReportModal(
+        `สรุปรายงานเดือน ${m}`,
+        `<div style="background:#0f172a; padding:24px; color:#f1f5f9; border-radius:20px; margin-bottom: 80px;">
             <div style="text-align:center; padding:10px 0 20px 0;">
-                <div style="font-size:18px; color:#94a3b8; font-weight:700; text-transform:uppercase;">✂️ ยอดตัดเดือน ${m}</div>
-                <div style="font-size:52px; font-weight:900;">฿${monthTotal.toLocaleString()}</div>
+                <div style="font-size:18px; color:#94a3b8; font-weight:700; text-transform:uppercase; letter-spacing:2px; margin-bottom:5px;">✂️ ยอดตัดทั้งเดือน</div>
+                <div style="font-size:52px; font-weight:900; color:#ffffff; letter-spacing:-1px;">฿${monthTotal.toLocaleString()}</div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
+                <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); padding:18px; border-radius:22px; text-align:center;">
+                    <div style="font-size:12px; color:#94a3b8; font-weight:700; text-transform:uppercase; margin-bottom:6px;">รายได้ช่าง</div>
+                    <div style="font-size:22px; font-weight:800; color:#f8fafc;">฿${Math.floor(monthBarber).toLocaleString()}</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); padding:18px; border-radius:22px; text-align:center;">
+                    <div style="font-size:12px; color:#94a3b8; font-weight:700; text-transform:uppercase; margin-bottom:6px;">รายได้ร้าน</div>
+                    <div style="font-size:22px; font-weight:800; color:#f8fafc;">฿${Math.floor(monthTotal - monthBarber).toLocaleString()}</div>
+                </div>
+            </div>
+
+            <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:25px;">
+                <div style="background:rgba(56,189,248,0.15); padding:6px 14px; border-radius:12px; font-size:13px; font-weight:600; color:#38bdf8;">👤 ลูกค้า ${monthCount} คน</div>
+                <div style="background:rgba(255,255,255,0.08); padding:6px 14px; border-radius:12px; font-size:13px; font-weight:600; color:#f8fafc;">📅 เปิดร้าน ${workDays} วัน</div>
+                <div style="background:rgba(244,63,94,0.15); padding:6px 14px; border-radius:12px; font-size:13px; font-weight:600; color:#fb7185;">🛑 หยุด ${offDays} วัน</div>
+                <div style="background:rgba(250,204,21,0.15); padding:6px 14px; border-radius:12px; font-size:13px; font-weight:600; color:#facc15;">📊 เฉลี่ย ${avgCustomerPerDay.toFixed(2)}</div>
             </div>
 
             <div style="margin-bottom:25px;">
                 <div style="font-size:14px; font-weight:800; color:#facc15; margin-bottom:12px;">📅 วิเคราะห์รายสัปดาห์</div>
                 ${weeklyHtml}
+            </div>
+
+            <div style="background:rgba(250,204,21,0.08); border:1px solid rgba(250,204,21,0.25); padding:18px; border-radius:20px; margin-bottom:30px;">
+                <div style="font-size:14px; font-weight:800; color:#facc15; margin-bottom:10px;">💡 วิเคราะห์ภาพรวม</div>
+                ${insights.map(i => `<div style="font-size:13px; color:#f8fafc; margin-bottom:6px;">• ${i}</div>`).join("")}
             </div>
 
             <div style="margin-bottom:25px;">
@@ -1167,12 +1230,9 @@ allRec
                 </div>
                 ${renderStats(serviceStats, "#38bdf8")}
             </div>
-        </div>
-    `;
-
-    // สั่งเปิด Modal
-    openReportModal(`สรุปรายงานเดือน ${m}`, finalHTML);
-}      
+        </div>`
+    );
+}
      
      function topN(obj, n = 5) {
               if (!obj || Object.keys(obj).length === 0) return [];
