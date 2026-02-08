@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.27329 </title>
+    <title>Barber Note Pro V.27399 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -581,34 +581,51 @@ nav {
                 }
             }
             function saveSettings() {
-                const shopName = $("setShop").value;
-                const shopPerc = $("setPerc").value;
-                const shopGuar = $("setGuar").value;
-                const shopTheme = $("setTheme").value;
-                conf.shop = shopName;
-                conf.perc = parseFloat(shopPerc) || 0; // กันค่าว่างพัง
-                conf.guar = parseFloat(shopGuar) || 0; // กันค่าว่างพัง
-                conf.theme = shopTheme;
-                localStorage.setItem('shopName', shopName);
-                localStorage.setItem('shopPerc', shopPerc);
-                localStorage.setItem('shopGuar', shopGuar);
-                localStorage.setItem('shopTheme', shopTheme);
-            
-                if($("shopNameDisp")) {
-                    $("shopNameDisp").innerText = shopName.toUpperCase();
-                }
-                if (typeof applyTheme === "function") {
-                    applyTheme(shopTheme); 
-                }
-                if (typeof calculateMoney === "function") {
-                    calculateMoney(); 
-                }
-                if (typeof renderDay === "function") {
-                    renderDay(); 
-                }
-                $("modalSet").style.display = 'none';
-                alert("ตั้งค่าสำเร็จ!");
-            }
+    const shopName = $("setShop").value;
+    const shopPerc = $("setPerc").value;
+    const shopGuar = $("setGuar").value;
+    const shopTheme = $("setTheme").value;
+    
+    // --- 1. เพิ่มบรรทัดดึงค่าเสียงจากตัวเลือก (Select) ---
+    const shopVoice = $("setVoice") ? $("setVoice").value : "default.mp3"; 
+
+    conf.shop = shopName;
+    conf.perc = parseFloat(shopPerc) || 0;
+    conf.guar = parseFloat(shopGuar) || 0;
+    conf.theme = shopTheme;
+    
+    // --- 2. บันทึกค่าเสียงลงในตัวแปรกลาง (conf) ---
+    conf.voice = shopVoice; 
+
+    localStorage.setItem('shopName', shopName);
+    localStorage.setItem('shopPerc', shopPerc);
+    localStorage.setItem('shopGuar', shopGuar);
+    localStorage.setItem('shopTheme', shopTheme);
+    
+    // --- 3. บันทึกค่าเสียงลงในความจำเครื่อง (LocalStorage) ---
+    localStorage.setItem('shopVoice', shopVoice); 
+
+    if($("shopNameDisp")) {
+        $("shopNameDisp").innerText = shopName.toUpperCase();
+    }
+    if (typeof applyTheme === "function") {
+        applyTheme(shopTheme); 
+    }
+    
+    // --- 4. สั่งให้เล่นเสียงที่เลือกทันทีเพื่อเป็นการทดสอบ (ตัวเลือกเสริม) ---
+    if (typeof playSuccessSound === "function") {
+        playSuccessSound(shopVoice); 
+    }
+
+    if (typeof calculateMoney === "function") {
+        calculateMoney(); 
+    }
+    if (typeof renderDay === "function") {
+        renderDay(); 
+    }
+    $("modalSet").style.display = 'none';
+    alert("ตั้งค่าสำเร็จ!");
+}
              function closeAndGoHome(){const m=document.getElementById("modalSet");if(m)m.style.display='none';if(typeof go==='function')go(1);else location.reload()}
              function speak(txt) {if ('speechSynthesis' in window) {const msg = new SpeechSynthesisUtterance(txt); msg.lang = 'th-TH'; window.speechSynthesis.speak(msg);}}       
              function clearAllData(){if(confirm("ลบข้อมูลทั้งหมด?")){localStorage.clear();location.reload()}}
