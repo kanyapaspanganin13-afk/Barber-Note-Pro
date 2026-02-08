@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.02 </title>
+    <title>Barber Note Pro V.018 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -717,6 +717,98 @@ nav {
         }
     }
 }
+     // ฟังก์ชันสำหรับอัปเดตยอดเงินในช่อง Mix แบบอัตโนมัติ
+function updateMixValues() {
+    const price = parseFloat($("priceInp").value) || 0;
+    const tip = parseFloat($("tipInp").value) || 0;
+    const total = price + tip;
+    
+    const cash = parseFloat($("mixCash").value) || 0;
+    
+    // คำนวณยอดโอนที่เหลือ
+    const trans = total - cash;
+    $("mixTrans").value = trans > 0 ? trans : 0;
+}
+
+// ดักจับเหตุการณ์เมื่อมีการพิมพ์ในช่องเงินสด
+if ($("mixCash")) {
+    $("mixCash").addEventListener("input", updateMixValues);
+}
+
+// และดักจับตอนเปลี่ยนราคา/ทิป เผื่อมีการแก้ไขยอดรวม
+if ($("priceInp")) $("priceInp").addEventListener("input", updateMixValues);
+if ($("tipInp")) $("tipInp").addEventListener("input", updateMixValues);
+   
+function addRecord() {
+    const dInp = $("dateInp").value;
+    const timeInp = $("timeInp").value;
+    const price = parseFloat($("priceInp").value) || 0;
+    const tip = parseFloat($("tipInp").value) || 0;
+    const payType = $("payTypeInp").value; // สมมติว่านี่คือ ID ของช่องเลือก สด/โอน/ผสม
+
+    // ตรวจสอบความสมบูรณ์ของข้อมูลเบื้องต้น
+    if (price === 0 && payType !== 'Holiday' && payType !== 'Guarantee') {
+        alert("กรุณาระบุราคาด้วยครับ");
+        return;
+    }
+
+    // สร้างก้อนข้อมูล
+    const newRec = {
+        id: Date.now(),
+        date: dInp,
+        time: timeInp,
+        price: price,
+        tip: tip,
+        pay: payType,
+        svcs: selectedServices, // ตัวแปรที่เก็บรายการบริการที่เลือกไว้
+        // ✅ เก็บค่าจากช่องที่คุณส่งมาให้
+        payCash: (payType === 'Mix') ? (parseFloat($("mixCash").value) || 0) : 0,
+        payTrans: (payType === 'Mix') ? (parseFloat($("mixTrans").value) || 0) : 0
+    };
+
+    // บันทึกลงตัวแปรหลักและ LocalStorage
+    db.push(newRec);
+    localStorage.setItem("barber_db", JSON.stringify(db));
+
+    // แจ้งเตือนและรีเฟรชหน้าจอ
+    alert("บันทึกข้อมูลเรียบร้อยแล้วครับ");
+    resetForm(); // ฟังก์ชันสำหรับล้างค่าในช่องกรอก
+    renderDay(); // สั่งให้วาดรายการใหม่ทันที
+}    
+ // ฟังก์ชันล้างค่าในฟอร์มหลังจากบันทึก
+function resetForm() {
+    $("priceInp").value = "";
+    $("tipInp").value = "";
+    $("mixCash").value = "";
+    $("mixTrans").value = "";
+    $("mixPanel").style.display = "none";
+    selectedServices = []; // ล้างรายการบริการที่เลือกไว้
+    // หากมีพวก checkbox หรือปุ่มกดเลือกบริการ ก็ควรสั่งให้กลับไปค่าเริ่มต้นที่นี่ครับ
+}
+
+// ฟังก์ชันเปิด/ปิด mixPanel ตามการเลือกวิธีชำระเงิน
+function togglePayType() {
+    const payType = $("payTypeInp").value;
+    const panel = $("mixPanel");
+    
+    if (payType === 'Mix') {
+        panel.style.display = "block";
+        // ใส่ค่าเริ่มต้นให้ช่องโอน = ยอดรวมทั้งหมด
+        const total = (parseFloat($("priceInp").value) || 0) + (parseFloat($("tipInp").value) || 0);
+        $("mixCash").value = "";
+        $("mixTrans").value = total;
+    } else {
+        panel.style.display = "none";
+    }
+}
+
+// เมื่อกรอก "เงินสด" ให้ "เงินโอน" ลดลงอัตโนมัติ
+$("mixCash").addEventListener("input", function() {
+    const total = (parseFloat($("priceInp").value) || 0) + (parseFloat($("tipInp").value) || 0);
+    const cash = parseFloat(this.value) || 0;
+    const remain = total - cash;
+    $("mixTrans").value = remain > 0 ? remain : 0;
+});    
     function renderDay() {
     const dInp = $("dateInp").value;
     let allRec = db.filter(r => r.date === dInp);
