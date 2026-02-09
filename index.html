@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.12 </title>
+    <title>Barber Note Pro V.1 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -1091,7 +1091,7 @@ if (dList) {
                     location.reload();
                 }
             }
-            function saveAndGo(date, total) {
+    function saveAndGo(date, total) {
     const allToday = db.filter(r => r.date === date);
     const todayData = allToday.filter(r => r.type === 'SERVICE' || r.type === 'GUARANTEE');
     const isHoliday = allToday.some(r => r.type === 'HOLIDAY');
@@ -1144,24 +1144,20 @@ if (dList) {
         account.balance = (Number(account.balance) || 0) + settle;
         archives.push(data);
     }
-
     // ล้างข้อมูลใน db เฉพาะของวันที่ปิดยอด
     db = db.filter(r => r.date !== date);
-    
     // บันทึกข้อมูลลง Memory/Storage
     save(); 
-
     // --- ✅ จุดสำคัญที่ต้องเพิ่ม: สั่งให้หน้าบัญชีอัปเดตตัวเลขทันที ---
     if (typeof loadAccountStatus === "function") {
         loadAccountStatus();
     }
-
     alert("✅ บันทึกยอดเรียบร้อย!");
     go(3); // ไปหน้าบัญชี
 }
                 function toggleAccHistory() {const w = $("accHistoryWrapper"); w.style.display = w.style.display === "none" ? "block" : "none";$("accHistory").innerHTML = account.logs.map(l => `<div style="padding:5px; border-bottom:1px solid #eee;">${l.date}: ฿${l.amount} (${l.note})</div>`).join('') || "ไม่มีประวัติ";}    
                 function loadAccountHistory() {let h = account.logs.map(l => `<div style="padding:15px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;"><div><b style="font-size:14px; color:#1e293b;">${l.date}</b><br><small style="color:#64748b;">${l.note}</small></div><b style="color:${l.amount >= 0 ? '#16a34a' : '#dc2626'};">${l.amount >= 0 ? '+' : ''}฿${Math.abs(l.amount).toLocaleString()}</b></div> `).join('');if($("accHistory")) {$("accHistory").innerHTML = h || '<center style="padding:40px; color:#94a3b8;">ไม่มีประวัติการเคลียร์</center>';}}     
-               function loadAccountStatus() {
+      function loadAccountStatus() {
     // 1. ดึงยอด "ค้างเดิม" จากกระเป๋าหลัก (account.balance)
     const oldBalance = Number(account.balance) || 0;
     if ($("accOldVal")) $("accOldVal").innerText = `฿${oldBalance.toLocaleString()}`;
@@ -1212,7 +1208,7 @@ if (dList) {
         $("accLight").style.boxShadow = `0 0 12px ${lightColor}`;
     }
 }
-            function clearAccount() {
+     function clearAccount() {
                 const d = $("accDate").value || new Date().toISOString().split('T')[0];
                 
                 const net = Number(account.balance) || 0;
@@ -1298,7 +1294,7 @@ if (dList) {
                     }
                 }
             }
-function loadHistDaily() {
+        function loadHistDaily() {
     const d = $("histDate").value;
     if (!d) return;
 
@@ -1309,7 +1305,8 @@ function loadHistDaily() {
     let transTotal = f.trans || 0;
     let totalRevenue = cashTotal + transTotal;
 
-    let customerCount = (f.details) ? f.details.length : (f.count || 0);
+    // แก้ไข: ตรวจสอบจำนวนลูกค้าให้แม่นยำขึ้น
+    let customerCount = f.count || (f.details ? f.details.length : 0);
 
     const barberEarn = Math.floor(f.barber || 0);
     const shopEarn = Math.floor(f.shop || 0);
@@ -1318,7 +1315,7 @@ function loadHistDaily() {
     (f.details || []).forEach(r => {
         const services = Array.isArray(r.svcs) ? r.svcs : [r.svcs];
         services.forEach(s => {
-            svcCounts[s] = (svcCounts[s] || 0) + 1;
+            if(s) svcCounts[s] = (svcCounts[s] || 0) + 1;
         });
     });
 
@@ -1342,51 +1339,37 @@ function loadHistDaily() {
             <div style="font-size:24px; color:#38bdf8; font-weight:800;">฿${toBarber.toLocaleString()}</div>
         </div>`;
     }
-// --- แก้ไขส่วนการสร้าง rows ให้มีการ Sort เวลาก่อน ---
-const rows = (f.details || [])
-    .slice() // สร้าง copy ของ array เพื่อไม่ให้กระทบข้อมูลต้นฉบับ
-    .sort((a, b) => {
-        // เรียงลำดับจากเวลาน้อยไปมาก (08:00 -> 20:00)
-        // ใช้ localeCompare ช่วยในการเช็ค string ของเวลา "HH:mm"
-        return (a.time || "").localeCompare(b.time || "");
-    })
-    .map((r, index) => {
-        const p = Number(r.price) || 0;
-        const t = Number(r.tip) || 0;
-        const fullTime = (r.time && r.endTime) ? `${r.time}-${r.endTime}` : (r.time || "--:--");
 
-        // ✅ ปรับการแสดงผลประเภทการจ่ายเงิน (รองรับ Mix)
-        let payText = "";
-        if (r.pay === 'Mix') {
-            payText = `🌓 ผสม (สด:${(r.payCash||0)}/โอน:${(r.payTrans||0)})`;
-        } else {
-            payText = r.pay === 'Trans' ? '📱 โอน' : '💵 เงินสด';
-        }
+    const rows = (f.details || [])
+        .slice()
+        .sort((a, b) => (a.time || "").localeCompare(b.time || ""))
+        .map((r, index) => {
+            const p = Number(r.price) || 0;
+            const t = Number(r.tip) || 0;
+            const fullTime = (r.time && r.endTime) ? `${r.time}-${r.endTime}` : (r.time || "--:--");
 
-        return `
-        <div style="padding:14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:16px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-            <div style="display:flex; align-items:center; gap:12px;">
-                <div style="width:28px; height:28px; background:rgba(255,255,255,0.08); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:#94a3b8;">${index + 1}</div>
-                <div>
-                    <div style="font-weight:700; font-size:14px; color:#f8fafc;">${Array.isArray(r.svcs) ? r.svcs.join(' + ') : r.svcs}</div>
-                    <div style="font-size:13px; color:#94a3b8; font-weight:500; margin-top:2px;">⏱ ${fullTime} • ${payText}</div>
+            let payText = "";
+            if (r.pay === 'Mix') {
+                payText = `🌓 ผสม (สด:${(r.payCash||0)}/โอน:${(r.payTrans||0)})`;
+            } else {
+                payText = r.pay === 'Trans' ? '📱 โอน' : '💵 เงินสด';
+            }
+
+            return `
+            <div style="padding:14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:16px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="width:28px; height:28px; background:rgba(255,255,255,0.08); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:#94a3b8;">${index + 1}</div>
+                    <div>
+                        <div style="font-weight:700; font-size:14px; color:#f8fafc;">${Array.isArray(r.svcs) ? r.svcs.join(' + ') : r.svcs}</div>
+                        <div style="font-size:13px; color:#94a3b8; font-weight:500; margin-top:2px;">⏱ ${fullTime} • ${payText}</div>
+                    </div>
                 </div>
-            </div>
-            <div style="text-align:right;">
-                <div style="font-size:16px; font-weight:800; color:#f8fafc;">฿${p.toLocaleString()}</div>
-                ${t > 0 ? `<div style="font-size:12px; font-weight:600; color:#f472b6;">+ Tip ฿${t.toLocaleString()}</div>` : ''}
-            </div>
-        </div>`;
-    }).join("");
-    // --- ส่วนที่เพิ่มใหม่: ปุ่มลบข้อมูล ---
-    const deleteButtonHTML = `
-        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px dashed rgba(255,255,255,0.1); padding-bottom: 20px;">
-            <button onclick="confirmDeleteDaily('${d}')" 
-                    style="width: 100%; padding: 14px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px;">
-                 ลบข้อมูลทั้งหมดของวันที่ ${d}
-            </button>
-        </div>
-    `;
+                <div style="text-align:right;">
+                    <div style="font-size:16px; font-weight:800; color:#f8fafc;">฿${p.toLocaleString()}</div>
+                    ${t > 0 ? `<div style="font-size:12px; font-weight:600; color:#f472b6;">+ Tip ฿${t.toLocaleString()}</div>` : ''}
+                </div>
+            </div>`;
+        }).join("");
 
     openReportModal(`รายงาน ${d}`, `
         <div style="font-family:'Inter', system-ui, sans-serif; background:#0f172a; margin:-16px; padding:24px; color:#f1f5f9; min-height:100vh;">
@@ -1435,28 +1418,8 @@ const rows = (f.details || [])
             <div style="max-height:400px; overflow-y:auto;">
                 ${rows}
             </div>
-
-            ${deleteButtonHTML}
-        </div>
+            </div>
     `);
-}
-     function deleteSelectedDay() {
-    const targetDate = $("dateInp").value; 
-    
-    if (!targetDate) return alert("กรุณาเลือกวันที่ต้องการลบก่อน");
-
-    // ใช้คำถามที่สุภาพเพื่อยืนยันการลบ
-    const confirmMsg = `คุณต้องการลบข้อมูลทั้งหมดของวันที่ ${targetDate} ใช่หรือไม่ครับ?\n(ข้อมูลเฉพาะวันนี้จะหายไปทั้งหมด)`;
-    
-    if (confirm(confirmMsg)) {
-        // กรองเอาเฉพาะข้อมูลวันอื่นไว้
-        db = db.filter(item => item.date !== targetDate);
-        
-        saveDB();    // บันทึกลง LocalStorage
-        renderDay(); // อัปเดตการแสดงผลหน้าจอ
-        
-        alert(`ลบข้อมูลของวันที่ ${targetDate} เรียบร้อยแล้วครับ`);
-    }
 }
      function renderStats(obj, accentColor) {
     const entries = Object.entries(obj).sort((a, b) => b[1] - a[1]);
