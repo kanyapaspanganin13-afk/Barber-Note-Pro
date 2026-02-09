@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.10 </title>
+    <title>Barber Note Pro V.13 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -110,46 +110,55 @@ nav {
         text-align: center; border: none; outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
         appearance: none; -webkit-appearance: none;
     }
-           /* 7. ปุ่มและการจัดการ (แบบขนาดคงที่) */
         
-        /* สถานะปกติ: ให้ทุกปุ่มมีสีสันตามเดิม */
-        #btnCash { background: linear-gradient(135deg, #10b981, #059669); color: white; }
-        #btnTrans { background: linear-gradient(135deg, #6366f1, #4338ca); color: white; }
-        #btnMix   { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
-        
-        .btn-pay { 
-            height: 75px; 
-            font-size: 18px; 
-            width: 100%; 
-            border-radius: 18px;
-            border: 3px solid transparent; /* เตรียมพื้นที่ขอบไว้ */
-            transition: all 0.2s ease;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        /* 🟢 เมื่อถูกเลือก (Active): สีชัด มีขอบ มีเงา แต่ขนาดเท่าเดิม */
-        .btn-pay.active-cash, 
-        .btn-pay.active-trans, 
-        .btn-pay.active-mix { 
-            opacity: 1 !important;
-            filter: grayscale(0) !important;
-            border-color: #ffffff !important; /* เพิ่มขอบสีขาวให้ดูเด่น */
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3); /* เพิ่มเงาให้ดูเหมือนปุ่มลอยขึ้นนิดนึง */
-            z-index: 2;
-        }
-        
-        /* ⚪ เมื่อไม่ได้ถูกเลือก: ให้กลายเป็นสีเทา */
-        .btn-pay.is-inactive { 
-            background: #e2e8f0 !important; 
-            color: #94a3b8 !important; 
-            filter: grayscale(1); 
-            opacity: 0.5;
-            /* transform: scale(0.95);  <-- เอาออกด้วยเพื่อให้ขนาดเท่าเดิม */
-        }
+      /* 7. ปุ่มและการจัดการ (ขนาดนิ่งสนิท) */
+
+/* สีปกติของแต่ละปุ่ม */
+#btnCash { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+#btnTrans { background: linear-gradient(135deg, #6366f1, #4338ca); color: white; }
+#btnMix   { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+
+.btn-pay { 
+    height: 75px; 
+    font-size: 18px; 
+    width: 100%; 
+    border-radius: 18px;
+    border: 3px solid transparent;
+    transition: background 0.2s, opacity 0.2s, filter 0.2s; /* ลบ transform ออกจาก transition */
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform: none !important; /* บังคับไม่ให้มีการขยับ */
+}
+
+/* ล็อคขนาดไอคอนไม่ให้ขยาย */
+.btn-pay i {
+    transform: none !important;
+    display: inline-block;
+    margin-bottom: 4px;
+}
+
+/* 🟢 เมื่อถูกเลือก: เปลี่ยนเฉพาะขอบและเงา (ขนาดเท่าเดิม) */
+.btn-pay.active-cash, 
+.btn-pay.active-trans, 
+.btn-pay.active-mix { 
+    opacity: 1 !important;
+    filter: grayscale(0) !important;
+    border-color: #ffffff !important; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transform: none !important; /* ล็อคตำแหน่งปุ่ม */
+}
+
+/* ⚪ เมื่อไม่ได้ถูกเลือก: เป็นสีเทา */
+.btn-pay.is-inactive { 
+    background: #e2e8f0 !important; 
+    color: #94a3b8 !important; 
+    filter: grayscale(1); 
+    opacity: 0.5;
+    transform: none !important; /* ล็อคตำแหน่งปุ่ม */
+}
     /* 8. โมดอลและรายงาน */
     .modal { 
         position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); 
