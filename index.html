@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.0 </title>
+    <title>Barber Note Pro V.03 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -763,37 +763,57 @@ function addRecord() {
     const timeInp = $("timeInp").value;
     const price = parseFloat($("priceInp").value) || 0;
     const tip = parseFloat($("tipInp").value) || 0;
-    const payType = $("payTypeInp").value; // สมมติว่านี่คือ ID ของช่องเลือก สด/โอน/ผสม
+    const total = price + tip; // ยอดรวมทั้งหมดที่ต้องได้รับ
+    
+    // ใช้ตัวแปร payMethod จากฟังก์ชัน setPaymentType ที่เราสร้างไว้ก่อนหน้านี้
+    // (หรือถ้าใช้จาก Input ให้ใช้ payType)
+    const currentPay = payMethod; 
 
-    // ตรวจสอบความสมบูรณ์ของข้อมูลเบื้องต้น
-    if (price === 0 && payType !== 'Holiday' && payType !== 'Guarantee') {
+    if (price === 0 && currentPay !== 'Holiday' && currentPay !== 'Guarantee') {
         alert("กรุณาระบุราคาด้วยครับ");
         return;
     }
 
-    // สร้างก้อนข้อมูล
+    // --- ส่วนสำคัญ: จัดการแยกยอดเงินให้ถูกต้องก่อนบันทึก ---
+    let finalCash = 0;
+    let finalTrans = 0;
+
+    if (currentPay === 'Mix') {
+        // กรณีจ่ายผสม: ดึงจากช่อง Mix
+        finalCash = parseFloat($("mixCash").value) || 0;
+        finalTrans = parseFloat($("mixTrans").value) || 0;
+    } else if (currentPay === 'Cash' || currentPay === 'เงินสด') {
+        // กรณีเงินสด: ยอดทั้งหมดลงที่ช่องเงินสด
+        finalCash = total;
+        finalTrans = 0;
+    } else if (currentPay === 'Trans' || currentPay === 'โอน') {
+        // กรณีโอน: ยอดทั้งหมดลงที่ช่องโอน
+        finalCash = 0;
+        finalTrans = total;
+    }
+
     const newRec = {
         id: Date.now(),
         date: dInp,
         time: timeInp,
         price: price,
         tip: tip,
-        pay: payType,
-        svcs: selectedServices, // ตัวแปรที่เก็บรายการบริการที่เลือกไว้
-        // ✅ เก็บค่าจากช่องที่คุณส่งมาให้
-        payCash: (payType === 'Mix') ? (parseFloat($("mixCash").value) || 0) : 0,
-        payTrans: (payType === 'Mix') ? (parseFloat($("mixTrans").value) || 0) : 0
+        pay: currentPay, 
+        svcs: selectedServices,
+        // ✅ บันทึกแยกทั้งสองยอดเสมอเพื่อให้ระบบรายงานดึงไปใช้ได้
+        payCash: finalCash,
+        payTrans: finalTrans
     };
 
-    // บันทึกลงตัวแปรหลักและ LocalStorage
     db.push(newRec);
     localStorage.setItem("barber_db", JSON.stringify(db));
 
-    // แจ้งเตือนและรีเฟรชหน้าจอ
     alert("บันทึกข้อมูลเรียบร้อยแล้วครับ");
-    resetForm(); // ฟังก์ชันสำหรับล้างค่าในช่องกรอก
-    renderDay(); // สั่งให้วาดรายการใหม่ทันที
-}    
+    
+    // ล้างค่าหลังจากบันทึก
+    if (typeof resetForm === 'function') resetForm();
+    renderDay(); 
+}  
  // ฟังก์ชันล้างค่าในฟอร์มหลังจากบันทึก
 function resetForm() {
     $("priceInp").value = "";
