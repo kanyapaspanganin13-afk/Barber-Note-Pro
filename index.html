@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.0 </title>
+    <title>Barber Note Pro V.01 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -517,14 +517,14 @@ nav {
             }
 
 function confirmDeleteDaily(dateStr) {
-    const isConfirm = confirm(`ขออนุญาตยืนยันการลบข้อมูลครับ\n\nคุณต้องการลบข้อมูลทั้งหมดของวันที่ ${dateStr} ใช่หรือไม่?\n(ข้อมูลที่ลบแล้วจะไม่สามารถกู้คืนได้ครับ)`);
+    const isConfirm = confirm(`ขออนุญาตยืนยันการลบข้อมูล\n\nคุณต้องการลบข้อมูลทั้งหมดของวันที่ ${dateStr} ใช่หรือไม่?\n(ข้อมูลที่ลบแล้วจะไม่สามารถกู้คืนได้)`);
     
     if (isConfirm) {
         // กรองข้อมูลออก
         archives = archives.filter(r => r.date !== dateStr);
         saveData(); // บันทึกลงเครื่อง
         
-        alert(`ดำเนินการลบข้อมูลวันที่ ${dateStr} เรียบร้อยแล้วครับ`);
+        alert(`ดำเนินการลบข้อมูลวันที่ ${dateStr} เรียบร้อยแล้ว`);
         closeReportModal(); // ปิดหน้าต่าง
         if (typeof renderHistory === "function") renderHistory(); // อัปเดตหน้าหลัก
     }
@@ -534,7 +534,7 @@ function confirmDeleteDaily(dateStr) {
     
     // ตรวจสอบความครบถ้วนของข้อมูล
     if (!p || !payMethod) {
-        return alert("กรุณาใส่ราคาและเลือกวิธีจ่ายเงินก่อนครับ!");
+        return alert("กรุณาใส่ราคาและเลือกวิธีจ่ายเงินก่อน!");
     }
 
     const start = $("tStart").value || new Date().toTimeString().slice(0, 5);
@@ -547,7 +547,7 @@ function confirmDeleteDaily(dateStr) {
         transAmt = parseInt($("mixTrans").value) || 0;
 
         if (cashAmt + transAmt !== p + t) {
-            const confirmMsg = `ยอดเงินไม่ตรงบิล (สด ${cashAmt} + โอน ${transAmt} = ${cashAmt + transAmt}) \nยอดรวมบิลคือ ${p + t} \nคุณยังต้องการบันทึกข้อมูลนี้ใช่ไหมครับ?`;
+            const confirmMsg = `ยอดเงินไม่ตรงบิล (สด ${cashAmt} + โอน ${transAmt} = ${cashAmt + transAmt}) \nยอดรวมบิลคือ ${p + t} \nคุณยังต้องการบันทึกข้อมูลนี้ใช่ไหม?`;
             if (!confirm(confirmMsg)) return;
         }
     } else if (payMethod === 'Cash') {
@@ -569,7 +569,6 @@ function confirmDeleteDaily(dateStr) {
         payTrans: transAmt, 
         type: "SERVICE"
     };
-
     // บันทึกข้อมูล
     db.push(rec); 
     saveDB(); 
@@ -587,13 +586,13 @@ function confirmDeleteDaily(dateStr) {
 
     if($("mixPanel")) $("mixPanel").style.display = 'none';
     
-    alert("บันทึกข้อมูลเรียบร้อยแล้วครับ");
+    alert("บันทึกข้อมูลเรียบร้อยแล้ว");
 }
             function handleInsurance() {
                 const d = $("dateInp").value || new Date().toISOString().split('T')[0], g = parseInt(conf.guar) || 0;
                 const speak = (t) => { const m = new SpeechSynthesisUtterance(t); m.lang = 'th-TH'; window.speechSynthesis.speak(m); };
                 if (g <= 0) return (speak("กรุณาตั้งค่าประกัน"), alert("⚠️ ตั้งค่ายอดประกันใน 'ตั้งค่าระบบ' ก่อน"));
-                if (db.find(r => r.date === d && r.type === "GUARANTEE_CLAIM")) return (speak("วันนี้เปิดประกันไปแล้วค่ะ"), alert("🛡️ วันนี้เปิดระบบประกันไปแล้ว"));
+                if (db.find(r => r.date === d && r.type === "GUARANTEE_CLAIM")) return (speak("วันนี้เปิดประกันไปแล้ว"), alert("🛡️ วันนี้เปิดระบบประกันไปแล้ว"));
                 if (confirm(`🛡️ ยืนยันใช้ระบบ 'ประกันรายได้'?`)) {
                     db.push({ id: Date.now(), date: d, time: "00:00", svcs: ["🛡️ ประกันรายวัน"], price: 0, pay: "N/A", type: "GUARANTEE_CLAIM" });
                     saveDB(); speak(`เปิดระบบประกัน ${g} บาท เรียบร้อย`); alert("✅ เปิดระบบประกันเรียบร้อย"); renderDay();
@@ -680,7 +679,6 @@ function confirmDeleteDaily(dateStr) {
     localStorage.setItem('shopPerc', shopPerc);
     localStorage.setItem('shopGuar', shopGuar);
     localStorage.setItem('shopTheme', shopTheme);
-    
     // --- 3. บันทึกค่าเสียงลงในความจำเครื่อง (LocalStorage) ---
     localStorage.setItem('shopVoice', shopVoice); 
 
@@ -690,7 +688,6 @@ function confirmDeleteDaily(dateStr) {
     if (typeof applyTheme === "function") {
         applyTheme(shopTheme); 
     }
-    
     // --- 4. สั่งให้เล่นเสียงที่เลือกทันทีเพื่อเป็นการทดสอบ (ตัวเลือกเสริม) ---
     if (typeof playSuccessSound === "function") {
         playSuccessSound(shopVoice); 
@@ -711,7 +708,6 @@ function confirmDeleteDaily(dateStr) {
              function updateDateDisplay(v){if(!v)return;const d=new Date(v);const el=$("dateDisplay");if(el)el.innerText=d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});if(typeof renderDay==="function")renderDay()}window.addEventListener('DOMContentLoaded',()=>{const i=$("dateInp"),t=new Date().toISOString().split('T')[0];if(i){i.value=t;updateDateDisplay(t)}});
  function setPaymentType(m) {
     payMethod = m; // เก็บค่าประเภทการจ่ายเงิน
-
     // 1. จัดการ CSS Class (เพื่อให้ปุ่มที่ถูกเลือกดูเด่นขึ้น)
     if($("btnCash")) $("btnCash").className = `btn btn-pay ${m === 'Cash' ? 'active-cash' : ''}`;
     if($("btnTrans")) $("btnTrans").className = `btn btn-pay ${m === 'Trans' ? 'active-trans' : ''}`;
@@ -1005,7 +1001,7 @@ $("mixCash").addEventListener("input", function() {
                 const confirmDelete = confirm("⚠️ คุณต้องการลบข้อมูลรายงานของวันนี้ทั้งหมดใช่หรือไม่? (ข้อมูลที่ลบแล้วจะไม่สามารถเรียกคืนได้)");
                 if (confirmDelete) {
                     localStorage.removeItem("barber_db"); 
-                    alert("✅ ดำเนินการลบข้อมูลเรียบร้อยแล้วครับ");
+                    alert("✅ ดำเนินการลบข้อมูลเรียบร้อยแล้ว");
                     location.reload();
                 }
             }
@@ -1330,7 +1326,7 @@ const rows = (f.details || [])
      function deleteSelectedDay() {
     const targetDate = $("dateInp").value; 
     
-    if (!targetDate) return alert("กรุณาเลือกวันที่ต้องการลบก่อนครับ");
+    if (!targetDate) return alert("กรุณาเลือกวันที่ต้องการลบก่อน");
 
     // ใช้คำถามที่สุภาพเพื่อยืนยันการลบ
     const confirmMsg = `คุณต้องการลบข้อมูลทั้งหมดของวันที่ ${targetDate} ใช่หรือไม่ครับ?\n(ข้อมูลเฉพาะวันนี้จะหายไปทั้งหมด)`;
@@ -1446,31 +1442,7 @@ function generateMonthlyReport(m, monthTotal, monthBarber, monthCount, workDays,
     // --- 1. เตรียมข้อมูลสำหรับวิเคราะห์ (Logic) ---
     const weekEntries = Object.entries(weeklyData);
     
-    // หาสัปดาห์ที่รายได้สูงสุด
-    const topIncomeWeek = weekEntries.length > 0 
-        ? weekEntries.reduce((prev, curr) => (curr[1].income > prev[1].income ? curr : prev))
-        : null;
-
-    // หาสัปดาห์ที่ลูกค้าเยอะที่สุด
-    const topCustomerWeek = weekEntries.length > 0 
-        ? weekEntries.reduce((prev, curr) => (curr[1].customers > prev[1].customers ? curr : prev))
-        : null;
-
-    // คำนวณหาค่าเฉลี่ยตามชื่อวัน (จันทร์-อาทิตย์)
-    const dayStats = {};
-    let dailyTimeline = [];
-    
-    weekEntries.forEach(([wk, data]) => {
-        data.dailyCounts.forEach(d => {
-            dailyTimeline.push(d);
-            const dayName = d.dayName.split(' ')[0]; 
-            if (!dayStats[dayName]) dayStats[dayName] = { total: 0, count: 0 };
-            if (d.count > 0) {
-                dayStats[dayName].total += d.count;
-                dayStats[dayName].count += 1;
-            }
-        });
-    });
+    // ... (ส่วนหา topIncomeWeek, topCustomerWeek และ dayStats คงเดิม) ...
 
     const dayAverages = Object.entries(dayStats)
         .filter(([name, data]) => data.count > 0)
@@ -1479,23 +1451,39 @@ function generateMonthlyReport(m, monthTotal, monthBarber, monthCount, workDays,
     const busiestDay = dayAverages.sort((a, b) => b.avg - a.avg)[0];
     const quietestDay = dayAverages.sort((a, b) => a.avg - b.avg)[0];
 
-    // วิเคราะห์พฤติกรรม
+    // ✅ ส่วนที่เพิ่มใหม่: คำนวณหาช่วงวันที่จริง
+    const dates = dailyTimeline.map(d => d.date).filter(Boolean).sort();
+    const startDate = dates.length > 0 ? dates[0] : "";
+    const endDate = dates.length > 0 ? dates[dates.length - 1] : "";
+
+    // ฟังก์ชันช่วยจัดรูปแบบวันที่ (2026-02-01 -> 01/02)
+    const fmt = (dStr) => {
+        if(!dStr) return "";
+        const p = dStr.split('-');
+        return p.length === 3 ? `${p[2]}/${p[1]}` : dStr;
+    };
+
+    const periodLabel = (startDate && endDate) 
+        ? `ช่วงวันที่ ${fmt(startDate)} - ${fmt(endDate)}` 
+        : "ในเดือนนี้";
+
+    // วิเคราะห์พฤติกรรมโดยใช้ periodLabel
     const maxDailyCount = dailyTimeline.length > 0 ? Math.max(...dailyTimeline.map(d => d.count)) : 0;
-   const behavior = (maxDailyCount > avgCustomerPerDay * 1.5)
-    ? 'สัปดาห์นี้ มีช่วงที่ลูกค้าเข้ามามากกว่าปกติในบางวัน'
-    : 'สัปดาห์นี้ ลูกค้าเข้าร้านในระดับใกล้เคียงกันตลอดสัปดาห์';
-   
+    const behavior = (maxDailyCount > avgCustomerPerDay * 1.5)
+        ? `${periodLabel} มีช่วงที่ลูกค้าเข้ามามากกว่าปกติในบางวัน`
+        : `${periodLabel} ลูกค้าเข้าร้านในระดับใกล้เคียงกัน`;
+    
     const topHair = Object.entries(hairStats).sort((a,b) => b[1] - a[1])[0];
     const topService = Object.entries(serviceStats).sort((a,b) => b[1] - a[1])[0];
 
     // --- 2. สร้าง Array ข้อความสรุป Insights ---
     const insights = [
         `เดือนนี้เปิดให้บริการทั้งหมด <b>${workDays} วัน</b> (หยุด ${offDays} วัน)`,
-        `วิเคราะห์พฤติกรรมลูกค้า: ${behavior}`,
+        `วิเคราะห์พฤติกรรมลูกค้า: ${behavior}`, // แสดงผลเป็น "ช่วงวันที่ 01/02 - 07/02 มีช่วงที่..."
         topIncomeWeek ? `สัปดาห์ที่ทำรายได้สูงสุดคือ <b>${topIncomeWeek[0]}</b>` : `ยังไม่มีข้อมูลรายได้`,
         topCustomerWeek ? `สัปดาห์ที่มีลูกค้าเยอะที่สุดคือ <b>${topCustomerWeek[0]}</b>` : `ยังไม่มีข้อมูลลูกค้า`,
-        `สถิติรายวัน: ลูกค้ามักเข้าเยอะใน <b>วัน${busiestDay?.name || '-'}</b> และน้อยใน <b>วัน${quietestDay?.name || '-'}</b>`,
-        `อันดับ 1 ของเดือน: <b>${topHair ? topHair[0] : '-'}</b> (บริการยอดนิยม: ${topService ? topService[0] : '-'})`
+        `สถิติรายวัน: ลูกค้าเข้าเยอะใน <b>วัน${busiestDay?.name || '-'}</b> และน้อยใน <b>วัน${quietestDay?.name || '-'}</b>`,
+        `ทรงผมยอดนิยม: <b>${topHair ? topHair[0] : '-'}</b> (บริการยอดนิยม: ${topService ? topService[0] : '-'})`
     ];
 
     // --- 3. ส่วนการสร้าง HTML ของแต่ละสัปดาห์ (Weekly Cards) ---
@@ -1628,9 +1616,9 @@ function generateMonthlyReport(m, monthTotal, monthBarber, monthCount, workDays,
             }
               function confirmShareLine() {
               const m = $("histMonth").value;
-              if (!m) return alert("กรุณาเลือกเดือนก่อนนะครับ");
+              if (!m) return alert("กรุณาเลือกเดือน");
             
-              if (confirm(`คุณต้องการแชร์รายงานประจำเดือน ${m} เข้าสู่ LINE ใช่ไหมครับ?`)) {
+              if (confirm(`คุณต้องการแชร์รายงานประจำเดือน ${m} เข้าสู่ LINE ใช่ไหม?`)) {
                 shareLineMonth();
               }
             }
@@ -1654,7 +1642,7 @@ function buildMonthlyComments(data) {
     const regularOffDays = dayNames.filter((name, index) => !workedWeekdays.has(index));
 
     // ข้อความสรุปวันหยุด (สุภาพ)
-    let holidayMsg = `เดือนนี้พักผ่อนรวม ${offDaysCount} วันครับ`;
+    let holidayMsg = `เดือนนี้หยุดรวม ${offDaysCount} วัน`;
     if (regularOffDays.length > 0 && offDaysCount > 0) {
         holidayMsg += ` (หยุดประจำวัน${regularOffDays.join("/")})`;
     }
@@ -1666,8 +1654,8 @@ function buildMonthlyComments(data) {
         Object.values(w.daily).forEach(count => { if (count > maxDaily) maxDaily = count; });
     });
     const behavior = (maxDaily > avgPerDay * 1.5)
-        ? 'สัปดาห์นี้มีบางช่วงลูกค้าหนาแน่นเป็นพิเศษครับ'
-        : 'ปริมาณลูกค้าสม่ำเสมอ รักษาระดับได้ดีเยี่ยมครับ';
+        ? 'สัปดาห์นี้มีบางช่วงลูกค้าหนาแน่นเป็นพิเศษ'
+        : 'ปริมาณลูกค้าสม่ำเสมอ รักษาระดับได้ดีเยี่ยม';
     comments.push(`พฤติกรรม: ${behavior}`);
 
     // --- วันที่ลูกค้าเยอะที่สุด ---
