@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.18 </title>
+    <title>Barber Note Pro V.11 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -1160,7 +1160,7 @@ if (dList) {
 }
                 function toggleAccHistory() {const w = $("accHistoryWrapper"); w.style.display = w.style.display === "none" ? "block" : "none";$("accHistory").innerHTML = account.logs.map(l => `<div style="padding:5px; border-bottom:1px solid #eee;">${l.date}: ฿${l.amount} (${l.note})</div>`).join('') || "ไม่มีประวัติ";}    
                 function loadAccountHistory() {let h = account.logs.map(l => `<div style="padding:15px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;"><div><b style="font-size:14px; color:#1e293b;">${l.date}</b><br><small style="color:#64748b;">${l.note}</small></div><b style="color:${l.amount >= 0 ? '#16a34a' : '#dc2626'};">${l.amount >= 0 ? '+' : ''}฿${Math.abs(l.amount).toLocaleString()}</b></div> `).join('');if($("accHistory")) {$("accHistory").innerHTML = h || '<center style="padding:40px; color:#94a3b8;">ไม่มีประวัติการเคลียร์</center>';}}     
-function loadAccountStatus() {
+        function loadAccountStatus() {
     const now = new Date();
     const dateLabel = now.toLocaleDateString('th-TH', {
         day: '2-digit',
@@ -1172,7 +1172,7 @@ function loadAccountStatus() {
         $("accDateLabel").innerText = dateLabel;
     }
 
-    // 1. ดึงยอด "ค้างเดิม" - ส่วนนี้โชว์ปกติเพื่อให้เห็นต้นทาง
+    // 1. ดึงยอด "ค้างเดิม"
     const oldBalance = Number(account.balance) || 0;
     if ($("accOldVal")) $("accOldVal").innerText = `฿${oldBalance.toLocaleString()}`;
 
@@ -1193,17 +1193,14 @@ function loadAccountStatus() {
     const bEarn = Math.max(tTotal * (conf.perc / 100), conf.guar) + tTips;
     const settleToday = tCash - bEarn;
     
-    // --- [แก้ไข] ปิดการแสดงยอดวันนี้ เพื่อไม่ให้ดึงประกันมาโชว์ค้างไว้ ---
-    // if ($("accTodayVal")) $("accTodayVal").innerText = `฿${settleToday.toLocaleString()}`;
-    if ($("accTodayVal")) $("accTodayVal").innerText = `฿0`; // ให้โชว์เป็น 0 หรือค่าว่างไว้ก่อน
-    // --------------------------------------------------------
+    // ปิดการแสดงยอดวันนี้ตามความประสงค์ของท่าน (ให้โชว์เป็น 0)
+    if ($("accTodayVal")) $("accTodayVal").innerText = `฿0`;
 
     // 3. ยอดรวมสุทธิ (Net)
-    // ตรงนี้ยังใช้ settleToday คำนวณในตัวแปรได้ เพื่อให้รู้ "ที่มาที่ไป" ของยอดสุทธิ
     const net = oldBalance + settleToday; 
     if ($("accTotalVal")) $("accTotalVal").innerText = `฿${net.toLocaleString()}`;
 
-    // 4. อัปเดต Badge สถานะ (ใช้ค่า net ในการเช็ค)
+    // 4. อัปเดต Badge สถานะ
     const badge = $("statusBadge"); 
     let bgColor = "#f8fafc", textColor = "#64748b", statusTxt = "⚖️ ยอดลงตัว";
 
@@ -1213,12 +1210,6 @@ function loadAccountStatus() {
         bgColor = "#eff6ff"; textColor = "#1e3a8a"; statusTxt = "🏠 ร้านคืนช่าง";
     }
 
-    if (badge) {
-        badge.style.background = bgColor;
-        badge.style.color = textColor;
-        badge.innerText = statusTxt;
-    }
-}
     if (badge) {
         badge.innerText = statusTxt;
         badge.style.background = bgColor;
@@ -1231,7 +1222,7 @@ function loadAccountStatus() {
         $("accLight").style.background = lightColor;
         $("accLight").style.boxShadow = `0 0 12px ${lightColor}`;
     }
-}
+} // ปิดฟังก์ชันเพียงครั้งเดียวตรงนี้
      function clearAccount() {
                 const d = $("accDate").value || new Date().toISOString().split('T')[0];
                 
