@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.13 </title>
+    <title>Barber Note Pro V.12 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -889,8 +889,9 @@ $("mixCash").addEventListener("input", function() {
     const remain = total - cash;
     $("mixTrans").value = remain > 0 ? remain : 0;
 });    
-    function renderDay() {
-    const dInp = $("dateInp").value;
+   function renderDay(selectedDate) {
+    let dInp = selectedDate || ($("dateInp") ? $("dateInp").value : new Date().toISOString().split('T')[0]);
+    if ($("dateInp")) $("dateInp").value = dInp;
     let allRec = db.filter(r => r.date === dInp);
     
     if (allRec.length === 0 && typeof archives !== 'undefined') {
