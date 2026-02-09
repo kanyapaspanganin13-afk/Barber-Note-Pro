@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.01 </title>
+    <title>Barber Note Pro V.02 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -110,15 +110,34 @@ nav {
         text-align: center; border: none; outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
         appearance: none; -webkit-appearance: none;
     }
-    /* 7. ปุ่มและการจัดการ */
-    .btn { 
-        border: none; padding: 12px; border-radius: 15px; cursor: pointer; 
-        display: flex; align-items: center; justify-content: center; font-weight: 700; transition: 0.2s; 
-    }
-    .btn-save { background: var(--success); color: white; width: 100%; font-size: 16px; margin-top: 10px; }
-    .btn-pay { background: #e2e8f0; color: #64748b; border: 2px solid transparent; height: 70px; font-size: 18px; width: 100%; }
-    .btn-pay.active-cash { background: #dcfce7; color: #15803d; border-color: #22c55e; }
-    .btn-pay.active-trans { background: #e0f2fe; color: #0369a1; border-color: #0ea5e9; }
+    /* 7. ปุ่มและการจัดการ (ฉบับปรับปรุงสีให้ชัดขึ้น) */
+.btn { 
+    border: none; padding: 12px; border-radius: 15px; cursor: pointer; 
+    display: flex; align-items: center; justify-content: center; font-weight: 700; transition: 0.2s; 
+}
+
+.btn-pay { 
+    background: #f1f5f9; color: #94a3b8; border: 2px solid transparent; 
+    height: 70px; font-size: 18px; width: 100%; flex-direction: column; gap: 4px;
+}
+
+/* สถานะเมื่อกดเลือก: เงินสด */
+.btn-pay.active-cash { 
+    background: #10b981 !important; color: white !important; 
+    border-color: #059669 !important; box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+}
+
+/* สถานะเมื่อกดเลือก: โอน */
+.btn-pay.active-trans { 
+    background: #6366f1 !important; color: white !important; 
+    border-color: #4338ca !important; box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+}
+
+/* สถานะเมื่อกดเลือก: จ่ายผสม */
+.btn-pay.active-mix { 
+    background: #f59e0b !important; color: white !important; 
+    border-color: #d97706 !important; box-shadow: 0 4px 12px rgba(245,158,11,0.3);
+}
     /* 8. โมดอลและรายงาน */
     .modal { 
         position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); 
@@ -511,7 +530,6 @@ nav {
                     console.error("ไม่พบฟังก์ชัน renderHistoryList ในระบบ");
                 }
             }
-            
             function closeHistoryModal() { 
                 $("historyModal").style.display = "none"; 
             }
@@ -706,31 +724,38 @@ function confirmDeleteDaily(dateStr) {
              function speak(txt) {if ('speechSynthesis' in window) {const msg = new SpeechSynthesisUtterance(txt); msg.lang = 'th-TH'; window.speechSynthesis.speak(msg);}}       
              function clearAllData(){if(confirm("ลบข้อมูลทั้งหมด?")){localStorage.clear();location.reload()}}
              function updateDateDisplay(v){if(!v)return;const d=new Date(v);const el=$("dateDisplay");if(el)el.innerText=d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});if(typeof renderDay==="function")renderDay()}window.addEventListener('DOMContentLoaded',()=>{const i=$("dateInp"),t=new Date().toISOString().split('T')[0];if(i){i.value=t;updateDateDisplay(t)}});
- function setPaymentType(m) {
-    payMethod = m; // เก็บค่าประเภทการจ่ายเงิน
-    // 1. จัดการ CSS Class (เพื่อให้ปุ่มที่ถูกเลือกดูเด่นขึ้น)
-    if($("btnCash")) $("btnCash").className = `btn btn-pay ${m === 'Cash' ? 'active-cash' : ''}`;
-    if($("btnTrans")) $("btnTrans").className = `btn btn-pay ${m === 'Trans' ? 'active-trans' : ''}`;
-    if($("btnMix")) $("btnMix").className = `btn btn-pay ${m === 'Mix' ? 'active-mix' : ''}`;
+function setPaymentType(m) {
+    payMethod = m; 
 
-    // 2. แสดงหรือซ่อนแผงจ่ายผสม (mixPanel)
+    // ✅ ปรับการจัดการ Class ให้แม่นยำขึ้น
+    const btns = {
+        'Cash': { id: 'btnCash', active: 'active-cash' },
+        'Trans': { id: 'btnTrans', active: 'active-trans' },
+        'Mix': { id: 'btnMix', active: 'active-mix' }
+    };
+
+    Object.keys(btns).forEach(key => {
+        const target = $(btns[key].id);
+        if (target) {
+            // ล้าง Class เดิมออกก่อนแล้วใส่ใหม่ตามสถานะ
+            target.className = `btn btn-pay ${m === key ? btns[key].active : ''}`;
+        }
+    });
+    // 2. แสดงหรือซ่อนแผงจ่ายผสม (mixPanel) - เหมือนเดิมของคุณ
     const mixPanel = $("mixPanel");
     if (mixPanel) {
         if (m === 'Mix') {
             mixPanel.style.display = 'block';
-            // คำนวณยอดรวม (ราคา + ทิป) เพื่อนำไปโชว์ในช่องเงินโอนอัตโนมัติ
             const price = parseFloat($("priceInp").value) || 0;
             const tip = parseFloat($("tipInp").value) || 0;
             const total = price + tip;
-
-            $("mixCash").value = ""; // ล้างค่าเงินสดให้ว่างไว้รอคนกรอก
-            $("mixTrans").value = total; // ใส่ยอดที่เหลือเป็นยอดโอน
+            $("mixCash").value = ""; 
+            $("mixTrans").value = total; 
         } else {
             mixPanel.style.display = 'none';
         }
     }
 }
-     
 function updateMixValues() {
     const price = parseFloat($("priceInp").value) || 0;
     const tip = parseFloat($("tipInp").value) || 0;
@@ -995,7 +1020,7 @@ $("mixCash").addEventListener("input", function() {
             <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:12px 8px; border-bottom:2px solid #f1f5f9;">
                 <div style="display:flex; flex-direction:column; gap:2px;">
                     <b style="font-size:16px; color:#1e293b; letter-spacing:-0.5px;">📋 รายงานประจำวัน</b>
-                    <span style="font-size:13px; color:#6366f1; font-weight:700;">📅 วันที่: ${formattedDate}</span>
+                    <span style="font-size:13px; color:#6366f1; font-weight:700;"> วันที่: ${formattedDate}</span>
                 </div>
                 <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer; filter: drop-shadow(0 2px 4px rgba(34,197,94,0.2));" onclick="shareLine()"></i>
             </div>
