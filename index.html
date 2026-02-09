@@ -1092,95 +1092,126 @@ if (dList) {
                 }
             }
             function saveAndGo(date, total) {
-                const allToday = db.filter(r => r.date === date);
-                const todayData = allToday.filter(r => r.type === 'SERVICE' || r.type === 'GUARANTEE');
-                const isHoliday = allToday.some(r => r.type === 'HOLIDAY');
-                let cash = 0, trans = 0, tips = 0, count = 0, stats = {};
-                const extraSvcs = ["โกนหนวด", "กันหน้า", "สระผม"];
-            
-                todayData.forEach(r => {
-                    const p = Number(r.price) || 0, t = Number(r.tip) || 0;
-                    tips += t;
-                    r.pay === "Cash" ? cash += p : trans += (p + t);
-                    const svcs = Array.isArray(r.svcs) ? r.svcs : [r.svcs];
-                    // --- จุดสำคัญ: ถ้าเป็น GUARANTEE (ประกัน) ห้ามนับจำนวนลูกค้า และ ห้ามนับสถิติ ---
-                    if (r.type !== 'GUARANTEE') {
-                        const isRealCut = svcs.some(s => s && !extraSvcs.includes(s));
-                        if (isRealCut) count++;
-                        
-                        svcs.forEach(s => { 
-                            if(s) stats[s] = (stats[s] || 0) + 1; 
-                        });
-                    }
-                });
-                // 2. คำนวณรายได้ (ถ้าเป็นวันหยุดให้เป็น 0 ทั้งหมด)
-                const bEarn = isHoliday ? 0 : Math.max(total * (conf.perc / 100), conf.guar) + tips;
-                const settle = isHoliday ? 0 : cash - bEarn;
-                const idx = archives.findIndex(a => a.date === date);
-                // 3. เก็บข้อมูล data โดยเพิ่ม flag 'off' หรือ 'type' เพื่อให้รายงานดึงไปใช้ได้
-                const data = {
-                    date,
-                    total: Number(total),
-                    cash,
-                    trans,
-                    tips,
-                    barber: Math.floor(bEarn),
-                    shop: isHoliday ? 0 : total - (bEarn - tips),
-                    settle,
-                    count,
-                    stats,
-                    details: allToday, // เก็บข้อมูลทั้งหมด (รวมรายการวันหยุดด้วย)
-                    off: isHoliday,     // ส่งค่าไปให้รายงานรายเดือนนับวันหยุด
-                    type: isHoliday ? "HOLIDAY" : "WORK"
-                };    
-            
-                if (idx > -1) {
-                    account.balance = (Number(account.balance) || 0) + (settle - (archives[idx].settle || 0));
-                    archives[idx] = data;
-                } else {
-                    account.balance = (Number(account.balance) || 0) + settle;
-                    archives.push(data);
-                }
-                // ล้างข้อมูลใน db เฉพาะของวันที่ปิดยอด
-                db = db.filter(r => r.date !== date);
-                save(); 
-                alert("✅ บันทึกยอดเรียบร้อย!");
-                go(3);
-            }
+    const allToday = db.filter(r => r.date === date);
+    const todayData = allToday.filter(r => r.type === 'SERVICE' || r.type === 'GUARANTEE');
+    const isHoliday = allToday.some(r => r.type === 'HOLIDAY');
+    let cash = 0, trans = 0, tips = 0, count = 0, stats = {};
+    const extraSvcs = ["โกนหนวด", "กันหน้า", "สระผม"];
+
+    todayData.forEach(r => {
+        const p = Number(r.price) || 0, t = Number(r.tip) || 0;
+        tips += t;
+        r.pay === "Cash" ? cash += p : trans += (p + t);
+        const svcs = Array.isArray(r.svcs) ? r.svcs : [r.svcs];
+        
+        if (r.type !== 'GUARANTEE') {
+            const isRealCut = svcs.some(s => s && !extraSvcs.includes(s));
+            if (isRealCut) count++;
+            svcs.forEach(s => { 
+                if(s) stats[s] = (stats[s] || 0) + 1; 
+            });
+        }
+    });
+
+    // คำนวณรายได้
+    const bEarn = isHoliday ? 0 : Math.max(total * (conf.perc / 100), conf.guar) + tips;
+    const settle = isHoliday ? 0 : cash - bEarn;
+    const idx = archives.findIndex(a => a.date === date);
+
+    const data = {
+        date,
+        total: Number(total),
+        cash,
+        trans,
+        tips,
+        barber: Math.floor(bEarn),
+        shop: isHoliday ? 0 : total - (bEarn - tips),
+        settle,
+        count,
+        stats,
+        details: allToday, 
+        off: isHoliday,     
+        type: isHoliday ? "HOLIDAY" : "WORK"
+    };    
+
+    // --- ส่วนจัดการยอดสะสม (Balance) ---
+    if (idx > -1) {
+        // กรณีแก้ไขยอดเดิม: ต้องเอาส่วนต่างของ settle ไปปรับปรุง balance
+        account.balance = (Number(account.balance) || 0) + (settle - (archives[idx].settle || 0));
+        archives[idx] = data;
+    } else {
+        // กรณีบันทึกใหม่: บวก settle เข้าไปตรงๆ
+        account.balance = (Number(account.balance) || 0) + settle;
+        archives.push(data);
+    }
+
+    // ล้างข้อมูลใน db เฉพาะของวันที่ปิดยอด
+    db = db.filter(r => r.date !== date);
+    
+    // บันทึกข้อมูลลง Memory/Storage
+    save(); 
+
+    // --- ✅ จุดสำคัญที่ต้องเพิ่ม: สั่งให้หน้าบัญชีอัปเดตตัวเลขทันที ---
+    if (typeof loadAccountStatus === "function") {
+        loadAccountStatus();
+    }
+
+    alert("✅ บันทึกยอดเรียบร้อย!");
+    go(3); // ไปหน้าบัญชี
+}
                 function toggleAccHistory() {const w = $("accHistoryWrapper"); w.style.display = w.style.display === "none" ? "block" : "none";$("accHistory").innerHTML = account.logs.map(l => `<div style="padding:5px; border-bottom:1px solid #eee;">${l.date}: ฿${l.amount} (${l.note})</div>`).join('') || "ไม่มีประวัติ";}    
                 function loadAccountHistory() {let h = account.logs.map(l => `<div style="padding:15px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;"><div><b style="font-size:14px; color:#1e293b;">${l.date}</b><br><small style="color:#64748b;">${l.note}</small></div><b style="color:${l.amount >= 0 ? '#16a34a' : '#dc2626'};">${l.amount >= 0 ? '+' : ''}฿${Math.abs(l.amount).toLocaleString()}</b></div> `).join('');if($("accHistory")) {$("accHistory").innerHTML = h || '<center style="padding:40px; color:#94a3b8;">ไม่มีประวัติการเคลียร์</center>';}}     
-                function loadAccountStatus() {
-                const net = Number(account.balance) || 0;
-               
-                if ($("accOldVal")) $("accOldVal").innerText = `฿${net.toLocaleString()}`;
-                if ($("accTodayVal")) $("accTodayVal").innerText = `฿0`; 
-                if ($("accNet")) $("accNet").innerText = Math.abs(net).toLocaleString();
-            
-                const badge = $("statusBadge"); 
-                let bgColor = "#f8fafc"; 
-                let textColor = "#64748b";
-                let statusTxt = "⚖️ ยอดลงตัว";
-            
-                if (net > 0) {
-                    bgColor = "#fef2f2"; 
-                    textColor = "#dc2626"; 
-                    statusTxt = "👨‍🎨 ช่างคืนร้าน";
-                } else if (net < 0) {
-                    bgColor = "#eff6ff"; 
-                    textColor = "#1e3a8a"; 
-                    statusTxt = "🏠 ร้านคืนช่าง";
-                }
-                if (badge) {
-                    badge.innerText = statusTxt;
-                    badge.style.background = bgColor;
-                    badge.style.color = textColor;
-                }
-                if ($("accLight")) {
-                    const lightColor = net > 0 ? "#dc2626" : (net < 0 ? "#1e3a8a" : "#16a34a");
-                    $("accLight").style.background = lightColor;
-                    $("accLight").style.boxShadow = `0 0 12px ${lightColor}`;
-                }
-            }
+               function loadAccountStatus() {
+    // 1. ดึงยอด "ค้างเดิม" จากกระเป๋าหลัก (account.balance)
+    const oldBalance = Number(account.balance) || 0;
+    if ($("accOldVal")) $("accOldVal").innerText = `฿${oldBalance.toLocaleString()}`;
+
+    // 2. คำนวณยอด "วันนี้" (ดึงจากรายการใน db ที่ยังไม่ได้กดบันทึกปิดยอด)
+    const today = new Date().toISOString().split('T')[0];
+    const todayEntries = db.filter(r => r.date === today && (r.type === 'SERVICE' || r.type === 'GUARANTEE'));
+    
+    let tCash = 0, tTotal = 0, tTips = 0;
+    todayEntries.forEach(r => {
+        const p = Number(r.price) || 0;
+        const t = Number(r.tip) || 0;
+        tTotal += p;
+        tTips += t;
+        if (r.pay === "Cash") tCash += p;
+    });
+
+    const isHoliday = db.some(r => r.date === today && r.type === 'HOLIDAY');
+    // คำนวณรายได้ช่าง และยอดที่ต้องเคลียร์ (Settle)
+    const bEarn = isHoliday ? 0 : Math.max(tTotal * (conf.perc / 100), conf.guar) + tTips;
+    const todaySettle = isHoliday ? 0 : tCash - bEarn;
+
+    if ($("accTodayVal")) $("accTodayVal").innerText = `฿${todaySettle.toLocaleString()}`;
+
+    // 3. ยอดสุทธิรวม (Net) = ค้างเดิม + วันนี้
+    const net = oldBalance + todaySettle;
+    if ($("accNet")) $("accNet").innerText = Math.abs(net).toLocaleString();
+
+    // 4. ส่วนแสดงผล UI (สีไฟและป้ายสถานะ)
+    const badge = $("statusBadge"); 
+    let bgColor = "#f8fafc", textColor = "#64748b", statusTxt = "⚖️ ยอดลงตัว";
+
+    if (net > 0) {
+        bgColor = "#fef2f2"; textColor = "#dc2626"; statusTxt = "👨‍🎨 ช่างคืนร้าน";
+    } else if (net < 0) {
+        bgColor = "#eff6ff"; textColor = "#1e3a8a"; statusTxt = "🏠 ร้านคืนช่าง";
+    }
+
+    if (badge) {
+        badge.innerText = statusTxt;
+        badge.style.background = bgColor;
+        badge.style.color = textColor;
+    }
+
+    if ($("accLight")) {
+        const lightColor = net > 0 ? "#dc2626" : (net < 0 ? "#1e3a8a" : "#16a34a");
+        $("accLight").style.background = lightColor;
+        $("accLight").style.boxShadow = `0 0 12px ${lightColor}`;
+    }
+}
             function clearAccount() {
                 const d = $("accDate").value || new Date().toISOString().split('T')[0];
                 
