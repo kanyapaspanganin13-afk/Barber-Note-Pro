@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.02 </title>
+    <title>Barber Note Pro V.03 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -111,32 +111,46 @@ nav {
         appearance: none; -webkit-appearance: none;
     }
     /* 7. ปุ่มและการจัดการ (ฉบับปรับปรุงสีให้ชัดขึ้น) */
-.btn { 
-    border: none; padding: 12px; border-radius: 15px; cursor: pointer; 
-    display: flex; align-items: center; justify-content: center; font-weight: 700; transition: 0.2s; 
-}
-
+/* 7. ปุ่มและการจัดการ (ปรับใหม่ให้ดูง่ายที่สุด) */
 .btn-pay { 
-    background: #f1f5f9; color: #94a3b8; border: 2px solid transparent; 
-    height: 70px; font-size: 18px; width: 100%; flex-direction: column; gap: 4px;
+    background: #f8fafc; /* สีพื้นหลังปกติ (เทาอ่อนมาก) */
+    color: #94a3b8; 
+    border: 2px solid #e2e8f0; 
+    height: 75px; 
+    font-size: 16px; 
+    width: 100%; 
+    position: relative; /* เพื่อให้ใส่เครื่องหมายถูกได้ */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: grayscale(1); /* ทำให้ปุ่มที่ไม่ได้เลือกเป็นสีขาวดำ */
+    opacity: 0.6;
 }
 
-/* สถานะเมื่อกดเลือก: เงินสด */
-.btn-pay.active-cash { 
-    background: #10b981 !important; color: white !important; 
-    border-color: #059669 !important; box-shadow: 0 4px 12px rgba(16,185,129,0.3);
-}
-
-/* สถานะเมื่อกดเลือก: โอน */
-.btn-pay.active-trans { 
-    background: #6366f1 !important; color: white !important; 
-    border-color: #4338ca !important; box-shadow: 0 4px 12px rgba(99,102,241,0.3);
-}
-
-/* สถานะเมื่อกดเลือก: จ่ายผสม */
+/* เอฟเฟกต์เมื่อปุ่มถูกเลือก (Active) */
+.btn-pay.active-cash, 
+.btn-pay.active-trans, 
 .btn-pay.active-mix { 
-    background: #f59e0b !important; color: white !important; 
-    border-color: #d97706 !important; box-shadow: 0 4px 12px rgba(245,158,11,0.3);
+    filter: grayscale(0); /* กลับมามีสีสัน */
+    opacity: 1;
+    transform: translateY(-4px); /* ปุ่มลอยขึ้น */
+    border-width: 4px !important; /* ขอบหนาขึ้นชัดเจน */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* แยกสีขอบให้ชัดตามประเภท */
+.btn-pay.active-cash { border-color: #10b981 !important; color: #065f46; background: #ecfdf5; }
+.btn-pay.active-trans { border-color: #6366f1 !important; color: #3730a3; background: #eef2ff; }
+.btn-pay.active-mix { border-color: #f59e0b !important; color: #92400e; background: #fffbeb; }
+
+/* เพิ่มเครื่องหมาย ✅ หรือจุดเด่น (Optional) */
+.btn-pay.active-cash::after,
+.btn-pay.active-trans::after,
+.btn-pay.active-mix::after {
+    content: '✓';
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    font-size: 18px;
+    font-weight: 900;
 }
     /* 8. โมดอลและรายงาน */
     .modal { 
