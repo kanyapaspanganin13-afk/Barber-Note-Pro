@@ -660,12 +660,11 @@ function confirmDeleteDaily(dateStr) {
                 }
             }
             
-     function saveSettings() {
+    function saveSettings() {
     const shopName = $("setShop").value;
     const shopPerc = $("setPerc").value;
     const shopGuar = $("setGuar").value;
     const shopTheme = $("setTheme").value;
-    
     // --- 1. เพิ่มบรรทัดดึงค่าเสียงจากตัวเลือก (Select) ---
     const shopVoice = $("setVoice") ? $("setVoice").value : "default.mp3"; 
 
@@ -723,7 +722,6 @@ function confirmDeleteDaily(dateStr) {
     if (mixPanel) {
         if (m === 'Mix') {
             mixPanel.style.display = 'block';
-            
             // คำนวณยอดรวม (ราคา + ทิป) เพื่อนำไปโชว์ในช่องเงินโอนอัตโนมัติ
             const price = parseFloat($("priceInp").value) || 0;
             const tip = parseFloat($("tipInp").value) || 0;
@@ -741,19 +739,15 @@ function updateMixValues() {
     const price = parseFloat($("priceInp").value) || 0;
     const tip = parseFloat($("tipInp").value) || 0;
     const total = price + tip;
-    
     const cash = parseFloat($("mixCash").value) || 0;
-    
     // คำนวณยอดโอนที่เหลือ
     const trans = total - cash;
     $("mixTrans").value = trans > 0 ? trans : 0;
 }
-
 // ดักจับเหตุการณ์เมื่อมีการพิมพ์ในช่องเงินสด
 if ($("mixCash")) {
     $("mixCash").addEventListener("input", updateMixValues);
 }
-
 // และดักจับตอนเปลี่ยนราคา/ทิป เผื่อมีการแก้ไขยอดรวม
 if ($("priceInp")) $("priceInp").addEventListener("input", updateMixValues);
 if ($("tipInp")) $("tipInp").addEventListener("input", updateMixValues);
@@ -763,21 +757,16 @@ function addRecord() {
     const timeInp = $("timeInp").value;
     const price = parseFloat($("priceInp").value) || 0;
     const tip = parseFloat($("tipInp").value) || 0;
-    const total = price + tip; // ยอดรวมทั้งหมดที่ต้องได้รับ
-    
-    // ใช้ตัวแปร payMethod จากฟังก์ชัน setPaymentType ที่เราสร้างไว้ก่อนหน้านี้
-    // (หรือถ้าใช้จาก Input ให้ใช้ payType)
+    const total = price + tip; // ยอดรวมทั้งหมดที่ต้องได้รับ 
+    // ใช้ตัวแปร payMethod จากฟังก์ชัน setPaymentType ที่เราสร้างไว้ก่อนหน้านี้// (หรือถ้าใช้จาก Input ให้ใช้ payType)
     const currentPay = payMethod; 
-
     if (price === 0 && currentPay !== 'Holiday' && currentPay !== 'Guarantee') {
         alert("กรุณาระบุราคาด้วยครับ");
         return;
     }
-
     // --- ส่วนสำคัญ: จัดการแยกยอดเงินให้ถูกต้องก่อนบันทึก ---
     let finalCash = 0;
     let finalTrans = 0;
-
     if (currentPay === 'Mix') {
         // กรณีจ่ายผสม: ดึงจากช่อง Mix
         finalCash = parseFloat($("mixCash").value) || 0;
@@ -791,7 +780,6 @@ function addRecord() {
         finalCash = 0;
         finalTrans = total;
     }
-
     const newRec = {
         id: Date.now(),
         date: dInp,
@@ -807,7 +795,6 @@ function addRecord() {
 
     db.push(newRec);
     localStorage.setItem("barber_db", JSON.stringify(db));
-
     alert("บันทึกข้อมูลเรียบร้อยแล้วครับ");
     
     // ล้างค่าหลังจากบันทึก
@@ -824,7 +811,6 @@ function resetForm() {
     selectedServices = []; // ล้างรายการบริการที่เลือกไว้
     // หากมีพวก checkbox หรือปุ่มกดเลือกบริการ ก็ควรสั่งให้กลับไปค่าเริ่มต้นที่นี่ครับ
 }
-
 // ฟังก์ชันเปิด/ปิด mixPanel ตามการเลือกวิธีชำระเงิน
 function togglePayType() {
     const payType = $("payTypeInp").value;
@@ -840,7 +826,6 @@ function togglePayType() {
         panel.style.display = "none";
     }
 }
-
 // เมื่อกรอก "เงินสด" ให้ "เงินโอน" ลดลงอัตโนมัติ
 $("mixCash").addEventListener("input", function() {
     const total = (parseFloat($("priceInp").value) || 0) + (parseFloat($("tipInp").value) || 0);
@@ -858,14 +843,12 @@ $("mixCash").addEventListener("input", function() {
             allRec = archivedDay.details;
         }
     }
-
     const isHoliday = allRec.some(r => r.type && r.type.toUpperCase() === 'HOLIDAY');
     const stats = {};
     const extraSvcs = ["โกนหนวด", "กันหน้า", "สระผม"];
     let tot = 0, trans = 0, cash = 0, tips = 0;
     let listHtml = "";
     let realCustomerCount = 0;
-
     // --- ส่วนการประมวลผลข้อมูล ---
     allRec
     .slice()
@@ -881,8 +864,7 @@ $("mixCash").addEventListener("input", function() {
         if (r.pay === 'Mix') {
             // ดึงยอดที่บันทึกมาใช้โดยตรง
             const pCash = parseFloat(r.payCash) || 0;
-            const pTrans = parseFloat(r.payTrans) || 0;
-            
+            const pTrans = parseFloat(r.payTrans) || 0; 
             trans += pTrans;
             // cash ในที่นี้คือเงินสดที่ร้านต้องได้รับ (หักทิปที่ช่างเอาไปแล้ว)
             // ถ้า r.payCash รวมทิปมาด้วย ให้ใช้ pCash - t
@@ -1008,7 +990,6 @@ $("mixCash").addEventListener("input", function() {
                 <i class="fas fa-paper-plane"></i>
             </button>`;
     }
-
     const dList = $("dailyList");
     if (dList) {
         dList.innerHTML = `
@@ -1022,12 +1003,9 @@ $("mixCash").addEventListener("input", function() {
 }
                 function clearDailyData() {
                 const confirmDelete = confirm("⚠️ คุณต้องการลบข้อมูลรายงานของวันนี้ทั้งหมดใช่หรือไม่? (ข้อมูลที่ลบแล้วจะไม่สามารถเรียกคืนได้)");
-                
                 if (confirmDelete) {
                     localStorage.removeItem("barber_db"); 
-                
                     alert("✅ ดำเนินการลบข้อมูลเรียบร้อยแล้วครับ");
-                
                     location.reload();
                 }
             }
@@ -1251,35 +1229,42 @@ function loadHistDaily() {
             <div style="font-size:24px; color:#38bdf8; font-weight:800;">฿${toBarber.toLocaleString()}</div>
         </div>`;
     }
-   // --- แก้ไขเฉพาะส่วนสร้าง rows ในฟังก์ชัน loadHistDaily ---
-const rows = (f.details || []).map((r, index) => {
-    const p = Number(r.price) || 0;
-    const t = Number(r.tip) || 0;
-    const fullTime = (r.time && r.endTime) ? `${r.time}-${r.endTime}` : (r.time || "--:--");
+// --- แก้ไขส่วนการสร้าง rows ให้มีการ Sort เวลาก่อน ---
+const rows = (f.details || [])
+    .slice() // สร้าง copy ของ array เพื่อไม่ให้กระทบข้อมูลต้นฉบับ
+    .sort((a, b) => {
+        // เรียงลำดับจากเวลาน้อยไปมาก (08:00 -> 20:00)
+        // ใช้ localeCompare ช่วยในการเช็ค string ของเวลา "HH:mm"
+        return (a.time || "").localeCompare(b.time || "");
+    })
+    .map((r, index) => {
+        const p = Number(r.price) || 0;
+        const t = Number(r.tip) || 0;
+        const fullTime = (r.time && r.endTime) ? `${r.time}-${r.endTime}` : (r.time || "--:--");
 
-    // ✅ ปรับการแสดงผลประเภทการจ่ายเงิน
-    let payText = "";
-    if (r.pay === 'Mix') {
-        payText = `🌓 ผสม (สด:${(r.payCash||0)}/โอน:${(r.payTrans||0)})`;
-    } else {
-        payText = r.pay === 'Trans' ? '📱 โอน' : '💵 เงินสด';
-    }
+        // ✅ ปรับการแสดงผลประเภทการจ่ายเงิน (รองรับ Mix)
+        let payText = "";
+        if (r.pay === 'Mix') {
+            payText = `🌓 ผสม (สด:${(r.payCash||0)}/โอน:${(r.payTrans||0)})`;
+        } else {
+            payText = r.pay === 'Trans' ? '📱 โอน' : '💵 เงินสด';
+        }
 
-    return `
-    <div style="padding:14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:16px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-        <div style="display:flex; align-items:center; gap:12px;">
-            <div style="width:28px; height:28px; background:rgba(255,255,255,0.08); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:#94a3b8;">${index + 1}</div>
-            <div>
-                <div style="font-weight:700; font-size:14px; color:#f8fafc;">${Array.isArray(r.svcs) ? r.svcs.join(' + ') : r.svcs}</div>
-                <div style="font-size:13px; color:#94a3b8; font-weight:500; margin-top:2px;">⏱ ${fullTime} • ${payText}</div>
+        return `
+        <div style="padding:14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:16px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div style="width:28px; height:28px; background:rgba(255,255,255,0.08); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:#94a3b8;">${index + 1}</div>
+                <div>
+                    <div style="font-weight:700; font-size:14px; color:#f8fafc;">${Array.isArray(r.svcs) ? r.svcs.join(' + ') : r.svcs}</div>
+                    <div style="font-size:13px; color:#94a3b8; font-weight:500; margin-top:2px;">⏱ ${fullTime} • ${payText}</div>
+                </div>
             </div>
-        </div>
-        <div style="text-align:right;">
-            <div style="font-size:16px; font-weight:800; color:#f8fafc;">฿${p.toLocaleString()}</div>
-            ${t > 0 ? `<div style="font-size:12px; font-weight:600; color:#f472b6;">+ Tip ฿${t.toLocaleString()}</div>` : ''}
-        </div>
-    </div>`;
-}).join("");
+            <div style="text-align:right;">
+                <div style="font-size:16px; font-weight:800; color:#f8fafc;">฿${p.toLocaleString()}</div>
+                ${t > 0 ? `<div style="font-size:12px; font-weight:600; color:#f472b6;">+ Tip ฿${t.toLocaleString()}</div>` : ''}
+            </div>
+        </div>`;
+    }).join("");
     // --- ส่วนที่เพิ่มใหม่: ปุ่มลบข้อมูล ---
     const deleteButtonHTML = `
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px dashed rgba(255,255,255,0.1); padding-bottom: 20px;">
