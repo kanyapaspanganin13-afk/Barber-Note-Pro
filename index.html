@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.11 </title>
+    <title>Barber Note Pro V.1 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -1046,30 +1046,33 @@ $("mixCash").addEventListener("input", function() {
                 <i class="fas fa-paper-plane"></i>
             </button>`;
     }
-     const dList = $("dailyList");
-        if (dList) {
-            const dateParts = dInp.split('-');
-            const formattedDate = dateParts.length === 3 ? `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}` : dInp;
-    
-            dList.innerHTML = `
-                <div style="background:#f8fafc; padding:10px; border-radius:12px; margin-bottom:10px;">
-            <label style="font-size:12px; color:#64748b;">เลือกวันที่ดูรายงาน:</label>
+    const dList = $("dailyList");
+if (dList) {
+    // แปลงรูปแบบวันที่ (เช่น 2026-02-09 -> 09/02/2026) เพื่อใช้แสดงในกรณีวันหยุดหรือไม่มีข้อมูล
+    const dateParts = dInp.split('-');
+    const formattedDate = dateParts.length === 3 ? `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}` : dInp;
+
+    dList.innerHTML = `
+        <div style="background:#f1f5f9; padding:12px; border-radius:16px; margin-bottom:15px;">
+            <label style="font-size:12px; color:#475569; font-weight:700; margin-bottom:4px; display:block;">📅 รายงานประจำวันที่:</label>
             <input type="date" id="reportDateSelector" value="${dInp}" 
-                   onchange="updateReportView(this.value)" 
-                   style="width:100%; border:1px solid #e2e8f0; padding:8px; border-radius:8px;">
+                   onchange="renderDay(this.value)" 
+                   style="width:100%; border:2px solid #cbd5e1; padding:10px; border-radius:10px; font-family:inherit; font-weight:700; color:#1e293b; background:white;">
         </div>
+
         <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:12px 8px; border-bottom:2px solid #f1f5f9;">
-            <div style="display:flex; flex-direction:column; gap:2px;">
-                <b style="font-size:16px; color:#1e293b; letter-spacing:-0.5px;">📋 รายงานประจำวัน</b>
-                <span style="font-size:13px; color:#6366f1; font-weight:700;"> วันที่: ${formattedDate}</span>
+            <div style="display:flex; flex-direction:column;">
+                <b style="font-size:18px; color:#1e293b; letter-spacing:-0.5px;">📋 รายการ</b>
+                <small style="color:#64748b;">สรุปข้อมูลตามวันที่เลือกด้านบน</small>
             </div>
             <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer;" onclick="shareLine()"></i>
         </div>
-        ${isHoliday ? `...` : (listHtml || "...")}
+
+        ${isHoliday ? `<center style='padding:40px; color:#64748b;'>🏖️ วันหยุด (${formattedDate})</center>` : (listHtml || "<center style='padding:40px; color:#94a3b8;'>ไม่มีข้อมูลการขาย</center>")}
     `;
     }
-} // ปิดฟังก์ชัน renderDay
-                function clearDailyData() {
+}               
+        function clearDailyData() {
                 const confirmDelete = confirm("⚠️ คุณต้องการลบข้อมูลรายงานของวันนี้ทั้งหมดใช่หรือไม่? (ข้อมูลที่ลบแล้วจะไม่สามารถเรียกคืนได้)");
                 if (confirmDelete) {
                     localStorage.removeItem("barber_db"); 
