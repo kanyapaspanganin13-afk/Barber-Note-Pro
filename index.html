@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.14 </title>
+    <title>Barber Note Pro V.18 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -1172,7 +1172,7 @@ function loadAccountStatus() {
         $("accDateLabel").innerText = dateLabel;
     }
 
-    // 1. ดึงยอด "ค้างเดิม"
+    // 1. ดึงยอด "ค้างเดิม" - ส่วนนี้โชว์ปกติเพื่อให้เห็นต้นทาง
     const oldBalance = Number(account.balance) || 0;
     if ($("accOldVal")) $("accOldVal").innerText = `฿${oldBalance.toLocaleString()}`;
 
@@ -1193,10 +1193,14 @@ function loadAccountStatus() {
     const bEarn = Math.max(tTotal * (conf.perc / 100), conf.guar) + tTips;
     const settleToday = tCash - bEarn;
     
-    if ($("accTodayVal")) $("accTodayVal").innerText = `฿${settleToday.toLocaleString()}`;
+    // --- [แก้ไข] ปิดการแสดงยอดวันนี้ เพื่อไม่ให้ดึงประกันมาโชว์ค้างไว้ ---
+    // if ($("accTodayVal")) $("accTodayVal").innerText = `฿${settleToday.toLocaleString()}`;
+    if ($("accTodayVal")) $("accTodayVal").innerText = `฿0`; // ให้โชว์เป็น 0 หรือค่าว่างไว้ก่อน
+    // --------------------------------------------------------
 
     // 3. ยอดรวมสุทธิ (Net)
-    const net = oldBalance + settleToday;
+    // ตรงนี้ยังใช้ settleToday คำนวณในตัวแปรได้ เพื่อให้รู้ "ที่มาที่ไป" ของยอดสุทธิ
+    const net = oldBalance + settleToday; 
     if ($("accTotalVal")) $("accTotalVal").innerText = `฿${net.toLocaleString()}`;
 
     // 4. อัปเดต Badge สถานะ (ใช้ค่า net ในการเช็ค)
@@ -1209,6 +1213,12 @@ function loadAccountStatus() {
         bgColor = "#eff6ff"; textColor = "#1e3a8a"; statusTxt = "🏠 ร้านคืนช่าง";
     }
 
+    if (badge) {
+        badge.style.background = bgColor;
+        badge.style.color = textColor;
+        badge.innerText = statusTxt;
+    }
+}
     if (badge) {
         badge.innerText = statusTxt;
         badge.style.background = bgColor;
