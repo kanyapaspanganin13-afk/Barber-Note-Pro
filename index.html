@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.03 </title>
+    <title>Barber Note Pro V.0 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -875,21 +875,23 @@ $("mixCash").addEventListener("input", function() {
         const t = parseFloat(r.tip) || 0;
         const rType = r.type ? String(r.type).toUpperCase().trim() : '';
         const currentSvcs = Array.isArray(r.svcs) ? r.svcs : [];
-
-        // 1. คำนวณยอดรวมพื้นฐาน
+ // ✅ 1. คำนวณยอดรวมพื้นฐาน (แก้ไขใหม่ให้รองรับการดึงค่าจาก DB)
         tot += p;
         tips += t;
-
-        // ✅ แก้ไขส่วนนี้: คำนวณแยก Cash / Trans / Mix ให้ถูกต้อง
         if (r.pay === 'Mix') {
+            // ดึงยอดที่บันทึกมาใช้โดยตรง
             const pCash = parseFloat(r.payCash) || 0;
             const pTrans = parseFloat(r.payTrans) || 0;
+            
             trans += pTrans;
-            // ยอดเงินสดสำหรับคำนวณ settle (ไม่รวมทิป)
+            // cash ในที่นี้คือเงินสดที่ร้านต้องได้รับ (หักทิปที่ช่างเอาไปแล้ว)
+            // ถ้า r.payCash รวมทิปมาด้วย ให้ใช้ pCash - t
             cash += (pCash - t); 
-        } else if (r.pay === 'Trans') {
+        } else if (r.pay === 'Trans' || r.pay === 'โอน') {
+            // ถ้าจ่ายโอนทั้งหมด: ยอดราคา + ทิป จะเข้าส่วน trans
             trans += (p + t);
         } else {
+            // ถ้าจ่ายเงินสดทั้งหมด (Cash): ยอดราคาเข้า cash ของร้าน (ทิปอยู่ที่ช่างแล้วไม่ต้องบวก)
             cash += p;
         }
 
@@ -1249,28 +1251,35 @@ function loadHistDaily() {
             <div style="font-size:24px; color:#38bdf8; font-weight:800;">฿${toBarber.toLocaleString()}</div>
         </div>`;
     }
+   // --- แก้ไขเฉพาะส่วนสร้าง rows ในฟังก์ชัน loadHistDaily ---
+const rows = (f.details || []).map((r, index) => {
+    const p = Number(r.price) || 0;
+    const t = Number(r.tip) || 0;
+    const fullTime = (r.time && r.endTime) ? `${r.time}-${r.endTime}` : (r.time || "--:--");
 
-    const rows = (f.details || []).map((r, index) => {
-        const p = Number(r.price) || 0;
-        const t = Number(r.tip) || 0;
-        const fullTime = (r.time && r.endTime) ? `${r.time}-${r.endTime}` : (r.time || "--:--");
+    // ✅ ปรับการแสดงผลประเภทการจ่ายเงิน
+    let payText = "";
+    if (r.pay === 'Mix') {
+        payText = `🌓 ผสม (สด:${(r.payCash||0)}/โอน:${(r.payTrans||0)})`;
+    } else {
+        payText = r.pay === 'Trans' ? '📱 โอน' : '💵 เงินสด';
+    }
 
-        return `
-        <div style="padding:14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:16px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-            <div style="display:flex; align-items:center; gap:12px;">
-                <div style="width:28px; height:28px; background:rgba(255,255,255,0.08); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:#94a3b8;">${index + 1}</div>
-                <div>
-                    <div style="font-weight:700; font-size:14px; color:#f8fafc;">${Array.isArray(r.svcs) ? r.svcs.join(' + ') : r.svcs}</div>
-                    <div style="font-size:14px; color:#94a3b8; font-weight:500; margin-top:2px;">⏱ ${fullTime} • ${r.pay === 'Trans' ? 'โอน' : 'เงินสด'}</div>
-                </div>
+    return `
+    <div style="padding:14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:16px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:28px; height:28px; background:rgba(255,255,255,0.08); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:#94a3b8;">${index + 1}</div>
+            <div>
+                <div style="font-weight:700; font-size:14px; color:#f8fafc;">${Array.isArray(r.svcs) ? r.svcs.join(' + ') : r.svcs}</div>
+                <div style="font-size:13px; color:#94a3b8; font-weight:500; margin-top:2px;">⏱ ${fullTime} • ${payText}</div>
             </div>
-            <div style="text-align:right;">
-                <div style="font-size:16px; font-weight:800; color:#f8fafc;">฿${p.toLocaleString()}</div>
-                ${t > 0 ? `<div style="font-size:12px; font-weight:600; color:#f472b6;">+ Tip ฿${t.toLocaleString()}</div>` : ''}
-            </div>
-        </div>`;
-    }).join("");
-
+        </div>
+        <div style="text-align:right;">
+            <div style="font-size:16px; font-weight:800; color:#f8fafc;">฿${p.toLocaleString()}</div>
+            ${t > 0 ? `<div style="font-size:12px; font-weight:600; color:#f472b6;">+ Tip ฿${t.toLocaleString()}</div>` : ''}
+        </div>
+    </div>`;
+}).join("");
     // --- ส่วนที่เพิ่มใหม่: ปุ่มลบข้อมูล ---
     const deleteButtonHTML = `
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px dashed rgba(255,255,255,0.1); padding-bottom: 20px;">
