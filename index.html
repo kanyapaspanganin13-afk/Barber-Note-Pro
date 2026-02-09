@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.1 </title>
+    <title>Barber Note Pro V.12 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -332,11 +332,10 @@ nav {
                             <b style="font-size:22px; color:#1e293b; font-weight:900; display:block;" id="accOldVal">฿0</b>
                         </div>
                         <div style="flex:1; background:#fff; border-radius:22px; padding:18px 10px; text-align:center; box-shadow: 0 8px 20px rgba(0,0,0,0.04); border: 1px solid #f1f5f9;">
-                            <small style="font-size:16px; color:#64748b; font-weight:700; text-transform:uppercase;">วันนี้</small>
-                            <b style="font-size:22px; color:#1e293b; font-weight:900; display:block;" id="accTodayVal">฿0</b>
-                        </div>
+                        <small id="accDateLabel" style="font-size:14px; color:#64748b; font-weight:700; text-transform:uppercase;">วันที่</small>
+                        <b style="font-size:22px; color:#1e293b; font-weight:900; display:block;" id="accTodayVal">฿0</b>
                     </div>
-                        <div style="text-align:center; margin-bottom:20px;">
+                                            <div style="text-align:center; margin-bottom:20px;">
                 <div style="font-size:48px; font-weight:900; color:#1a237e; letter-spacing:-1px;">฿<span id="accNet">0</span></div>
                 <div id="statusBadge" style="display:inline-block; padding:6px 16px; border-radius:20px; font-size:14px; font-weight:bold; margin-top:8px;">
                     กำลังคำนวณ...
@@ -1157,13 +1156,19 @@ if (dList) {
 }
                 function toggleAccHistory() {const w = $("accHistoryWrapper"); w.style.display = w.style.display === "none" ? "block" : "none";$("accHistory").innerHTML = account.logs.map(l => `<div style="padding:5px; border-bottom:1px solid #eee;">${l.date}: ฿${l.amount} (${l.note})</div>`).join('') || "ไม่มีประวัติ";}    
                 function loadAccountHistory() {let h = account.logs.map(l => `<div style="padding:15px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;"><div><b style="font-size:14px; color:#1e293b;">${l.date}</b><br><small style="color:#64748b;">${l.note}</small></div><b style="color:${l.amount >= 0 ? '#16a34a' : '#dc2626'};">${l.amount >= 0 ? '+' : ''}฿${Math.abs(l.amount).toLocaleString()}</b></div> `).join('');if($("accHistory")) {$("accHistory").innerHTML = h || '<center style="padding:40px; color:#94a3b8;">ไม่มีประวัติการเคลียร์</center>';}}     
-      function loadAccountStatus() {
-    // 1. ดึงยอด "ค้างเดิม" จากกระเป๋าหลัก (account.balance)
+function loadAccountStatus() {
+    const now = new Date();
+    const dateLabel = now.toLocaleDateString('th-TH', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+    if ($("accDateLabel")) {
+        $("accDateLabel").innerText = dateLabel;
+    }
     const oldBalance = Number(account.balance) || 0;
     if ($("accOldVal")) $("accOldVal").innerText = `฿${oldBalance.toLocaleString()}`;
-
-    // 2. คำนวณยอด "วันนี้" (ดึงจากรายการใน db ที่ยังไม่ได้กดบันทึกปิดยอด)
-    const today = new Date().toISOString().split('T')[0];
+    const today = now.toISOString().split('T')[0];
     const todayEntries = db.filter(r => r.date === today && (r.type === 'SERVICE' || r.type === 'GUARANTEE'));
     
     let tCash = 0, tTotal = 0, tTips = 0;
@@ -1174,19 +1179,12 @@ if (dList) {
         tTips += t;
         if (r.pay === "Cash") tCash += p;
     });
-
-    const isHoliday = db.some(r => r.date === today && r.type === 'HOLIDAY');
-    // คำนวณรายได้ช่าง และยอดที่ต้องเคลียร์ (Settle)
-    const bEarn = isHoliday ? 0 : Math.max(tTotal * (conf.perc / 100), conf.guar) + tTips;
-    const todaySettle = isHoliday ? 0 : tCash - bEarn;
-
-    if ($("accTodayVal")) $("accTodayVal").innerText = `฿${todaySettle.toLocaleString()}`;
-
-    // 3. ยอดสุทธิรวม (Net) = ค้างเดิม + วันนี้
-    const net = oldBalance + todaySettle;
-    if ($("accNet")) $("accNet").innerText = Math.abs(net).toLocaleString();
-
-    // 4. ส่วนแสดงผล UI (สีไฟและป้ายสถานะ)
+    const bEarn = Math.max(tTotal * (conf.perc / 100), conf.guar) + tTips;
+    const settleToday = tCash - bEarn;
+    if ($("accTodayVal")) $("accTodayVal").innerText = `฿${settleToday.toLocaleString()}`;
+    const finalTotal = oldBalance + settleToday;
+    if ($("accTotalVal")) $("accTotalVal").innerText = `฿${finalTotal.toLocaleString()}`;
+}
     const badge = $("statusBadge"); 
     let bgColor = "#f8fafc", textColor = "#64748b", statusTxt = "⚖️ ยอดลงตัว";
 
