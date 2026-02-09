@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.0 </title>
+    <title>Barber Note Pro V.10 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -110,48 +110,58 @@ nav {
         text-align: center; border: none; outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
         appearance: none; -webkit-appearance: none;
     }
-    /* 7. ปุ่มและการจัดการ (ฉบับปรับปรุงสีให้ชัดขึ้น) */
-/* 7. ปุ่มและการจัดการ (ปรับใหม่ให้ดูง่ายที่สุด) */
-.btn-pay { 
-    background: #f8fafc; /* สีพื้นหลังปกติ (เทาอ่อนมาก) */
-    color: #94a3b8; 
-    border: 2px solid #e2e8f0; 
-    height: 75px; 
-    font-size: 16px; 
-    width: 100%; 
-    position: relative; /* เพื่อให้ใส่เครื่องหมายถูกได้ */
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    filter: grayscale(1); /* ทำให้ปุ่มที่ไม่ได้เลือกเป็นสีขาวดำ */
-    opacity: 0.6;
-}
+    /* 7. ปุ่มและการจัดการ (ฉบับปรับปรุงตามความต้องการของคุณ) */
 
-/* เอฟเฟกต์เมื่อปุ่มถูกเลือก (Active) */
-.btn-pay.active-cash, 
-.btn-pay.active-trans, 
-.btn-pay.active-mix { 
-    filter: grayscale(0); /* กลับมามีสีสัน */
-    opacity: 1;
-    transform: translateY(-4px); /* ปุ่มลอยขึ้น */
-    border-width: 4px !important; /* ขอบหนาขึ้นชัดเจน */
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-
-/* แยกสีขอบให้ชัดตามประเภท */
-.btn-pay.active-cash { border-color: #10b981 !important; color: #065f46; background: #ecfdf5; }
-.btn-pay.active-trans { border-color: #6366f1 !important; color: #3730a3; background: #eef2ff; }
-.btn-pay.active-mix { border-color: #f59e0b !important; color: #92400e; background: #fffbeb; }
-
-/* เพิ่มเครื่องหมาย ✅ หรือจุดเด่น (Optional) */
-.btn-pay.active-cash::after,
-.btn-pay.active-trans::after,
-.btn-pay.active-mix::after {
-    content: '✓';
-    position: absolute;
-    top: 5px;
-    right: 8px;
-    font-size: 18px;
-    font-weight: 900;
-}
+    /* สถานะปกติ: ให้ทุกปุ่มมีสีสันตามเดิม (เขียว, น้ำเงิน, ส้ม) */
+    #btnCash { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+    #btnTrans { background: linear-gradient(135deg, #6366f1, #4338ca); color: white; }
+    #btnMix   { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+    
+    .btn-pay { 
+        height: 75px; 
+        font-size: 18px; 
+        width: 100%; 
+        border-radius: 18px;
+        border: 3px solid transparent;
+        transition: all 0.25s ease;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* 🟢 เมื่อถูกเลือก (Active): ให้เด่นและขยายใหญ่ขึ้น */
+    .btn-pay.active-cash, 
+    .btn-pay.active-trans, 
+    .btn-pay.active-mix { 
+        opacity: 1 !important;
+        filter: grayscale(0) !important;
+        transform: scale(1.08) translateY(-3px);
+        border-color: #ffffff !important;
+        box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        z-index: 2;
+    }
+    
+    /* ⚪ เมื่อ "ไม่ได้เลือก" (ตอนที่มีปุ่มอื่นถูกเลือกอยู่): ให้กลายเป็นสีเทา */
+    .btn-pay.is-inactive { 
+        background: #e2e8f0 !important; 
+        color: #94a3b8 !important; 
+        filter: grayscale(1); 
+        opacity: 0.5;
+        transform: scale(0.95);
+    }
+    /* เพิ่มเครื่องหมาย ✅ หรือจุดเด่น (Optional) */
+    .btn-pay.active-cash::after,
+    .btn-pay.active-trans::after,
+    .btn-pay.active-mix::after {
+        content: '✓';
+        position: absolute;
+        top: 5px;
+        right: 8px;
+        font-size: 18px;
+        font-weight: 900;
+    }
     /* 8. โมดอลและรายงาน */
     .modal { 
         position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); 
@@ -739,24 +749,21 @@ function confirmDeleteDaily(dateStr) {
              function clearAllData(){if(confirm("ลบข้อมูลทั้งหมด?")){localStorage.clear();location.reload()}}
              function updateDateDisplay(v){if(!v)return;const d=new Date(v);const el=$("dateDisplay");if(el)el.innerText=d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});if(typeof renderDay==="function")renderDay()}window.addEventListener('DOMContentLoaded',()=>{const i=$("dateInp"),t=new Date().toISOString().split('T')[0];if(i){i.value=t;updateDateDisplay(t)}});
 function setPaymentType(m) {
-    // 1. ตรวจสอบว่าเป็นการกดซ้ำหรือไม่
-    // ถ้า payMethod เดิมตรงกับค่า m ที่กดเข้ามา ให้ทำการรีเซ็ต
+    // 1. ตรวจสอบว่าเป็นการกดซ้ำปุ่มเดิมหรือไม่
     if (typeof payMethod !== 'undefined' && payMethod === m) {
-        payMethod = ''; // ล้างค่าว่าง
-        
-        // ล้าง Class ทุกปุ่มให้กลับเป็นสถานะปกติ
+        payMethod = ''; // ล้างค่า
+
+        // คืนค่าทุกปุ่มให้กลับมาเป็นสีตามธีมเดิม (ลบ class พิเศษออกทั้งหมด)
         ['btnCash', 'btnTrans', 'btnMix'].forEach(id => {
             const el = $(id);
-            if (el) el.className = 'btn btn-pay';
+            if (el) el.className = 'btn btn-pay'; 
         });
 
-        // ซ่อนแผงจ่ายผสม
         if ($("mixPanel")) $("mixPanel").style.display = 'none';
-        return; // จบการทำงาน (ไม่ไปทำส่วนข้างล่างต่อ)
+        return;
     }
-
-    // --- ส่วนการทำงานปกติเมื่อมีการเลือก ---
-    payMethod = m; 
+    // 2. ถ้าเป็นการเลือกปุ่มใหม่
+    payMethod = m;
 
     const btns = {
         'Cash': { id: 'btnCash', active: 'active-cash' },
@@ -767,17 +774,21 @@ function setPaymentType(m) {
     Object.keys(btns).forEach(key => {
         const target = $(btns[key].id);
         if (target) {
-            target.className = `btn btn-pay ${m === key ? btns[key].active : ''}`;
+            if (m === key) {
+                // ปุ่มที่เลือก: ใส่สีสดและทำให้เด่น
+                target.className = `btn btn-pay ${btns[key].active}`;
+            } else {
+                // ปุ่มที่ไม่ได้เลือก: ทำให้เป็นสีเทา
+                target.className = `btn btn-pay is-inactive`;
+            }
         }
     });
-
+    // ส่วนของ mixPanel (เหมือนเดิมที่คุณใช้อยู่)
     const mixPanel = $("mixPanel");
     if (mixPanel) {
         if (m === 'Mix') {
             mixPanel.style.display = 'block';
-            const price = parseFloat($("priceInp").value) || 0;
-            const tip = parseFloat($("tipInp").value) || 0;
-            const total = price + tip;
+            const total = (parseFloat($("priceInp").value) || 0) + (parseFloat($("tipInp").value) || 0);
             $("mixCash").value = ""; 
             $("mixTrans").value = total; 
         } else {
