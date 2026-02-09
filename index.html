@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.1 </title>
+    <title>Barber Note Pro V.13 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -326,19 +326,23 @@ nav {
                         <div id="accLight" style="background:#22c55e; width:10px; height:10px; border-radius:50%; box-shadow:0 0 8px #22c55e;"></div>
                     </div>
             
-                    <div style="display:flex; gap:12px; margin-bottom:25px;">
-                        <div style="flex:1; background:#fff; border-radius:22px; padding:18px 10px; text-align:center; box-shadow: 0 8px 20px rgba(0,0,0,0.04); border: 1px solid #f1f5f9;">
-                            <small style="font-size:16px; color:#64748b; font-weight:700; text-transform:uppercase;">ค้างเดิม</small>
-                            <b style="font-size:22px; color:#1e293b; font-weight:900; display:block;" id="accOldVal">฿0</b>
-                        </div>
-                        <div style="flex:1; background:#fff; border-radius:22px; padding:18px 10px; text-align:center; box-shadow: 0 8px 20px rgba(0,0,0,0.04); border: 1px solid #f1f5f9;">
-                        <small id="accDateLabel" style="font-size:14px; color:#64748b; font-weight:700; text-transform:uppercase;">วันที่</small>
-                        <b style="font-size:22px; color:#1e293b; font-weight:900; display:block;" id="accTodayVal">฿0</b>
+                   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                    <div style="background:#fff; border-radius:18px; padding:12px; text-align:center; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                        <small style="font-size:12px; color:#64748b; font-weight:700;">ค้างเดิม</small>
+                        <b style="font-size:18px; color:#1e293b; display:block;" id="accOldVal">฿0</b>
                     </div>
-                                            <div style="text-align:center; margin-bottom:20px;">
-                <div style="font-size:48px; font-weight:900; color:#1a237e; letter-spacing:-1px;">฿<span id="accNet">0</span></div>
-                <div id="statusBadge" style="display:inline-block; padding:6px 16px; border-radius:20px; font-size:14px; font-weight:bold; margin-top:8px;">
-                    กำลังคำนวณ...
+                    
+                    <div style="background:#fff; border-radius:18px; padding:12px; text-align:center; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                        <small id="accDateLabel" style="font-size:12px; color:#64748b; font-weight:700;">00/00/0000</small>
+                        <b style="font-size:18px; color:#1e293b; display:block;" id="accTodayVal">฿0</b>
+                    </div>
+                </div>
+                
+                <div style="background:#fff; border-radius:22px; padding:20px; text-align:center; margin-bottom:20px; border: 1px solid #f1f5f9;">
+                    <div id="statusBadge" style="display:inline-block; padding:4px 12px; border-radius:10px; font-size:12px; font-weight:700; margin-bottom:8px;">
+                         กำลังคำนวณ...
+                    </div>
+                    <div style="font-size:32px; font-weight:900; color:#1e293b;" id="accTotalVal">฿0</div>
                 </div>
                  </div>
                     <div style="margin-bottom:15px;">
