@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.01 </title>
+    <title>Barber Note Pro V.021 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -986,17 +986,23 @@ $("mixCash").addEventListener("input", function() {
                 <i class="fas fa-paper-plane"></i>
             </button>`;
     }
-    const dList = $("dailyList");
+   const dList = $("dailyList");
     if (dList) {
+        // ✅ แปลงรูปแบบวันที่ให้ดูง่ายขึ้น (เช่น 2026-02-09 -> 09/02/2026)
+        const dateParts = selectedDate.split('-');
+        const formattedDate = dateParts.length === 3 ? `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}` : selectedDate;
+
         dList.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:0 5px;">
-                <b style="font-size:16px;">📋 รายงานวันนี้:</b>
-                <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()"></i>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0; padding:10px 5px; border-bottom:1px dashed rgba(255,255,255,0.1);">
+                <div style="display:flex; flex-direction:column; gap:2px;">
+                    <b style="font-size:16px; color:#f8fafc;">📋 รายงานประจำวัน</b>
+                    <span style="font-size:13px; color:#facc15; font-weight:600;">📅 วันที่: ${formattedDate}</span>
+                </div>
+                <i class="fab fa-line" style="color:#22c55e; font-size:32px; cursor:pointer" onclick="shareLine()" title="แชร์ไปที่ Line"></i>
             </div>
-            ${isHoliday ? `<center style='padding:40px; color:#64748b;'>🏖️ วันหยุด</center>` : (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูล</center>")}
+            ${isHoliday ? `<center style='padding:40px; color:#64748b;'>🏖️ วันหยุด (${formattedDate})</center>` : (listHtml || "<center style='padding:40px; opacity:0.3;'>ไม่มีข้อมูลของวันนี้</center>")}
         `;
     }
-}
                 function clearDailyData() {
                 const confirmDelete = confirm("⚠️ คุณต้องการลบข้อมูลรายงานของวันนี้ทั้งหมดใช่หรือไม่? (ข้อมูลที่ลบแล้วจะไม่สามารถเรียกคืนได้)");
                 if (confirmDelete) {
