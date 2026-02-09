@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro V.12 </title>
+    <title>Barber Note Pro V.1 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -1163,11 +1163,16 @@ function loadAccountStatus() {
         month: '2-digit',
         year: 'numeric'
     });
+
     if ($("accDateLabel")) {
         $("accDateLabel").innerText = dateLabel;
     }
+
+    // 1. ดึงยอด "ค้างเดิม"
     const oldBalance = Number(account.balance) || 0;
     if ($("accOldVal")) $("accOldVal").innerText = `฿${oldBalance.toLocaleString()}`;
+
+    // 2. คำนวณยอด "วันนี้"
     const today = now.toISOString().split('T')[0];
     const todayEntries = db.filter(r => r.date === today && (r.type === 'SERVICE' || r.type === 'GUARANTEE'));
     
@@ -1179,12 +1184,18 @@ function loadAccountStatus() {
         tTips += t;
         if (r.pay === "Cash") tCash += p;
     });
+
+    // คำนวณรายได้ช่างและยอด Settle วันนี้
     const bEarn = Math.max(tTotal * (conf.perc / 100), conf.guar) + tTips;
     const settleToday = tCash - bEarn;
+    
     if ($("accTodayVal")) $("accTodayVal").innerText = `฿${settleToday.toLocaleString()}`;
-    const finalTotal = oldBalance + settleToday;
-    if ($("accTotalVal")) $("accTotalVal").innerText = `฿${finalTotal.toLocaleString()}`;
-}
+
+    // 3. ยอดรวมสุทธิ (Net)
+    const net = oldBalance + settleToday;
+    if ($("accTotalVal")) $("accTotalVal").innerText = `฿${net.toLocaleString()}`;
+
+    // 4. อัปเดต Badge สถานะ (ใช้ค่า net ในการเช็ค)
     const badge = $("statusBadge"); 
     let bgColor = "#f8fafc", textColor = "#64748b", statusTxt = "⚖️ ยอดลงตัว";
 
@@ -1200,6 +1211,7 @@ function loadAccountStatus() {
         badge.style.color = textColor;
     }
 
+    // 5. อัปเดตไฟสถานะ (accLight)
     if ($("accLight")) {
         const lightColor = net > 0 ? "#dc2626" : (net < 0 ? "#1e3a8a" : "#16a34a");
         $("accLight").style.background = lightColor;
