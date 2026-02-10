@@ -557,15 +557,60 @@ function confirmDeleteDaily(dateStr) {
         if (typeof renderHistory === "function") renderHistory(); // อัปเดตหน้าหลัก
     }
 }
-function handleSave(event) {
-    const p = parseInt($("priceInp").value), t = parseInt($("tipInp").value) || 0;
+// ฟังก์ชันสำหรับกดแก้ไขจากหน้ารายงาน
+function editEntry(id) {
+    // 1. ค้นหาข้อมูลเดิมจาก ID
+    const entry = db.find(r => r.id === id);
+    if (!entry) return;
+
+    // 2. ดึงข้อมูลกลับมาใส่ในช่องกรอก (Input)
+    if ($("priceInp")) $("priceInp").value = entry.price;
+    if ($("tipInp")) $("tipInp").value = entry.tip;
+    if ($("tStart")) $("tStart").value = entry.time; // ใช้ tStart ตามชื่อใน handleSave
+    if ($("dateInp")) $("dateInp").value = entry.date;
+
+    // 3. ดึงสถานะการจ่ายเงินกลับมา
+    payMethod = entry.pay; 
+    // อัปเดตสีปุ่มให้รู้ว่าเดิมจ่ายแบบไหน
+    ["btnCash", "btnTrans", "btnMix"].forEach(btnId => { 
+        if($(btnId)) $(btnId).className = "icon-card"; 
+    });
+    if (payMethod === 'Cash' && $("btnCash")) $("btnCash").className = "icon-card active";
+    if (payMethod === 'Trans' && $("btnTrans")) $("btnTrans").className = "icon-card active";
+    if (payMethod === 'Mix' && $("btnMix")) {
+        $("btnMix").className = "icon-card active";
+        if($("mixPanel")) $("mixPanel").style.display = 'block';
+        if($("mixCash")) $("mixCash").value = entry.payCash;
+        if($("mixTrans")) $("mixTrans").value = entry.payTrans;
+    }
+
+    // 4. ลบรายการเดิมออกจากฐานข้อมูล (เพื่อรอการ "บันทึกใหม่" หลังจากแก้)
+    db = db.filter(r => r.id !== id);
     
+    // 5. บันทึกและอัปเดตรายงานทันที
+    saveDB();
+    renderDay(entry.date);
+    if (typeof loadAccountStatus === 'function') loadAccountStatus();
+
+    // 6. สลับหน้ากลับไปที่หน้าบันทึก (Page 1) และเลื่อนขึ้นบนสุด
+    showPage(1); // สมมติว่าท่านใช้ฟังก์ชัน showPage ในการสลับหน้า
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+     function handleSave(event) {
+    // 1. ดึงค่าจาก Form
+    const p = parseInt($("priceInp").value);
+    const t = parseInt($("tipInp").value) || 0;
+    const selectedDate = $("dateInp").value;
+    
+    // ตรวจสอบความพร้อมของข้อมูล
     if (!p || !payMethod) {
         return alert("กรุณาใส่ราคาและเลือกวิธีจ่ายเงินก่อน!");
     }
+
     const start = $("tStart").value || new Date().toTimeString().slice(0, 5);
     let cashAmt = 0, transAmt = 0;
 
+    // 2. จัดการคำนวณยอดเงินตามประเภทการจ่าย
     if (payMethod === 'Mix') {
         cashAmt = parseInt($("mixCash").value) || 0;
         transAmt = parseInt($("mixTrans").value) || 0;
@@ -575,21 +620,34 @@ function handleSave(event) {
     } else {
         payMethod === 'Cash' ? cashAmt = p + t : transAmt = p + t;
     }
+
+    // 3. สร้างก้อนข้อมูล (Object)
     const rec = {
         id: Date.now(), 
-        date: $("dateInp").value, 
+        date: selectedDate, 
         time: start, 
         endTime: $("tEnd").value || (typeof addMinutes === 'function' ? addMinutes(start, 30) : start),
         svcs: [$("hairStyle")?.value, $("extra1")?.value, $("extra2")?.value].filter(Boolean),
-        price: p, tip: t, pay: payMethod, payCash: cashAmt, payTrans: transAmt, type: "SERVICE"
+        price: p, 
+        tip: t, 
+        pay: payMethod, 
+        payCash: cashAmt, 
+        payTrans: transAmt, 
+        type: "SERVICE"
     };
-    // บันทึกและคำนวณใหม่ทันที
+
+    // 4. บันทึกและจัดเรียง (สำคัญ: เพื่อให้รายงานเรียงเวลาสวยงาม)
     db.push(rec); 
+    db.sort((a, b) => a.time.localeCompare(b.time)); // เรียงจากเช้าไปเย็น
     saveDB(); 
-    renderDay(); 
+    
+    // 5. อัปเดต UI ทันที
+    // สั่งให้ render รายงานของวันที่เราเพิ่งบันทึกไป
+    if (typeof renderDay === 'function') renderDay(selectedDate);
     if (typeof loadAccountStatus === 'function') loadAccountStatus();
-    // ✅ แสดงสถานะปุ่มบันทึกสำเร็จ
-    const btnSave = event.currentTarget || document.querySelector(".btn-main");
+
+    // 6. ✅ แสดงสถานะปุ่มบันทึกสำเร็จ (UX)
+    const btnSave = event?.currentTarget || document.querySelector(".btn-main");
     if (btnSave) {
         const oldContent = btnSave.innerHTML;
         const oldBg = btnSave.style.background;
@@ -600,9 +658,12 @@ function handleSave(event) {
         setTimeout(() => {
             btnSave.style.background = oldBg;
             btnSave.innerHTML = oldContent;
+            // กลับไปหน้า p1 อัตโนมัติถ้าต้องการ (เลือกเปิดใช้ได้ครับ)
+            // showPage(1); 
         }, 1200);
     }
-    // ล้างค่าฟอร์ม
+
+    // 7. ล้างค่าฟอร์มเพื่อเริ่มงานใหม่
     ["priceInp", "tipInp", "mixCash", "mixTrans"].forEach(id => { if($(id)) $(id).value = ""; });
     payMethod = ""; 
     ["btnCash", "btnTrans", "btnMix"].forEach(id => { if($(id)) $(id).className = "icon-card"; });
