@@ -560,31 +560,24 @@ function confirmDeleteDaily(dateStr) {
         if (typeof renderHistory === "function") renderHistory(); // อัปเดตหน้าหลัก
     }
 }
-     function handleSave() {
+   function handleSave(event) {
     const p = parseInt($("priceInp").value), t = parseInt($("tipInp").value) || 0;
     
-    // ตรวจสอบความครบถ้วนของข้อมูล
     if (!p || !payMethod) {
         return alert("กรุณาใส่ราคาและเลือกวิธีจ่ายเงินก่อน!");
     }
 
     const start = $("tStart").value || new Date().toTimeString().slice(0, 5);
-    
-    let cashAmt = 0;
-    let transAmt = 0;
+    let cashAmt = 0, transAmt = 0;
 
     if (payMethod === 'Mix') {
         cashAmt = parseInt($("mixCash").value) || 0;
         transAmt = parseInt($("mixTrans").value) || 0;
-
         if (cashAmt + transAmt !== p + t) {
-            const confirmMsg = `ยอดเงินไม่ตรงบิล (สด ${cashAmt} + โอน ${transAmt} = ${cashAmt + transAmt}) \nยอดรวมบิลคือ ${p + t} \nคุณยังต้องการบันทึกข้อมูลนี้ใช่ไหม?`;
-            if (!confirm(confirmMsg)) return;
+            if (!confirm(`ยอดเงินไม่ตรงบิล (รวม ${cashAmt + transAmt} / บิล ${p + t})\nยืนยันบันทึกหรือไม่?`)) return;
         }
-    } else if (payMethod === 'Cash') {
-        cashAmt = p + t;
     } else {
-        transAmt = p + t;
+        payMethod === 'Cash' ? cashAmt = p + t : transAmt = p + t;
     }
 
     const rec = {
@@ -593,31 +586,35 @@ function confirmDeleteDaily(dateStr) {
         time: start, 
         endTime: $("tEnd").value || (typeof addMinutes === 'function' ? addMinutes(start, 30) : start),
         svcs: [$("hairStyle")?.value, $("extra1")?.value, $("extra2")?.value].filter(Boolean),
-        price: p, 
-        tip: t, 
-        pay: payMethod, 
-        payCash: cashAmt,   
-        payTrans: transAmt, 
-        type: "SERVICE"
+        price: p, tip: t, pay: payMethod, payCash: cashAmt, payTrans: transAmt, type: "SERVICE"
     };
-    // บันทึกข้อมูล
+
+    // บันทึกและคำนวณใหม่ทันที
     db.push(rec); 
     saveDB(); 
     renderDay(); 
+    if (typeof loadAccountStatus === 'function') loadAccountStatus();
 
-    // ✅ ล้างค่าในหน้าจอหลังบันทึกสำเร็จ
-    ["priceInp", "tipInp", "mixCash", "mixTrans"].forEach(id => {
-        if($(id)) $(id).value = "";
-    });
-    
-    // ✅ รีเซ็ตสถานะปุ่มและตัวแปรวิธีจ่ายเงิน
+    // ✅ แสดงสถานะปุ่มบันทึกสำเร็จ
+    const btnSave = event.currentTarget || document.querySelector(".btn-main");
+    if (btnSave) {
+        const oldContent = btnSave.innerHTML;
+        const oldBg = btnSave.style.background;
+
+        btnSave.style.setProperty("background", "linear-gradient(135deg, #10b981, #059669)", "important");
+        btnSave.innerHTML = `<i class="fas fa-check-circle" style="font-size:38px;"></i> <span style="font-size:32px; font-weight:900;">บันทึกสำเร็จ</span>`;
+
+        setTimeout(() => {
+            btnSave.style.background = oldBg;
+            btnSave.innerHTML = oldContent;
+        }, 1200);
+    }
+
+    // ล้างค่าฟอร์ม
+    ["priceInp", "tipInp", "mixCash", "mixTrans"].forEach(id => { if($(id)) $(id).value = ""; });
     payMethod = ""; 
-    const buttons = ["btnCash", "btnTrans", "btnMix"];
-    buttons.forEach(id => { if($(id)) $(id).className = "btn btn-pay"; });
-
+    ["btnCash", "btnTrans", "btnMix"].forEach(id => { if($(id)) $(id).className = "icon-card"; });
     if($("mixPanel")) $("mixPanel").style.display = 'none';
-    
-    alert("บันทึกข้อมูลเรียบร้อยแล้ว");
 }
             function handleInsurance() {
                 const d = $("dateInp").value || new Date().toISOString().split('T')[0], g = parseInt(conf.guar) || 0;
