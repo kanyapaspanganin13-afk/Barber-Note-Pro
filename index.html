@@ -109,14 +109,10 @@ nav {
         width: 100%; height: 75px; border-radius: 20px; font-size: 20px; font-weight: 700; 
         text-align: center; border: none; outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
         appearance: none; -webkit-appearance: none;
-    }     
-     /* คลาสสำหรับแจ้งเตือนเมื่อบันทึกสำเร็จ */
-    .btn-success-active {
-        background: #10b981 !important; /* สีเขียว */
-        color: white !important;
-        transform: scale(0.98);
     }
-    /* 7. ปุ่มและการจัดการ (ขนาดนิ่งสนิท) */
+        
+      /* 7. ปุ่มและการจัดการ (ขนาดนิ่งสนิท) */
+
 /* สีปกติของแต่ละปุ่ม */
 #btnCash { background: linear-gradient(135deg, #10b981, #059669); color: white; }
 #btnTrans { background: linear-gradient(135deg, #6366f1, #4338ca); color: white; }
@@ -272,36 +268,37 @@ nav {
     <span style="font-size: 32px; font-weight: 900; letter-spacing:1px;">บันทึกข้อมูล</span>
 </button>
             </div>
-</div> 
-
-    <div id="p2" class="page" style="max-width:480px; margin:0 auto; padding: 15px; padding-bottom: 100px;">
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
-            <div style="background: #3b50ce; padding:18px 15px; border-radius:20px; text-align:center; box-shadow:0 10px 15px -3px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);">
-                <small style="font-weight:800; color:#cbd5e1; text-transform: uppercase; letter-spacing: 0.5px;">ยอดรวมวันนี้</small>
-                <div id="dTotal" style="font-size:36px; font-weight:900; color:#cbd5e1; margin: 5px 0;">0</div>
-                <div id="dCounts" style="font-size:16px; font-weight:700; color:#cbd5e1; background:rgba(255,255,255,0.15); display:inline-block; padding:2px 10px; border-radius:10px;">ลูกค้า 0 คน</div>
-            </div>
-
-            <div style="background:#3b50ce; padding:15px; border-radius:20px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; justify-content:center; gap:8px;">
+            <div id="p2" class="page" style="max-width:480px; margin:0 auto; padding: 15px; padding-bottom: 100px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+                    <div style="background: #3b50ce; padding:18px 15px; border-radius:20px; text-align:center; box-shadow:0 10px 15px -3px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);">
+                        <small style="font-weight:800; color:#cbd5e1; text-transform: uppercase; letter-spacing: 0.5px;">ยอดรวมวันนี้</small>
+                        <div id="dTotal" style="font-size:36px; font-weight:900; color:#cbd5e1; margin: 5px 0;">0</div>
+                        <div id="dCounts" style="font-size:16px; font-weight:700; color:#cbd5e1; background:rgba(255,255,255,0.15); display:inline-block; padding:2px 10px; border-radius:10px;">ลูกค้า 0 คน</div>
+                    </div>
+            
+                   <div style="background:#3b50ce; padding:15px; border-radius:20px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; justify-content:center; gap:8px;">
+                
                 <div style="display:flex; justify-content:space-between; align-items:center; font-size:15px; font-weight:700;">
                     <span style="color:#cbd5e1; display:flex; align-items:center; gap:8px;">
                         <i class="fas fa-mobile-alt" style="width:18px; color:#60a5fa;"></i> โอน:
                     </span> 
                     <b id="dTrans" style="color:#ffffff;">0</b>
                 </div>
+                
                 <div style="display:flex; justify-content:space-between; align-items:center; font-size:15px; font-weight:700;">
                     <span style="color:#cbd5e1; display:flex; align-items:center; gap:8px;">
                         <i class="fas fa-money-bill-wave" style="width:18px; color:#4ade80;"></i> สด:
                     </span> 
                     <b id="dCash" style="color:#ffffff;">0</b>
                 </div>
+                
                 <div style="display:flex; justify-content:space-between; align-items:center; font-size:15px; font-weight:700;">
                     <span style="color:#cbd5e1; display:flex; align-items:center; gap:8px;">
                         <i class="fas fa-cut" style="width:18px; color:#fbbf24;"></i> ช่าง:
                     </span> 
                     <b id="dBarber" style="color:#ffffff;">0</b>
                 </div>
+                
                 <div style="display:flex; justify-content:space-between; align-items:center; font-size:15px; font-weight:800; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 8px; margin-top: 2px;">
                     <span style="color:#cbd5e1; display:flex; align-items:center; gap:8px;">
                         <i class="fas fa-store" style="width:18px; color:#f472b6;"></i> ร้าน:
@@ -309,69 +306,86 @@ nav {
                     <b id="dShop" style="color:#ffffff;">0</b>
                 </div>
             </div>
-        </div> <div id="settleBarContainer" style="margin-bottom:18px;">
-            <div id="settleBar"></div> 
-        </div>
-        <div id="dServiceStats"></div>
-        <hr style="border:0; border-top:1px solid #e2e8f0; margin-top:15px;">
-        
-        <div id="dailyList"></div> </div> <div id="p3" class="page" style="max-width:480px; margin:0 auto; padding: 12px; padding-bottom: 100px; background: #f8fafc;">
-        </div>
-        <div id="p3" class="page" style="max-width:480px; margin:0 auto; padding: 12px; padding-bottom: 100px; background: #f8fafc;">
-     </div>
+            </div>
+                <div id="settleBarContainer" style="margin-bottom:18px;"><div id="settleBar"></div> </div>
+                <div id="dServiceStats"></div>
+                <hr style="border:0; border-top:1px solid #e2e8f0; margin-top:15px;">
+                <div id="dailyList"></div>
             
-    <div class="card" style="background:#fff; border-radius:25px; padding:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border:1px solid #fff; margin-bottom: 15px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <b style="font-size:22px; color:#92400e;"><i class="fas fa-wallet"></i> สถานะบัญชี</b>
-            <div id="accLight" style="background:#22c55e; width:10px; height:10px; border-radius:50%; box-shadow:0 0 8px #22c55e;"></div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-            <div style="background:#fff; border-radius:18px; padding:12px; text-align:center; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                <small style="font-size:12px; color:#64748b; font-weight:700;">ค้างเดิม</small>
-                <b style="font-size:18px; color:#1e293b; display:block;" id="accOldVal">฿0</b>
+             <div style="margin-top: 115px; width: 100%; display: flex; justify-content: center;">
+                    <button onclick="clearDailyData()" style="width:70%; height:50px; background:#e51c23; border:none ; border-radius:15px; font-size:15px; font-weight:800; color:#ffffff; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow: none;">
+                        <i class="fas fa-trash-alt" style="font-size: 18px;"></i><span style="line-height: 1;">ลบรายงานวันนี้ทั้งหมด</span>
+                    </button>
+                </div>
             </div>
-            <div style="background:#fff; border-radius:18px; padding:12px; text-align:center; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                <small id="accDateLabel" style="font-size:12px; color:#64748b; font-weight:700;">00/00/0000</small>
-                <b style="font-size:18px; color:#1e293b; display:block;" id="accTodayVal">฿0</b>
-            </div>
+            
+                <div id="p3" class="page" style="max-width:480px; margin:0 auto; padding: 12px; padding-bottom: 100px; background: #f8fafc;">
+                <div class="card" style="background:#fff; border-radius:25px; padding:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border:1px solid #fff; margin-bottom: 15px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <b style="font-size:22px; color:#92400e;"><i class="fas fa-wallet"></i> สถานะบัญชี</b>
+                        <div id="accLight" style="background:#22c55e; width:10px; height:10px; border-radius:50%; box-shadow:0 0 8px #22c55e;"></div>
+                    </div>
+            
+                   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                    <div style="background:#fff; border-radius:18px; padding:12px; text-align:center; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                        <small style="font-size:12px; color:#64748b; font-weight:700;">ค้างเดิม</small>
+                        <b style="font-size:18px; color:#1e293b; display:block;" id="accOldVal">฿0</b>
+                    </div>
+                    
+                    <div style="background:#fff; border-radius:18px; padding:12px; text-align:center; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                        <small id="accDateLabel" style="font-size:12px; color:#64748b; font-weight:700;">00/00/0000</small>
+                        <b style="font-size:18px; color:#1e293b; display:block;" id="accTodayVal">฿0</b>
+                    </div>
+                </div>
+                
+               <div style="background:#fff; border-radius:22px; padding:20px; text-align:center; margin-bottom:20px; border: 1px solid #f1f5f9;">
+        <div id="statusBadge" style="display:inline-block; padding:4px 12px; border-radius:10px; font-size:12px; font-weight:700; margin-bottom:8px;">
+             กำลังคำนวณ...
         </div>
-
-       <div style="background:#fff; border-radius:18px; padding:10px; text-align:center; margin-bottom:12px; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
-    <div id="statusBadge" style="display:inline-block; padding:2px 10px; border-radius:8px; font-size:12px; font-weight:700; margin-bottom:4px;">
-        กำลังคำนวณ...
+        <div style="font-size:32px; font-weight:900; color:#1e293b;" id="accTotalVal">฿0</div>
+    </div> </div> <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+    <button onclick="clearMoney()">เคลียร์เงิน</button>
+    <button onclick="showHistory()">ประวัติ</button>
+</div>
+                    <div style="margin-bottom:15px;">
+                        <div style="display:flex; align-items:center; background:#f1f5f9; border-radius:15px; padding:0 15px; margin-bottom:8px; height:50px;">
+                            <i class="fas fa-calendar-alt" style="color:#6366f1;"></i>
+                            <input type="date" id="accDate" style="flex:1; border:none; background:none; font-size:16px; font-weight:600; padding-left:10px; outline:none;">
+                        </div>
+                        <div style="display:flex; align-items:center; background:#f1f5f9; border-radius:15px; padding:0 15px; height:50px;">
+                            <i class="fas fa-pen-nib" style="color:#94a3b8;"></i>
+                            <input type="text" id="accNote" placeholder="หมายเหตุ..." style="flex:1; border:none; background:none; font-size:15px; padding-left:10px; outline:none;">
+                        </div>
+                    </div>
+            
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <button onclick="clearAccount()" style="background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; border-radius:18px; padding:15px 5px; font-size:14px; font-weight:800;">
+                            <i class="fas fa-check-double"></i> เคลียร์เงิน
+                        </button>
+                       <button onclick="openHistoryModal()" style="background:#fff; color:#3b82f6; border:2px solid #3b82f6; border-radius:18px; padding:15px 5px; font-size:14px; font-weight:800;">
+                            <i class="fas fa-history"></i> ประวัติเคลียร์เงิน
+                        </button>
+                    </div> 
+                </div>
+             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <div onclick="$('histDate').showPicker()" style="background:linear-gradient(135deg, #f59e0b, #d97706); border-radius:25px; padding:20px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(245,158,11,0.2);">
+                    <i class="fas fa-search-dollar" style="font-size:28px; margin-bottom:5px; display:block;"></i>
+                    <b style="font-size:16px;">เรียกดูรายวัน</b>
+                    <input type="date" id="histDate" onchange="loadHistDaily()" style="position:absolute; inset:0; opacity:0;">
+                </div>
+            
+                <div onclick="$('histMonth').showPicker()" style="background:linear-gradient(135deg, #6366f1, #4338ca); border-radius:25px; padding:20px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(99,102,241,0.2);">
+                    <i class="fas fa-calendar-check" style="font-size:28px; margin-bottom:5px; display:block;"></i>
+                    <b style="font-size:16px;">สรุปรายเดือน</b>
+                    <input type="month" id="histMonth" onchange="loadHistMonth()" style="position:absolute; inset:0; opacity:0;">
+                </div>
+            </div> <div onclick="confirmShareLine()" 
+                 style="margin-top: 15px; background: linear-gradient(135deg, #25d366, #075e54);border-radius: 25px; padding: 15px;text-align: center;color: #fff;cursor: pointer;box-shadow: 0 8px 15px rgba(37,211,102,0.2);display: flex; align-items: center;justify-content: center;gap: 10px;">       
+                <i class="fab fa-line" style="font-size: 24px;"></i>
+                <b style="font-size: 16px;">รายงานสรุปประจำเดือน</b>
+        </div>
     </div>
-    <div style="font-size:30px; font-weight:900; color:#1e293b; line-height:1;" id="accTotalVal">฿0</div>
-</div>
-
-        <div style="margin-bottom:15px;">
-            <div style="display:flex; align-items:center; background:#f1f5f9; border-radius:15px; padding:0 15px; margin-bottom:8px; height:50px;">
-                <i class="fas fa-calendar-alt" style="color:#6366f1;"></i>
-                <input type="date" id="accDate" style="flex:1; border:none; background:none; font-size:16px; font-weight:600; padding-left:10px; outline:none;">
-            </div>
-            <div style="display:flex; align-items:center; background:#f1f5f9; border-radius:15px; padding:0 15px; height:50px;">
-                <i class="fas fa-pen-nib" style="color:#94a3b8;"></i>
-                <input type="text" id="accNote" placeholder="หมายเหตุ..." style="flex:1; border:none; background:none; font-size:15px; padding-left:10px; outline:none;">
-            </div>
-        </div>
-
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom: 15px;"> <button onclick="clearAccount()" style="background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; border-radius:18px; padding:15px 5px; font-size:14px; font-weight:800; cursor:pointer;">
-        <i class="fas fa-check-double"></i> เคลียร์เงิน
-    </button>
-    <button onclick="openHistoryModal()" style="background:#fff; color:#3b82f6; border:2px solid #3b82f6; border-radius:18px; padding:15px 5px; font-size:14px; font-weight:800; cursor:pointer;">
-        <i class="fas fa-history"></i> ประวัติเคลียร์เงิน
-    </button>
-</div> 
-
-<div onclick="$('histMonth').showPicker()" style="background:linear-gradient(135deg, #6366f1, #4338ca); border-radius:25px; padding:12px 10px; text-align:center; color:#fff; position:relative; box-shadow:0 8px 15px rgba(99,102,241,0.2); cursor:pointer; margin-top: 15px;"> <i class="fas fa-calendar-check" style="font-size:24px; margin-bottom:12px; display:block;"></i> <b style="font-size:16px;">สรุปรายเดือน</b>
-    <input type="month" id="histMonth" onchange="loadHistMonth()" style="position:absolute; inset:0; opacity:0; cursor:pointer;">
-</div>
-    <div onclick="confirmShareLine()" style="background: linear-gradient(135deg, #25d366, #075e54); border-radius: 25px; padding: 15px; text-align: center; color: #fff; cursor: pointer; box-shadow: 0 8px 15px rgba(37,211,102,0.2); display: flex; align-items: center; justify-content: center; gap: 10px;">       
-        <i class="fab fa-line" style="font-size: 24px;"></i>
-        <b style="font-size: 16px;">รายงานสรุปประจำเดือน</b>
-        </div>
-    </div> 
-</div> 
+</div>    
 
     <div id="modalSet" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); z-index:9999; display:flex; align-items:center; justify-content:center; padding:15px;">
     
@@ -557,117 +571,64 @@ function confirmDeleteDaily(dateStr) {
         if (typeof renderHistory === "function") renderHistory(); // อัปเดตหน้าหลัก
     }
 }
-// ฟังก์ชันสำหรับกดแก้ไขจากหน้ารายงาน
-function editEntry(id) {
-    // 1. ค้นหาข้อมูลเดิมจาก ID
-    const entry = db.find(r => r.id === id);
-    if (!entry) return;
-
-    // 2. ดึงข้อมูลกลับมาใส่ในช่องกรอก (Input)
-    if ($("priceInp")) $("priceInp").value = entry.price;
-    if ($("tipInp")) $("tipInp").value = entry.tip;
-    if ($("tStart")) $("tStart").value = entry.time; // ใช้ tStart ตามชื่อใน handleSave
-    if ($("dateInp")) $("dateInp").value = entry.date;
-
-    // 3. ดึงสถานะการจ่ายเงินกลับมา
-    payMethod = entry.pay; 
-    // อัปเดตสีปุ่มให้รู้ว่าเดิมจ่ายแบบไหน
-    ["btnCash", "btnTrans", "btnMix"].forEach(btnId => { 
-        if($(btnId)) $(btnId).className = "icon-card"; 
-    });
-    if (payMethod === 'Cash' && $("btnCash")) $("btnCash").className = "icon-card active";
-    if (payMethod === 'Trans' && $("btnTrans")) $("btnTrans").className = "icon-card active";
-    if (payMethod === 'Mix' && $("btnMix")) {
-        $("btnMix").className = "icon-card active";
-        if($("mixPanel")) $("mixPanel").style.display = 'block';
-        if($("mixCash")) $("mixCash").value = entry.payCash;
-        if($("mixTrans")) $("mixTrans").value = entry.payTrans;
-    }
-
-    // 4. ลบรายการเดิมออกจากฐานข้อมูล (เพื่อรอการ "บันทึกใหม่" หลังจากแก้)
-    db = db.filter(r => r.id !== id);
+     function handleSave() {
+    const p = parseInt($("priceInp").value), t = parseInt($("tipInp").value) || 0;
     
-    // 5. บันทึกและอัปเดตรายงานทันที
-    saveDB();
-    renderDay(entry.date);
-    if (typeof loadAccountStatus === 'function') loadAccountStatus();
-
-    // 6. สลับหน้ากลับไปที่หน้าบันทึก (Page 1) และเลื่อนขึ้นบนสุด
-    showPage(1); // สมมติว่าท่านใช้ฟังก์ชัน showPage ในการสลับหน้า
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-     function handleSave(event) {
-    // 1. ดึงค่าจาก Form
-    const p = parseInt($("priceInp").value);
-    const t = parseInt($("tipInp").value) || 0;
-    const selectedDate = $("dateInp").value;
-    
-    // ตรวจสอบความพร้อมของข้อมูล
+    // ตรวจสอบความครบถ้วนของข้อมูล
     if (!p || !payMethod) {
         return alert("กรุณาใส่ราคาและเลือกวิธีจ่ายเงินก่อน!");
     }
 
     const start = $("tStart").value || new Date().toTimeString().slice(0, 5);
-    let cashAmt = 0, transAmt = 0;
+    
+    let cashAmt = 0;
+    let transAmt = 0;
 
-    // 2. จัดการคำนวณยอดเงินตามประเภทการจ่าย
     if (payMethod === 'Mix') {
         cashAmt = parseInt($("mixCash").value) || 0;
         transAmt = parseInt($("mixTrans").value) || 0;
+
         if (cashAmt + transAmt !== p + t) {
-            if (!confirm(`ยอดเงินไม่ตรงบิล (รวม ${cashAmt + transAmt} / บิล ${p + t})\nยืนยันบันทึกหรือไม่?`)) return;
+            const confirmMsg = `ยอดเงินไม่ตรงบิล (สด ${cashAmt} + โอน ${transAmt} = ${cashAmt + transAmt}) \nยอดรวมบิลคือ ${p + t} \nคุณยังต้องการบันทึกข้อมูลนี้ใช่ไหม?`;
+            if (!confirm(confirmMsg)) return;
         }
+    } else if (payMethod === 'Cash') {
+        cashAmt = p + t;
     } else {
-        payMethod === 'Cash' ? cashAmt = p + t : transAmt = p + t;
+        transAmt = p + t;
     }
 
-    // 3. สร้างก้อนข้อมูล (Object)
     const rec = {
         id: Date.now(), 
-        date: selectedDate, 
+        date: $("dateInp").value, 
         time: start, 
         endTime: $("tEnd").value || (typeof addMinutes === 'function' ? addMinutes(start, 30) : start),
         svcs: [$("hairStyle")?.value, $("extra1")?.value, $("extra2")?.value].filter(Boolean),
         price: p, 
         tip: t, 
         pay: payMethod, 
-        payCash: cashAmt, 
+        payCash: cashAmt,   
         payTrans: transAmt, 
         type: "SERVICE"
     };
-
-    // 4. บันทึกและจัดเรียง (สำคัญ: เพื่อให้รายงานเรียงเวลาสวยงาม)
+    // บันทึกข้อมูล
     db.push(rec); 
-    db.sort((a, b) => a.time.localeCompare(b.time)); // เรียงจากเช้าไปเย็น
     saveDB(); 
+    renderDay(); 
+
+    // ✅ ล้างค่าในหน้าจอหลังบันทึกสำเร็จ
+    ["priceInp", "tipInp", "mixCash", "mixTrans"].forEach(id => {
+        if($(id)) $(id).value = "";
+    });
     
-    // 5. อัปเดต UI ทันที
-    // สั่งให้ render รายงานของวันที่เราเพิ่งบันทึกไป
-    if (typeof renderDay === 'function') renderDay(selectedDate);
-    if (typeof loadAccountStatus === 'function') loadAccountStatus();
-
-    // 6. ✅ แสดงสถานะปุ่มบันทึกสำเร็จ (UX)
-    const btnSave = event?.currentTarget || document.querySelector(".btn-main");
-    if (btnSave) {
-        const oldContent = btnSave.innerHTML;
-        const oldBg = btnSave.style.background;
-
-        btnSave.style.setProperty("background", "linear-gradient(135deg, #10b981, #059669)", "important");
-        btnSave.innerHTML = `<i class="fas fa-check-circle" style="font-size:38px;"></i> <span style="font-size:32px; font-weight:900;">บันทึกสำเร็จ</span>`;
-
-        setTimeout(() => {
-            btnSave.style.background = oldBg;
-            btnSave.innerHTML = oldContent;
-            // กลับไปหน้า p1 อัตโนมัติถ้าต้องการ (เลือกเปิดใช้ได้ครับ)
-            // showPage(1); 
-        }, 1200);
-    }
-
-    // 7. ล้างค่าฟอร์มเพื่อเริ่มงานใหม่
-    ["priceInp", "tipInp", "mixCash", "mixTrans"].forEach(id => { if($(id)) $(id).value = ""; });
+    // ✅ รีเซ็ตสถานะปุ่มและตัวแปรวิธีจ่ายเงิน
     payMethod = ""; 
-    ["btnCash", "btnTrans", "btnMix"].forEach(id => { if($(id)) $(id).className = "icon-card"; });
+    const buttons = ["btnCash", "btnTrans", "btnMix"];
+    buttons.forEach(id => { if($(id)) $(id).className = "btn btn-pay"; });
+
     if($("mixPanel")) $("mixPanel").style.display = 'none';
+    
+    alert("บันทึกข้อมูลเรียบร้อยแล้ว");
 }
             function handleInsurance() {
                 const d = $("dateInp").value || new Date().toISOString().split('T')[0], g = parseInt(conf.guar) || 0;
@@ -840,12 +801,15 @@ function updateMixValues() {
     const tip = parseFloat($("tipInp").value) || 0;
     const total = price + tip;
     const cash = parseFloat($("mixCash").value) || 0;
+    // คำนวณยอดโอนที่เหลือ
     const trans = total - cash;
     $("mixTrans").value = trans > 0 ? trans : 0;
 }
+// ดักจับเหตุการณ์เมื่อมีการพิมพ์ในช่องเงินสด
 if ($("mixCash")) {
     $("mixCash").addEventListener("input", updateMixValues);
 }
+// และดักจับตอนเปลี่ยนราคา/ทิป เผื่อมีการแก้ไขยอดรวม
 if ($("priceInp")) $("priceInp").addEventListener("input", updateMixValues);
 if ($("tipInp")) $("tipInp").addEventListener("input", updateMixValues);
    
@@ -898,7 +862,7 @@ function addRecord() {
     if (typeof resetForm === 'function') resetForm();
     renderDay(); 
 }  
- 
+ // ฟังก์ชันล้างค่าในฟอร์มหลังจากบันทึก
 function resetForm() {
     $("priceInp").value = "";
     $("tipInp").value = "";
@@ -908,7 +872,7 @@ function resetForm() {
     selectedServices = []; // ล้างรายการบริการที่เลือกไว้
     // หากมีพวก checkbox หรือปุ่มกดเลือกบริการ ก็ควรสั่งให้กลับไปค่าเริ่มต้นที่นี่ครับ
 }
-
+// ฟังก์ชันเปิด/ปิด mixPanel ตามการเลือกวิธีชำระเงิน
 function togglePayType() {
     const payType = $("payTypeInp").value;
     const panel = $("mixPanel");
@@ -974,17 +938,28 @@ $("mixCash").addEventListener("input", function() {
             // ถ้าจ่ายเงินสดทั้งหมด (Cash): ยอดราคาเข้า cash ของร้าน (ทิปอยู่ที่ช่างแล้วไม่ต้องบวก)
             cash += p;
         }
-        // 🚨 2. เงื่อนไขการนับลูกค้า (แก้ไขใหม่)
-        if (rType === 'HOLIDAY' || rType === 'GUARANTEE' || (p === 0 && t === 0)) {
+
+        // 🚨 2. เงื่อนไขการนับลูกค้า
+        if (rType === 'HOLIDAY' || rType === 'GUARANTEE' || p === 0) {
+             // ข้ามการนับ
         } else {
-            realCustomerCount++; 
             const cleanExtras = extraSvcs.map(s => s.trim().toLowerCase());
+            const hasRealHaircut = currentSvcs.some(s => {
+                if (!s) return false;
+                const cleanS = s.trim().toLowerCase();
+                return !cleanExtras.includes(cleanS);
+            });
+
+            if (hasRealHaircut) {
+                realCustomerCount++; 
+                stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
+            }
+
             currentSvcs.forEach(s => {
-                if (s) {
-                    stats[s] = (stats[s] || 0) + 1;
-                }
+                if (s) stats[s] = (stats[s] || 0) + 1;
             });
         }
+
         // ✅ 3. ส่วนสร้าง HTML (ปรับให้โชว์ไอคอน Mix)
         const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
         
@@ -1190,12 +1165,16 @@ if (dList) {
 function loadAccountStatus() {
     const now = new Date();
     const dateLabel = now.toLocaleDateString('th-TH', {
-        day: '2-digit', month: '2-digit', year: 'numeric'
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
     });
 
-    if ($("accDateLabel")) $("accDateLabel").innerText = dateLabel;
+    if ($("accDateLabel")) {
+        $("accDateLabel").innerText = dateLabel;
+    }
 
-    // 1. ดึงยอด "ค้างเดิม" (เงินที่ช่างติดร้านไว้จากวันก่อนๆ)
+    // 1. ดึงยอด "ค้างเดิม"
     const oldBalance = Number(account.balance) || 0;
     if ($("accOldVal")) $("accOldVal").innerText = `฿${oldBalance.toLocaleString()}`;
 
@@ -1211,27 +1190,18 @@ function loadAccountStatus() {
         tTips += t;
         if (r.pay === "Cash") tCash += p;
     });
-    let settleToday = 0;
-    if (todayEntries.length > 0) {
-        const commissionEarn = tTotal * (conf.perc / 100);
-        let bEarn = 0;
-        if (commissionEarn >= conf.guar) {
-            bEarn = commissionEarn + tTips;
-        } else {
-            bEarn = Number(conf.guar) + tTips;
-        }
-        settleToday = tCash - bEarn;
-    } else {
-        settleToday = 0;
-    }
-    if ($("accTodayVal")) {
-        $("accTodayVal").innerText = `฿${settleToday.toLocaleString()}`;
-    }
+
+    // คำนวณรายได้ช่างและยอด Settle วันนี้
+    const bEarn = Math.max(tTotal * (conf.perc / 100), conf.guar) + tTips;
+    const settleToday = tCash - bEarn;
+    
+    if ($("accTodayVal")) $("accTodayVal").innerText = `฿${settleToday.toLocaleString()}`;
+
     // 3. ยอดรวมสุทธิ (Net)
-    const net = oldBalance + settleToday; 
+    const net = oldBalance + settleToday;
     if ($("accTotalVal")) $("accTotalVal").innerText = `฿${net.toLocaleString()}`;
 
-    // 4. อัปเดต Badge สถานะ
+    // 4. อัปเดต Badge สถานะ (ใช้ค่า net ในการเช็ค)
     const badge = $("statusBadge"); 
     let bgColor = "#f8fafc", textColor = "#64748b", statusTxt = "⚖️ ยอดลงตัว";
 
@@ -1245,12 +1215,9 @@ function loadAccountStatus() {
         badge.innerText = statusTxt;
         badge.style.background = bgColor;
         badge.style.color = textColor;
-        badge.style.borderRadius = "8px";
-        badge.style.padding = "2px 12px";
-        badge.style.fontSize = "12px";
     }
 
-    // 5. อัปเดตไฟสถานะ
+    // 5. อัปเดตไฟสถานะ (accLight)
     if ($("accLight")) {
         const lightColor = net > 0 ? "#dc2626" : (net < 0 ? "#1e3a8a" : "#16a34a");
         $("accLight").style.background = lightColor;
@@ -1947,40 +1914,26 @@ function sendToLineFinal() {
     window.open(`https://line.me/R/msg/text/?${encodeURIComponent(finalMsg)}`);
     document.getElementById("linePreview").style.display = "none";
 }
-           function go(p) {
-    // 1. จัดการการซ่อน/แสดงหน้า Page
-    document.querySelectorAll('.page').forEach(pg => {
-        pg.classList.remove('active');
-        pg.style.display = 'none'; 
-    });
-
-    const targetPage = document.getElementById('p' + p);
-    if (targetPage) {
-        targetPage.classList.add('active');
-        targetPage.style.display = 'block';
-    }
-
-    // 2. จัดการสถานะปุ่มเมนู (Navbar) ให้มีสีตามหน้าจอที่เลือก
-    document.querySelectorAll('.nav-item').forEach((btn, i) => {
-        btn.classList.toggle('active', (i + 1) === p);
-    });
-
-    // 3. เงื่อนไขพิเศษเมื่อเข้าแต่ละหน้า
-    if (p === 2) {
-        // เมื่อไปหน้ารายงาน: ให้ดึงวันที่จากหน้าแรกไปแสดงผลรายงานทันที
-        const targetDate = $("dateInp")?.value || new Date().toISOString().split('T')[0];
-        if (typeof renderDay === 'function') renderDay(targetDate);
-    }
-
-    if (p === 3) { 
-        // เมื่อไปหน้าบัญชี: บังคับวันที่ให้ตรงกันและคำนวณยอดเงินค้างชำระ
-        if ($("accDate") && $("dateInp")) $("accDate").value = $("dateInp").value;
-        if (typeof loadAccountStatus === 'function') loadAccountStatus(); 
-    }
-
-    // 4. เลื่อนจอขึ้นบนสุด (เพื่อความสุภาพและใช้งานง่าย)
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+            function go(p) {
+                document.querySelectorAll('.page').forEach(pg => {
+                    pg.classList.remove('active');
+                    pg.style.display = 'none'; 
+                });
+                const targetPage = document.getElementById('p' + p);
+                if (targetPage) {
+                    targetPage.classList.add('active');
+                    targetPage.style.display = 'block';
+                }
+                document.querySelectorAll('.nav-item').forEach((btn, i) => {
+                    btn.classList.toggle('active', (i + 1) === p);
+                });
+                if (p === 3) { 
+                    // 1. บังคับให้วันที่ในหน้าบัญชี ตรงกับวันที่หน้าแรกก่อน
+                    if($("accDate") && $("dateInp")) $("accDate").value = $("dateInp").value;
+                    // 2. สั่งให้ฟังก์ชันคำนวณเลขบัญชีทำงานทันที
+                    loadAccountStatus(); 
+                }
+            }
                 function saveDB() {localStorage.setItem("barber_db", JSON.stringify(db));localStorage.setItem("barber_conf", JSON.stringify(conf));}
                 function delRec(id) { if (confirm("ลบรายการนี้?")) { db = db.filter(r => r.id !== id); saveDB(); renderDay(); } }
                 function editTime(id) {const rec = db.find(r => r.id === id);if (!rec) return;const newStart = prompt("แก้เวลาเริ่ม (HH:MM)", rec.time);if (!newStart) return;const newEnd = prompt("แก้เวลาเสร็จ (HH:MM)", rec.endTime || "");rec.time = newStart;rec.endTime = newEnd || addMinutes(newStart, 30);saveDB();renderDay();}
