@@ -1144,67 +1144,62 @@ if (dList) {
   
     function loadAccountStatus() {
     const now = new Date();
-    const dateLabel = now.toLocaleDateString('th-TH', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    });
+    const dateLabel = now.toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    if ($("accDateLabel")) $("accDateLabel").innerText = dateLabel;
 
-    if ($("accDateLabel")) {
-        $("accDateLabel").innerText = dateLabel;
-    }
-
-    // 1. ดึงยอด "ค้างเดิม"
+    // 1. ดึงยอดค้างเดิม
     const oldBalance = Number(account.balance) || 0;
     if ($("accOldVal")) $("accOldVal").innerText = `฿${oldBalance.toLocaleString()}`;
 
-    // 2. คำนวณยอด "วันนี้"
+    // 2. คำนวณยอดวันนี้
     const today = now.toISOString().split('T')[0];
     const todayEntries = db.filter(r => r.date === today && (r.type === 'SERVICE' || r.type === 'GUARANTEE'));
     
     let tCash = 0, tTotal = 0, tTips = 0;
     todayEntries.forEach(r => {
-        const p = Number(r.price) || 0;
-        const t = Number(r.tip) || 0;
-        tTotal += p;
-        tTips += t;
-        if (r.pay === "Cash") tCash += p;
+        tTotal += (Number(r.price) || 0);
+        tTips += (Number(r.tip) || 0);
+        if (r.pay === "Cash") tCash += (Number(r.price) || 0) + (Number(r.tip) || 0);
     });
 
-    // คำนวณรายได้ช่างและยอด Settle วันนี้
-    const bEarn = Math.max(tTotal * (conf.perc / 100), conf.guar) + tTips;
-    const settleToday = tCash - bEarn;
-    
+    let settleToday = 0;
+    // --- ตรรกะ: ถ้าไม่มีงาน ให้เป็น 0 / ถ้ามีงาน ให้เช็กคอมมิชชัน VS ประกัน ---
+    if (todayEntries.length > 0) {
+        const commissionEarn = tTotal * (conf.perc / 100);
+        const baseEarn = (commissionEarn >= conf.guar) ? commissionEarn : Number(conf.guar);
+        const bEarn = baseEarn + tTips;
+        settleToday = tCash - bEarn;
+    } else {
+        settleToday = 0; 
+    }
+
     if ($("accTodayVal")) $("accTodayVal").innerText = `฿${settleToday.toLocaleString()}`;
 
-    // 3. ยอดรวมสุทธิ (Net)
+    // 3. ยอดรวมสุทธิ
     const net = oldBalance + settleToday;
     if ($("accTotalVal")) $("accTotalVal").innerText = `฿${net.toLocaleString()}`;
 
-    // 4. อัปเดต Badge สถานะ (ใช้ค่า net ในการเช็ค)
-    const badge = $("statusBadge"); 
-    let bgColor = "#f8fafc", textColor = "#64748b", statusTxt = "⚖️ ยอดลงตัว";
+    // 4. อัปเดตสถานะ Badge และไฟสถานะ
+    updateStatusUI(net);
+}
 
-    if (net > 0) {
-        bgColor = "#fef2f2"; textColor = "#dc2626"; statusTxt = "👨‍🎨 ช่างคืนร้าน";
-    } else if (net < 0) {
-        bgColor = "#eff6ff"; textColor = "#1e3a8a"; statusTxt = "🏠 ร้านคืนช่าง";
-    }
+// แยกฟังก์ชัน UI เพื่อความสะอาดของโค้ด
+function updateStatusUI(net) {
+    const badge = $("statusBadge");
+    const light = $("accLight");
+    let color = net > 0 ? "#dc2626" : (net < 0 ? "#1e3a8a" : "#16a34a");
+    let txt = net > 0 ? "👨‍🎨 ช่างคืนร้าน" : (net < 0 ? "🏠 ร้านคืนช่าง" : "⚖️ ยอดลงตัว");
 
     if (badge) {
-        badge.innerText = statusTxt;
-        badge.style.background = bgColor;
-        badge.style.color = textColor;
+        badge.innerText = txt;
+        badge.style.background = net > 0 ? "#fef2f2" : (net < 0 ? "#eff6ff" : "#f0fdf4");
+        badge.style.color = color;
     }
-
-    // 5. อัปเดตไฟสถานะ (accLight)
-    if ($("accLight")) {
-        const lightColor = net > 0 ? "#dc2626" : (net < 0 ? "#1e3a8a" : "#16a34a");
-        $("accLight").style.background = lightColor;
-        $("accLight").style.boxShadow = `0 0 12px ${lightColor}`;
+    if (light) {
+        light.style.background = color;
+        light.style.boxShadow = `0 0 12px ${color}`;
     }
-}
-     function clearAccount() {
+}     function clearAccount() {
                 const d = $("accDate").value || new Date().toISOString().split('T')[0];
                 const net = Number(account.balance) || 0;
                 if (net === 0) {
