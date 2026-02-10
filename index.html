@@ -1165,23 +1165,21 @@ function loadAccountStatus() {
         if (r.pay === "Cash") tCash += p;
     });
     /* --- ส่วนที่แก้ไข: ตรรกะการคิดรายได้ช่าง --- */
-    const commissionEarn = tTotal * (conf.perc / 100); // คำนวณคอมมิชชันจริง
-    let baseEarn = 0;
+   const commissionEarn = tTotal * (conf.perc / 100); 
+    let settleToday = 0;
+    // 2. เช็กเงื่อนไข: รายได้จริง เกิน ประกัน หรือไม่?
     if (commissionEarn >= conf.guar) {
-        // ถ้ารายได้จริง มากกว่าหรือเท่ากับ ประกัน -> ใช้รายได้จริง (ข้ามประกัน)
-        baseEarn = commissionEarn;
+        // [กรณีรายได้เกิน] -> ใช้ยอดเงินสด ลบ คอมมิชชันจริง (ข้ามประกันไปเลย)
+        settleToday = tCash - (commissionEarn + tTips);
     } else {
-        // ถ้ารายได้จริง น้อยกว่า ประกัน -> ให้ใช้ยอดประกัน
-        baseEarn = conf.guar;
+        // [กรณีรายได้ไม่ถึง] -> ใช้ยอดเงินสด ลบ ค่าประกัน
+        settleToday = tCash - (conf.guar + tTips);
     }
-    const bEarn = baseEarn + tTips;
-    const settleToday = tCash - bEarn;
-    /* -------------------------------------- */
-    // ปิดการแสดงยอดวันนี้ตามความประสงค์ (ให้โชว์เป็น 0)
+    // ปิดการแสดงยอดวันนี้ให้โชว์เป็น 0 ตามต้องการ
     if ($("accTodayVal")) $("accTodayVal").innerText = `฿0`;
     // 3. ยอดรวมสุทธิ (Net)
     const net = oldBalance + settleToday; 
-    if ($("accTotalVal")) $("accTotalVal").innerText = `฿${net.toLocaleString()}`;
+    if ($("accTotalVal")) $("accTotalVal").innerText = `฿${net.toLocaleString()}`;;
 
     // 4. อัปเดต Badge สถานะ
     const badge = $("statusBadge"); 
