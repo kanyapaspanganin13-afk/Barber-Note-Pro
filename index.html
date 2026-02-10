@@ -923,28 +923,17 @@ $("mixCash").addEventListener("input", function() {
             // ถ้าจ่ายเงินสดทั้งหมด (Cash): ยอดราคาเข้า cash ของร้าน (ทิปอยู่ที่ช่างแล้วไม่ต้องบวก)
             cash += p;
         }
-
-        // 🚨 2. เงื่อนไขการนับลูกค้า
-        if (rType === 'HOLIDAY' || rType === 'GUARANTEE' || p === 0) {
-             // ข้ามการนับ
+        // 🚨 2. เงื่อนไขการนับลูกค้า (แก้ไขใหม่)
+        if (rType === 'HOLIDAY' || rType === 'GUARANTEE' || (p === 0 && t === 0)) {
         } else {
+            realCustomerCount++; 
             const cleanExtras = extraSvcs.map(s => s.trim().toLowerCase());
-            const hasRealHaircut = currentSvcs.some(s => {
-                if (!s) return false;
-                const cleanS = s.trim().toLowerCase();
-                return !cleanExtras.includes(cleanS);
-            });
-
-            if (hasRealHaircut) {
-                realCustomerCount++; 
-                stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
-            }
-
             currentSvcs.forEach(s => {
-                if (s) stats[s] = (stats[s] || 0) + 1;
+                if (s) {
+                    stats[s] = (stats[s] || 0) + 1;
+                }
             });
         }
-
         // ✅ 3. ส่วนสร้าง HTML (ปรับให้โชว์ไอคอน Mix)
         const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
         
