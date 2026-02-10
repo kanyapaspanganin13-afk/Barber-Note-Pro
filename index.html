@@ -1158,7 +1158,7 @@ function loadAccountStatus() {
 
     if ($("accDateLabel")) $("accDateLabel").innerText = dateLabel;
 
-    // 1. ดึงยอด "ค้างเดิม"
+    // 1. ดึงยอด "ค้างเดิม" (เงินที่ช่างติดร้านไว้จากวันก่อนๆ)
     const oldBalance = Number(account.balance) || 0;
     if ($("accOldVal")) $("accOldVal").innerText = `฿${oldBalance.toLocaleString()}`;
 
@@ -1174,25 +1174,22 @@ function loadAccountStatus() {
         tTips += t;
         if (r.pay === "Cash") tCash += p;
     });
-
-    // --- ตรรกะใหม่: รายได้จริง VS ประกัน ---
-    const commissionEarn = tTotal * (conf.perc / 100);
-    let bEarn = 0;
-
-    if (commissionEarn >= conf.guar) {
-        // ถ้ารายได้จริงเกินประกัน -> ใช้รายได้จริง + ทิป
-        bEarn = commissionEarn + tTips;
+    let settleToday = 0;
+    if (todayEntries.length > 0) {
+        const commissionEarn = tTotal * (conf.perc / 100);
+        let bEarn = 0;
+        if (commissionEarn >= conf.guar) {
+            bEarn = commissionEarn + tTips;
+        } else {
+            bEarn = Number(conf.guar) + tTips;
+        }
+        settleToday = tCash - bEarn;
     } else {
-        // ถ้ารายได้จริงไม่ถึงประกัน -> ใช้ค่าประกัน + ทิป
-        bEarn = Number(conf.guar) + tTips;
+        settleToday = 0;
     }
-
-    // คำนวณยอดต้องเคลียร์วันนี้ (เงินสดในมือ - รายได้ที่ช่างต้องได้รับ)
-    const settleToday = tCash - bEarn;
-
-    // ซ่อนยอดวันนี้ให้โชว์เป็น 0 ตามต้องการ
-    if ($("accTodayVal")) $("accTodayVal").innerText = `฿0`;
-
+    if ($("accTodayVal")) {
+        $("accTodayVal").innerText = `฿${settleToday.toLocaleString()}`;
+    }
     // 3. ยอดรวมสุทธิ (Net)
     const net = oldBalance + settleToday; 
     if ($("accTotalVal")) $("accTotalVal").innerText = `฿${net.toLocaleString()}`;
