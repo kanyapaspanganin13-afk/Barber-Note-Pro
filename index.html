@@ -924,28 +924,29 @@ $("mixCash").addEventListener("input", function() {
             // ถ้าจ่ายเงินสดทั้งหมด (Cash): ยอดราคาเข้า cash ของร้าน (ทิปอยู่ที่ช่างแล้วไม่ต้องบวก)
             cash += p;
         }
-
-        // 🚨 2. เงื่อนไขการนับลูกค้า
-        if (rType === 'HOLIDAY' || rType === 'GUARANTEE' || p === 0) {
-             // ข้ามการนับ
-        } else {
-            const cleanExtras = extraSvcs.map(s => s.trim().toLowerCase());
-            const hasRealHaircut = currentSvcs.some(s => {
-                if (!s) return false;
-                const cleanS = s.trim().toLowerCase();
-                return !cleanExtras.includes(cleanS);
-            });
-
-            if (hasRealHaircut) {
-                realCustomerCount++; 
-                stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
-            }
-
-            currentSvcs.forEach(s => {
-                if (s) stats[s] = (stats[s] || 0) + 1;
-            });
-        }
-
+      // 🚨 2. เงื่อนไขการนับลูกค้า (แบบแก้ไข)
+    if (rType === 'HOLIDAY' || rType === 'GUARANTEE' || p === 0) {
+        // ข้ามการนับ (วันหยุด/การันตี/ยอดเป็น 0)
+    } else {
+    // 🟢 แก้ไข: นับลูกค้า 1 คนเสมอถ้ามีการใช้บริการ (ไม่ว่าจะตัดผมหรือบริการเสริม)
+    if (currentSvcs.length > 0) {
+        realCustomerCount++; 
+    }
+    // ส่วนการเก็บสถิติแยกประเภท (คงไว้เหมือนเดิมเพื่อดูว่าใครตัดผมบ้าง)
+    const cleanExtras = extraSvcs.map(s => s.trim().toLowerCase());
+    const hasRealHaircut = currentSvcs.some(s => {
+        if (!s) return false;
+        const cleanS = s.trim().toLowerCase();
+        return !cleanExtras.includes(cleanS);
+    });
+    if (hasRealHaircut) {
+        stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
+    }
+    // นับจำนวนครั้งของแต่ละบริการ
+    currentSvcs.forEach(s => {
+        if (s) stats[s] = (stats[s] || 0) + 1;
+    });
+}
         // ✅ 3. ส่วนสร้าง HTML (ปรับให้โชว์ไอคอน Mix)
         const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
         
@@ -954,8 +955,7 @@ $("mixCash").addEventListener("input", function() {
         if (r.pay === 'Mix') {
             payIcon = '🌓'; // ไอคอนสำหรับจ่ายผสม
             mixText = `<br><small style="color:#64748b; font-size:10px; font-weight:normal;">(สด:${r.payCash}/โอน:${r.payTrans})</small>`;
-        }
-        
+        } 
         listHtml += `
         <div class="history-row" style="padding:15px; border-bottom:1px solid #f1f5f9; background:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -1124,7 +1124,6 @@ if (dList) {
         off: isHoliday,     
         type: isHoliday ? "HOLIDAY" : "WORK"
     };    
-
     // --- ส่วนจัดการยอดสะสม (Balance) ---
     if (idx > -1) {
         // กรณีแก้ไขยอดเดิม: ต้องเอาส่วนต่างของ settle ไปปรับปรุง balance
@@ -1146,9 +1145,10 @@ if (dList) {
     alert("✅ บันทึกยอดเรียบร้อย!");
     go(3); // ไปหน้าบัญชี
 }
-                function toggleAccHistory() {const w = $("accHistoryWrapper"); w.style.display = w.style.display === "none" ? "block" : "none";$("accHistory").innerHTML = account.logs.map(l => `<div style="padding:5px; border-bottom:1px solid #eee;">${l.date}: ฿${l.amount} (${l.note})</div>`).join('') || "ไม่มีประวัติ";}    
-                function loadAccountHistory() {let h = account.logs.map(l => `<div style="padding:15px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;"><div><b style="font-size:14px; color:#1e293b;">${l.date}</b><br><small style="color:#64748b;">${l.note}</small></div><b style="color:${l.amount >= 0 ? '#16a34a' : '#dc2626'};">${l.amount >= 0 ? '+' : ''}฿${Math.abs(l.amount).toLocaleString()}</b></div> `).join('');if($("accHistory")) {$("accHistory").innerHTML = h || '<center style="padding:40px; color:#94a3b8;">ไม่มีประวัติการเคลียร์</center>';}}     
-function loadAccountStatus() {
+    function toggleAccHistory() {const w = $("accHistoryWrapper"); w.style.display = w.style.display === "none" ? "block" : "none";$("accHistory").innerHTML = account.logs.map(l => `<div style="padding:5px; border-bottom:1px solid #eee;">${l.date}: ฿${l.amount} (${l.note})</div>`).join('') || "ไม่มีประวัติ";}    
+    function loadAccountHistory() {let h = account.logs.map(l => `<div style="padding:15px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;"><div><b style="font-size:14px; color:#1e293b;">${l.date}</b><br><small style="color:#64748b;">${l.note}</small></div><b style="color:${l.amount >= 0 ? '#16a34a' : '#dc2626'};">${l.amount >= 0 ? '+' : ''}฿${Math.abs(l.amount).toLocaleString()}</b></div> `).join('');if($("accHistory")) {$("accHistory").innerHTML = h || '<center style="padding:40px; color:#94a3b8;">ไม่มีประวัติการเคลียร์</center>';}}     
+  
+    function loadAccountStatus() {
     const now = new Date();
     const dateLabel = now.toLocaleDateString('th-TH', {
         day: '2-digit',
@@ -1212,9 +1212,7 @@ function loadAccountStatus() {
 }
      function clearAccount() {
                 const d = $("accDate").value || new Date().toISOString().split('T')[0];
-                
                 const net = Number(account.balance) || 0;
-            
                 if (net === 0) {
                     alert("💎 ยอดเป็นศูนย์ ไม่ต้องเคลียร์");
                     return;
@@ -1232,7 +1230,6 @@ function loadAccountStatus() {
                 account.balance = 0;
                 save(); 
                 alert("✅ เคลียร์บัญชีเรียบร้อย!");
-                
                 if ($("accNote")) $("accNote").value = "";
                 loadAccountHistory(); 
                 loadAccountStatus();  
@@ -1269,51 +1266,36 @@ function loadAccountStatus() {
             }
             // ฟังก์ชันสำหรับแก้ไขประวัติการเคลียร์เงิน
             function editAccountLog(index) {
-                // เนื่องจากเราใช้ .reverse() ในตอนวาด ต้องอ้างอิงลำดับจากตัวแปร logs โดยตรง
                 let l = account.logs[index];
-                
                 const newNote = prompt("📝 แก้ไขหมายเหตุ:", l.note);
                 const newAmount = prompt("💰 แก้ไขจำนวนเงิน:", Math.abs(l.amount));
-            
                 if (newNote !== null && newAmount !== null) {
-                    // รักษาเครื่องหมายบวก/ลบเดิมไว้ (คืนเงินร้าน หรือ ร้านจ่ายช่าง)
                     const isNegative = l.amount < 0;
                     const val = parseFloat(newAmount.replace(/,/g, '')) || 0;
-                    
-                    // อัปเดตข้อมูลในตัวแปรหลัก
                     account.logs[index].note = newNote;
                     account.logs[index].amount = isNegative ? -val : val;
-            
-                    // เรียกใช้ฟังก์ชัน save() ของเดิมที่มีอยู่ในระบบเพื่อลงบันทึกใน localStorage
                     if (typeof save === "function") {
                         save();
                     }
                     alert("✅ แก้ไขข้อมูลและบันทึกเรียบร้อย");
-                    // อัปเดตการแสดงผลหน้าจอ
                     renderHistoryList();
                     if (typeof loadAccountStatus === "function") {
                         loadAccountStatus();
                     }
                 }
             }
-        function loadHistDaily() {
+    function loadHistDaily() {
     const d = $("histDate").value;
     if (!d) return;
-
     const f = archives.find(a => a.date === d);
     if (!f) return alert("ไม่พบข้อมูลของวันนี้");
-
     let cashTotal = f.cash || 0;
     let transTotal = f.trans || 0;
     let totalRevenue = cashTotal + transTotal;
-
-    // แก้ไข: ตรวจสอบจำนวนลูกค้าให้แม่นยำขึ้น
     let customerCount = f.count || (f.details ? f.details.length : 0);
-
     const barberEarn = Math.floor(f.barber || 0);
     const shopEarn = Math.floor(f.shop || 0);
     const svcCounts = {};
-
     (f.details || []).forEach(r => {
         const services = Array.isArray(r.svcs) ? r.svcs : [r.svcs];
         services.forEach(s => {
@@ -1341,7 +1323,6 @@ function loadAccountStatus() {
             <div style="font-size:24px; color:#38bdf8; font-weight:800;">฿${toBarber.toLocaleString()}</div>
         </div>`;
     }
-
     const rows = (f.details || [])
         .slice()
         .sort((a, b) => (a.time || "").localeCompare(b.time || ""))
@@ -1349,14 +1330,12 @@ function loadAccountStatus() {
             const p = Number(r.price) || 0;
             const t = Number(r.tip) || 0;
             const fullTime = (r.time && r.endTime) ? `${r.time}-${r.endTime}` : (r.time || "--:--");
-
             let payText = "";
             if (r.pay === 'Mix') {
                 payText = `🌓 ผสม (สด:${(r.payCash||0)}/โอน:${(r.payTrans||0)})`;
             } else {
                 payText = r.pay === 'Trans' ? '📱 โอน' : '💵 เงินสด';
             }
-
             return `
             <div style="padding:14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:16px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
                 <div style="display:flex; align-items:center; gap:12px;">
