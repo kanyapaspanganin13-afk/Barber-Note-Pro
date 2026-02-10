@@ -596,10 +596,28 @@ function confirmDeleteDaily(dateStr) {
         payTrans: transAmt, 
         type: "SERVICE"
     };
+
     // บันทึกข้อมูล
     db.push(rec); 
     saveDB(); 
     renderDay(); 
+
+    // ✅ ส่วนที่แก้ไข: เปลี่ยนสีปุ่มบันทึกแทนการ alert
+    const btnSave = $("btnSave"); // ตรวจสอบว่า id ของปุ่มบันทึกคือ btnSave หรือไม่
+    if (btnSave) {
+        const originalBg = btnSave.style.background;
+        const originalText = btnSave.innerText;
+
+        // เปลี่ยนเป็นสีเขียวและเปลี่ยนข้อความชั่วคราว
+        btnSave.style.background = "#10b981"; 
+        btnSave.innerText = "✅ บันทึกสำเร็จ";
+
+        // คืนค่าเดิมหลังจาก 1.5 วินาที
+        setTimeout(() => {
+            btnSave.style.background = originalBg;
+            btnSave.innerText = originalText;
+        }, 1500);
+    }
 
     // ✅ ล้างค่าในหน้าจอหลังบันทึกสำเร็จ
     ["priceInp", "tipInp", "mixCash", "mixTrans"].forEach(id => {
@@ -612,8 +630,6 @@ function confirmDeleteDaily(dateStr) {
     buttons.forEach(id => { if($(id)) $(id).className = "btn btn-pay"; });
 
     if($("mixPanel")) $("mixPanel").style.display = 'none';
-    
-    alert("บันทึกข้อมูลเรียบร้อยแล้ว");
 }
             function handleInsurance() {
                 const d = $("dateInp").value || new Date().toISOString().split('T')[0], g = parseInt(conf.guar) || 0;
