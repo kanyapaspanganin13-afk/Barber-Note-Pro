@@ -110,7 +110,13 @@ nav {
         text-align: center; border: none; outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
         appearance: none; -webkit-appearance: none;
     }     
-      /* 7. ปุ่มและการจัดการ (ขนาดนิ่งสนิท) */
+     /* คลาสสำหรับแจ้งเตือนเมื่อบันทึกสำเร็จ */
+    .btn-success-active {
+        background: #10b981 !important; /* สีเขียว */
+        color: white !important;
+        transform: scale(0.98);
+    }
+    /* 7. ปุ่มและการจัดการ (ขนาดนิ่งสนิท) */
 /* สีปกติของแต่ละปุ่ม */
 #btnCash { background: linear-gradient(135deg, #10b981, #059669); color: white; }
 #btnTrans { background: linear-gradient(135deg, #6366f1, #4338ca); color: white; }
@@ -556,23 +562,20 @@ function confirmDeleteDaily(dateStr) {
         if (typeof renderHistory === "function") renderHistory(); // อัปเดตหน้าหลัก
     }
 }
-     function handleSave() {
+    function handleSave() {
     const p = parseInt($("priceInp").value), t = parseInt($("tipInp").value) || 0;
     
-    // ตรวจสอบความครบถ้วนของข้อมูล
+    // 1. ตรวจสอบความครบถ้วน
     if (!p || !payMethod) {
         return alert("กรุณาใส่ราคาและเลือกวิธีจ่ายเงินก่อน!");
     }
 
     const start = $("tStart").value || new Date().toTimeString().slice(0, 5);
-    
-    let cashAmt = 0;
-    let transAmt = 0;
+    let cashAmt = 0, transAmt = 0;
 
     if (payMethod === 'Mix') {
         cashAmt = parseInt($("mixCash").value) || 0;
         transAmt = parseInt($("mixTrans").value) || 0;
-
         if (cashAmt + transAmt !== p + t) {
             const confirmMsg = `ยอดเงินไม่ตรงบิล (สด ${cashAmt} + โอน ${transAmt} = ${cashAmt + transAmt}) \nยอดรวมบิลคือ ${p + t} \nคุณยังต้องการบันทึกข้อมูลนี้ใช่ไหม?`;
             if (!confirm(confirmMsg)) return;
@@ -589,46 +592,44 @@ function confirmDeleteDaily(dateStr) {
         time: start, 
         endTime: $("tEnd").value || (typeof addMinutes === 'function' ? addMinutes(start, 30) : start),
         svcs: [$("hairStyle")?.value, $("extra1")?.value, $("extra2")?.value].filter(Boolean),
-        price: p, 
-        tip: t, 
-        pay: payMethod, 
-        payCash: cashAmt,   
-        payTrans: transAmt, 
-        type: "SERVICE"
+        price: p, tip: t, pay: payMethod, payCash: cashAmt, payTrans: transAmt, type: "SERVICE"
     };
 
-    // บันทึกข้อมูล
+    // 2. บันทึกข้อมูล
     db.push(rec); 
     saveDB(); 
     renderDay(); 
 
-    // ✅ ส่วนที่แก้ไข: เปลี่ยนสีปุ่มบันทึกแทนการ alert
-    const btnSave = $("btnSave"); // ตรวจสอบว่า id ของปุ่มบันทึกคือ btnSave หรือไม่
+    // ✅ ส่วนที่แก้ไข: เปลี่ยนสีปุ่มแบบบังคับ (Force Change)
+    // ค้นหาปุ่มโดยพยายามหาจาก ID ก่อน ถ้าไม่เจอให้หาจากปุ่มที่มี onclick='handleSave()'
+    const btnSave = $("btnSave") || document.querySelector("button[onclick*='handleSave']");
+    
     if (btnSave) {
+        // เก็บค่าเดิมไว้ก่อนเปลี่ยน
         const originalBg = btnSave.style.background;
         const originalText = btnSave.innerText;
 
-        // เปลี่ยนเป็นสีเขียวและเปลี่ยนข้อความชั่วคราว
-        btnSave.style.background = "#10b981"; 
+        // บังคับเปลี่ยนสีเป็นเขียวเข้ม และเปลี่ยนข้อความ
+        btnSave.style.setProperty("background", "#10b981", "important");
+        btnSave.style.setProperty("color", "#ffffff", "important");
         btnSave.innerText = "✅ บันทึกสำเร็จ";
 
-        // คืนค่าเดิมหลังจาก 1.5 วินาที
+        // คืนค่าเดิมหลังจาก 1.2 วินาที (เพื่อให้หน้าจอกลับมาพร้อมใช้งานต่อ)
         setTimeout(() => {
-            btnSave.style.background = originalBg;
+            btnSave.style.removeProperty("background");
+            btnSave.style.removeProperty("color");
             btnSave.innerText = originalText;
-        }, 1500);
+        }, 1200);
     }
 
-    // ✅ ล้างค่าในหน้าจอหลังบันทึกสำเร็จ
+    // 3. ล้างค่าในหน้าจอ
     ["priceInp", "tipInp", "mixCash", "mixTrans"].forEach(id => {
         if($(id)) $(id).value = "";
     });
     
-    // ✅ รีเซ็ตสถานะปุ่มและตัวแปรวิธีจ่ายเงิน
     payMethod = ""; 
     const buttons = ["btnCash", "btnTrans", "btnMix"];
     buttons.forEach(id => { if($(id)) $(id).className = "btn btn-pay"; });
-
     if($("mixPanel")) $("mixPanel").style.display = 'none';
 }
             function handleInsurance() {
