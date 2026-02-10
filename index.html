@@ -786,15 +786,12 @@ function updateMixValues() {
     const tip = parseFloat($("tipInp").value) || 0;
     const total = price + tip;
     const cash = parseFloat($("mixCash").value) || 0;
-    // คำนวณยอดโอนที่เหลือ
     const trans = total - cash;
     $("mixTrans").value = trans > 0 ? trans : 0;
 }
-// ดักจับเหตุการณ์เมื่อมีการพิมพ์ในช่องเงินสด
 if ($("mixCash")) {
     $("mixCash").addEventListener("input", updateMixValues);
 }
-// และดักจับตอนเปลี่ยนราคา/ทิป เผื่อมีการแก้ไขยอดรวม
 if ($("priceInp")) $("priceInp").addEventListener("input", updateMixValues);
 if ($("tipInp")) $("tipInp").addEventListener("input", updateMixValues);
    
@@ -847,7 +844,7 @@ function addRecord() {
     if (typeof resetForm === 'function') resetForm();
     renderDay(); 
 }  
- // ฟังก์ชันล้างค่าในฟอร์มหลังจากบันทึก
+ 
 function resetForm() {
     $("priceInp").value = "";
     $("tipInp").value = "";
@@ -857,7 +854,7 @@ function resetForm() {
     selectedServices = []; // ล้างรายการบริการที่เลือกไว้
     // หากมีพวก checkbox หรือปุ่มกดเลือกบริการ ก็ควรสั่งให้กลับไปค่าเริ่มต้นที่นี่ครับ
 }
-// ฟังก์ชันเปิด/ปิด mixPanel ตามการเลือกวิธีชำระเงิน
+
 function togglePayType() {
     const payType = $("payTypeInp").value;
     const panel = $("mixPanel");
@@ -1181,19 +1178,31 @@ function loadAccountStatus() {
     const net = oldBalance + settleToday; 
     if ($("accTotalVal")) $("accTotalVal").innerText = `฿${net.toLocaleString()}`;;
 
-    // 4. อัปเดต Badge สถานะ
-    const badge = $("statusBadge"); 
-    let bgColor = "#f8fafc", textColor = "#64748b", statusTxt = "⚖️ ยอดลงตัว";
-    if (net > 0) {
-        bgColor = "#fef2f2"; textColor = "#dc2626"; statusTxt = "👨‍🎨 ช่างคืนร้าน";
-    } else if (net < 0) {
-        bgColor = "#eff6ff"; textColor = "#1e3a8a"; statusTxt = "🏠 ร้านคืนช่าง";
-    }
-    if (badge) {
-        badge.innerText = statusTxt;
-        badge.style.background = bgColor;
-        badge.style.color = textColor;
-    }
+   // 4. อัปเดต Badge สถานะ (ใช้ค่า net ที่คำนวณจากรายได้จริง/ประกันแล้ว)
+const badge = $("statusBadge"); 
+let bgColor = "#f8fafc", textColor = "#64748b", statusTxt = "⚖️ ยอดลงตัว";
+
+if (net > 0) {
+    // กรณีต้องคืนเงินเข้าร้าน
+    bgColor = "#fef2f2"; 
+    textColor = "#dc2626"; 
+    statusTxt = "👨‍🎨 ช่างคืนร้าน";
+} else if (net < 0) {
+    // กรณีร้านต้องจ่ายเงินให้ช่าง (ใช้ยอดจริง ไม่โชว์ประกันรบกวน)
+    bgColor = "#eff6ff"; 
+    textColor = "#1e3a8a"; 
+    statusTxt = "🏠 ร้านคืนช่าง";
+}
+
+if (badge) {
+    badge.innerText = statusTxt;
+    badge.style.background = bgColor;
+    badge.style.color = textColor;
+    // เพิ่มความสวยงาม: ทำให้ขอบโค้งมนเข้ากับดีไซน์ใหม่
+    badge.style.borderRadius = "8px";
+    badge.style.padding = "2px 12px";
+    badge.style.fontSize = "12px";
+}
     // 5. อัปเดตไฟสถานะ (accLight)
     if ($("accLight")) {
         const lightColor = net > 0 ? "#dc2626" : (net < 0 ? "#1e3a8a" : "#16a34a");
