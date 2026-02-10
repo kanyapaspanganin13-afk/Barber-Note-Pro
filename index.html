@@ -1136,14 +1136,10 @@ if (dList) {
 function loadAccountStatus() {
     const now = new Date();
     const dateLabel = now.toLocaleDateString('th-TH', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
+        day: '2-digit', month: '2-digit', year: 'numeric'
     });
 
-    if ($("accDateLabel")) {
-        $("accDateLabel").innerText = dateLabel;
-    }
+    if ($("accDateLabel")) $("accDateLabel").innerText = dateLabel;
 
     // 1. ดึงยอด "ค้างเดิม"
     const oldBalance = Number(account.balance) || 0;
@@ -1161,49 +1157,49 @@ function loadAccountStatus() {
         tTips += t;
         if (r.pay === "Cash") tCash += p;
     });
-    /* --- ส่วนที่แก้ไข: ตรรกะการคิดรายได้ช่าง --- */
-   const commissionEarn = tTotal * (conf.perc / 100); 
-    let settleToday = 0;
-    // 2. เช็กเงื่อนไข: รายได้จริง เกิน ประกัน หรือไม่?
+
+    // --- ตรรกะใหม่: รายได้จริง VS ประกัน ---
+    const commissionEarn = tTotal * (conf.perc / 100);
+    let bEarn = 0;
+
     if (commissionEarn >= conf.guar) {
-        // [กรณีรายได้เกิน] -> ใช้ยอดเงินสด ลบ คอมมิชชันจริง (ข้ามประกันไปเลย)
-        settleToday = tCash - (commissionEarn + tTips);
+        // ถ้ารายได้จริงเกินประกัน -> ใช้รายได้จริง + ทิป
+        bEarn = commissionEarn + tTips;
     } else {
-        // [กรณีรายได้ไม่ถึง] -> ใช้ยอดเงินสด ลบ ค่าประกัน
-        settleToday = tCash - (conf.guar + tTips);
+        // ถ้ารายได้จริงไม่ถึงประกัน -> ใช้ค่าประกัน + ทิป
+        bEarn = Number(conf.guar) + tTips;
     }
-    // ปิดการแสดงยอดวันนี้ให้โชว์เป็น 0 ตามต้องการ
+
+    // คำนวณยอดต้องเคลียร์วันนี้ (เงินสดในมือ - รายได้ที่ช่างต้องได้รับ)
+    const settleToday = tCash - bEarn;
+
+    // ซ่อนยอดวันนี้ให้โชว์เป็น 0 ตามต้องการ
     if ($("accTodayVal")) $("accTodayVal").innerText = `฿0`;
+
     // 3. ยอดรวมสุทธิ (Net)
     const net = oldBalance + settleToday; 
-    if ($("accTotalVal")) $("accTotalVal").innerText = `฿${net.toLocaleString()}`;;
+    if ($("accTotalVal")) $("accTotalVal").innerText = `฿${net.toLocaleString()}`;
 
-   // 4. อัปเดต Badge สถานะ (ใช้ค่า net ที่คำนวณจากรายได้จริง/ประกันแล้ว)
-const badge = $("statusBadge"); 
-let bgColor = "#f8fafc", textColor = "#64748b", statusTxt = "⚖️ ยอดลงตัว";
+    // 4. อัปเดต Badge สถานะ
+    const badge = $("statusBadge"); 
+    let bgColor = "#f8fafc", textColor = "#64748b", statusTxt = "⚖️ ยอดลงตัว";
 
-if (net > 0) {
-    // กรณีต้องคืนเงินเข้าร้าน
-    bgColor = "#fef2f2"; 
-    textColor = "#dc2626"; 
-    statusTxt = "👨‍🎨 ช่างคืนร้าน";
-} else if (net < 0) {
-    // กรณีร้านต้องจ่ายเงินให้ช่าง (ใช้ยอดจริง ไม่โชว์ประกันรบกวน)
-    bgColor = "#eff6ff"; 
-    textColor = "#1e3a8a"; 
-    statusTxt = "🏠 ร้านคืนช่าง";
-}
+    if (net > 0) {
+        bgColor = "#fef2f2"; textColor = "#dc2626"; statusTxt = "👨‍🎨 ช่างคืนร้าน";
+    } else if (net < 0) {
+        bgColor = "#eff6ff"; textColor = "#1e3a8a"; statusTxt = "🏠 ร้านคืนช่าง";
+    }
 
-if (badge) {
-    badge.innerText = statusTxt;
-    badge.style.background = bgColor;
-    badge.style.color = textColor;
-    // เพิ่มความสวยงาม: ทำให้ขอบโค้งมนเข้ากับดีไซน์ใหม่
-    badge.style.borderRadius = "8px";
-    badge.style.padding = "2px 12px";
-    badge.style.fontSize = "12px";
-}
-    // 5. อัปเดตไฟสถานะ (accLight)
+    if (badge) {
+        badge.innerText = statusTxt;
+        badge.style.background = bgColor;
+        badge.style.color = textColor;
+        badge.style.borderRadius = "8px";
+        badge.style.padding = "2px 12px";
+        badge.style.fontSize = "12px";
+    }
+
+    // 5. อัปเดตไฟสถานะ
     if ($("accLight")) {
         const lightColor = net > 0 ? "#dc2626" : (net < 0 ? "#1e3a8a" : "#16a34a");
         $("accLight").style.background = lightColor;
