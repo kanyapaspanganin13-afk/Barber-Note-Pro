@@ -1136,7 +1136,7 @@ if (dList) {
 }
                 function toggleAccHistory() {const w = $("accHistoryWrapper"); w.style.display = w.style.display === "none" ? "block" : "none";$("accHistory").innerHTML = account.logs.map(l => `<div style="padding:5px; border-bottom:1px solid #eee;">${l.date}: ฿${l.amount} (${l.note})</div>`).join('') || "ไม่มีประวัติ";}    
                 function loadAccountHistory() {let h = account.logs.map(l => `<div style="padding:15px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;"><div><b style="font-size:14px; color:#1e293b;">${l.date}</b><br><small style="color:#64748b;">${l.note}</small></div><b style="color:${l.amount >= 0 ? '#16a34a' : '#dc2626'};">${l.amount >= 0 ? '+' : ''}฿${Math.abs(l.amount).toLocaleString()}</b></div> `).join('');if($("accHistory")) {$("accHistory").innerHTML = h || '<center style="padding:40px; color:#94a3b8;">ไม่มีประวัติการเคลียร์</center>';}}     
-        function loadAccountStatus() {
+function loadAccountStatus() {
     const now = new Date();
     const dateLabel = now.toLocaleDateString('th-TH', {
         day: '2-digit',
@@ -1164,14 +1164,21 @@ if (dList) {
         tTips += t;
         if (r.pay === "Cash") tCash += p;
     });
-
-    // คำนวณรายได้ช่างและยอด Settle วันนี้
-    const bEarn = Math.max(tTotal * (conf.perc / 100), conf.guar) + tTips;
+    /* --- ส่วนที่แก้ไข: ตรรกะการคิดรายได้ช่าง --- */
+    const commissionEarn = tTotal * (conf.perc / 100); // คำนวณคอมมิชชันจริง
+    let baseEarn = 0;
+    if (commissionEarn >= conf.guar) {
+        // ถ้ารายได้จริง มากกว่าหรือเท่ากับ ประกัน -> ใช้รายได้จริง (ข้ามประกัน)
+        baseEarn = commissionEarn;
+    } else {
+        // ถ้ารายได้จริง น้อยกว่า ประกัน -> ให้ใช้ยอดประกัน
+        baseEarn = conf.guar;
+    }
+    const bEarn = baseEarn + tTips;
     const settleToday = tCash - bEarn;
-    
-    // ปิดการแสดงยอดวันนี้ตามความประสงค์ของท่าน (ให้โชว์เป็น 0)
+    /* -------------------------------------- */
+    // ปิดการแสดงยอดวันนี้ตามความประสงค์ (ให้โชว์เป็น 0)
     if ($("accTodayVal")) $("accTodayVal").innerText = `฿0`;
-
     // 3. ยอดรวมสุทธิ (Net)
     const net = oldBalance + settleToday; 
     if ($("accTotalVal")) $("accTotalVal").innerText = `฿${net.toLocaleString()}`;
@@ -1179,26 +1186,23 @@ if (dList) {
     // 4. อัปเดต Badge สถานะ
     const badge = $("statusBadge"); 
     let bgColor = "#f8fafc", textColor = "#64748b", statusTxt = "⚖️ ยอดลงตัว";
-
     if (net > 0) {
         bgColor = "#fef2f2"; textColor = "#dc2626"; statusTxt = "👨‍🎨 ช่างคืนร้าน";
     } else if (net < 0) {
         bgColor = "#eff6ff"; textColor = "#1e3a8a"; statusTxt = "🏠 ร้านคืนช่าง";
     }
-
     if (badge) {
         badge.innerText = statusTxt;
         badge.style.background = bgColor;
         badge.style.color = textColor;
     }
-
     // 5. อัปเดตไฟสถานะ (accLight)
     if ($("accLight")) {
         const lightColor = net > 0 ? "#dc2626" : (net < 0 ? "#1e3a8a" : "#16a34a");
         $("accLight").style.background = lightColor;
         $("accLight").style.boxShadow = `0 0 12px ${lightColor}`;
     }
-} // ปิดฟังก์ชันเพียงครั้งเดียวตรงนี้
+}
      function clearAccount() {
                 const d = $("accDate").value || new Date().toISOString().split('T')[0];
                 
