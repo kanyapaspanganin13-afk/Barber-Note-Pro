@@ -562,7 +562,7 @@ function confirmDeleteDaily(dateStr) {
         if (typeof renderHistory === "function") renderHistory(); // อัปเดตหน้าหลัก
     }
 }
-    function handleSave() {
+   function handleSave(event) {
     const p = parseInt($("priceInp").value), t = parseInt($("tipInp").value) || 0;
     
     // 1. ตรวจสอบความครบถ้วน
@@ -595,41 +595,50 @@ function confirmDeleteDaily(dateStr) {
         price: p, tip: t, pay: payMethod, payCash: cashAmt, payTrans: transAmt, type: "SERVICE"
     };
 
-    // 2. บันทึกข้อมูล
+    // 2. บันทึกข้อมูลและอัปเดตระบบ
     db.push(rec); 
     saveDB(); 
     renderDay(); 
+    
+    // สำคัญ: เรียกใช้ฟังก์ชันคำนวณบัญชีใหม่ทันทีเพื่อให้ยอด "ค้างเดิม" ไม่ถูกประกันกิน
+    if (typeof loadAccountStatus === 'function') {
+        loadAccountStatus();
+    }
 
-    // ✅ ส่วนที่แก้ไข: เปลี่ยนสีปุ่มแบบบังคับ (Force Change)
-    // ค้นหาปุ่มโดยพยายามหาจาก ID ก่อน ถ้าไม่เจอให้หาจากปุ่มที่มี onclick='handleSave()'
-    const btnSave = $("btnSave") || document.querySelector("button[onclick*='handleSave']");
+    // ✅ 3. การแสดงผลสถานะปุ่มบันทึก (คงไอคอนและเปลี่ยนสีแบบ Gradient)
+    const btnSave = event.currentTarget || $("btnSave") || document.querySelector("button[onclick*='handleSave']");
     
     if (btnSave) {
-        // เก็บค่าเดิมไว้ก่อนเปลี่ยน
         const originalBg = btnSave.style.background;
-        const originalText = btnSave.innerText;
+        const originalContent = btnSave.innerHTML;
 
-        // บังคับเปลี่ยนสีเป็นเขียวเข้ม และเปลี่ยนข้อความ
-        btnSave.style.setProperty("background", "#10b981", "important");
-        btnSave.style.setProperty("color", "#ffffff", "important");
-        btnSave.innerText = "✅ บันทึกสำเร็จ";
+        // เปลี่ยนเป็นสีเขียว Gradient และเปลี่ยนข้อความแต่คงโครงสร้างเดิม
+        btnSave.style.setProperty("background", "linear-gradient(135deg, #10b981, #059669)", "important");
+        btnSave.innerHTML = `
+            <i class="fas fa-check-circle" style="font-size: 38px;"></i>
+            <span style="font-size: 32px; font-weight: 900; letter-spacing:1px;">บันทึกสำเร็จ</span>
+        `;
 
-        // คืนค่าเดิมหลังจาก 1.2 วินาที (เพื่อให้หน้าจอกลับมาพร้อมใช้งานต่อ)
+        // คืนค่าเดิมหลังจาก 1.2 วินาที
         setTimeout(() => {
-            btnSave.style.removeProperty("background");
-            btnSave.style.removeProperty("color");
-            btnSave.innerText = originalText;
+            btnSave.style.background = originalBg;
+            btnSave.innerHTML = originalContent;
         }, 1200);
     }
 
-    // 3. ล้างค่าในหน้าจอ
+    // 4. ล้างค่าในหน้าจอ (Reset Form)
     ["priceInp", "tipInp", "mixCash", "mixTrans"].forEach(id => {
         if($(id)) $(id).value = "";
     });
     
     payMethod = ""; 
     const buttons = ["btnCash", "btnTrans", "btnMix"];
-    buttons.forEach(id => { if($(id)) $(id).className = "btn btn-pay"; });
+    buttons.forEach(id => { 
+        if($(id)) {
+            $(id).className = "icon-card"; // กลับไปใช้คลาสเริ่มต้นของท่าน
+            $(id).style.border = "none";   // ล้างขอบที่เลือกไว้
+        }
+    });
     if($("mixPanel")) $("mixPanel").style.display = 'none';
 }
             function handleInsurance() {
