@@ -48,7 +48,7 @@
 }
 /* 4. ระบบเลย์เอาต์ (เวอร์ชันแก้ไขให้ไอคอนไม่หาย) */
 .page { 
-    display: none; 
+    display: none; /* เพิ่มบรรทัดนี้เพื่อซ่อนทุกหน้าก่อน */
     background: var(--card);
     opacity: 0.95; 
     backdrop-filter: blur(10px);
@@ -57,12 +57,12 @@
     padding: 20px;
     margin-bottom: 20px;
     border: 1px solid var(--border);
-    /* กำหนดความสูงให้เท่ากัน */
     min-height: 75vh;    
 }
+
+/* หน้าที่มีคลาส active เท่านั้นที่จะแสดง */
 .page.active { 
-    /* เปลี่ยนกลับเป็น block เพื่อให้เนื้อหาข้างใน (ไอคอน/ปุ่ม) เรียงลงมาเหมือนเดิม */
-    display: block; 
+    display: block !important; 
     animation: slideUp 0.4s ease-out;
 }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
