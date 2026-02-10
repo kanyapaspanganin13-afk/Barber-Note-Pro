@@ -562,14 +562,12 @@ function confirmDeleteDaily(dateStr) {
         if (typeof renderHistory === "function") renderHistory(); // อัปเดตหน้าหลัก
     }
 }
-   function handleSave(event) {
+function handleSave(event) {
     const p = parseInt($("priceInp").value), t = parseInt($("tipInp").value) || 0;
     
-    // 1. ตรวจสอบความครบถ้วน
     if (!p || !payMethod) {
         return alert("กรุณาใส่ราคาและเลือกวิธีจ่ายเงินก่อน!");
     }
-
     const start = $("tStart").value || new Date().toTimeString().slice(0, 5);
     let cashAmt = 0, transAmt = 0;
 
@@ -577,15 +575,11 @@ function confirmDeleteDaily(dateStr) {
         cashAmt = parseInt($("mixCash").value) || 0;
         transAmt = parseInt($("mixTrans").value) || 0;
         if (cashAmt + transAmt !== p + t) {
-            const confirmMsg = `ยอดเงินไม่ตรงบิล (สด ${cashAmt} + โอน ${transAmt} = ${cashAmt + transAmt}) \nยอดรวมบิลคือ ${p + t} \nคุณยังต้องการบันทึกข้อมูลนี้ใช่ไหม?`;
-            if (!confirm(confirmMsg)) return;
+            if (!confirm(`ยอดเงินไม่ตรงบิล (รวม ${cashAmt + transAmt} / บิล ${p + t})\nยืนยันบันทึกหรือไม่?`)) return;
         }
-    } else if (payMethod === 'Cash') {
-        cashAmt = p + t;
     } else {
-        transAmt = p + t;
+        payMethod === 'Cash' ? cashAmt = p + t : transAmt = p + t;
     }
-
     const rec = {
         id: Date.now(), 
         date: $("dateInp").value, 
@@ -594,51 +588,29 @@ function confirmDeleteDaily(dateStr) {
         svcs: [$("hairStyle")?.value, $("extra1")?.value, $("extra2")?.value].filter(Boolean),
         price: p, tip: t, pay: payMethod, payCash: cashAmt, payTrans: transAmt, type: "SERVICE"
     };
-
-    // 2. บันทึกข้อมูลและอัปเดตระบบ
+    // บันทึกและคำนวณใหม่ทันที
     db.push(rec); 
     saveDB(); 
     renderDay(); 
-    
-    // สำคัญ: เรียกใช้ฟังก์ชันคำนวณบัญชีใหม่ทันทีเพื่อให้ยอด "ค้างเดิม" ไม่ถูกประกันกิน
-    if (typeof loadAccountStatus === 'function') {
-        loadAccountStatus();
-    }
-
-    // ✅ 3. การแสดงผลสถานะปุ่มบันทึก (คงไอคอนและเปลี่ยนสีแบบ Gradient)
-    const btnSave = event.currentTarget || $("btnSave") || document.querySelector("button[onclick*='handleSave']");
-    
+    if (typeof loadAccountStatus === 'function') loadAccountStatus();
+    // ✅ แสดงสถานะปุ่มบันทึกสำเร็จ
+    const btnSave = event.currentTarget || document.querySelector(".btn-main");
     if (btnSave) {
-        const originalBg = btnSave.style.background;
-        const originalContent = btnSave.innerHTML;
+        const oldContent = btnSave.innerHTML;
+        const oldBg = btnSave.style.background;
 
-        // เปลี่ยนเป็นสีเขียว Gradient และเปลี่ยนข้อความแต่คงโครงสร้างเดิม
         btnSave.style.setProperty("background", "linear-gradient(135deg, #10b981, #059669)", "important");
-        btnSave.innerHTML = `
-            <i class="fas fa-check-circle" style="font-size: 38px;"></i>
-            <span style="font-size: 32px; font-weight: 900; letter-spacing:1px;">บันทึกสำเร็จ</span>
-        `;
+        btnSave.innerHTML = `<i class="fas fa-check-circle" style="font-size:38px;"></i> <span style="font-size:32px; font-weight:900;">บันทึกสำเร็จ</span>`;
 
-        // คืนค่าเดิมหลังจาก 1.2 วินาที
         setTimeout(() => {
-            btnSave.style.background = originalBg;
-            btnSave.innerHTML = originalContent;
+            btnSave.style.background = oldBg;
+            btnSave.innerHTML = oldContent;
         }, 1200);
     }
-
-    // 4. ล้างค่าในหน้าจอ (Reset Form)
-    ["priceInp", "tipInp", "mixCash", "mixTrans"].forEach(id => {
-        if($(id)) $(id).value = "";
-    });
-    
+    // ล้างค่าฟอร์ม
+    ["priceInp", "tipInp", "mixCash", "mixTrans"].forEach(id => { if($(id)) $(id).value = ""; });
     payMethod = ""; 
-    const buttons = ["btnCash", "btnTrans", "btnMix"];
-    buttons.forEach(id => { 
-        if($(id)) {
-            $(id).className = "icon-card"; // กลับไปใช้คลาสเริ่มต้นของท่าน
-            $(id).style.border = "none";   // ล้างขอบที่เลือกไว้
-        }
-    });
+    ["btnCash", "btnTrans", "btnMix"].forEach(id => { if($(id)) $(id).className = "icon-card"; });
     if($("mixPanel")) $("mixPanel").style.display = 'none';
 }
             function handleInsurance() {
