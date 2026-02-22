@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BarberNote">
     <link rel="apple-touch-icon" href="https://i.ibb.co/kVrdspsT/Barber-note-pro.jpg">
-    <title>Barber Note Pro</title>
+    <title>Barber Note Pro </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -194,21 +194,23 @@ function openReportModal(title, htmlContent) {
     position: relative; 
     z-index: 1; 
 }
-/* 4. ระบบเลย์เอาต์ (เวอร์ชันแก้ไขให้ไอคอนไม่หาย) */
+/* 4. ระบบเลย์เอาต์  */
 .page { 
-    display: none; /* เพิ่มบรรทัดนี้เพื่อซ่อนทุกหน้าก่อน */
-    background: var(--card);
-    opacity: 0.95; 
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    display: none; 
+    background: #f8fafc; 
+    opacity: 1; 
     border-radius: 25px;
     padding: 20px;
-    margin-bottom: 20px;
+    /* 🔴 ปรับจาก margin-bottom เป็นการกำหนดระยะห่างที่พอดี */
+    margin: 10px 10px 80px 10px; 
     border: 1px solid var(--border);
-    min-height: 75vh;    
+    
+    /* 🟢 แก้ตรงนี้: เปลี่ยนจาก 100.1vh เป็น auto หรือกำหนดความสูงขั้นต่ำที่เหมาะสม */
+    min-height: calc(100vh - 120px); 
+    
+    box-sizing: border-box;
+    overflow-y: auto; /* ให้เลื่อนได้เฉพาะในกรอบถ้าเนื้อหายาว */
 }
-
-/* หน้าที่มีคลาส active เท่านั้นที่จะแสดง */
 .page.active { 
     display: block !important; 
     animation: slideUp 0.4s ease-out;
@@ -587,26 +589,26 @@ nav {
 
 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-bottom:25px;">
     <button onclick="exportBackup()" style="height:50px; background:#ffffff; border:1px solid #cbd5e1; border-radius:12px; font-size:13px; font-weight:800; color:#1e293b; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
-        <i class="fas fa-file-download" style="font-size:14px;"></i> 
-        <span>สำรองข้อมูล</span>
+        <i class="fas fa-file-download" style="font-size:14px;"></i> <span>สำรองข้อมูล</span>
     </button>
     
     <input type="file" id="fileInput" style="display:none;" onchange="importBackup(this)">
 
-<button onclick="document.getElementById('fileInput').click()" style="height:50px; background:#ffffff; border:1px solid #cbd5e1; border-radius:12px; font-size:13px; font-weight:800; color:#1e293b; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
-    <i class="fas fa-file-upload" style="font-size:14px;"></i> 
-    <span>คืนค่า</span>
-</button>
+    <button onclick="$('fileInput').click()" style="height:50px; background:#ffffff; border:1px solid #cbd5e1; border-radius:12px; font-size:13px; font-weight:800; color:#1e293b; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
+        <i class="fas fa-file-upload" style="font-size:14px;"></i> <span>คืนค่า</span>
+    </button>
     
     <button onclick="clearData()" style="height:50px; background:#fff1f2; border:1px solid #fecaca; border-radius:12px; font-size:13px; font-weight:800; color:#e11d48; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
-        <i class="fas fa-trash-alt" style="font-size:14px;"></i> 
-        <span>ลบทั้งหมด</span>
+        <i class="fas fa-trash-alt" style="font-size:14px;"></i> <span>ลบทั้งหมด</span>
     </button>
 </div>
 
-            <div style="display:grid; grid-template-columns: 2fr 1.2fr; gap:12px;">
-                <button onclick="saveSettings()" style="background:#1e3a8a; color:#fff; height:65px; border-radius:22px; border:none; font-weight:800; font-size:20px; box-shadow: 0 10px 25px rgba(30,58,138,0.3);">บันทึกข้อมูล</button>
-                <button onclick="$('modalSet').style.display='none'" style="background:#f1f5f9; color:#64748b; height:65px; border-radius:22px; border:none; font-weight:800; font-size:18px;">ปิดหน้านี้</button>
+<div style="display:grid; grid-template-columns: 2fr 1.2fr; gap:12px;">
+    <button onclick="saveSettings()" style="background:#1e3a8a; color:#fff; height:65px; border-radius:22px; border:none; font-weight:800; font-size:20px; box-shadow: 0 10px 25px rgba(30,58,138,0.3);">บันทึกข้อมูล</button>
+    <button onclick="$('modalSet').style.display='none'" style="background:#f1f5f9; color:#64748b; height:65px; border-radius:22px; border:none; font-weight:800; font-size:18px;">ปิดหน้านี้</button>
+</div>
+   <div style="text-align:center; padding-top: 10px; padding-bottom: 10px; line-height: 1.5;"><div style="font-size:10px; color:#94a3b8; font-weight:600; letter-spacing: 1px;">V.<span id="display-version">1.0.0</span></div>
+    <div style="font-size:9px; color:#cbd5e1; font-weight:400;"> Update: <span id="display-date">22/02/2026</span>
             </div>
         </div>
     </div>
@@ -650,12 +652,34 @@ nav {
    (ส่วนตั้งค่าเริ่มต้นและตัวแปรหลัก)
    ========================================================== */
 const $ = (id) => document.getElementById(id);
-
+// 1. ตั้งค่าเลขเวอร์ชันและวันที่
+const APP_VERSION = "1.0.0"; 
+const LAST_UPDATED = "22/02/2026"; 
+// 2. ระบบอัปเดตอัตโนมัติ (ใส่ไว้ตรงนี้เพื่อให้ทำงานทันทีที่โหลดสคริปต์)
+(function autoUpdate() {
+    const currentStoredVersion = localStorage.getItem("app_v");
+    if (currentStoredVersion !== APP_VERSION) {
+        localStorage.setItem("app_v", APP_VERSION);
+        if ('caches' in window) {
+            caches.keys().then(names => {
+                for (let name of names) caches.delete(name);
+            });
+        }
+        // บังคับรีโหลดเพื่อรับโค้ดใหม่
+        window.location.reload(true);
+    }
+})();
+// 3. ตัวแปรหลักของระบบ
 let db = JSON.parse(localStorage.getItem("barber_db")) || [];
 let archives = JSON.parse(localStorage.getItem("barber_archives")) || [];
 let account = JSON.parse(localStorage.getItem("barber_account")) || { balance: 0, logs: [] };
 let conf = JSON.parse(localStorage.getItem("barber_conf")) || { shop: "Barber Shop", perc: 50, guar: 0 };
 let payMethod = "";
+// 4. สั่งแสดงผลเลขเวอร์ชันและวันที่บนหน้าจอ
+document.addEventListener("DOMContentLoaded", () => {
+    if ($("display-version")) $("display-version").innerText = APP_VERSION;
+    if ($("display-date")) $("display-date").innerText = LAST_UPDATED;
+});
 function go(p) {
     // 1. จัดการการซ่อน/แสดงหน้า Page
     document.querySelectorAll('.page').forEach(pg => {
@@ -814,7 +838,7 @@ function addRecord() {
     
     const currentPay = payMethod; 
     if (price === 0 && currentPay !== 'Holiday' && currentPay !== 'Guarantee') {
-        alert("กรุณาระบุราคาด้วยครับ");
+        alert("กรุณาระบุราคา");
         return;
     }
 
@@ -846,7 +870,6 @@ function addRecord() {
     db.push(newRec);
     localStorage.setItem("barber_db", JSON.stringify(db));
 
-    // 🎯 ส่วนที่ทำให้ยอด "ดีด" ไปหน้าบัญชี
     if (typeof calculateMoney === "function") {
         const result = calculateMoney(); 
         const idx = archives.findIndex(a => a.date === dInp);
@@ -864,10 +887,20 @@ function addRecord() {
         localStorage.setItem("barber_archives", JSON.stringify(archives));
     }
 
-    alert("บันทึกข้อมูลเรียบร้อยแล้วครับ");
+    // --- 🛡️ ส่วนที่เพิ่มใหม่: ปลดล็อคปุ่มส่งข้อมูลทันทีที่มีงานใหม่ ---
+   const btn = document.getElementById("btnSubmitSend");
+const icon = document.getElementById("btnIcon");
+if (btn) {
+    btn.disabled = false; // ปลดล็อก
+    btn.style.background = "#ff6f00"; // กลับเป็นสีส้ม
+    if (icon) icon.className = "fas fa-paper-plane"; // กลับเป็นไอคอนจรวด
+    btn.style.cursor = "pointer";
+}
+    // -------------------------------------------------------
+    alert("บันทึกข้อมูลเรียบร้อย");
 
     if (typeof resetForm === 'function') resetForm();
-    if (typeof renderDay === 'function') renderDay(); 
+    if (typeof renderDay === 'function') renderDay();
     
     // 🎯 เรียกอัปเดตยอดหน้าบัญชีทันที
     if (typeof loadAccountStatus === 'function') loadAccountStatus();
@@ -1095,13 +1128,40 @@ function updateMixValues() {
    SECTION 4: CALCULATION & CLOSING DAILY REPORT
    (ระบบคำนวณส่วนแบ่งและการปิดยอดรายวัน)
    ========================================================== */
-function saveAndGo(date, total) {
+async function saveAndGo(date, total) {
     if (typeof db === 'undefined' || typeof archives === 'undefined') return;
 
+    const btn = document.getElementById("btnSubmitSend");
+    const icon = document.getElementById("btnIcon");
+
+    // 🎯 1. ดักจับข้อมูลซ้ำ: ถ้าส่งแล้วให้เตือนและล็อกปุ่มเป็นสีเทา ไอคอนจรวด
+    const alreadySent = archives.some(a => a.date === date);
+    if (alreadySent) {
+        alert(`⚠️ ข้อมูลของวันที่ ${date} ส่งไปแล้ว`);
+        if (btn) {
+            btn.disabled = true; 
+            btn.style.background = "#94a3b8"; // 🔘 สีเทา
+            if (icon) icon.className = "fas fa-paper-plane"; // ไอคอนจรวดเหมือนเดิม
+            btn.style.cursor = "default";
+        }
+        return;
+    }
+
+    // 🎯 2. ยืนยันก่อนส่ง
+    if (!confirm(`ยืนยันการส่งข้อมูลวันที่ ${date} ใช่ไหม?`)) return;
+
+    // 🎯 3. เริ่มส่ง: ล็อกปุ่มเป็นสีเขียว
+    if (btn) {
+        if (btn.disabled) return; 
+        btn.disabled = true;             
+        btn.style.background = "#22c55e"; // 🟢 สีเขียว (กำลังส่ง)
+        if (icon) icon.className = "fas fa-spinner fa-spin"; 
+    }
+
+    // ... [Logic คำนวณคงเดิมของช่าง] ...
     const allToday = db.filter(r => r.date === date);
     const todayData = allToday.filter(r => r.type === 'SERVICE');
     const isHoliday = allToday.some(r => r.type === 'HOLIDAY');
-
     let cash = 0, tips = 0;
     todayData.forEach(r => {
         const p = Number(r.price) || 0;
@@ -1110,37 +1170,41 @@ function saveAndGo(date, total) {
         if (r.pay === "Cash" || r.pay === "เงินสด") { cash += (p + t); }
         else if (r.pay === "Mix") { cash += Number(r.payCash) || 0; }
     });
-
     const commission = total * (Number(conf.perc) / 100);
     const baseEarn = Math.max(commission, Number(conf.guar) || 0); 
     const bEarn = isHoliday ? 0 : baseEarn + tips;
     const settle = isHoliday ? 0 : cash - bEarn;
-
-    // 1. บันทึกลง Archives (รายงานรายเดือน)
-    const data = { 
-        date, total, cash, 
-        barber: Math.floor(bEarn), 
-        settle: settle, 
-        type: isHoliday ? "HOLIDAY" : "WORK",
-        details: allToday 
-    };
+    const data = { date, total, cash, barber: Math.floor(bEarn), settle: settle, type: isHoliday ? "HOLIDAY" : "WORK", details: allToday };
     const idx = archives.findIndex(a => a.date === date);
     if (idx > -1) { archives[idx] = data; } else { archives.push(data); }
-
-    // 🎯 แก้จุดนี้: ห้ามมี account.logs.push เด็ดขาด!!
-    // แต่เราจะส่งยอดไป "ฝาก" ไว้ที่ตัวแปร account.balance เพื่อให้หน้าบัญชีดึงไปโชว์
-    if (!isHoliday) {
-        account.balance = -settle; 
-    }
-
+    if (!isHoliday) { account.balance = -settle; }
     db = db.filter(r => r.date !== date);
-    if (typeof saveDB === "function") { saveDB(); } else { save(); }
-    
-    // เรียกแสดงผลยอดที่ฝากไว้
-    if (typeof loadAccountStatus === 'function') loadAccountStatus();
-    
-    alert(`✅ ส่งข้อมูลสำเร็จ`);
-    if (typeof go === "function") go(3); 
+
+    try {
+        if (typeof saveDB === "function") { await saveDB(); } else { await save(); }
+        
+        // 🎯 4. ส่งสำเร็จ: เปลี่ยนเป็นสีเทา แต่ไอคอนจรวดเหมือนเดิม
+        if (btn) {
+            btn.style.background = "#94a3b8"; // 🔘 สีเทา (สำเร็จแล้ว)
+            if (icon) icon.className = "fas fa-paper-plane"; // ✈️ จรวดเหมือนเดิม
+            btn.disabled = true;             
+            btn.style.cursor = "default";
+        }
+
+        if (typeof loadAccountStatus === 'function') loadAccountStatus();
+        
+        setTimeout(() => {
+            alert(`✅ ส่งข้อมูลสำเร็จ`);
+        }, 500);
+
+    } catch (e) {
+        if (btn) {
+            btn.disabled = false;
+            btn.style.background = "#ff6f00"; // 🟠 กลับเป็นสีส้ม
+            if (icon) icon.className = "fas fa-paper-plane";
+        }
+        alert("❌ ผิดพลาด: " + e);
+    }
 }
 // --- ระบบประกันรายได้ ---
 function handleInsurance() {
@@ -1357,9 +1421,10 @@ function renderDay(selectedDate){
             <div id="settleBar" style="flex:8; height:55px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; border-radius:18px; font-weight:800; font-size:14px; color:${statusColor}; border:1px solid #e2e8f0;">
                 <span style="margin-right:8px; font-size:18px;">${icon}</span> ${txt}
             </div>
-            <button onclick="saveAndGo('${dInp}', ${tot})" style="flex:2.2; height:55px; background:#ff6f00; color:#fff; border-radius:18px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-                <i class="fas fa-paper-plane"></i>
-            </button>`;
+          <button id="btnSubmitSend" onclick="saveAndGo('${dInp}', ${tot})" 
+        style="flex:2.2; height:55px; background:#ff6f00; color:#fff; border-radius:18px; border:none; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition: background 0.3s;">
+    <i id="btnIcon" class="fas fa-paper-plane"></i>
+</button>`;
     }
 const dList = $("dailyList");
 if (dList) {
@@ -1637,8 +1702,13 @@ function closeReportModal() {
     const modal = $("reportModal");
     if (modal) {
         modal.style.display = "none";
-        // ปรับพื้นหลังหน้าหลักให้กลับมาเลื่อนได้ปกติ (ถ้ามีการล็อคไว้)
+        // 1. ปรับพื้นหลังหน้าหลักให้กลับมาเลื่อนได้ปกติ
         document.body.style.overflow = "auto";
+    }
+    // 2. 🟢 สั่งให้เด้งกลับไปหน้าบันทึก (หน้าที่ 2) ทันที
+    // เพื่อให้เนื้อหาหน้าบันทึกโชว์ขึ้นมาแทนหน้าว่างๆ ครับ
+    if (typeof go === 'function') {
+        go(2); 
     }
 }
 function closeAndGoHome() {
@@ -1870,7 +1940,6 @@ function loadHistMonth() {
     filtered.forEach(day => {
         const dObj = new Date(day.date);
         let wIdx = Math.ceil(dObj.getDate() / 7);
-        if (wIdx > 4) wIdx = 4;
         const wKey = `สัปดาห์ที่ ${wIdx}`;
 
         if (!weeklyData[wKey]) {
@@ -2477,43 +2546,73 @@ function applyTheme(t) {
    SECTION 9: SYSTEM STARTUP & EVENT LISTENERS
    (สวิตช์เปิดเครื่อง: การเริ่มต้นและดักจับเหตุการณ์)
    ========================================================== */
-// 1. ดักจับการคลิกพื้นหลังเพื่อปิด Modal 
+// 1. ดักจับการคลิกพื้นหลังเพื่อปิด Modal (ปรับให้รองรับ modalSet ที่ช่างใช้ด้วย)
 window.onclick = function(e) {
     const modals = [
         { id: "reportModal", close: typeof closeReportModal === "function" ? closeReportModal : null },
         { id: "historyModal", close: typeof closeHistoryModal === "function" ? closeHistoryModal : null },
+        { id: "modalSet", close: typeof closeAndGoHome === "function" ? closeAndGoHome : null }, // เพิ่มตัวนี้ครับ
         { id: "configModal", close: typeof closeConfigModal === "function" ? closeConfigModal : null } 
     ]; 
     modals.forEach(m => {
         const modalEl = $(m.id);
+        // ถ้าคลิกโดนพื้นที่ว่างรอบๆ Modal ให้รันฟังก์ชันปิด
         if (modalEl && e.target === modalEl && m.close) m.close();
     });
 };
-// 2. การทำงานทันทีที่โหลดหน้าเว็บเสร็จ
+
+// 2. ระบบ Pull-to-Refresh (ปรับระยะให้ลื่นขึ้น)
+let touchStart = 0;
+window.addEventListener('touchstart', (e) => {
+    touchStart = e.targetTouches[0].pageY;
+}, {passive: true});
+
+window.addEventListener('touchmove', (e) => {
+    let touchMove = e.targetTouches[0].pageY;
+    // ถ้าอยู่ที่บนสุด และลากลงมา (ระยะ 180px กำลังดีครับ ไม่เหนื่อยนิ้ว)
+    if (window.scrollY === 0 && touchMove - touchStart > 180) {
+        // ใส่ Effect นิดหน่อยให้รู้ว่ากำลังรีเฟรช
+        document.body.style.opacity = "0.5";
+        location.reload(); 
+    }
+}, {passive: true});
+
+// 3. การทำงานทันทีที่โหลดหน้าเว็บเสร็จ
 window.addEventListener('load', () => {
     console.log("🚀 Barber App System Started...");
-    // --- ส่วนตั้งค่าเริ่มต้น ---
+    
+    // --- 🟢 ส่วนที่เพิ่ม: สั่งซ่อนหน้าต่างตั้งค่าก่อนเป็นอันดับแรก ---
+    if ($("modalSet")) $("modalSet").style.display = "none";
+    if ($("reportModal")) $("reportModal").style.display = "none";
+
+    // --- ส่วนตั้งค่าวันที่เริ่มต้น ---
     const today = new Date().toISOString().split('T')[0]; 
-    // ตั้งค่าวันที่ปัจจุบันลงใน Input
     if ($("dateInp")) $("dateInp").value = today;
     if ($("accDate")) $("accDate").value = today;
     if ($("histDate")) $("histDate").value = today;
 
-    // ✨ ส่วนสำคัญที่สุด: สั่งให้อัปเดตตัวเลขวันที่บนหน้าจอเป็นภาษาไทยทันที
+    // ✨ แก้ไขจุดสำคัญ: บังคับไปหน้าหลัก
+    // ช่างครับ ถ้า ID ของหน้าบันทึกคือ "p1" ต้องใช้ go(1) นะครับ
+    // แต่ถ้าช่างตั้ง ID เป็น "p0" ก็ใช้ go(0) ตามเดิมได้เลยครับ
+    if (typeof go === 'function') {
+        go(1); // 👈 ลองเปลี่ยนเป็น 1 ดูครับ เพราะปกติ p1 คือหน้าแรก
+    }
+
     if (typeof updateDateDisplay === 'function') {
         updateDateDisplay(today);
-    } else {
-        // กรณีไม่มีฟังก์ชัน ให้ลองสั่ง renderDay ตรงๆ เพื่อโหลดข้อมูล
-        if (typeof renderDay === 'function') renderDay(today);
+    } else if (typeof renderDay === 'function') {
+        renderDay(today);
     }
+    
     if (typeof loadAccountStatus === 'function') loadAccountStatus();
+
     // --- ส่วนดักจับเหตุการณ์ (Event Listeners) ---
     if ($("mixCash")) $("mixCash").addEventListener("input", updateMixValues);
     if ($("priceInp")) $("priceInp").addEventListener("input", updateMixValues);
     if ($("tipInp")) $("tipInp").addEventListener("input", updateMixValues);
 
-    console.log("⚡ ระบบคำนวณเงินและ Event Listeners พร้อมทำงาน");
+    console.log("⚡ ระบบพร้อมทำงาน: หน้าหลักถูกตั้งค่าเป็นหน้าที่ 1");
 });
  </script>
-            </body>
-            </html>
+    </body>
+    </html>
