@@ -201,16 +201,19 @@ function openReportModal(title, htmlContent) {
     opacity: 1; 
     border-radius: 25px;
     padding: 20px;
-    /* 🔴 ปรับจาก margin-bottom เป็นการกำหนดระยะห่างที่พอดี */
-    margin: 10px 10px 80px 10px; 
+    
+    /* 🔴 ปรับระยะห่างด้านล่างให้มากขึ้นเล็กน้อยเพื่อให้พ้นแถบเมนู */
+    margin: 10px 10px 100px 10px; 
+    
     border: 1px solid var(--border);
     
-    /* 🟢 แก้ตรงนี้: เปลี่ยนจาก 100.1vh เป็น auto หรือกำหนดความสูงขั้นต่ำที่เหมาะสม */
-    min-height: calc(100vh - 120px); 
+    /* 🟢 ลดความสูงลงอีกนิด เพื่อให้เหลือพื้นที่ด้านล่างครับ */
+    min-height: calc(100vh - 200px); 
     
     box-sizing: border-box;
-    overflow-y: auto; /* ให้เลื่อนได้เฉพาะในกรอบถ้าเนื้อหายาว */
+    overflow-y: auto;
 }
+
 .page.active { 
     display: block !important; 
     animation: slideUp 0.4s ease-out;
@@ -319,14 +322,28 @@ nav {
     font-size: 24px;                 /* คุมขนาดไอคอนให้คงที่ */
     transition: none !important;     /* ปิดความนุ่มนวลในการขยาย เพื่อให้มันนิ่งสนิททันที */
 } 
-     /* 8. โมดอลและรายงาน */
+   /* 8. โมดอลและรายงาน - ปรับปรุงใหม่ */
     .modal { 
-        position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); 
-        display: none; z-index: 1000000; align-items: center; justify-content: center; 
+        position: fixed; 
+        inset: 0; 
+        background: rgba(0, 0, 0, 0.7); /* ลดความดำลงนิดจะได้เห็นหน้าหลัง */
+        display: none; 
+        z-index: 1000000; 
+        align-items: center; 
+        justify-content: center;
+        padding-bottom: 80px; /* เพิ่มช่องว่างด้านล่างให้พ้นแถบเมนูบาร์ */
     }
     .modal-content { 
-        background: var(--card); color: var(--text); width: 90%; max-width: 400px; 
-        border-radius: 25px; padding: 25px; max-height: 85vh; overflow-y: auto; 
+        background: var(--card); 
+        color: var(--text); 
+        width: 90%; 
+        max-width: 400px; 
+        border-radius: 25px; 
+        padding: 25px; 
+        max-height: 75vh; /* ปรับลดจาก 85 เป็น 75 เพื่อไม่ให้ยาวเกินไป */
+        overflow-y: auto; 
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3); /* เพิ่มเงาให้ดูมีมิติ */
+        position: relative;
     }
     .status-bar { padding: 12px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 14px; margin-bottom: 10px; }
     .acc-main-card { background: var(--card); padding: 20px; border-radius: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); margin-bottom: 15px; }
@@ -547,71 +564,73 @@ nav {
      </div> 
   </div>                   
     <div id="modalSet" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); z-index:9999; display:flex; align-items:center; justify-content:center; padding:15px;">
+  <div style="background:#ffffff; width:95%; max-width:420px; border-radius:35px; display:flex; flex-direction:column; overflow:hidden; animation: slideUp 0.3s ease-out; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
     
-    <div style="background:#ffffff; width:95%; max-width:420px; border-radius:35px; display:flex; flex-direction:column; overflow:hidden; animation: slideUp 0.3s ease-out; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
-        
-        <div style="padding:25px 20px 15px; text-align:center;">
-            <h3 style="margin:0; font-size:24px; color:#1e3a8a; font-weight:900;">⚙️ ตั้งค่าระบบ</h3>
+    <div style="padding: 20px 20px 5px; text-align: center;">
+        <h3 style="margin: 0; font-size: 22px; color: #1e3a8a; font-weight: 900;">⚙️ ตั้งค่าระบบ</h3>
+    </div>
+
+    <div style="padding: 5px 20px 25px;"> <input type="text" id="setShop" placeholder="ชื่อร้าน" 
+               style="width: 100%; height: 52px; border-radius: 16px; border: 1px solid #e2e8f0; background: #f1f5f9; text-align: center; font-size: 18px; font-weight: 700; color: #1e3a8a; margin-bottom: 10px; outline: none;">
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+            <input type="number" id="setPerc" placeholder="% ช่าง" style="width:100%; height:52px; border-radius:16px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:18px; font-weight:700; outline:none;">
+            <input type="number" id="setGuar" placeholder="ประกัน" style="width:100%; height:52px; border-radius:16px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:18px; font-weight:700; outline:none;">
         </div>
 
-        <div style="padding:10px 25px 35px;">
-            <input type="text" id="setShop" placeholder="ชื่อร้าน" style="width:100%; height:55px; border-radius:18px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:18px; font-weight:700; color:#1e3a8a; margin-bottom:12px; outline:none;">
+        <div style="margin-bottom:10px;">
+            <select id="setTheme" style="width:100%; height:52px; border-radius:16px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:16px; font-weight:700; color:#475569; outline:none;">
+                <option value="light">🌤 ธีมสว่าง</option>
+                <option value="navy">🌌 ธีมน้ำเงิน</option>
+                <option value="dark">🌑 ธีมดำ-ทอง</option>
+            </select>
+        </div>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
-                <input type="number" id="setPerc" placeholder="% ช่าง" style="width:100%; height:55px; border-radius:18px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:18px; font-weight:700; outline:none;">
-                <input type="number" id="setGuar" placeholder="ประกัน" style="width:100%; height:55px; border-radius:18px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:18px; font-weight:700; outline:none;">
-            </div>
-
-            <div style="margin-bottom:12px;">
-                <select id="setTheme" style="width:100%; height:55px; border-radius:18px; border:1px solid #e2e8f0; background:#f1f5f9; text-align:center; font-size:16px; font-weight:700; color:#475569; outline:none;">
-                    <option value="light">🌤 ธีมสว่าง</option>
-                    <option value="navy">🌌 ธีมน้ำเงิน</option>
-                    <option value="dark">🌑 ธีมดำ-ทอง</option>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
+            <div style="position: relative; display: flex; align-items: center;">
+                <select id="setSound" style="width:100%; height:52px; border-radius:16px; border:1px solid #cbd5e1; background:#f1f5f9; text-align:center; font-size:15px; font-weight:700; outline:none; appearance:none; -webkit-appearance:none; padding-left: 35px;">
+                    <option value="on">เปิดเสียง</option>
+                    <option value="off">ปิดเสียง</option>
                 </select>
+                <i class="fas fa-volume-up" style="position: absolute; left: 12px; color: #475569; pointer-events: none; font-size: 14px;"></i>
             </div>
-<div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;">
-    <div style="position: relative; display: flex; align-items: center;">
-        <select id="setSound" style="width:100%; height:55px; border-radius:18px; border:1px solid #cbd5e1; background:#f1f5f9; text-align:center; font-size:15px; font-weight:700; outline:none; appearance:none; -webkit-appearance:none; padding-left: 40px;">
-            <option value="on">เปิดเสียง</option>
-            <option value="off">ปิดเสียง</option>
-        </select>
-        <i class="fas fa-volume-up" style="position: absolute; left: 15px; color: #475569; pointer-events: none;"></i>
-    </div>
 
-    <div style="position: relative; display: flex; align-items: center;">
-        <select id="setVoice" style="width:100%; height:55px; border-radius:18px; border:1px solid #cbd5e1; background:#f1f5f9; text-align:center; font-size:15px; font-weight:700; outline:none; appearance:none; -webkit-appearance:none; padding-left: 40px;">
-            <option value="female">เสียงหญิง</option>
-            <option value="male">เสียงชาย</option>
-        </select>
-        <i class="fas fa-user-friends" style="position: absolute; left: 15px; color: #475569; pointer-events: none;"></i>
-    </div>
-</div>
-
-<div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-bottom:25px;">
-    <button onclick="exportBackup()" style="height:50px; background:#ffffff; border:1px solid #cbd5e1; border-radius:12px; font-size:13px; font-weight:800; color:#1e293b; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
-        <i class="fas fa-file-download" style="font-size:14px;"></i> <span>สำรองข้อมูล</span>
-    </button>
-    
-    <input type="file" id="fileInput" style="display:none;" onchange="importBackup(this)">
-
-    <button onclick="$('fileInput').click()" style="height:50px; background:#ffffff; border:1px solid #cbd5e1; border-radius:12px; font-size:13px; font-weight:800; color:#1e293b; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
-        <i class="fas fa-file-upload" style="font-size:14px;"></i> <span>คืนค่า</span>
-    </button>
-    
-    <button onclick="clearData()" style="height:50px; background:#fff1f2; border:1px solid #fecaca; border-radius:12px; font-size:13px; font-weight:800; color:#e11d48; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
-        <i class="fas fa-trash-alt" style="font-size:14px;"></i> <span>ลบทั้งหมด</span>
-    </button>
-</div>
-
-<div style="display:grid; grid-template-columns: 2fr 1.2fr; gap:12px;">
-    <button onclick="saveSettings()" style="background:#1e3a8a; color:#fff; height:65px; border-radius:22px; border:none; font-weight:800; font-size:20px; box-shadow: 0 10px 25px rgba(30,58,138,0.3);">บันทึกข้อมูล</button>
-    <button onclick="$('modalSet').style.display='none'" style="background:#f1f5f9; color:#64748b; height:65px; border-radius:22px; border:none; font-weight:800; font-size:18px;">ปิดหน้านี้</button>
-</div>
-   <div style="text-align:center; padding-top: 10px; padding-bottom: 10px; line-height: 1.5;"><div style="font-size:10px; color:#94a3b8; font-weight:600; letter-spacing: 1px;">V.<span id="display-version">1.0.0</span></div>
-    <div style="font-size:9px; color:#cbd5e1; font-weight:400;"> Update: <span id="display-date">22/02/2026</span>
+            <div style="position: relative; display: flex; align-items: center;">
+                <select id="setVoice" style="width:100%; height:52px; border-radius:16px; border:1px solid #cbd5e1; background:#f1f5f9; text-align:center; font-size:15px; font-weight:700; outline:none; appearance:none; -webkit-appearance:none; padding-left: 35px;">
+                    <option value="female">เสียงหญิง</option>
+                    <option value="male">เสียงชาย</option>
+                </select>
+                <i class="fas fa-user-friends" style="position: absolute; left: 12px; color: #475569; pointer-events: none; font-size: 14px;"></i>
             </div>
         </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-bottom:20px;">
+            <button onclick="exportBackup()" style="height:48px; background:#ffffff; border:1px solid #cbd5e1; border-radius:12px; font-size:12px; font-weight:800; color:#1e293b; display:flex; align-items:center; justify-content:center; gap:5px; cursor:pointer;">
+                <i class="fas fa-file-download"></i> <span>สำรองข้อมูล</span>
+            </button>
+            
+            <input type="file" id="fileInput" style="display:none;" onchange="importBackup(this)">
+
+            <button onclick="$('fileInput').click()" style="height:48px; background:#ffffff; border:1px solid #cbd5e1; border-radius:12px; font-size:12px; font-weight:800; color:#1e293b; display:flex; align-items:center; justify-content:center; gap:5px; cursor:pointer;">
+                <i class="fas fa-file-upload"></i> <span>คืนค่า</span>
+            </button>
+            
+            <button onclick="clearData()" style="height:48px; background:#fff1f2; border:1px solid #fecaca; border-radius:12px; font-size:12px; font-weight:800; color:#e11d48; display:flex; align-items:center; justify-content:center; gap:5px; cursor:pointer;">
+                <i class="fas fa-trash-alt"></i> <span>ล้างข้อมูล</span>
+            </button>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 2fr 1.2fr; gap:12px; margin-bottom: 10px;">
+            <button onclick="saveSettings()" style="background:#1e3a8a; color:#fff; height:60px; border-radius:20px; border:none; font-weight:800; font-size:18px; box-shadow: 0 8px 20px rgba(30,58,138,0.2);">บันทึกข้อมูล</button>
+            <button onclick="$('modalSet').style.display='none'" style="background:#f1f5f9; color:#64748b; height:60px; border-radius:20px; border:none; font-weight:800; font-size:16px;">ปิด</button>
+        </div>
+
+        <div style="text-align:center; line-height: 1.4;">
+            <div style="font-size:10px; color:#94a3b8; font-weight:600; letter-spacing: 0.5px;">V.<span id="display-version">1.0.5</span></div>
+            <div style="font-size:9px; color:#cbd5e1; font-weight:400;">Update: <span id="display-date">22/02/2026</span></div>
+        </div>
     </div>
+</div>
 </div>
     <div id="reportModal" class="modal">
     <div class="modal-content">
@@ -653,7 +672,7 @@ nav {
    ========================================================== */
 const $ = (id) => document.getElementById(id);
 // 1. ตั้งค่าเลขเวอร์ชันและวันที่
-const APP_VERSION = "1.0.0"; 
+const APP_VERSION = "1.0.5"; 
 const LAST_UPDATED = "22/02/2026"; 
 // 2. ระบบอัปเดตอัตโนมัติ (ใส่ไว้ตรงนี้เพื่อให้ทำงานทันทีที่โหลดสคริปต์)
 (function autoUpdate() {
@@ -1699,18 +1718,21 @@ function closeHistoryModal() {
     if (modal) modal.style.display = "none"; 
 }
 function closeReportModal() {
-    const modal = $("reportModal");
+    const modal = $("reportModal"); 
+    
     if (modal) {
         modal.style.display = "none";
-        // 1. ปรับพื้นหลังหน้าหลักให้กลับมาเลื่อนได้ปกติ
         document.body.style.overflow = "auto";
     }
-    // 2. 🟢 สั่งให้เด้งกลับไปหน้าบันทึก (หน้าที่ 2) ทันที
-    // เพื่อให้เนื้อหาหน้าบันทึกโชว์ขึ้นมาแทนหน้าว่างๆ ครับ
-    if (typeof go === 'function') {
-        go(2); 
-    }
-}
+
+    // หน่วงเวลาเล็กน้อยเพื่อให้ UI คืนค่าได้สมบูรณ์
+    setTimeout(() => {
+        if (typeof go === 'function') {
+            console.log("กำลังกลับไปหน้าบันทึก...");
+            go(2); 
+        }
+    }, 100); 
+} // ปิดฟังก์ชันแค่ตรงนี้พอครับช่าง (ปีกกาอันที่เกินออกไปแล้ว)
 function closeAndGoHome() {
     const m = $("modalSet");
     if (m) m.style.display = 'none';
@@ -2614,5 +2636,5 @@ window.addEventListener('load', () => {
     console.log("⚡ ระบบพร้อมทำงาน: หน้าหลักถูกตั้งค่าเป็นหน้าที่ 1");
 });
  </script>
-    </body>
-    </html>
+            </body>
+            </html>
