@@ -345,6 +345,63 @@ nav {
         box-shadow: 0 20px 50px rgba(0,0,0,0.3); /* เพิ่มเงาให้ดูมีมิติ */
         position: relative;
     }
+    /* 9. ส่วนเสริมสำหรับรายงานและสถิติ (ที่เพิ่งปรับปรุง) */
+
+/* กรอบนับจำนวนลูกค้า dCounts */
+#dCounts {
+    text-align: center;
+    padding: 8px;
+    border-radius: 12px;
+    background: var(--bg); /* ปรับสีตามธีม */
+    color: var(--text);
+    min-height: 60px; /* ล็อคความสูงขั้นต่ำไม่ให้โย่ง */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* ปรับแต่ง Tag บริการใน dServiceStats */
+#dServiceStats span {
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    white-space: nowrap; /* ป้องกันข้อความตัดบรรทัดในตัวเอง */
+}
+
+/* ปรับปรุงหน้าประวัติ (History Row) ให้รองรับโหมดมืด */
+.history-row {
+    background: var(--card) !important;
+    border-bottom: 1px solid var(--border) !important;
+    transition: background 0.2s;
+}
+
+.history-row:last-child {
+    border-bottom: none;
+}
+
+/* สีตัวหนังสือในรายงานให้เปลี่ยนตามธีม */
+.history-row [style*="color:#1e293b"] { color: var(--text) !important; }
+.history-row [style*="color:#64748b"] { color: var(--text); opacity: 0.7; }
+
+/* จัดการ Scrollbar ให้ดูเล็กและสะอาดตา */
+#accHistory::-webkit-scrollbar, 
+.modal-content::-webkit-scrollbar,
+.page::-webkit-scrollbar {
+    width: 4px;
+}
+#accHistory::-webkit-scrollbar-thumb,
+.modal-content::-webkit-scrollbar-thumb,
+.page::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 10px;
+}
+/* ปรับปุ่มลบในประวัติให้เด่นแต่พอดี */
+span[onclick*="delRec"] {
+    padding: 4px 8px;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 6px;
+    margin-top: 5px;
+    display: inline-block;
+}
     .status-bar { padding: 12px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 14px; margin-bottom: 10px; }
     .acc-main-card { background: var(--card); padding: 20px; border-radius: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); margin-bottom: 15px; }
     #accHistory { font-size: 12px; max-height: 150px; overflow-y: auto; }
@@ -355,158 +412,141 @@ nav {
         </style>
     </head>
 <body>
-            <div class="container">
-            <div id="p1" class="page active" style="padding: 15px; background: #f8fafc;">
-                <h2 id="shopNameDisp" style="text-align:center; color:#1e293b; font-weight:900; margin: 10px 0 20px 0; letter-spacing: 1px; text-transform: uppercase;">BARBER SHOP</h2>
-                
-                <div class="grid-3" style="gap: 12px; margin-bottom: 20px;">
-                    <div class="icon-card" style="background:#fff; border:none; box-shadow:0 8px 15px rgba(0,0,0,0.05); border-radius:20px; height:90px; display:flex; flex-direction:column; align-items:center; justify-content:center;" onclick="handleInsurance()">
-                        <div style="background:linear-gradient(135deg, #fbbf24, #f59e0b); width:38px; height:38px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:8px; color:#fff; font-size:18px;">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <span style="color:#1e293b; font-weight:800; font-size:14px;">ประกันรายได้</span>
-                    </div>
-                    
-                    <div class="icon-card" style="background:#fff; border:none; box-shadow:0 8px 15px rgba(0,0,0,0.05); border-radius:20px; height:90px; display:flex; flex-direction:column; align-items:center; justify-content:center;" onclick="handleHoliday()">
-                        <div style="background:linear-gradient(135deg, #f87171, #ef4444); width:38px; height:38px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:8px; color:#fff; font-size:18px;">
-                            <i class="fas fa-umbrella-beach"></i>
-                        </div>
-                        <span style="color:#1e293b; font-weight:800; font-size:14px;">บันทึกวันหยุด</span>
-                    </div>
-            
-                    <div class="icon-card" style="background:#fff; border:none; box-shadow:0 8px 15px rgba(0,0,0,0.05); border-radius:20px; height:90px; display:flex; flex-direction:column; align-items:center; justify-content:center;" onclick="openSettings()">
-                        <div style="background:linear-gradient(135deg, #94a3b8, #475569); width:38px; height:38px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:8px; color:#fff; font-size:18px;">
-                            <i class="fas fa-cog"></i>
-                        </div>
-                        <span style="color:#1e293b; font-weight:800; font-size:14px;">ตั้งค่าระบบ</span>
-                    </div>
-                </div>
-            
-              <div class="grid-3" style="gap:10px; margin-bottom:15px;">
-    <div style="background:#fff; border-radius:18px; border:none; height:75px; position:relative; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+<div class="container">
+<div class="container" style="width: 100vw; min-height: 100vh; background: #f1f5f9; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; overflow-x: hidden; padding: 20px 0;">  
+    <div id="p1" class="page active" style="width: 98%; max-width: 480px; padding: 15px; background: #f8fafc; min-height: fit-content; box-shadow: 0 0 15px rgba(0,0,0,0.05); margin: 0 auto; border-radius: 25px; padding-bottom: 25px;">
         
-        <span id="dateDisplay" style="font-weight:800; color:#475569; font-size:18px;">📅 เลือกวันที่</span>
+        <h2 id="shopNameDisp" style="text-align:center; color:#1e293b; font-weight:900; margin: 5px 0 15px 0; letter-spacing: 1px; text-transform: uppercase; font-size: 22px;">BARBER SHOP</h2>
         
-        <input type="date" id="dateInp" 
-               onchange="if(window.updateDateDisplay) updateDateDisplay(this.value);" 
-               style="position:absolute; opacity:0; width:100%; height:100%; cursor:pointer; z-index:2;">
+        <div class="grid-3" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+            <div class="icon-card" style="background:#fff; border:none; box-shadow:0 4px 10px rgba(0,0,0,0.04); border-radius:18px; height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer;" onclick="handleInsurance()">
+                <div style="background:linear-gradient(135deg, #fbbf24, #f59e0b); width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:4px; color:#fff; font-size:16px;"><i class="fas fa-shield-alt"></i></div>
+                <span style="color:#1e293b; font-weight:800; font-size:11px;">ประกันรายได้</span>
+            </div>
+            <div class="icon-card" style="background:#fff; border:none; box-shadow:0 4px 10px rgba(0,0,0,0.04); border-radius:18px; height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer;" onclick="handleHoliday()">
+                <div style="background:linear-gradient(135deg, #f87171, #ef4444); width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:4px; color:#fff; font-size:16px;"><i class="fas fa-umbrella-beach"></i></div>
+                <span style="color:#1e293b; font-weight:800; font-size:11px;">บันทึกวันหยุด</span>
+            </div>
+            <div class="icon-card" style="background:#fff; border:none; box-shadow:0 4px 10px rgba(0,0,0,0.04); border-radius:18px; height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer;" onclick="openSettings()">
+                <div style="background:linear-gradient(135deg, #94a3b8, #475569); width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:4px; color:#fff; font-size:16px;"><i class="fas fa-cog"></i></div>
+                <span style="color:#1e293b; font-weight:800; font-size:11px;">ตั้งค่าระบบ</span>
+            </div>
+        </div>
+
+       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+    <div style="background:#fff; border-radius:15px; height:55px; position:relative; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 8px rgba(0,0,0,0.03);">
+        <span id="dateDisplay" style="font-weight:800; color:#475569; font-size:18px;">📅 วันที่</span>
+        <input type="date" id="dateInp" onchange="if(window.updateDateDisplay) updateDateDisplay(this.value);" style="position:absolute; opacity:0; width:100%; height:100%; cursor:pointer; z-index:2;">
     </div>
 
-    <input type="time" id="tStart" style="height:75px; border-radius:22px; border:none; text-align:center; font-weight:700; background:#fff; color:#1e293b; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
-    <input type="time" id="tEnd" style="height:75px; border-radius:22px; border:none; text-align:center; font-weight:700; background:#fff; color:#1e293b; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+    <select id="custType" style="width: 100%; height:55px; border-radius:15px; border:none; background:#fff; color:#1e293b; font-weight:800; font-size:18px; text-align:center; text-align-last:center; padding: 0 5px; outline:none; box-shadow: 0 4px 8px rgba(0,0,0,0.03); appearance:none; cursor:pointer;">
+        <option value="none">ประเภทลูกค้า</option>
+        <option value="new">💇 ลูกค้าใหม่</option>
+        <option value="regular">💇‍♂️ ลูกค้าประจำ</option>
+    </select>
 </div>
-            <div style="display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-                <select id="hairStyle" style="height:70px; border-radius:14px; border:none; font-weight:700; background:#fff; color:#1e293b; box-shadow:0 4px 10px rgba(0,0,0,0.03); padding:0 10px;">
-                    <option value="">✂️ ทรงผม</option>
-                    <option>แฟชั่น</option><option>สกินเฟด</option><option>เปิดข้าง</option><option>รองทรง</option>
-                    <option>ตำรวจ/ทหาร</option><option>ทรงนักเรียน</option><option>แก้ผม</option><option>โกนผม</option>
-                </select>
-                <select id="extra1" style="height:70px; border-radius:14px; border:none; font-weight:700; background:#fff; color:#64748b; box-shadow:0 4px 10px rgba(0,0,0,0.03); padding:0 8px;">
-                    <option value="">บริการ1</option>
-                    <option value="เด็ก"> เด็ก</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option><option>ย้อมผม</option><option>ดัดผม</option><option>ย้อมแฟชั่น</option>
-                </select>
-                <select id="extra2" style="height:70px; border-radius:14px; border:none; font-weight:700; background:#fff; color:#64748b; box-shadow:0 4px 10px rgba(0,0,0,0.03); padding:0 8px;">
-                    <option value="">บริการ2</option>
-                    <option value="เด็ก"> เด็ก</option><option>โกนหนวด</option><option>กันหน้า</option><option>สระผม</option><option>ย้อมผม</option><option>ดัดผม</option><option>ย้อมแฟชั่น</option>
-                </select>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+            <div style="position:relative;">
+                <div style="position:absolute; top:4px; left:12px; font-size:12px; font-weight:700; color:#94a3b8; z-index:1;">เริ่ม</div>
+                <input type="time" id="tStart" style="width:100%; height:55px; border-radius:15px; border:none; text-align:center; font-weight:700; background:#fff; color:#1e293b; box-shadow: 0 4px 8px rgba(0,0,0,0.03); padding-top:10px; font-size:20px; outline:none;">
             </div>
-            
-            <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px; margin: 10px 0;">
-                <div style="position: relative; background: #ffffff; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05);">
-                    <span style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 24px; color: #6366f1; font-weight: 900;">฿</span>
-                    <input type="number" id="priceInp" placeholder="0" inputmode="numeric" 
-                        style="width: 100%; height: 85px !important; background: transparent !important; font-size: 45px !important; font-weight: 900 !important; color: #1e293b !important; padding-left: 40px !important; border: none !important;">
-                </div>
-            
-                <input type="number" id="tipInp" placeholder="ทิป" inputmode="numeric" 
-                    style="width: 100%; height: 85px !important; background: #e1f5fe !important; border-radius: 20px !important; font-size: 32px !important; font-weight: 900 !important; color: #ad2c18 !important; border: none !important;">
+            <div style="position:relative;">
+                <div style="position:absolute; top:4px; left:12px; font-size:12px; font-weight:700; color:#94a3b8; z-index:1;">เสร็จ</div>
+                <input type="time" id="tEnd" style="width:100%; height:55px; border-radius:15px; border:none; text-align:center; font-weight:700; background:#fff; color:#1e293b; box-shadow: 0 4px 8px rgba(0,0,0,0.03); padding-top:10px; font-size:20px; outline:none;">
             </div>
-            
-           <div class="grid-3" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-bottom:15px;">
-    <button id="btnCash" onclick="setPaymentType('Cash')" style="height:70px; border-radius:18px; border:none; background:linear-gradient(135deg, #10b981, #059669); color:#fff; font-weight:700; font-size:18px; box-shadow:0 4px 10px rgba(16,185,129,0.2);">
-        <i class="fas fa-money-bill-wave"></i><br>เงินสด
-    </button>
-    <button id="btnTrans" onclick="setPaymentType('Trans')" style="height:70px; border-radius:18px; border:none; background:linear-gradient(135deg, #6366f1, #4338ca); color:#fff; font-weight:700; font-size:18px; box-shadow:0 4px 10px rgba(99,102,241,0.2);">
-        <i class="fas fa-qrcode"></i><br>สแกนจ่าย
-    </button>
-    <button id="btnMix" onclick="setPaymentType('Mix')" style="height:70px; border-radius:18px; border:none; background:linear-gradient(135deg, #81d4fa, #01579b); color:#fff; font-weight:700; font-size:18px; box-shadow:0 4px 10px rgba(245,158,11,0.2);">
-        <i class="fas fa-wallet"></i><br>จ่ายผสม
-    </button>
-</div>
-
-<div id="mixPanel" style="display:none; background:#f8fafc; padding:15px; border-radius:20px; border:2px dashed #cbd5e1; margin-bottom:20px;">
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-        <div>
-            <label style="font-size:18px; color:#64748b;">ระบุเงินสด:</label>
-            <input type="number" id="mixCash" style="width:100%; height:45px; border-radius:12px; border:1px solid #ddd; text-align:center; font-size:30px;" placeholder="0">
         </div>
-        <div>
-            <label style="font-size:18px; color:#64748b;">ระบุเงินโอน:</label>
-            <input type="number" id="mixTrans" style="width:100%; height:45px; border-radius:12px; border:1px solid #ddd; text-align:center; font-size:30px;" placeholder="0">
+
+        <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+            <select id="hairStyle" style="height:70px; border-radius:15px; border:none; font-weight:700; background:#fff; color:#1e293b; box-shadow:0 4px 10px rgba(0,0,0,0.03); padding:0 8px; font-size:18px; outline:none;">
+                <option value="">✂️ ทรงผม</option>
+               <option>แฟชั่น</option><option>สกินเฟด</option><option>รองทรง</option><option>ตำรวจ/ทหาร</option><option>นักเรียน</option><option>ซอยผม/เล็มผม</option><option>แก้ผม</option><option>โกนผม</option>    
+            </select>
+            <select id="extra1" style="height:70px; border-radius:15px; border:none; font-weight:700; background:#fff; color:#64748b; box-shadow:0 4px 10px rgba(0,0,0,0.03); padding:0 5px; font-size:18px; outline:none;">
+                <option value="">บริการ1</option>
+               <option value="เด็ก">เด็ก</option><option>โกนหนวด</option><option>กันหน้า</option><option>กันจอน</option><option>สระผม</option><option>ย้อมผม</option><option>ดัดผม</option><option>ย้อมแฟชั่น</option>
+            </select>
+            <select id="extra2" style="height:70px; border-radius:15px; border:none; font-weight:700; background:#fff; color:#64748b; box-shadow:0 4px 10px rgba(0,0,0,0.03); padding:0 5px; font-size:18px; outline:none;">
+                <option value="">บริการ2</option>
+                <option value="เด็ก">เด็ก</option><option>โกนหนวด</option><option>กันหน้า</option><option>กันจอน</option><option>สระผม</option><option>ย้อมผม</option><option>ดัดผม</option><option>ย้อมแฟชั่น</option>
+            </select>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 8px; margin-bottom: 12px;">
+            <div style="position: relative; background: #ffffff; border-radius: 20px; box-shadow: 0 6px 15px rgba(0,0,0,0.06); height: 90px; display: flex; align-items: center;">
+                <span style="padding-left: 15px; font-size: 25px; color: #6366f1; font-weight: 900;">฿</span>
+                <input type="number" id="priceInp" placeholder="0" inputmode="numeric" style="width: 100%; border: none; background: transparent; font-size: 50px; font-weight: 900; color: #1e293b; outline: none; padding-right: 10px;">
+            </div>
+            <input type="number" id="tipInp" placeholder="ทิปโอน" inputmode="numeric" style="height: 90px; background: #e1f5fe; border-radius: 20px; border: none; font-size: 35px; font-weight: 900; color: #ad2c18; text-align: center; outline: none;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-bottom:12px;">
+            <button id="btnCash" onclick="setPaymentType('Cash')" style="height:80px; border-radius:18px; border:none; background:linear-gradient(135deg, #10b981, #059669); color:#fff; font-weight:700; font-size:16px;">
+                <i class="fas fa-money-bill-wave" style="font-size:18px;"></i><br>เงินสด
+            </button>
+            <button id="btnTrans" onclick="setPaymentType('Trans')" style="height:80px; border-radius:18px; border:none; background:linear-gradient(135deg, #6366f1, #4338ca); color:#fff; font-weight:700; font-size:16px;">
+                <i class="fas fa-qrcode" style="font-size:18px;"></i><br>สแกน
+            </button>
+            <button id="btnMix" onclick="setPaymentType('Mix')" style="height:80px; border-radius:18px; border:none; background:linear-gradient(135deg, #81d4fa, #01579b); color:#fff; font-weight:700; font-size:16px;">
+                <i class="fas fa-wallet" style="font-size:18px;"></i><br>ผสม
+            </button>
+        </div>
+
+        <button class="btn-main" onclick="handleSave(event)" style="width:100%; height:90px; border-radius:25px; background: linear-gradient(135deg, #190da8, #0b1e59); color:#fff; border:none; box-shadow: 0 8px 20px rgba(11, 30, 89, 0.3); display:flex; align-items:center; justify-content:center; gap:12px;">
+            <i class="fas fa-save" style="font-size: 30px;"></i>
+            <span style="font-size: 28px; font-weight: 900; letter-spacing:1px;">บันทึกข้อมูล</span>
+        </button>
+    </div>
+        <div id="p2" class="page" style="max-width:480px; margin:0 auto; padding: 15px; padding-bottom: 100px;">
+    <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 10px; margin-bottom: 15px;">
+        
+        <div style="background: linear-gradient(135deg, #190da8, #0b1e59); padding:18px 10px; border-radius:20px; text-align:center; box-shadow:0 10px 15px -3px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; justify-content: center;">
+            <small style="font-weight:800; color:#cbd5e1; text-transform: uppercase; letter-spacing: 0.5px; font-size: 15px;">ยอดรวมวันนี้</small>
+            <div id="dTotal" style="font-size:42px; font-weight:900; color:#ffffff; margin: 2px 0; letter-spacing: -1px;">0</div>
+            <div id="dCounts" style="font-size:14px; font-weight:700; color:#ffffff; background:rgba(255,255,255,0.15); display:inline-block; padding:4px 10px; border-radius:12px; margin: 0 auto; width: fit-content;">ลูกค้า 0 คน</div>
+        </div>
+
+        <div style="background: linear-gradient(135deg, #190da8, #0b1e59); padding:12px 10px; border-radius:20px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; justify-content:center; gap:6px;">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:16px; font-weight:700;">
+                <span style="color:#cbd5e1; display:flex; align-items:center; gap:5px;">
+                    <i class="fas fa-mobile-alt" style="width:14px; color:#60a5fa;"></i> โอน
+                </span> 
+                <b id="dTrans" style="color:#ffffff;">0</b>
+            </div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:16px; font-weight:700;">
+                <span style="color:#cbd5e1; display:flex; align-items:center; gap:5px;">
+                    <i class="fas fa-money-bill-wave" style="width:14px; color:#4ade80;"></i> สด
+                </span> 
+                <b id="dCash" style="color:#ffffff;">0</b>
+            </div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:16px; font-weight:700;">
+                <span style="color:#cbd5e1; display:flex; align-items:center; gap:5px;">
+                    <i class="fas fa-cut" style="width:14px; color:#fbbf24;"></i> ช่าง
+                </span> 
+                <b id="dBarber" style="color:#ffffff;">0</b>
+            </div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:16px; font-weight:800; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 6px; margin-top: 2px;">
+                <span style="color:#cbd5e1; display:flex; align-items:center; gap:5px;">
+                    <i class="fas fa-store" style="width:14px; color:#f472b6;"></i> ร้าน
+                </span> 
+                <b id="dShop" style="color:#ffffff;">0</b>
+            </div>
         </div>
     </div>
-</div>
-<button class="btn-main" onclick="handleSave(event)" 
-    style="width:100%; height:90px; border-radius:28px; 
-    background: linear-gradient(135deg, #190da8, #0b1e59); /* 🔵 สีที่ช่างเลือก */
-    color:#fff; border:none; 
-    box-shadow: 0 15px 35px rgba(11, 30, 89, 0.4); 
-    display:flex; align-items:center; justify-content:center; gap:15px;">
+
+    <div id="settleBarContainer" style="margin-bottom:18px;"><div id="settleBar"></div> </div>
+    <div id="dServiceStats"></div>
+    <hr style="border:0; border-top:1px solid #e2e8f0; margin-top:15px;">
+    <div id="dailyList"></div>
+</div>           
     
-    <i class="fas fa-save" style="font-size: 38px;"></i>
-    <span style="font-size: 32px; font-weight: 900; letter-spacing:1px;">บันทึกข้อมูล</span>
-</button>
-</div>
-            <div id="p2" class="page" style="max-width:480px; margin:0 auto; padding: 15px; padding-bottom: 100px;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
-                    <div style="background: #3b50ce; padding:18px 15px; border-radius:20px; text-align:center; box-shadow:0 10px 15px -3px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);">
-                        <small style="font-weight:800; color:#cbd5e1; text-transform: uppercase; letter-spacing: 0.5px;">ยอดรวมวันนี้</small>
-                        <div id="dTotal" style="font-size:36px; font-weight:900; color:#cbd5e1; margin: 5px 0;">0</div>
-                        <div id="dCounts" style="font-size:16px; font-weight:700; color:#cbd5e1; background:rgba(255,255,255,0.15); display:inline-block; padding:2px 10px; border-radius:10px;">ลูกค้า 0 คน</div>
-                    </div>
-            
-                   <div style="background:#3b50ce; padding:15px; border-radius:20px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; justify-content:center; gap:8px;">
-                
-                <div style="display:flex; justify-content:space-between; align-items:center; font-size:15px; font-weight:700;">
-                    <span style="color:#cbd5e1; display:flex; align-items:center; gap:8px;">
-                        <i class="fas fa-mobile-alt" style="width:18px; color:#60a5fa;"></i> โอน:
-                    </span> 
-                    <b id="dTrans" style="color:#ffffff;">0</b>
-                </div>
-                
-                <div style="display:flex; justify-content:space-between; align-items:center; font-size:15px; font-weight:700;">
-                    <span style="color:#cbd5e1; display:flex; align-items:center; gap:8px;">
-                        <i class="fas fa-money-bill-wave" style="width:18px; color:#4ade80;"></i> สด:
-                    </span> 
-                    <b id="dCash" style="color:#ffffff;">0</b>
-                </div>
-                
-                <div style="display:flex; justify-content:space-between; align-items:center; font-size:15px; font-weight:700;">
-                    <span style="color:#cbd5e1; display:flex; align-items:center; gap:8px;">
-                        <i class="fas fa-cut" style="width:18px; color:#fbbf24;"></i> ช่าง:
-                    </span> 
-                    <b id="dBarber" style="color:#ffffff;">0</b>
-                </div>
-                
-                <div style="display:flex; justify-content:space-between; align-items:center; font-size:15px; font-weight:800; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 8px; margin-top: 2px;">
-                    <span style="color:#cbd5e1; display:flex; align-items:center; gap:8px;">
-                        <i class="fas fa-store" style="width:18px; color:#f472b6;"></i> ร้าน:
-                    </span> 
-                    <b id="dShop" style="color:#ffffff;">0</b>
-                </div>
-            </div>
-            </div>
-                <div id="settleBarContainer" style="margin-bottom:18px;"><div id="settleBar"></div> </div>
-                <div id="dServiceStats"></div>
-                <hr style="border:0; border-top:1px solid #e2e8f0; margin-top:15px;">
-                <div id="dailyList"></div>
-            </div>
-            
-               <div id="p3" class="page" style="max-width:480px; margin:0 auto; padding: 12px; padding-bottom: 100px; background: #f8fafc;">
-    
-    <div class="card" style="background:#fff; border-radius:25px; padding:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border:1px solid #fff; margin-bottom: 15px;">
+  <div id="p3" class="page" style="width: 100%; max-width: 480px; margin: 0 auto; padding: 12px; padding-bottom: 20px; background: #f8fafc; min-height: fit-content; overflow-x: hidden;">
+    <div class="card" style="background:#fff; border-radius:25px; padding:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border:1px solid #fff; margin-bottom: 15px; height: auto;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <b style="font-size:22px; color:#92400e;"><i class="fas fa-wallet"></i> สถานะบัญชี</b>
+            <b style="font-size:22px; color:#4e04bd;"><i class="fas fa-wallet"></i> สถานะบัญชี</b>
             <div id="accLight" style="background:#22c55e; width:10px; height:10px; border-radius:50%; box-shadow:0 0 8px #22c55e;"></div>
         </div>
 
@@ -626,8 +666,8 @@ nav {
         </div>
 
         <div style="text-align:center; line-height: 1.4;">
-            <div style="font-size:10px; color:#94a3b8; font-weight:600; letter-spacing: 0.5px;">V.<span id="display-version">1.0.8</span></div>
-            <div style="font-size:9px; color:#cbd5e1; font-weight:400;">Update: <span id="display-date">22/02/2026</span></div>
+            <div style="font-size:10px; color:#94a3b8; font-weight:600; letter-spacing: 0.5px;">V.<span id="display-version">1.0.9</span></div>
+            <div style="font-size:9px; color:#cbd5e1; font-weight:400;">Update: <span id="display-date">05/03/2026</span></div>
         </div>
     </div>
 </div>
@@ -644,7 +684,7 @@ nav {
 <div id="historyModal" class="modal">
     <div class="modal-content">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h3 style="margin:0; color:#1a237e;">📜 ประวัติการเคลียร์เงิน</h3>
+            <h3 style="margin:0; color:#1a237e;">📄 ประวัติการเคลียร์เงิน</h3>
             <button onclick="closeHistoryModal()" style="background:#fee2e2; color:#dc2626; border:none; width:35px; height:35px; border-radius:50%; font-size:18px; cursor:pointer;">✕</button>
         </div>
         <div id="accHistory" style="max-height:400px; overflow-y:auto;"></div>
@@ -672,8 +712,8 @@ nav {
    ========================================================== */
 const $ = (id) => document.getElementById(id);
 // 1. ตั้งค่าเลขเวอร์ชันและวันที่
-const APP_VERSION = "1.0.8"; 
-const LAST_UPDATED = "22/02/2026"; 
+const APP_VERSION = "1.0.9"; 
+const LAST_UPDATED = "05/03/2026"; 
 // 2. ระบบอัปเดตอัตโนมัติ (ใส่ไว้ตรงนี้เพื่อให้ทำงานทันทีที่โหลดสคริปต์)
 (function autoUpdate() {
     const currentStoredVersion = localStorage.getItem("app_v");
@@ -1344,6 +1384,11 @@ function renderDay(selectedDate){
     let tot = 0, trans = 0, cash = 0, tips = 0;
     let listHtml = "";
     let realCustomerCount = 0;
+
+    // --- 🟢 เพิ่มตัวแปรสำหรับนับแยกประเภท ---
+    let countNew = 0;      // สำหรับ value="new"
+    let countRegular = 0;  // สำหรับ value="regular"
+
     // --- ส่วนการประมวลผลข้อมูล ---
     allRec
     .slice()
@@ -1353,54 +1398,57 @@ function renderDay(selectedDate){
         const t = parseFloat(r.tip) || 0;
         const rType = r.type ? String(r.type).toUpperCase().trim() : '';
         const currentSvcs = Array.isArray(r.svcs) ? r.svcs : [];
- // ✅ 1. คำนวณยอดรวมพื้นฐาน (แก้ไขใหม่ให้รองรับการดึงค่าจาก DB)
+        const cType = r.custType || 'none'; // รับค่าประเภทลูกค้าจากฐานข้อมูล
+
         tot += p;
         tips += t;
         if (r.pay === 'Mix') {
-            // ดึงยอดที่บันทึกมาใช้โดยตรง
             const pCash = parseFloat(r.payCash) || 0;
             const pTrans = parseFloat(r.payTrans) || 0; 
             trans += pTrans;
-            // cash ในที่นี้คือเงินสดที่ร้านต้องได้รับ (หักทิปที่ช่างเอาไปแล้ว)
-            // ถ้า r.payCash รวมทิปมาด้วย ให้ใช้ pCash - t
             cash += (pCash - t); 
         } else if (r.pay === 'Trans' || r.pay === 'โอน') {
-            // ถ้าจ่ายโอนทั้งหมด: ยอดราคา + ทิป จะเข้าส่วน trans
             trans += (p + t);
         } else {
-            // ถ้าจ่ายเงินสดทั้งหมด (Cash): ยอดราคาเข้า cash ของร้าน (ทิปอยู่ที่ช่างแล้วไม่ต้องบวก)
             cash += p;
         }
-      // 🚨 2. เงื่อนไขการนับลูกค้า (แบบแก้ไข)
-    if (rType === 'HOLIDAY' || rType === 'GUARANTEE' || p === 0) {
-        // ข้ามการนับ (วันหยุด/การันตี/ยอดเป็น 0)
-    } else {
-    // 🟢 แก้ไข: นับลูกค้า 1 คนเสมอถ้ามีการใช้บริการ (ไม่ว่าจะตัดผมหรือบริการเสริม)
-    if (currentSvcs.length > 0) {
-        realCustomerCount++; 
-    }
-    // ส่วนการเก็บสถิติแยกประเภท (คงไว้เหมือนเดิมเพื่อดูว่าใครตัดผมบ้าง)
-    const cleanExtras = extraSvcs.map(s => s.trim().toLowerCase());
-    const hasRealHaircut = currentSvcs.some(s => {
-        if (!s) return false;
-        const cleanS = s.trim().toLowerCase();
-        return !cleanExtras.includes(cleanS);
-    });
-    if (hasRealHaircut) {
-        stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
-    }
-    // นับจำนวนครั้งของแต่ละบริการ
-    currentSvcs.forEach(s => {
-        if (s) stats[s] = (stats[s] || 0) + 1;
-    });
-}
-        // ✅ 3. ส่วนสร้าง HTML (ปรับให้โชว์ไอคอน Mix)
+
+        if (rType === 'HOLIDAY' || rType === 'GUARANTEE' || p === 0) {
+            // ข้ามการนับ
+        } else {
+            if (currentSvcs.length > 0) {
+                realCustomerCount++; // นับรวมลูกค้า 1 คนเสมอ
+                
+                // 🟢 นับแยกตามประเภทที่เลือก
+                if (cType === 'new') countNew++;
+                if (cType === 'regular') countRegular++;
+            }
+            
+            const cleanExtras = extraSvcs.map(s => s.trim().toLowerCase());
+            const hasRealHaircut = currentSvcs.some(s => {
+                if (!s) return false;
+                const cleanS = s.trim().toLowerCase();
+                return !cleanExtras.includes(cleanS);
+            });
+            if (hasRealHaircut) {
+                stats["ตัดผม"] = (stats["ตัดผม"] || 0) + 1;
+            }
+            currentSvcs.forEach(s => {
+                if (s) stats[s] = (stats[s] || 0) + 1;
+            });
+        }
+
         const timeShow = r.endTime ? `${r.time}-${r.endTime}` : r.time;
         
+        // 🟢 เพิ่มสัญลักษณ์แสดงประเภทในรายการ (History)
+        let custTag = "";
+        if(cType === 'new') custTag = " <span style='color:#f59e0b; font-size:12px;'>💇</span>";
+        if(cType === 'regular') custTag = " <span style='color:#f6fc2d; font-size:12px;'>💇‍♂️</span>";
+
         let payIcon = r.pay === 'Trans' ? '📱' : '💵';
         let mixText = "";
         if (r.pay === 'Mix') {
-            payIcon = '🌓'; // ไอคอนสำหรับจ่ายผสม
+            payIcon = '🌓';
             mixText = `<br><small style="color:#64748b; font-size:10px; font-weight:normal;">(สด:${r.payCash}/โอน:${r.payTrans})</small>`;
         } 
         listHtml += `
@@ -1412,7 +1460,7 @@ function renderDay(selectedDate){
                     </div>
                     <div style="display:flex; flex-direction:column;">
                         <div style="font-weight:800; font-size:14px; color:#1e293b; margin-bottom:2px;">
-                            <span style="color:#64748b; font-weight:500;">[${timeShow}]</span> ${currentSvcs.join(' + ')}
+                            <span style="color:#64748b; font-weight:500;">[${timeShow}]</span> ${currentSvcs.join(' + ')}${custTag}
                         </div>
                         <div style="display:flex; gap:8px; align-items:center;">
                             ${t ? `<small style="color:#be185d; font-weight:700; font-size:11px;">🔹 ทิป: ฿${t}</small>` : '<small style="color:#94a3b8; font-size:11px;">(ไม่มีทิป)</small>'}
@@ -1440,23 +1488,50 @@ function renderDay(selectedDate){
     if ($("dBarber")) $("dBarber").innerText = Math.floor(bEarn).toLocaleString();
     if ($("dShop")) $("dShop").innerText = Math.floor(sEarn).toLocaleString();
 
-    if ($("dCounts")) {
-        if (isHoliday) {
-            $("dCounts").innerText = "🏖️ วันหยุด";
-        } else if (realCustomerCount === 0 && allRec.length > 0) {
-            $("dCounts").innerText = "🛡️ ประกันรายได้";
-        } else if (allRec.length === 0 && allRec.length > 0) {
-            $("dCounts").innerText = "ไม่มีข้อมูล";
-        } else {
-            $("dCounts").innerText = `ลูกค้า: ${realCustomerCount} คน`;
+       // --- 🟢 ส่วนสรุปยอดลูกค้า (แก้ไขใหม่: แยกบรรทัดและปรับสี) ---
+if ($("dCounts")) {
+    if (isHoliday) {
+        $("dCounts").innerHTML = "<span style='color:#64748b;'>🏖️ วันหยุด</span>";
+    } else if (allRec.length === 0) {
+        $("dCounts").innerHTML = "<span style='color:#94a3b8;'>ไม่มีข้อมูล</span>";
+    } else {
+        // จัดรูปแบบการแสดงผลใหม่ แยกบรรทัด ใหม่/ประจำ
+        let detail = "";
+        if (countNew > 0 || countRegular > 0) {
+            detail = `
+                <div style="font-size: 13px; font-weight: 700; margin-top: 4px; border-top: 1px dashed #e2e8f0; pt: 4px;">
+                    <span style="color:#10b981;"> ใหม่: ${countNew}</span> | 
+                    <span style="color:#f6fc2d;"> ประจำ: ${countRegular}</span>
+                </div>`;
         }
+        // ปรับความสูงช่องและการแสดงตัวเลขหลัก
+        $("dCounts").innerHTML = `
+            <div style="line-height: 1.2;">
+                <b style="font-size: 16px; color:#fff;">ลูกค้า: ${realCustomerCount} คน</b>
+                ${detail}
+            </div>`;
     }
-
-    let sH = `<div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:10px;">`;
-    const priority = ["ตัดผม", "เด็ก"];
-    priority.forEach(k => { if (stats[k]) sH += `<span style="background:#4338ca;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${k}: ${stats[k]}</span>`; });
-    for (let s in stats) { if (!priority.includes(s)) sH += `<span style="background:#64748b;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;">${s}: ${stats[s]}</span>`; }
-    if ($("dServiceStats")) $("dServiceStats").innerHTML = sH + `</div>`;
+}
+// --- 🟢 ปรับการแสดงผล Service Stats ให้เรียงตามประเภท (ทรงผมขึ้นก่อนเสมอ) ---
+let sH = `<div style="display:flex; flex-wrap:wrap; gap:4px; justify-content:center; margin-bottom:8px;">`;
+// 1. เตรียมรายชื่อบริการเสริมเพื่อใช้เช็ค
+const cleanExtras = extraSvcs.map(s => s.trim().toLowerCase());
+// 2. ดึงรายการทั้งหมดจาก stats และแยกเป็น 2 กลุ่ม
+const allStatsKeys = Object.keys(stats);
+// กลุ่มที่ 1: ทรงผม (อะไรก็ได้ที่ไม่ใช่ โกนหนวด/กันหน้า/สระผม)
+const haircutGroup = allStatsKeys.filter(k => !cleanExtras.includes(k.trim().toLowerCase()));
+// กลุ่มที่ 2: บริการเสริม (โกนหนวด/กันหน้า/สระผม)
+const extraGroup = allStatsKeys.filter(k => cleanExtras.includes(k.trim().toLowerCase()));
+// 3. แสดงผลกลุ่มทรงผมก่อน (ใช้สีน้ำเงินเข้ม) 
+// ไม่ว่าจะเป็น รองทรง, แฟชั่น, สกินเฮด จะเรียงต่อกันตรงนี้ครับ
+haircutGroup.forEach(k => {
+    sH += `<span style="background:#4338ca;color:#fff;padding:3px 10px;border-radius:6px;font-size:10px;font-weight:800;">${k}: ${stats[k]}</span>`;
+});
+// 4. แสดงผลกลุ่มบริการเสริมต่อท้าย (ใช้สีฟ้าอ่อน)
+extraGroup.forEach(k => {
+    sH += `<span style="background:#e0f2fe;color:#0369a1;padding:3px 10px;border-radius:6px;font-size:10px;font-weight:700;border:1px solid #bae6fd;">${k}: ${stats[k]}</span>`;
+});
+if ($("dServiceStats")) $("dServiceStats").innerHTML = sH + `</div>`;
 
     let txt = "", statusColor = "", icon = "";
     if (isHoliday) {
@@ -1486,49 +1561,49 @@ function renderDay(selectedDate){
     <i id="btnIcon" class="fas fa-paper-plane"></i>
 </button>`;
     }
-const dList = $("dailyList");
-if (dList) {
-    const dateParts = dInp.split('-'); 
-    let displayDateBE = dInp;
 
-    if (dateParts.length === 3) {
-        const d = dateParts[2];
-        const m = dateParts[1];
-        const yBE = parseInt(dateParts[0]) + 543; // แปลงเป็น พ.ศ.
-        displayDateBE = `${d}/${m}/${yBE}`;
-    }
-   // ... (ส่วนบนของฟังก์ชัน)
+    const dList = $("dailyList");
+    if (dList) {
+        const dateParts = dInp.split('-'); 
+        let displayDateBE = dInp;
 
-dList.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 8px 12px; border-radius: 12px; border-bottom: 2px solid #f1f5f9; margin-bottom: 10px;">           
-            
-            <div style="display: flex; align-items: center; gap: 10px; margin-right: 15px;">
-                <b style="font-size: 16px; color: #1e293b;">📋 รายงาน</b>              
+        if (dateParts.length === 3) {
+            const d = dateParts[2];
+            const m = dateParts[1];
+            const yBE = parseInt(dateParts[0]) + 543;
+            displayDateBE = `${d}/${m}/${yBE}`;
+        }
+
+        dList.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 8px 12px; border-radius: 12px; border-bottom: 2px solid #f1f5f9; margin-bottom: 10px;">           
                 
-                <div style="position: relative; background: #f1f5f9; padding: 5px 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; cursor: pointer; width: 130px; height: 34px;"> 
-                    <span style="font-size: 14px; font-weight: 700; color: #6366f1; width: 100%; text-align: center;">${displayDateBE}</span>                
-                    <input type="date" id="reportDateSelector" value="${dInp}" 
-                           onchange="renderDay(this.value)" 
-                           style="position: absolute; opacity: 0; left: 0; top: 0; width: 100%; height: 100%; cursor: pointer;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-right: 15px;">
+                    <b style="font-size: 13px; color: #1e293b;">รายงานวันที่</b>              
+                    
+                    <div style="position: relative; background: #f1f5f9; padding: 5px 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; cursor: pointer; width: 130px; height: 34px;"> 
+                        <span style="font-size: 14px; font-weight: 700; color: #6366f1; width: 100%; text-align: center;">${displayDateBE}</span>                 
+                        <input type="date" id="reportDateSelector" value="${dInp}" 
+                               onchange="renderDay(this.value)" 
+                               style="position: absolute; opacity: 0; left: 0; top: 0; width: 100%; height: 100%; cursor: pointer;">
+                    </div>
+
+                    <button onclick="deleteArchiveDate('${dInp}')" 
+                            title="ลบข้อมูลของวันนี้"
+                            style="background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; width: 34px; height: 34px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;">
+                        <i class="fas fa-trash-alt" style="font-size: 18px;"></i>
+                    </button>
                 </div>
 
-                <button onclick="deleteArchiveDate('${dInp}')" 
-                        title="ลบข้อมูลของวันนี้"
-                        style="background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; width: 34px; height: 34px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;">
-                    <i class="fas fa-trash-alt" style="font-size: 18px;"></i>
-                </button>
+                <div style="display: flex; align-items: center;">
+                    <i class="fab fa-line" style="color: #22c55e; font-size: 34px; cursor: pointer;" onclick="shareLine()"></i>
+                </div>
             </div>
 
-            <div style="display: flex; align-items: center;">
-                <i class="fab fa-line" style="color: #22c55e; font-size: 34px; cursor: pointer;" onclick="shareLine()"></i>
+            <div style="padding: 0 5px;">
+                ${isHoliday ? `<center style='padding:30px; color:#64748b;'>🏖️ วันหยุด (${displayDateBE})</center>` : (listHtml || "<center style='padding:30px; color:#94a3b8;'>ไม่มีข้อมูล</center>")}
             </div>
-        </div>
-
-        <div style="padding: 0 5px;">
-            ${isHoliday ? `<center style='padding:30px; color:#64748b;'>🏖️ วันหยุด (${displayDateBE})</center>` : (listHtml || "<center style='padding:30px; color:#94a3b8;'>ไม่มีข้อมูล</center>")}
-        </div>
-    `;
-} 
+        `;
+    } 
 }
 /* ==========================================================
    SECTION 5: ACCOUNTING & FINANCIAL STATUS
@@ -1537,8 +1612,6 @@ dList.innerHTML = `
 function loadAccountStatus() {
     const getEl = (id) => document.getElementById(id);
     
-    // 🎯 แก้จุดนี้: ดึงวันที่จาก Input "accDate" ตรงๆ เพราะมันคือรูปแบบเดียวกับที่บันทึก
-    // ถ้าไม่มีให้ดึงวันที่ปัจจุบันในรูปแบบ ISO (YYYY-MM-DD) ซึ่งมักจะตรงกับที่ระบบใช้เก็บ
     let todayKey = getEl("accDate")?.value;
     
     if (!todayKey) {
@@ -1546,7 +1619,7 @@ function loadAccountStatus() {
         const y = now.getFullYear();
         const m = String(now.getMonth() + 1).padStart(2, '0');
         const d = String(now.getDate()).padStart(2, '0');
-        todayKey = `${y}-${m}-${d}`; // รูปแบบ 2026-02-14
+        todayKey = `${y}-${m}-${d}`;
     }
 
     if (typeof archives === "undefined") return;
@@ -1555,38 +1628,51 @@ function loadAccountStatus() {
     const todayData = archives.find(a => a.date === todayKey);
     let todaySettle = todayData ? -todayData.settle : 0;
 
-    // 🎯 2. ดึงยอด "ค้างเดิม" (เอาเฉพาะวันที่ยังค้างอยู่และไม่ใช่วันนี้)
+    // 🎯 2. ดึงยอด "ค้างเดิม"
     let oldSettle = archives.reduce((sum, day) => {
-        // ต้องไม่ใช่วันนี้ 
-        // และต้องเป็นยอดที่ "ยังไม่ถูกเคลียร์" (ถ้าช่างมีระบบเคลียร์แล้วยอดจะกลายเป็น 0)
+        // เงื่อนไข: ไม่ใช่วันนี้ และ ยอดยังไม่เป็น 0 (ยังค้างอยู่)
         if (day.date !== todayKey && day.settle !== 0) {
             return sum + (Number(-day.settle) || 0);
         }
         return sum;
     }, 0);
 
-    // 🎯 3. หักลบกันเป็น "ยอดต้องเคลียร์"
+    // 🎯 3. คำนวณ "ยอดต้องเคลียร์รวม"
     let totalBalance = oldSettle + todaySettle;
     if (typeof account !== "undefined") {
         account.balance = totalBalance;
     }
 
-    // 📊 แสดงผลตัวเลข
+    // --- 📊 แสดงผลตัวเลขและข้อความ ---
+
+    // แสดงยอดวันนี้
     if (getEl("accTodayVal")) getEl("accTodayVal").innerText = `฿${todaySettle.toLocaleString()}`;
-    if (getEl("accOldVal"))   getEl("accOldVal").innerText = `฿${oldSettle.toLocaleString()}`;
+
+    // 🟢 แก้ไขจุดนี้: แสดงยอดค้างเดิมพร้อมข้อความว่าใครค้าง
+    const oldValEl = getEl("accOldVal");
+    if (oldValEl) {
+        if (oldSettle < 0) {
+            oldValEl.innerHTML = `<small style="color:#991b1b">ช่างค้าง:</small> ฿${Math.abs(oldSettle).toLocaleString()}`;
+        } else if (oldSettle > 0) {
+            oldValEl.innerHTML = `<small style="color:#166534">ร้านค้าง:</small> ฿${oldSettle.toLocaleString()}`;
+        } else {
+            oldValEl.innerText = `฿0`;
+        }
+    }
     
+    // ยอดรวมทั้งหมด
     if (getEl("accTotalVal")) {
         getEl("accTotalVal").innerText = `฿${Math.abs(totalBalance).toLocaleString()}`;
     }
 
-    // ส่วนของวันที่แสดงบนหัว (โชว์ให้สวยงาม)
+    // ส่วนหัววันที่
     if (getEl("accDateLabel")) {
         getEl("accDateLabel").innerText = new Date(todayKey).toLocaleDateString('th-TH', { 
             day: 'numeric', month: 'short', year: 'numeric' 
         });
     }
 
-    // อัปเดตสถานะป้าย
+    // อัปเดตสถานะป้าย Badge (ยอดรวมสรุป)
     const badge = getEl("statusBadge");
     if (badge) {
         if (totalBalance < 0) {
@@ -1779,15 +1865,8 @@ function closeReportModal() {
         modal.style.display = "none";
         document.body.style.overflow = "auto";
     }
-
-    // หน่วงเวลาเล็กน้อยเพื่อให้ UI คืนค่าได้สมบูรณ์
-    setTimeout(() => {
-        if (typeof go === 'function') {
-            console.log("กำลังกลับไปหน้าบันทึก...");
-            go(2); 
-        }
-    }, 100); 
-} // ปิดฟังก์ชันแค่ตรงนี้พอครับช่าง (ปีกกาอันที่เกินออกไปแล้ว)
+    console.log("ปิดรายงานเรียบร้อย ค้างไว้หน้าเดิม...");
+}
 function closeAndGoHome() {
     const m = $("modalSet");
     if (m) m.style.display = 'none';
@@ -1960,7 +2039,7 @@ function renderHistoryList() {
                     <div style="font-size:16px; font-weight:800;">฿${transTotal.toLocaleString()}</div>
                 </div>
                 <div style="background:#78350f; padding:14px 8px; border-radius:18px; text-align:center; color:#ffffff;">
-                    <div style="font-size:13px; opacity:0.8; font-weight:600; margin-bottom:4px;">👥 ลูกค้า</div>
+                    <div style="font-size:13px; opacity:0.8; font-weight:600; margin-bottom:4px;">👤 ลูกค้า</div>
                     <div style="font-size:16px; font-weight:800;">${customerCount}</div>
                 </div>
             </div>
@@ -2002,16 +2081,20 @@ function loadHistMonth() {
 
     const filtered = archives.filter(a => a.date && a.date.startsWith(m));
     if (!filtered.length) {
+        if ($("shopTotalMonth")) $("shopTotalMonth").innerText = "฿0";
+        if (window.calcNetProfit) window.calcNetProfit();
         return openReportModal("📊 สรุปรายเดือน", `<div style='text-align:center;padding:50px;color:#94a3b8;'>ไม่พบข้อมูลของเดือน ${m}</div>`);
     }
 
-    // 🟢 เพิ่มตัวนับ monthGuarDays (จำนวนวันประกันรายได้)
+    // --- 🟢 ตัวแปรสำหรับนับรวมรายเดือน ---
+    let countNew = 0;      
+    let countRegular = 0;  
     let monthTotal = 0, monthBarber = 0, monthCount = 0, monthGuarDays = 0; 
     let hairStats = {}, serviceStats = {};
     let offDays = 0, workDays = 0;
     let weeklyData = {};
 
-    const haircutList = ["แฟชั่น","สกินเฟด","เปิดข้าง","รองทรง","ตำรวจ/ทหาร","ทรงนักเรียน","แก้ผม","โกนผม","เด็ก"];
+    const haircutList = ["แฟชั่น","สกินเฟด","รองทรง","ตำรวจ/ทหาร","นักเรียน","ทรงนักเรียน","เปิดข้าง","ซอยผม/เล็มผม","แก้ผม","โกนผม","เด็ก"];
     const dayNames = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
 
     filtered.forEach(day => {
@@ -2022,7 +2105,8 @@ function loadHistMonth() {
         if (!weeklyData[wKey]) {
             weeklyData[wKey] = { 
                 customers: 0, workDays: 0, offDays: 0, 
-                zeroDays: 0, guarDays: 0, dailyCounts: [], // เพิ่ม guarDays ในระดับสัปดาห์ด้วย
+                zeroDays: 0, guarDays: 0, dailyCounts: [],
+                countNew: 0, countRegular: 0, 
                 popularHair: {}, 
                 popularService: {}, 
                 income: 0 
@@ -2038,7 +2122,6 @@ function loadHistMonth() {
         workDays++;
         weeklyData[wKey].workDays++;
         
-        // 🛡️ ตรวจสอบว่าในรายละเอียดวันนั้น มีรายการ "GUARANTEE_CLAIM" หรือไม่
         const hasInsurance = day.details && day.details.some(d => d.type === "GUARANTEE_CLAIM");
         if (hasInsurance) {
             monthGuarDays++;
@@ -2047,20 +2130,29 @@ function loadHistMonth() {
 
         const dailyIncome = Number(day.total) || 0;
         const dailyBarber = Number(day.barber) || 0; 
-        
         monthTotal += dailyIncome;
         monthBarber += dailyBarber;
         weeklyData[wKey].income += dailyIncome;
 
-        let dayCustomerCount = 0;
+// --- 🟢 แก้ไข Logic ให้รวมลูกค้าทุกคน (แม้ไม่ได้ระบุประเภท) ---
+        let dayCustomerCount = 0; 
+
         if (day.details && Array.isArray(day.details)) {
             day.details.forEach(d => {
-                // 👤 นับเฉพาะ SERVICE จริงๆ (ไม่นับ GUARANTEE_CLAIM เป็นลูกค้า)
                 if (d.type === "SERVICE") {
-                    monthCount++;
-                    dayCustomerCount++;
-                    weeklyData[wKey].customers++;
-
+                    monthCount++;       // นับรวมลูกค้าทุกคนในเดือน
+                    dayCustomerCount++; // นับรวมลูกค้าทุกคนในวัน
+                    weeklyData[wKey].customers++; // นับรวมลูกค้าทุกคนในสัปดาห์
+                    // แยกนับเฉพาะกลุ่มที่ระบุประเภท (เพื่อใช้ในสถิติโครงสร้างลูกค้า)
+                    const type = String(d.custType || "").toLowerCase().trim();
+                    if (type === "new") {
+                        countNew++;
+                        weeklyData[wKey].countNew++;
+                    } else if (type === "regular") {
+                        countRegular++;
+                        weeklyData[wKey].countRegular++;
+                    }
+                    // ลูกค้าที่ไม่ระบุประเภท จะถูกนับรวมใน monthCount ไปแล้ว แต่ไม่เข้านับใน countNew/Regular
                     const svcs = Array.isArray(d.svcs) ? d.svcs : [d.svcs];
                     svcs.forEach(s => {
                         if (!s) return;
@@ -2076,6 +2168,7 @@ function loadHistMonth() {
                 }
             });
         }
+
         if (dayCustomerCount === 0) weeklyData[wKey].zeroDays++;
         
         weeklyData[wKey].dailyCounts.push({ 
@@ -2086,29 +2179,34 @@ function loadHistMonth() {
         });
     });
 
+    const realShopEarn = monthTotal - monthBarber;
+    if ($("shopTotalMonth")) {
+        $("shopTotalMonth").innerText = "฿" + Math.floor(realShopEarn).toLocaleString();
+    }
+    if (window.calcNetProfit) window.calcNetProfit();
+
     const avgCustomerPerDay = workDays > 0 ? (monthCount / workDays) : 0;
     
-    // 🎯 ส่งค่า monthGuarDays เข้าไปในฟังก์ชันสรุปรายงานด้วย
-    generateMonthlyReport(m, monthTotal, monthBarber, monthCount, workDays, offDays, avgCustomerPerDay, weeklyData, hairStats, serviceStats, monthGuarDays);
+    // ส่งค่าไปสร้างรายงาน
+    generateMonthlyReport(m, monthTotal, monthBarber, monthCount, workDays, offDays, avgCustomerPerDay, weeklyData, hairStats, serviceStats, monthGuarDays, countNew, countRegular);
 }
-function generateMonthlyReport(m, monthTotal, monthBarber, monthCount, workDays, offDays, avgCustomerPerDay, weeklyData, hairStats, serviceStats, monthGuarDays) {
-    // --- 1. เตรียมข้อมูลสำหรับวิเคราะห์ (Logic) ---
+function generateMonthlyReport(m, monthTotal, monthBarber, monthCount, workDays, offDays, avgCustomerPerDay, weeklyData, hairStats, serviceStats, monthGuarDays, countNew, countRegular) {
+    // --- 1. เตรียมข้อมูลพื้นฐาน & นับยอดลูกค้าใหม่/ประจำใหม่ป้องกันค่าเป็น 0 ---
     const weekEntries = Object.entries(weeklyData);
+    const weekKeys = Object.keys(weeklyData); 
     const dayStats = {};
-    let dailyTimeline = []; 
-
-    const haircutList = ["แฟชั่น","สกินเฟด","เปิดข้าง","รองทรง","ตำรวจ/ทหาร","ทรงนักเรียน","แก้ผม","โกนผม","เด็ก"];
-    const allHaircuts = ["แฟชั่น","สกินเฟด","เปิดข้าง","รองทรง","ตำรวจ/ทหาร","ทรงนักเรียน","แก้ผม","โกนผม","เด็ก"];
-    const allServices = ["โกนหนวด", "สระผม", "ย้อมผม", "กันหน้า", "ดัดผม", "ย้อมแฟชั่น"]; 
-
-    const topHair = Object.entries(hairStats).sort((a, b) => b[1] - a[1])[0];
-    const topService = Object.entries(serviceStats).sort((a, b) => b[1] - a[1])[0];
+    
+    let totalNew = 0;
+    let totalRegular = 0;
 
     weekEntries.forEach(([wk, data]) => {
+        // นับยอดรวมลูกค้าใหม่/ประจำทั้งเดือน
+        totalNew += (data.countNew || 0);
+        totalRegular += (data.countRegular || 0);
+
         if (data.dailyCounts) {
             data.dailyCounts.forEach(d => {
-                dailyTimeline.push(d); 
-                const dayName = d.dayName.split(' ')[0]; 
+                const dayName = d.dayName.split(' ')[0];
                 if (!dayStats[dayName]) dayStats[dayName] = { total: 0, count: 0 };
                 if (d.count > 0) {
                     dayStats[dayName].total += d.count;
@@ -2118,27 +2216,64 @@ function generateMonthlyReport(m, monthTotal, monthBarber, monthCount, workDays,
         }
     });
 
-    const topIncomeWeek = weekEntries.length > 0 ? weekEntries.reduce((prev, curr) => (curr[1].income > prev[1].income ? curr : prev)) : null;
-    const topCountWeek = weekEntries.length > 0 ? weekEntries.reduce((prev, curr) => (curr[1].customers > prev[1].customers ? curr : prev)) : null;
-
-    const dayAverages = Object.entries(dayStats)
-        .filter(([name, data]) => data.count > 0)
-        .map(([name, data]) => ({ name, avg: data.total / data.count }));
-
+    const dayAverages = Object.entries(dayStats).filter(([name, data]) => data.count > 0).map(([name, data]) => ({ name, avg: data.total / data.count }));
     const busiestDay = dayAverages.sort((a, b) => b.avg - a.avg)[0];
     const quietestDay = dayAverages.sort((a, b) => a.avg - b.avg)[0];
+    const topIncomeWeek = weekEntries.length > 0 ? weekEntries.reduce((p, c) => ((c[1].income || 0) > (p[1].income || 0) ? c : p)) : null;
+    const topCountWeek = weekEntries.length > 0 ? weekEntries.reduce((p, c) => ((c[1].countNew + c[1].countRegular) > (p[1].countNew + p[1].countRegular) ? c : p)) : null;
 
+    const topHair = Object.entries(hairStats).sort((a, b) => b[1] - a[1])[0];
+    const topService = Object.entries(serviceStats).sort((a, b) => b[1] - a[1])[0];
+
+   // --- 2. วิเคราะห์ลูกค้า (รายสัปดาห์ & รายเดือน) - แก้ไขตามเงื่อนไขพี่ ---
+    let maxNewWeek = "-"; 
+    let maxRegWeek = "-";
+    let nUp = 0, nDown = 0, rUp = 0, rDown = 0;
+
+    weekKeys.forEach((wk, idx) => {
+        const curr = weeklyData[wk];
+        const n = curr.countNew || 0;
+        const r = curr.countRegular || 0;
+        
+        // วิเคราะห์สดรายสัปดาห์
+        curr.newAnalysis = (n > r) ? "กลุ่มหลักอาทิตย์นี้" : (n < r) ? "น้อยกว่าลูกค้าประจำ" : "เท่ากับลูกค้าประจำ";
+        curr.regAnalysis = (r > n) ? "กลุ่มหลักอาทิตย์นี้" : (r < n) ? "น้อยกว่าลูกค้าใหม่" : "เท่ากับลูกค้าใหม่";
+
+        // 🎯 แก้ไข Logic การเลือกสัปดาห์ที่เยอะที่สุด:
+        // ต้องชนะอีกฝั่งในสัปดาห์เดียวกันก่อน ถึงจะมีสิทธิ์บันทึกชื่อสัปดาห์
+        
+        // ถ้าลูกค้าใหม่ "มากกว่า" ลูกค้าประจำ และมากกว่ายอดสูงสุดที่เคยเก็บไว้
+        if (n > r && (maxNewWeek === "-" || n > (weeklyData[maxNewWeek]?.countNew || 0))) {
+            maxNewWeek = wk;
+        }
+
+        // ถ้าลูกค้าประจำ "มากกว่า" ลูกค้าใหม่ และมากกว่ายอดสูงสุดที่เคยเก็บไว้
+        if (r > n && (maxRegWeek === "-" || r > (weeklyData[maxRegWeek]?.countRegular || 0))) {
+            maxRegWeek = wk;
+        }
+
+        // ส่วนการเปรียบเทียบสัปดาห์ก่อนหน้า (คงเดิม)
+        if (idx > 0) {
+            const prev = weeklyData[weekKeys[idx - 1]];
+            const pN = prev.countNew || 0;
+            const pR = prev.countRegular || 0;
+            if (n > pN) nUp++; else if (n < pN) nDown++;
+            if (r > pR) rUp++; else if (r < pR) rDown++;
+        }
+    });
+   
+    // --- 3. [กู้คืน] ฟังก์ชัน Render กราฟสถิติ ---
     const renderStats = (statsObj, color) => {
-        const entries = Object.entries(statsObj).sort((a,b) => b[1]-a[1]);
-        if (entries.length === 0) return `<div style="color:#64748b; font-size:12px;">ไม่มีข้อมูลสถิติ</div>`;
+        const entries = Object.entries(statsObj).sort((a, b) => b[1] - a[1]);
+        if (entries.length === 0) return `<div style="font-size:12px; color:#64748b;">ไม่มีข้อมูล</div>`;
         const maxVal = entries[0][1];
         return entries.map(([name, count]) => {
-            const width = (count / maxVal) * 100;
+            const width = maxVal > 0 ? (count / maxVal) * 100 : 0;
             return `
-            <div style="margin-bottom:10px;">
-                <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
-                    <span style="color:#f8fafc;">${name}</span>
-                    <span style="color:${color}; font-weight:700;">${count}</span>
+            <div style="margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px;">
+                    <span style="color:#cbd5e1;">${name}</span>
+                    <span style="font-weight:700; color:${color};">${count}</span>
                 </div>
                 <div style="width:100%; height:6px; background:rgba(255,255,255,0.05); border-radius:10px; overflow:hidden;">
                     <div style="width:${width}%; height:100%; background:${color}; border-radius:10px;"></div>
@@ -2147,22 +2282,51 @@ function generateMonthlyReport(m, monthTotal, monthBarber, monthCount, workDays,
         }).join("");
     };
 
-    const maxWeekCount = topCountWeek ? topCountWeek[1].customers : 0;
-    const maxIncomeAmount = topIncomeWeek ? (topIncomeWeek[1].income || 0) : 0;
+// --- 5. สรุปภาพรวม (Insights) ปรับปรุงใหม่แยกสีลูกค้า (โทน C: ฟ้า-ทอง) ---
+const insights = [
+    `เดือนนี้: เปิดร้านทั้งหมด <b>${workDays} วัน</b> (หยุด ${offDays} วัน)`,
+    `สถิติประกันรายได้: ใช้ประกันรายได้ทั้งหมด <b>${monthGuarDays || 0} วัน</b>`,
+    
+    // แสดงสัปดาห์ที่ลูกค้ามากที่สุด (นับรวมทุกคน)
+    `สัปดาห์ที่มีลูกค้ามากที่สุด: <b>${topCountWeek ? topCountWeek[0] : "-"}</b> (${topCountWeek ? (topCountWeek[1].customers || "-") : "-"} คน)`,
+    
+    // แสดงสัปดาห์รายได้สูงสุด
+    (topIncomeWeek && (topIncomeWeek[1].income || 0) > 0) 
+        ? `สัปดาห์ที่มีรายได้สูงสุด: <b>${topIncomeWeek[0]}</b> (฿${topIncomeWeek[1].income.toLocaleString()})` 
+        : `สัปดาห์ที่มีรายได้สูงสุด: <b>-</b>`
+];
 
-    // 🎯 แก้ไขจุดที่มีเครื่องหมาย ? เกิน และจัดรูปแบบ Insights
-    const insights = [
-        `เดือนนี้เปิดให้บริการทั้งหมด <b>${workDays} วัน</b> (หยุด ${offDays} วัน)`,
-        `ใช้ประกันรายได้ทั้งหมด <b>${monthGuarDays || 0} วัน</b>`,
-        (topIncomeWeek && maxIncomeAmount > 0) ? `สัปดาห์ที่ทำรายได้สูงสุดคือ <b>${topIncomeWeek[0]}</b>` : `สัปดาห์ที่ทำรายได้สูงสุดคือ <b>-</b>`,
-        (topCountWeek && maxWeekCount > 0) ? `สัปดาห์ที่มีลูกค้ามากที่สุดคือ <b>${topCountWeek[0]}</b>` : `สัปดาห์ที่มีลูกค้ามากที่สุดคือ <b>-</b>`,
-        (busiestDay && busiestDay.avg > 0) ? (() => {
-            if (!quietestDay || busiestDay.avg === quietestDay.avg) return `ลูกค้าเข้าเยอะใน <b>วัน${busiestDay.name}</b>`;
-            return `ลูกค้าเข้าเยอะใน <b>วัน${busiestDay.name}</b> และน้อยใน <b>วัน${quietestDay.name}</b>`;
-        })() : `สถิติรายวัน: -`,
-        `ทรงผมยอดนิยม: <b>${topHair ? topHair[0] : '-'}</b> | บริการยอดนิยม: <b>${topService ? topService[0] : '-'}</b>`
-    ];
+// 🎯 เงื่อนไข: ถ้ามีการเลือกประเภทลูกค้า ถึงจะแสดง 2 บรรทัดนี้ (พร้อมแยกสี ฟ้า-ทอง)
+if (totalNew > 0 || totalRegular > 0) {
+    // 🔵 สีฟ้าสำหรับลูกค้าใหม่ | 🟡 สีเหลืองทองสำหรับลูกค้าประจำ
+    const newColor = "#3b82f6";
+    const regColor = "#f59e0b";
 
+    const newText = `<span style="color: ${newColor}; font-weight: bold;">ใหม่ ${totalNew > 0 ? totalNew : "-"}</span>`;
+    const regText = `<span style="color: ${regColor}; font-weight: bold;">ประจำ ${totalRegular > 0 ? totalRegular : "-"}</span>`;
+    
+    insights.push(`โครงสร้างลูกค้าเดือนนี้: <b>${totalRegular > totalNew ? "ลูกค้าประจำเป็นฐานหลัก" : totalNew > totalRegular ? "ลูกค้าใหม่เพิ่มมากขึ้น" : "สัดส่วนลูกค้าพอๆ กัน"} (${regText} / ${newText})</b>`);
+    
+    // แยกสีตรงชื่อสัปดาห์ที่ลูกค้าแต่ละกลุ่มเยอะที่สุด
+    const maxNewText = `<span style="color: ${newColor};">ใหม่ (<b>${maxNewWeek !== "-" ? maxNewWeek : "-"}</b>)</span>`;
+    const maxRegText = `<span style="color: ${regColor};">ประจำ (<b>${maxRegWeek !== "-" ? maxRegWeek : "-"}</b>)</span>`;
+    
+    insights.push(`สถิติลูกค้าเยอะสุดแยกกลุ่ม: ${maxNewText} | ${maxRegText}`);
+}
+
+// สถิติรายวัน (เข้าเยอะ/น้อย)
+if (busiestDay && busiestDay.avg > 0) {
+    const dayText = (!quietestDay || busiestDay.avg === quietestDay.avg) 
+        ? `ลูกค้าเข้าเยอะใน <b>วัน${busiestDay.name}</b>` 
+        : `ลูกค้าเข้าเยอะใน <b>วัน${busiestDay.name}</b> และน้อยใน <b>วัน${quietestDay.name}</b>`;
+    insights.push(dayText);
+} else {
+    insights.push(`สถิติรายวัน: -`);
+}
+
+// ทรงผมและบริการยอดนิยม
+insights.push(`ทรงผมยอดนิยม: <b>${topHair ? topHair[0] : '-'}</b> | บริการยอดนิยม: <b>${topService ? topService[0] : '-'}</b>`);
+   
     const weeklyHtml = weekEntries.map(([wk, data]) => {
         const weeklyTotalIncome = data.income || 0;
         let sumBarber = 0;
@@ -2180,9 +2344,6 @@ function generateMonthlyReport(m, monthTotal, monthBarber, monthCount, workDays,
         const bestDay = (maxCount > 0) ? `${sortedDays[0].dayName} (${maxCount})` : "-";
         let worstDay = (sortedDays.length > 1 && maxCount !== minCount) ? `${sortedDays[sortedDays.length - 1].dayName} (${minCount})` : "-";
 
-        const unusedHair = allHaircuts.filter(h => !data.popularHair[h]);
-        const unusedService = allServices.filter(s => !data.popularService[s]);
-
         const popHair = Object.entries(data.popularHair || {}).sort((a,b) => b[1] - a[1]).slice(0, 2).map(([name, count]) => `
             <span style="background:rgba(190,242,100,0.1); color:#bef264; padding:2px 8px; border-radius:8px; font-size:10px; border:1px solid rgba(190,242,100,0.2); margin-right:4px;">✂️ ${name} ${count}</span>
         `).join("");
@@ -2194,7 +2355,7 @@ function generateMonthlyReport(m, monthTotal, monthBarber, monthCount, workDays,
         return `
         <div style="background:#020617; border:1px solid rgba(255,255,255,0.08); padding:16px; border-radius:22px; margin-bottom:12px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <div style="font-size:15px; font-weight:800; color:#f8fafc;">📅 ${wk}</div>
+                <div style="font-size:15px; font-weight:800; color:#f8fafc;">🗓️ ${wk}</div>
                 <div style="font-size:10px; color:#94a3b8;">เปิด ${data.workDays} | หยุด ${data.offDays}</div>
             </div>
             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px; margin-bottom:10px;">
@@ -2211,24 +2372,29 @@ function generateMonthlyReport(m, monthTotal, monthBarber, monthCount, workDays,
                     <div style="font-size:13px; font-weight:800; color:#38bdf8;">฿${Math.floor(wShop).toLocaleString()}</div>
                 </div>
             </div>
-            <div style="display:flex; gap:6px; margin-bottom:10px;">
-                <div style="flex:1; background:rgba(255,255,255,0.02); padding:4px 10px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:10px; color:#64748b;">👤 ลูกค้า</span>
-                    <span style="font-size:11px; font-weight:700; color:#38bdf8;">${data.customers}</span>
-                </div>
-                <div style="flex:1; background:rgba(250,204,21,0.05); border:1px solid rgba(250,204,21,0.1); padding:4px 10px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:10px; color:#facc15;">🛡️ ประกัน</span>
-                    <span style="font-size:11px; font-weight:700; color:#facc15;">${data.guarDays || 0}</span>
-                </div>
-                <div style="flex:1; background:rgba(255,255,255,0.02); padding:4px 10px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:10px; color:#64748b;">📊 เฉลี่ย</span>
-                    <span style="font-size:11px; font-weight:700; color:#ffffff;">${avg}</span>
-                </div>
-            </div>
-            <div style="font-size:11px; color:#64748b; line-height:1.6; padding:0 4px 10px 4px; border-bottom:1px solid rgba(255,255,255,0.05); margin-bottom:10px;">
-                <div>📈 ลูกค้าเยอะที่สุด: <span style="color:#f1f5f9; font-weight:600;">${bestDay}</span></div>
-                <div>📉 ลูกค้าน้อยที่สุด: <span style="color:#f1f5f9; font-weight:600;">${worstDay}</span></div>
-            </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px;">
+    <div style="background: rgba(255,255,255,0.02); padding: 6px 4px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+        <div style="font-size: 8px; color: #64748b; margin-bottom: 2px;">👤 รวม</div>
+        <div style="font-size: 12px; font-weight: 700; color: #38bdf8;">${data.customers}</div>
+    </div>
+
+    <div style="background: rgba(34,197,94,0.05); padding: 6px 4px; border-radius: 12px; text-align: center; border: 1px solid rgba(34,197,94,0.1);">
+        <div style="font-size: 8px; color: #4ade80; margin-bottom: 2px;">💇 ใหม่</div>
+        <div style="font-size: 12px; font-weight: 700; color: #4ade80;">${data.countNew || 0}</div>
+    </div>
+
+    <div style="background: rgba(168,85,247,0.05); padding: 6px 4px; border-radius: 12px; text-align: center; border: 1px solid rgba(168,85,247,0.1);">
+        <div style="font-size: 8px; color: #c084fc; margin-bottom: 2px;">💇‍♂️ ประจำ</div>
+        <div style="font-size: 12px; font-weight: 700; color: #c084fc;">${data.countRegular || 0}</div>
+    </div>
+</div>
+<div style="font-size: 11px; color: #64748b; line-height: 1.7; padding: 0 4px 10px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px;">
+    <div>💇 ลูกค้าใหม่: <span style="color: #f1f5f9; font-weight: 600;">${data.newAnalysis} (${data.countNew || 0})</span></div>
+    <div>💇‍♂️ ลูกค้าประจำ: <span style="color: #f1f5f9; font-weight: 600;">${data.regAnalysis} (${data.countRegular || 0})</span></div>
+    <div style="margin-top: 2px;">📈 ลูกค้าเยอะที่สุด: <span style="color: #f1f5f9; font-weight: 600;">${bestDay}</span></div>
+    <div>📉 ลูกค้าน้อยที่สุด: <span style="color: #f1f5f9; font-weight: 600;">${worstDay}</span></div>
+</div>      
             <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top: 8px;">
                 ${popHair} ${popService}
             </div>
@@ -2252,19 +2418,38 @@ function generateMonthlyReport(m, monthTotal, monthBarber, monthCount, workDays,
                     <div style="font-size:20px; font-weight:800; color:#f8fafc;">฿${Math.floor(monthTotal - monthBarber).toLocaleString()}</div>
                 </div>
             </div>
-            <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:25px;">
-                <div style="background:rgba(56,189,248,0.15); padding:6px 14px; border-radius:12px; font-size:13px; font-weight:600; color:#38bdf8;">👤 ลูกค้า ${monthCount} คน</div>
-                <div style="background:rgba(255,255,255,0.08); padding:6px 14px; border-radius:12px; font-size:13px; font-weight:600; color:#f8fafc;">📅 เปิดร้าน ${workDays} วัน</div>
-                <div style="background:rgba(250,204,21,0.15); padding:6px 14px; border-radius:12px; font-size:13px; font-weight:600; color:#facc15;">🛡️ ประกัน ${monthGuarDays || 0} วัน</div>
-                <div style="background:rgba(244,63,94,0.15); padding:6px 14px; border-radius:12px; font-size:13px; font-weight:600; color:#fb7185;">🛑 หยุด ${offDays} วัน</div>
-                <div style="background:rgba(147, 51, 234, 0.15); padding:6px 14px; border-radius:12px; font-size:13px; font-weight:600; color:#a855f7;">📊 เฉลี่ย ${avgCustomerPerDay.toFixed(2)}</div>
-            </div>
+          <div style="margin-bottom: 25px;">
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px;">
+        <div style="background: rgba(56,189,248,0.15); padding: 10px 4px; border-radius: 12px; font-size: 13px; font-weight: 700; color: #38bdf8; text-align: center; border: 1px solid rgba(56,189,248,0.2);">
+            👤 ลูกค้า ${monthCount}
+        </div>
+        <div style="background: rgba(34,197,94,0.15); padding: 10px 4px; border-radius: 12px; font-size: 13px; font-weight: 700; color: #4ade80; text-align: center; border: 1px solid rgba(34,197,94,0.2);">
+            💇 ใหม่ ${countNew || 0}
+        </div>
+        <div style="background: rgba(168,85,247,0.15); padding: 10px 4px; border-radius: 12px; font-size: 13px; font-weight: 700; color: #c084fc; text-align: center; border: 1px solid rgba(168,85,247,0.2);">
+            💇‍♂️ ประจำ ${countRegular || 0}
+        </div>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;">
+        <div style="background: rgba(255,255,255,0.08); padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; color: #f8fafc;">
+            📅 เปิด ${workDays} วัน
+        </div>
+        <div style="background: rgba(244,63,94,0.15); padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; color: #fb7185;">
+            ⛱️ หยุด ${offDays} วัน
+        </div>
+        <div style="background: rgba(250,204,21,0.15); padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; color: #facc15;">
+            🛡️ ประกัน ${monthGuarDays || 0} วัน
+        </div>
+        <div style="background: rgba(147,51,234,0.15); padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; color: #a855f7;">
+            📊 เฉลี่ย ${avgCustomerPerDay.toFixed(2)}
+        </div>
             <div style="margin-bottom:25px;">
-                <div style="font-size:14px; font-weight:800; color:#facc15; margin-bottom:12px;">📅 วิเคราะห์รายสัปดาห์</div>
+                <div style="font-size:14px; font-weight:800; color:#facc15; margin-bottom:12px;">🌀 วิเคราะห์รายสัปดาห์</div>
                 ${weeklyHtml}
             </div>
             <div style="background:rgba(250,204,21,0.08); border:1px solid rgba(250,204,21,0.25); padding:18px; border-radius:20px; margin-bottom:30px;">
-                <div style="font-size:14px; font-weight:800; color:#facc15; margin-bottom:10px;">💡 วิเคราะห์ภาพรวม</div>
+                <div style="font-size:14px; font-weight:800; color:#facc15; margin-bottom:10px;">⌛ วิเคราะห์ภาพรวม</div>
                 ${insights.map(i => `<div style="font-size:13px; color:#f8fafc; margin-bottom:6px;">• ${i}</div>`).join("")}
             </div>
             <div style="margin-bottom:25px;">
@@ -2281,7 +2466,7 @@ function generateMonthlyReport(m, monthTotal, monthBarber, monthCount, workDays,
             </div>
         </div>`
     );
-}  
+} 
 function renderStats(obj, accentColor) {
     const entries = Object.entries(obj).sort((a, b) => b[1] - a[1]);
     if (!entries.length) return "<div style='color:rgba(255,255,255,0.2); padding:10px; font-size:13px;'>ไม่มีข้อมูลสถิติ</div>";
@@ -2293,6 +2478,7 @@ function renderStats(obj, accentColor) {
         </div>`).join("");
 }
 function shareLine() {
+    const $ = (id) => document.getElementById(id); // กันเหนียวเผื่อลืมประกาศตัวแปร $
     const dInp = $("dateInp").value;
     const today = db.filter(r => r.date === dInp);
     
@@ -2300,18 +2486,21 @@ function shareLine() {
         alert("ไม่พบข้อมูลของวันที่เลือก");
         return;
     }
-    // --- 🟢 แก้ไขวันที่ให้เป็นแบบย่อ (เช่น 13 ก.พ. 69) ---
+
     const [y, m, d] = dInp.split('-');
     const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
     const fDate = `${parseInt(d)} ${months[parseInt(m)-1]} ${(parseInt(y) + 543).toString().slice(-2)}`;
     
-    // --- 🟢 ดึงชื่อร้านจาก Config ---
     const shopName = conf.shop || "Barber Shop";
 
     let tot = 0, cash = 0, trans = 0, tips = 0;
     let stats = {}, realCustomerCount = 0;
+    
+    // --- 🟢 เพิ่มตัวนับแยกประเภทลูกค้า ---
+    let newCount = 0;
+    let regCount = 0;
 
-    // 1. ประมวลผลรายการลูกค้า (คงเดิม)
+    // 1. ประมวลผลรายการลูกค้า
     const clientList = today
         .sort((a, b) => a.time.localeCompare(b.time))
         .map((r, i) => {
@@ -2331,6 +2520,12 @@ function shareLine() {
             const isService = !['GUARANTEE', 'HOLIDAY'].includes(rType) && p > 0;
             if (isService) {
                 realCustomerCount++;
+                
+                // --- 🎯 เช็คประเภทลูกค้า (ใช้ custType ให้ตรงกับที่เก็บในฐานข้อมูล) ---
+                const cType = String(r.custType || "").toLowerCase().trim();
+                if (cType === 'new') newCount++;
+                else if (cType === 'regular') regCount++;
+
                 if (r.hair && r.hair.includes("เด็ก")) stats["เด็ก"] = (stats["เด็ก"] || 0) + 1;
                 (r.svcs || []).forEach(s => { if (s) stats[s] = (stats[s] || 0) + 1; });
             }
@@ -2363,11 +2558,18 @@ function shareLine() {
         ? `⚠️ ช่างคืนร้าน: ${Math.floor(Math.abs(settle)).toLocaleString()} บาท` 
         : `🟦 ร้านคืนช่าง: ${Math.floor(Math.abs(settle)).toLocaleString()} บาท`;
 
-    // 4. ประกอบข้อความ (Template)
-    let msg = `💈 รายงานร้าน: ${shopName}\n`; // 🟢 ใช้ชื่อร้านจากตัวแปรแล้ว
-    msg += `📅 วันที่: ${fDate}\n`;            // 🟢 เป็นแบบย่อแล้ว
+   // --- 4. ประกอบข้อความ (Template) - ปรับตามเงื่อนไขพี่ ---
+    let msg = `💈 รายงานร้าน: ${shopName}\n`;
+    msg += `📅 วันที่: ${fDate}\n`;
     msg += `-------------------------\n`;
-    msg += `📝 ลูกค้า (${realCustomerCount} คน):\n${clientList}\n`;
+    if (newCount > 0 || regCount > 0) {
+        msg += `📝 ลูกค้าทั้งหมด: ${realCustomerCount} คน\n`;
+        msg += `✨ ใหม่: ${newCount > 0 ? newCount : '-'} | 🤵 ประจำ: ${regCount > 0 ? regCount : '-'}\n`;
+    } else {
+        msg += `📝 ลูกค้า: ${realCustomerCount} คน\n`;
+    }
+    msg += `-------------------------\n`;
+    msg += `${clientList}\n`;
     msg += `-------------------------\n`;
     msg += `📊 สรุปงาน:\n${statText || '(ไม่มีรายการ)'}\n`;
     msg += `-------------------------\n`;
@@ -2378,17 +2580,16 @@ function shareLine() {
     msg += `-------------------------\n`;
     msg += `${settleMsg}`;
 
-    // 5. แสดง Preview (สำคัญมาก)
-    const msgEdit = $("msgEdit"); // ใช้ฟังก์ชัน $ ที่คุณประกาศไว้
+    // 5. แสดง Preview
+    const msgEdit = $("msgEdit");
     const previewArea = $("linePreview");
     
     if (msgEdit && previewArea) {
         msgEdit.value = msg;
-        previewArea.style.display = "flex"; // แสดงหน้าต่าง Preview
-        console.log("✅ Preview Generated");
+        previewArea.style.display = "flex";
+        console.log("✅ Line Report Generated with Customer Types");
     } else {
-        console.error("❌ ไม่พบ Element สำหรับแสดง Preview");
-        alert("ระบบพรีวิวมีปัญหา โปรดตรวจสอบ ID ของหน้าต่างพรีวิวครับ");
+        alert("ระบบพรีวิวมีปัญหา โปรดตรวจสอบ ID ของหน้าต่างพรีวิว");
     }
 }
 function sendToLineFinal() {
@@ -2396,7 +2597,7 @@ function sendToLineFinal() {
     const previewArea = document.getElementById("linePreview");
     // 1. ตรวจสอบว่ามีข้อมูลข้อความหรือไม่
     if (!msgEdit || !msgEdit.value.trim()) {
-        alert("กรุณาตรวจสอบข้อความก่อนส่งครับ");
+        alert("กรุณาตรวจสอบข้อความก่อนส่ง");
         return;
     }
     const finalMsg = msgEdit.value;
@@ -2492,14 +2693,15 @@ function handleSave(event) {
     const price = parseInt($("priceInp")?.value) || 0;
     const tip = parseInt($("tipInp")?.value) || 0;
     const dateVal = $("dateInp")?.value;
+    // 🟢 เพิ่มการดึงค่าประเภทลูกค้า
+    const custTypeVal = $("custType")?.value || 'none'; 
 
     if (!price || !payMethod) {
-        // 🔊 เพิ่มเสียงเตือนเมื่อข้อมูลไม่ครบ
         speak("กรุณาใส่ราคาและเลือกวิธีจ่ายเงิน");
         return alert("กรุณาใส่ราคาและเลือกวิธีจ่ายเงิน!");
     }
 
-    // 2. จัดการเรื่องเวลา (สำคัญ: เก็บค่า End Time ไว้ก่อนรีเซ็ต)
+    // 2. จัดการเรื่องเวลา
     const startTime = $("tStart")?.value || new Date().toTimeString().slice(0, 5);
     const endTime = $("tEnd")?.value; 
 
@@ -2515,6 +2717,7 @@ function handleSave(event) {
     } else {
         payMethod === 'Cash' ? cashAmt = price + tip : transAmt = price + tip;
     }
+
     // 4. สร้างอ็อบเจกต์บันทึกข้อมูล (Record Object)
     const rec = {
         id: Date.now(), 
@@ -2522,6 +2725,8 @@ function handleSave(event) {
         time: startTime, 
         endTime: endTime || (typeof addMinutes === 'function' ? addMinutes(startTime, 30) : startTime),
         svcs: [$("hairStyle")?.value, $("extra1")?.value, $("extra2")?.value].filter(Boolean),
+        // 🟢 เพิ่มฟิลด์ custType ลงในข้อมูลที่จะบันทึก
+        custType: custTypeVal, 
         price: price, 
         tip: tip, 
         pay: payMethod, 
@@ -2534,16 +2739,15 @@ function handleSave(event) {
     db.push(rec); 
     saveDB(); 
 
-    // 🔊 --- เพิ่มฟังก์ชันเสียงพูดสรุปยอดเงิน ---
+    // 🔊 เสียงพูดสรุปยอดเงิน
     const total = price + tip;
     const payText = payMethod === 'Cash' ? "เงินสด" : (payMethod === 'Trans' ? "เงินโอน" : "ยอดผสม");
     speak(`บันทึก ${payText} ยอดรวม ${total} บาท เรียบร้อย`);
-    // ---------------------------------------
 
     if (typeof renderDay === 'function') renderDay(); 
     if (typeof loadAccountStatus === 'function') loadAccountStatus();
 
-    // 6. Animation แสดงสถานะสำเร็จ (Feedback UI)
+    // 6. Animation แสดงสถานะสำเร็จ
     const btnSave = event.currentTarget || document.querySelector(".btn-main");
     if (btnSave) {
         const originalContent = btnSave.innerHTML;
@@ -2558,14 +2762,15 @@ function handleSave(event) {
         }, 1200);
     }
 
-    // 7. รีเซ็ตฟอร์มเพื่อเตรียมรับลูกค้าคนถัดไป
+    // 7. รีเซ็ตฟอร์ม
     if ($("tStart") && endTime) {
         $("tStart").value = endTime;
     }
     const inputsToClear = ["priceInp", "tipInp", "mixCash", "mixTrans", "tEnd"];
     inputsToClear.forEach(id => { if($(id)) $(id).value = ""; });
 
-    const selectsToReset = ["hairStyle", "extra1", "extra2"];
+    // 🟢 รีเซ็ตค่าประเภทลูกค้ากลับเป็น "ปิด" (none)
+    const selectsToReset = ["hairStyle", "extra1", "extra2", "custType"]; 
     selectsToReset.forEach(id => { if($(id)) $(id).selectedIndex = 0; });
 
     payMethod = ""; 
@@ -2574,7 +2779,8 @@ function handleSave(event) {
     
     if($("mixPanel")) $("mixPanel").style.display = 'none';
 
-    if ($("tEnd")) {$("tEnd").focus();
+    if ($("tEnd")) {
+        $("tEnd").focus();
     }
 }
 function applyTheme(t) {
