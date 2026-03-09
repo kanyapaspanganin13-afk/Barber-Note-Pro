@@ -408,6 +408,18 @@ nav {
 .swal2-title, .swal2-content {
     color: var(--text) !important;
 }
+/* ✅ เพิ่มส่วนนี้เพื่อดึงให้แจ้งเตือนมาอยู่หน้าสุด */
+.swal2-container {
+    z-index: 99999 !important; /* ต้องสูงกว่า 10000 ของ Modal พี่ */
+}
+
+/* อันนี้ของเดิมของพี่ (เก็บไว้เหมือนเดิมครับ) */
+.swal2-popup {
+    font-family: 'Kanit', sans-serif !important;
+    border-radius: 20px !important;
+    background: var(--card) !important;
+    color: var(--text) !important;
+}
 @keyframes slideUp { 
     from { transform: translateY(30px); opacity: 0; } 
     to { transform: translateY(0); opacity: 1; } 
@@ -638,7 +650,7 @@ nav {
                 </div>
                 <div style="margin-bottom:10px;">
                     <select id="setTheme" onchange="applyTheme(this.value)" style="width:100%; height:52px; border-radius:16px; border: 1px solid var(--border); background:var(--bg); text-align:center; font-size:16px; font-weight:700; color:var(--text); outline:none;">
-                        <option value="light">🌤 ธีมสว่าง</option>
+                        <option value="light">⛅ ธีมสว่าง</option>
                         <option value="navy">🌌 ธีมน้ำเงิน</option>
                         <option value="vintage">🌑 ธีมดำ-ทอง</option>
                     </select>
@@ -660,18 +672,25 @@ nav {
                         <i class="fas fa-user-friends" style="position: absolute; left: 12px; color: var(--text); opacity:0.6; pointer-events: none; font-size: 14px;"></i>
                     </div>
                 </div>
-
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-bottom:20px;">
-                    <button onclick="exportBackup()" style="height:48px; background:var(--card); border:1px solid var(--border); border-radius:12px; font-size:11px; font-weight:800; color:var(--text); cursor:pointer;"><i class="fas fa-file-download"></i> สำรองข้อมูล</button>
-                    <button onclick="document.getElementById('fileInput').click()" style="height:48px; background:var(--card); border:1px solid var(--border); border-radius:12px; font-size:11px; font-weight:800; color:var(--text); cursor:pointer;"><i class="fas fa-file-upload"></i> คืนค่า</button>
-                    <button onclick="clearData()" style="height:48px; background:rgba(239, 68, 68, 0.1); border:1px solid var(--danger); border-radius:12px; font-size:11px; font-weight:800; color:var(--danger); cursor:pointer;"><i class="fas fa-trash-alt"></i> ล้างข้อมูล</button>
+                    <input type="file" id="fileInput" style="display:none" accept=".json" onchange="importBackup(this)">
+                    <button onclick="exportBackup()" style="height:48px; background:var(--card); border:1px solid var(--border); border-radius:12px; font-size:11px; font-weight:800; color:var(--text); cursor:pointer;">
+                        <i class="fas fa-file-download"></i> สำรองข้อมูล
+                    </button>
+                    <button onclick="document.getElementById('fileInput').click()" style="height:48px; background:var(--card); border:1px solid var(--border); border-radius:12px; font-size:11px; font-weight:800; color:var(--text); cursor:pointer;">
+                        <i class="fas fa-file-upload"></i> คืนค่า
+                    </button>
+                    
+                    <button onclick="clearData()" style="height:48px; background:rgba(239, 68, 68, 0.1); border:1px solid var(--danger); border-radius:12px; font-size:11px; font-weight:800; color:var(--danger); cursor:pointer;">
+                        <i class="fas fa-trash-alt"></i> ล้างข้อมูล
+                    </button>
                 </div>
                 <div style="display:grid; grid-template-columns: 2fr 1.2fr; gap:12px; margin-bottom: 10px;">
                     <button onclick="saveSettings()" style="background:var(--accent); color:var(--btn-text); height:60px; border-radius:20px; border:none; font-weight:800; font-size:18px; box-shadow: 0 8px 20px rgba(0,0,0,0.2);">บันทึก</button>
                     <button onclick="document.getElementById('modalSet').style.display='none'" style="background:var(--bg); color:var(--text); opacity:0.7; height:60px; border-radius:20px; border:none; font-weight:800; font-size:16px;">ปิด</button>
                 </div>
                 <div style="text-align:center; line-height: 1.4; opacity: 0.5;">
-                    <div style="font-size:10px; color:var(--text); font-weight:600;">V.1.0.8</div>
+                    <div style="font-size:10px; color:var(--text); font-weight:600;">V.1.0.2</div>
                     <div style="font-size:9px; color:var(--text); font-weight:400;">Update: 09/03/2026</div>
                 </div>
             </div>
@@ -683,15 +702,15 @@ nav {
     <div id="linePreview" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; justify-content:center; align-items:center; padding:20px; backdrop-filter: blur(5px);"><div style="background: var(--card); width:100%; max-width:450px; padding:20px; border-radius:25px; box-shadow:0 15px 40px rgba(0,0,0,0.4); border: 1px solid var(--border);"><h3 style="margin:0 0 15px 0; color: var(--text); font-size:18px; display:flex; align-items:center; gap:8px;">📝 ตรวจสอบรายงาน</h3><textarea id="msgEdit" style="width:100%; height:300px; padding:15px; border:1px solid var(--border); border-radius:15px; background: var(--bg); color: var(--text); font-family:sans-serif; font-size:14px; line-height:1.5; outline:none; resize:none;"></textarea><div style="display:flex; gap:10px; margin-top:15px;"><button onclick="document.getElementById('linePreview').style.display='none'" style="flex:1; padding:12px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius:12px; font-weight:bold; cursor:pointer;">ยกเลิก</button><button onclick="sendToLineFinal()" style="flex:1; padding:12px; background: var(--success); color:#fff; border:none; border-radius:12px; font-weight:bold; cursor:pointer; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);">ส่งเข้า LINE ✅</button></div></div></div>
 
 <nav style="background: var(--card); border-top: 1px solid var(--border); backdrop-filter: blur(10px); position:fixed; bottom:0; width:100%; max-width:480px; height: 75px; display:flex; justify-content:space-around; align-items: center; z-index:1000; padding-bottom: env(safe-area-inset-bottom);">
-    <div onclick="go(1)" id="nav1" class="nav-item active" style="display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; flex: 1; color: var(--accent); transition: 0.3s;">
+    <div onclick="go(1)" id="nav1" class="nav-item active" style="display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; flex: 1; transition: 0.3s;">
         <i class="fas fa-edit" style="font-size: 24px; margin-bottom: 2px;"></i>
         <span style="font-size: 14px; font-weight: 800;">บันทึก</span>
     </div>
-    <div onclick="go(2)" id="nav2" class="nav-item" style="display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; flex: 1; color: var(--text); opacity: 0.5; transition: 0.3s;">
+    <div onclick="go(2)" id="nav2" class="nav-item" style="display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; flex: 1; transition: 0.3s;">
         <i class="fas fa-history" style="font-size: 24px; margin-bottom: 2px;"></i>
         <span style="font-size: 14px; font-weight: 800;">รายงาน</span>
     </div>
-    <div onclick="go(3)" id="nav3" class="nav-item" style="display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; flex: 1; color: var(--text); opacity: 0.5; transition: 0.3s;">
+    <div onclick="go(3)" id="nav3" class="nav-item" style="display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; flex: 1; transition: 0.3s;">
         <i class="fas fa-wallet" style="font-size: 24px; margin-bottom: 2px;"></i>
         <span style="font-size: 14px; font-weight: 800;">บัญชี</span>
     </div>
@@ -709,7 +728,7 @@ nav {
    ========================================================== */
 const $ = (id) => document.getElementById(id);
 // 1. ตั้งค่าเลขเวอร์ชันและวันที่
-const APP_VERSION = "1.0.8"; 
+const APP_VERSION = "1.0.2"; 
 const LAST_UPDATED = "09/03/2026"; 
 // 2. ระบบอัปเดตอัตโนมัติ (ใส่ไว้ตรงนี้เพื่อให้ทำงานทันทีที่โหลดสคริปต์)
 (function autoUpdate() {
@@ -747,29 +766,30 @@ document.addEventListener("DOMContentLoaded", () => {
     if ($("display-date")) $("display-date").innerText = LAST_UPDATED;
 });
 function go(p) {
-    // 1. ซ่อน/แสดงหน้า (โค้ดเดิมของช่างดีอยู่แล้วครับ)
+    // 1. ซ่อน/แสดงหน้า
     document.querySelectorAll('.page').forEach(pg => {
         pg.classList.remove('active');
         pg.style.display = 'none'; 
     });
-    
     const targetPage = document.getElementById('p' + p);
     if (targetPage) {
         targetPage.classList.add('active');
         targetPage.style.display = 'block';
     }
-    // 2. จัดการเมนู Active
+    // 2. ✨ ส่วนที่แก้ไข: จัดการปุ่มเมนูให้เปลี่ยนสีตามหน้าปัจจุบัน
     document.querySelectorAll('.nav-item').forEach((btn, i) => {
-        btn.classList.toggle('active', (i + 1) === p);
+        const isSelected = (i + 1) === p;
+        btn.classList.toggle('active', isSelected);
+        // บังคับเปลี่ยนสีและค่าความชัดผ่าน JavaScript เพื่อสู้กับ Inline Style ใน HTML
+        btn.style.color = isSelected ? 'var(--accent)' : 'var(--text)';
+        btn.style.opacity = isSelected ? '1' : '0.5';
     });
-    // --- ✨ ส่วนที่เพิ่ม: โหลดชื่อร้านทุกครั้งที่สลับหน้า (ป้องกันชื่อหาย) ---
+    // --- ✨ ส่วนที่เพิ่ม: โหลดชื่อร้านทุกครั้งที่สลับหน้า ---
     const savedShopName = localStorage.getItem("shopName") || "BARBER SHOP";
     const shopTitleEl = document.querySelector('h2'); 
     if (shopTitleEl) shopTitleEl.innerText = savedShopName;
-
     // 3. เงื่อนไขพิเศษ
     const dateInpValue = $("dateInp")?.value || new Date().toISOString().split('T')[0];
-
     if (p === 2) {
         if (typeof renderDay === 'function') renderDay(dateInpValue);
         if ($("displayDateThai")) {
@@ -777,14 +797,11 @@ function go(p) {
             $("displayDateThai").innerText = `${d}/${m}/${parseInt(y) + 543}`;
         }
     }
-
     if (p === 3) { 
-        // หน้าบัญชี: ให้เช็คก่อนว่าข้อมูลเปลี่ยนไหม ค่อยโหลด (ลดการกระตุก)
         if ($("accDate") && $("dateInp")) {
             $("accDate").value = $("dateInp").value;
         }
         if (typeof loadAccountStatus === 'function') {
-            // เรียกใช้ฟังก์ชันเดิม แต่ไม่ต้องรีเฟรชหน้าจอ
             loadAccountStatus(); 
         }
     }
@@ -825,173 +842,107 @@ function saveDB() {
         console.error("❌ ไม่สามารถบันทึกได้:", e);
     }
 }
-// 1. ฟังก์ชันส่งออกข้อมูล (Backup)
+// 1. ฟังก์ชันส่งออกข้อมูล (Backup) - ปรับให้ชื่อ Key ตรงกัน
 function exportBackup() {
     try {
         const data = {
             db: JSON.parse(localStorage.getItem("barber_db") || "[]"),
             archives: JSON.parse(localStorage.getItem("barber_archives") || "[]"),
-            account: typeof account !== 'undefined' ? account : {}, 
-            settings: JSON.parse(localStorage.getItem("barber_settings") || "{}")
+            account: typeof account !== 'undefined' ? account : { balance: 0, logs: [] }, 
+            conf: JSON.parse(localStorage.getItem("barber_conf") || "{}")
         };
         const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `Barber-Note-Backup-${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `Barber-Backup-${new Date().toLocaleDateString('th-TH').replace(/\//g, '-')}.json`;
         a.click();
         
-        // แจ้งเตือนแบบใช้คำเป็นกลางและฟอนต์ Kanit
         Swal.fire({
             title: 'สำรองข้อมูลสำเร็จ',
-            text: 'ระบบดำเนินการจัดเก็บข้อมูลเรียบร้อยแล้ว',
+            text: 'ระบบสร้างไฟล์สำรองเรียบร้อยแล้ว',
             icon: 'success',
-            confirmButtonText: 'ตกลง',
             confirmButtonColor: 'var(--success)'
         });
-        
     } catch (e) { 
-        Swal.fire({
-            title: 'เกิดข้อผิดพลาด',
-            text: 'ไม่สามารถสำรองข้อมูลได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง',
-            icon: 'error',
-            confirmButtonText: 'รับทราบ',
-            confirmButtonColor: 'var(--danger)'
-        });
+        Swal.fire({ title: 'เกิดข้อผิดพลาด', text: 'ไม่สามารถสร้างไฟล์สำรองได้', icon: 'error' });
     }
 }
-// 2. ฟังก์ชันนำเข้าข้อมูลจากไฟล์ (Import)
+
+// 2. ฟังก์ชันนำเข้าข้อมูล (Import) - แก้ให้เขียนทับเฉพาะตัว ไม่ลบทั้งหมด
 function importBackup(input) {
     const reader = new FileReader();
     reader.onload = function(e) {
         try {
             const data = JSON.parse(e.target.result);
-            
+            if (!data.db && !data.archives) throw new Error("Wrong format");
+
             Swal.fire({
                 title: 'ยืนยันการนำเข้าข้อมูล',
-                text: "ข้อมูลปัจจุบันทั้งหมดจะถูกแทนที่ด้วยข้อมูลใหม่ ต้องการดำเนินการต่อหรือไม่?",
+                text: "ข้อมูลปัจจุบันจะถูกแทนที่ด้วยข้อมูลจากไฟล์นี้",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: 'var(--success)',
-                cancelButtonColor: 'var(--danger)',
                 confirmButtonText: 'ยืนยัน',
                 cancelButtonText: 'ยกเลิก',
                 background: 'var(--card)',
                 color: 'var(--text)'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // ล้างข้อมูลเก่าและเขียนทับด้วยข้อมูลจากไฟล์
-                    localStorage.clear(); 
+                    // ✅ เขียนทับเฉพาะ Key ที่เกี่ยวข้อง ป้องกันค่า Config อื่นหาย
                     localStorage.setItem("barber_db", JSON.stringify(data.db || []));
                     localStorage.setItem("barber_archives", JSON.stringify(data.archives || []));
                     localStorage.setItem("barber_account", JSON.stringify(data.account || { balance: 0, logs: [] }));
-                    localStorage.setItem("barber_settings", JSON.stringify(data.settings || {}));
+                    localStorage.setItem("barber_conf", JSON.stringify(data.conf || {}));
                     
-                    Swal.fire({
-                        title: 'นำเข้าข้อมูลสำเร็จ',
-                        text: 'ระบบกำลังเริ่มการทำงานใหม่ กรุณารอสักครู่',
-                        icon: 'success',
-                        showConfirmButton: false,
-                        timer: 2000,
-                        background: 'var(--card)',
-                        color: 'var(--text)'
-                    });
-
-                    setTimeout(() => {
-                        location.reload();
-                    }, 2000);
+                    Swal.fire({ title: 'สำเร็จ', text: 'กำลังรีโหลดข้อมูล...', icon: 'success', showConfirmButton: false, timer: 1500 });
+                    setTimeout(() => location.reload(), 1500);
                 }
             });
-
         } catch(err) { 
-            Swal.fire({
-                title: 'ไฟล์ไม่ถูกต้อง',
-                text: 'รูปแบบไฟล์ข้อมูลไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง',
-                icon: 'error',
-                confirmButtonText: 'ตกลง',
-                confirmButtonColor: 'var(--accent)',
-                background: 'var(--card)',
-                color: 'var(--text)'
-            });
+            Swal.fire({ title: 'ไฟล์ไม่ถูกต้อง', text: 'กรุณาใช้ไฟล์ .json ที่สำรองจากแอปนี้เท่านั้น', icon: 'error' });
         }
     };
     if (input.files && input.files[0]) reader.readAsText(input.files[0]);
 }
-// 3. ฟังก์ชันคืนค่าข้อมูล (Restore จากตัวแปรตรงๆ)
-function restoreData(jsonData) {
-    try {
-        const data = JSON.parse(jsonData);
-        
-        // คืนค่าข้อมูลไปยังหน่วยความจำ
-        account = data.account || { balance: 0, logs: [] };
-        archives = data.archives || []; 
-        
-        // บันทึกลง Storage
-        localStorage.setItem("barber_account", JSON.stringify(account));
-        localStorage.setItem("barber_archives", JSON.stringify(archives));
-        
-        if (typeof save === "function") save();
-        if (typeof saveDB === "function") saveDB();
-
-        // แจ้งเตือนความสำเร็จ (ตัดคำแทนตัวและคำลงท้าย)
-        Swal.fire({
-            title: 'ดำเนินการสำเร็จ',
-            text: 'ระบบคืนค่าข้อมูลและล้างยอดบัญชีเรียบร้อยแล้ว',
-            icon: 'success',
-            showConfirmButton: false,
-            timer: 2000,
-            background: 'var(--card)',
-            color: 'var(--text)'
-        });
-
-        // หน่วงเวลาเล็กน้อยก่อนรีเฟรชหน้าจอ
-        setTimeout(() => {
-            location.reload(); 
-        }, 2000);
-        
-    } catch (e) {
-        Swal.fire({
-            title: 'เกิดข้อผิดพลาด',
-            text: 'ไม่สามารถคืนค่าข้อมูลได้เนื่องจากรูปแบบข้อมูลไม่ถูกต้อง',
-            icon: 'error',
-            confirmButtonText: 'รับทราบ',
-            confirmButtonColor: 'var(--danger)',
-            background: 'var(--card)',
-            color: 'var(--text)'
-        });
-    }
-}
-// 4. ฟังก์ชันล้างข้อมูลแอป (Hard Reset)
 function clearData() {
+    // เช็คก่อนว่าในเครื่องมี SweetAlert (Swal) ไหม
+    if (typeof Swal === 'undefined') {
+        if (confirm("ล้างข้อมูลทั้งหมด? รายงานและบัญชีจะหายถาวร")) {
+            localStorage.removeItem("barber_db");
+            localStorage.removeItem("barber_archives");
+            localStorage.removeItem("barber_account");
+            location.reload();
+        }
+        return;
+    }
+
+    // ถ้ามี Swal ให้ใช้แบบสวยๆ
     Swal.fire({
-        title: 'ยืนยันการล้างข้อมูลระบบ',
-        text: "ข้อมูลทั้งหมดรวมถึงรายงานบัญชีจะถูกลบอย่างถาวร ต้องการดำเนินการต่อหรือไม่?",
+        title: 'ล้างข้อมูลทั้งหมด?',
+        text: "รายงานและบัญชีจะหายถาวร (ควรสำรองข้อมูลก่อน)",
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: 'var(--danger)', // ใช้ตัวแปรสีแดงจากธีม
-        cancelButtonColor: '#6b7280',
-        confirmButtonText: 'ยืนยันการลบข้อมูล',
-        cancelButtonText: 'ยกเลิก',
-        background: 'var(--card)',
-        color: 'var(--text)'
+        confirmButtonColor: '#dc2626', // สีแดง
+        cancelButtonColor: '#6b7280', // สีเทา
+        confirmButtonText: 'ยืนยันลบข้อมูล',
+        cancelButtonText: 'ยกเลิก'
     }).then((result) => {
         if (result.isConfirmed) {
-            // ล้างข้อมูลทุกอย่างใน LocalStorage
-            localStorage.clear(); 
+            // ลบข้อมูลหลัก
+            localStorage.removeItem("barber_db");
+            localStorage.removeItem("barber_archives");
+            localStorage.removeItem("barber_account");
             
             Swal.fire({
                 title: 'ล้างข้อมูลสำเร็จ',
-                text: 'ระบบดำเนินการล้างข้อมูลทั้งหมดเรียบร้อยแล้ว',
                 icon: 'success',
-                showConfirmButton: false,
-                timer: 2000,
-                background: 'var(--card)',
-                color: 'var(--text)'
+                timer: 1000,
+                showConfirmButton: false
             });
             
             setTimeout(() => {
-                location.reload(); 
-            }, 2000);
+                location.reload();
+            }, 1000);
         }
     });
 }
@@ -2859,6 +2810,7 @@ function shareLine() {
         });
     }
 }
+
 function sendToLineFinal() {
     const msgEdit = document.getElementById("msgEdit");
     const previewArea = document.getElementById("linePreview");
